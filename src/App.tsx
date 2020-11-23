@@ -1,49 +1,33 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React from "react";
+import {BrowserRouter as Router, Route} from 'react-router-dom';
 
-import logo from "./barnes_logo.png";
 import "./App.css";
 
+import Landing from './toolbox/Landing';
+import lineChart1 from './toolbox/diagrams/lineChart/lineChart1';
+import lineChart2 from './toolbox/diagrams/lineChart/lineChart2';
+import lineChart3 from './toolbox/diagrams/lineChart/lineChart3';
+import lineChart4 from './toolbox/diagrams/lineChart/lineChart4';
+import lineChart5 from './toolbox/diagrams/lineChart/lineChart5';
+
 function App() {
+	return (
+		<Router>
+			<a href="/">Home</a>
+			<a href="/linechart1/">LineChart1</a>
+			<a href="/linechart2/">LineChart2</a>
+			<a href="/linechart3/">LineChart3</a>
+			<a href="/linechart4/">LineChart4</a>
+			<a href="/linechart5/">LineChart5</a>
 
-  const [server_time, setTime] = useState();
-  const [version_info, setVersion] = useState([{id: '', message:'', created_at:''}]);
-
- 
-  useEffect(() => {
-
-    async function getServerTime() {
-      const result = await axios(
-        'http://127.0.0.1:8000/api/time/',
-      );
-      setTime(result.data);
-    }
-
-    async function getVersionInfo() {
-      const result = await axios(
-        'http://127.0.0.1:8000/api/version/',
-      );
-      console.log(result);
-      setVersion(result.data);
-    }
-
-    getServerTime();
-    getVersionInfo();
-  }, []);
-
-
-
-
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" /> 
-        <p className="HelloWorld">Hello World! it's {server_time} at GIS server</p>
-        <p>GIS6 version information: {version_info[0].message} created at: {version_info[0].created_at}</p>
-      </header>
-     
-    </div>
-  );
+			<Route path="/" exact component={Landing} />
+			<Route path="/linechart1/" exact component={lineChart1} />
+			<Route path="/linechart2/" exact component={lineChart2} />
+			<Route path="/linechart3/" exact component={lineChart3} />
+			<Route path="/linechart4/" exact component={lineChart4} />
+			<Route path="/linechart5/" exact component={lineChart5} />
+		</Router>
+	);
 }
 
 export default App;
