@@ -1,18 +1,31 @@
 import React from 'react';
-import LineChart from './lineChart';
+import {Serie, LineChart} from './lineChart';
 
-export default function PinPositionTimeChart() {
+type PinPosChartProps = Readonly<{
+	xMax: number;
+	Series: Array<Serie>;
+	Height: number;
+}>;
+
+export default function PinPositionTimeChart(props: PinPosChartProps) {
+	// eslint-disable-next-line
+	const [xMax, setxMax] = React.useState(props.xMax);
+	// eslint-disable-next-line
+	const [Series, setSeries] = React.useState(props.Series);
+	// eslint-disable-next-line
+	const [Height, setHeight] = React.useState(props.Height);
+
 	function formatSubTitle() {
-		return " (" + 1 + " pins)"
+		return " (" + Series.length + " pins)"
 	}
 
 	return (
 		<LineChart
 			xAxisLabel="Time [sec]"
-			yAxisLabels={["Position [mm]"]}
-			xMax={10}
-			Series={[{data:[[1,2]], yAxisIndex:0, name: "N1"}]}
-			Height={400}
+			yAxiss={[{Label: "Position [mm]", Max: 10}]}
+			xMax={xMax}
+			Series={Series}
+			Height={Height}
 			Title="Pin Positions"
 			SubTitle={formatSubTitle()}
 			/>

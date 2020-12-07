@@ -4,15 +4,18 @@ import ReactEcharts from "echarts-for-react";
 // import "./styles.css"
 import "./styles.scss"
 
-interface Serie {
+export interface Serie {
 	data: Array<Array<Number>>;
-	yAxisIndex: Number;
+	yAxisIndex?: Number;
 	name: string;
 }
 
 type LineChartProps = Readonly<{
 	xAxisLabel: string;
-	yAxisLabels: Array<string>;
+	yAxiss: Array<{
+		Label: string;
+		Max: number;
+	}>;
 	xMax: number;
 	Series: Array<Serie>;
 	Height: number;
@@ -20,11 +23,11 @@ type LineChartProps = Readonly<{
 	SubTitle: string;
 }>;
 
-export default function LineChart(props: LineChartProps) {
+export function LineChart(props: LineChartProps) {
 	// eslint-disable-next-line
 	const [xAxisLabel, setxAxisLabel] = React.useState(props.xAxisLabel);
 	// eslint-disable-next-line
-	const [yAxisLabels, setyAxisLabels] = React.useState(props.yAxisLabels);
+	const [yAxiss, setyAxiss] = React.useState(props.yAxiss);
 	// eslint-disable-next-line
 	const [xMax, setxMax] = React.useState(props.xMax);
 	// eslint-disable-next-line
@@ -63,14 +66,14 @@ export default function LineChart(props: LineChartProps) {
 				min: 0,
 				max: xMax,
 			},
-			yAxis: yAxisLabels.map(function (c, k) {
+			yAxis: yAxiss.map(function (c, k) {
 				return {
 					type: 'value',
-					name: c,
+					name: c.Label,
 					nameLocation: 'middle',
 					nameGap: 30,
 					min: 0,
-					max: 100
+					max: c.Max
 				}
 			}),
 			tooltip: {
@@ -95,7 +98,8 @@ export default function LineChart(props: LineChartProps) {
 			dataZoom: [{
 				type: 'inside',
 				throttle: 50,
-				zoomOnMouseWheel: false, 
+				zoomOnMouseWheel: false,
+				moveOnMouseWheel: false,
 			}],
 			series: Series.map(function (el, elIndex) {
 				return {
