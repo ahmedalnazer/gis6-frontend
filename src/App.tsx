@@ -10,6 +10,9 @@ import lineChart3 from './toolbox/diagrams/lineChart/lineChart3';
 import lineChart4 from './toolbox/diagrams/lineChart/lineChart4';
 import lineChart5 from './toolbox/diagrams/lineChart/lineChart5';
 import lineChart6 from './toolbox/diagrams/lineChart/lineChart6';
+import timeValue from './toolbox/diagrams/lineChart/timeValue';
+import PressureTimeChart from './toolbox/diagrams/lineChart/pressureTimeChart';
+import CycleData from './cycleData';
 
 function App() {
 	return (
@@ -21,6 +24,9 @@ function App() {
 			<a href="/linechart4/">LineChart4(google)</a>
 			<a href="/linechart5/">LineChart5(react-vis)</a>
 			<a href="/linechart6/">LineChart6(echarts)</a>
+			<a href="/timevalue/">Time Value</a>
+			<a href="/pchart/">Pressure Time Value</a>
+			<a href="/cycledata/">Cycle Data</a>
 
 			<Route path="/" exact component={Landing} />
 			<Route path="/linechart1/" exact component={lineChart1} />
@@ -29,6 +35,9 @@ function App() {
 			<Route path="/linechart4/" exact component={lineChart4} />
 			<Route path="/linechart5/" exact component={lineChart5} />
 			<Route path="/linechart6/" exact component={lineChart6} />
+			<Route path="/timevalue/" exact component={timeValue} />
+			<Route path="/pchart/" exact component={PressureTimeChart} />
+			<Route path="/cycledata/" exact component={CycleData} />
 		</Router>
 	);
 }
