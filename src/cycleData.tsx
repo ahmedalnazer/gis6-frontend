@@ -7,6 +7,7 @@ import {fetchJson, sendJson} from './restApi';
 
 type CycleDataProps = Readonly<{
 	OrderId: number;
+	CycleId: number;
 }>;
 
 export default function CycleData(props: CycleDataProps) {
@@ -17,42 +18,41 @@ export default function CycleData(props: CycleDataProps) {
 	// eslint-disable-next-line
 	const [OrderId, setOrderId] = React.useState(props.OrderId);
 	// eslint-disable-next-line
+	const [CycleId, setCycleId] = React.useState(props.CycleId);
+	const [TcData, setTcData] = React.useState([]);
 	const [VgData, setVgData] = React.useState([]);
-	// eslint-disable-next-line
-	const [PpData, setPpData] = React.useState([]);
-	// eslint-disable-next-line
 	const [PsData, setPsData] = React.useState([]);
 
-	async function loadVgData() {
-		const data = await fetchJson("/sensordata/?cycleid=1&devtype=vg");
+	async function loadTcData() {
+		const data = await fetchJson("/sensordata/?cycleid=" + OrderId + "&devtype=tc");
 
 		//convert here
-		//[{data:[[1,2]], name: "T1"}]
+		//[{data:[[1,2]], name: "Z1"}]
 
-		setVgData(data);
+		setTcData(data);
 	}
 
-	async function loadPpData() {
-		const data = await fetchJson("/sensordata/?cycleid=1&devtype=vg");
+	async function loadVgData() {
+		const data = await fetchJson("/sensordata/?cycleid=" + OrderId + "&devtype=vg");
 
 		//convert here
-		//[{data:[[1,2]], name: "T1"}]
+		//[{data:[[1,2]], name: "N1"}]
 
 		setVgData(data);
 	}
 
 	async function loadPsData() {
-		const data = await fetchJson("/sensordata/?cycleid=1&devtype=vg");
+		const data = await fetchJson("/sensordata/?cycleid=" + OrderId + "&devtype=em75");
 
 		//convert here
-		//[{data:[[1,2]], name: "T1"}]
+		//[{data:[[1,2]], name: "p1"}]
 
-		setVgData(data);
+		setPsData(data);
 	}
 
 	React.useEffect(() => {
+		loadTcData();
 		loadVgData();
-		loadPpData();
 		loadPsData();
 	});
 
@@ -60,13 +60,13 @@ export default function CycleData(props: CycleDataProps) {
 		<div>
 			<ZoneTempTimeChart 
 				xMax={xMax}
-				Series={VgData}
+				Series={TcData}
 				Height={Height}
 				/>
 			<hr />
 			<PinPositionTimeChart
 				xMax={xMax}
-				Series={PpData}
+				Series={VgData}
 				Height={Height}
 				/>
 			<hr />
