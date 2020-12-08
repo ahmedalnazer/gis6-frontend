@@ -102,11 +102,11 @@ class Base64Binary {
 }
 
 export interface Serie {
-	data: Array<Array<Number>>;
+	data: Array<Array<number>>;
 	name: string;
 }
 
-function convertToGraphData(data:Array<Uint16Array>) {
+function convertToGraphData(sampleTime:number, data:Array<Uint16Array>) {
 	let NewData: Array<Serie> = Array(data[0].length);
 
 	for (var i=0; i<NewData.length; i++) {
@@ -116,7 +116,7 @@ function convertToGraphData(data:Array<Uint16Array>) {
 	// Now reorganize the data
 	for (var slice = 0; slice < data.length; slice++) {
 		for (var signal = 0; signal < data[slice].length; signal++) {
-			NewData[signal].data.push([slice*0.5, data[slice][signal]])
+			NewData[signal].data.push([sampleTime*slice, data[slice][signal]])
 
 			//ToDo slice must be recalulated to time
 			//ToDo signal must be recalculated to real unit
@@ -148,7 +148,7 @@ function parseSensorDataUint16(slice:SensorData)
 	return dataValues;
 }
 
-export function parseSensorData(slices:Array<SensorData>)
+export function parseSensorData(sampleTime:number, slices:Array<SensorData>)
 {
 	if (slices.length===0) return []
 	let data = []
@@ -159,5 +159,5 @@ export function parseSensorData(slices:Array<SensorData>)
 		}
 		data.push(parseSensorDataUint16(slices[i]));
 	}
-	return  convertToGraphData(data)
+	return  convertToGraphData(sampleTime, data)
 }
