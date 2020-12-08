@@ -2,7 +2,7 @@ import React from 'react';
 import PressureTimeChart from './toolbox/diagrams/lineChart/pressureTimeChart';
 import PinPositionTimeChart from './toolbox/diagrams/lineChart/pinPositionTimeChart';
 import ZoneTempTimeChart from './toolbox/diagrams/lineChart/zoneTempTimeChart';
-import {fetchJson, sendJson} from './restApi';
+import {fetchJson} from './restApi';
 import {parseSensorData, Serie} from './toolbox/diagrams/DataConverter';
 
 type CycleDataProps = Readonly<{
@@ -16,7 +16,7 @@ export default function CycleData(props: CycleDataProps) {
 	// eslint-disable-next-line
 	const [xMax, setxMax] = React.useState(10);
 	// eslint-disable-next-line
-	const [Height, setxHeight] = React.useState(400);
+	const [Height, setxHeight] = React.useState(200);
 	// eslint-disable-next-line
 	const [OrderId, setOrderId] = React.useState(props.OrderId);
 	// eslint-disable-next-line
@@ -29,29 +29,24 @@ export default function CycleData(props: CycleDataProps) {
 		const data = await fetchJson("/sensordata/?cycleid=" + CycleId + "&devtype=tc");
 
 		let diadata = parseSensorData(data);
-		//convert here
-		//[{data:[[1,2]], name: "Z1"}]
 
 		setTcData(diadata);
-		console.log("data loaded!");
+		
 	}
 
 	async function loadVgData() {
-		//const data = await fetchJson("/sensordata/?cycleid=" + CycleId + "&devtype=vg");
+		const data = await fetchJson("/sensordata/?cycleid=" + CycleId + "&devtype=vg");
 
-		//convert here
-		//[{data:[[1,2]], name: "N1"}]
-
-		//setVgData(data);
+		let diadata = parseSensorData(data);
+		setVgData(diadata);
 	}
 
 	async function loadPsData() {
+		const data:any = []
 		//const data = await fetchJson("/sensordata/?cycleid=" + CycleId + "&devtype=em75");
 
-		//convert here
-		//[{data:[[1,2]], name: "p1"}]
-
-		//setPsData(data);
+		let diadata = parseSensorData(data);
+		setPsData(diadata);
 	}
 
 	React.useEffect(() => {

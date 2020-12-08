@@ -1,5 +1,5 @@
 import React from 'react';
-import {Serie, LineChart} from './lineChart';
+import { Serie, LineChart } from './lineChart';
 
 type ZoneTempChartProps = Readonly<{
 	xMax: number;
@@ -8,26 +8,30 @@ type ZoneTempChartProps = Readonly<{
 }>;
 
 export default function ZoneTempTimeChart(props: ZoneTempChartProps) {
-	// eslint-disable-next-line
-	const [xMax, setxMax] = React.useState(props.xMax);
-	// eslint-disable-next-line
-	const [Series, setSeries] = React.useState(props.Series);
-	// eslint-disable-next-line
-	const [Height, setHeight] = React.useState(props.Height);
-	
+	// // eslint-disable-next-line
+	// const [xMax, setxMax] = React.useState();
+	// // eslint-disable-next-line
+	// const [Series, setSeries] = React.useState();
+	// // eslint-disable-next-line
+	// const [Height, setHeight] = React.useState();
+
 	function formatSubTitle() {
-		return " (" + Series.length + " zones)"
+		return " (" + props.Series.length + " zones)"
 	}
+
+	// setxMax(props.xMax);
+	// setSeries(props.Series);
+	// setHeight(props.Height);
 
 	return (
 		<LineChart
 			xAxisLabel="Time [sec]"
-			yAxiss={[{Label: "Temperature [°C]", Max: 500}]}
-			xMax={xMax}
-			Series={Series}
-			Height={Height}
+			yAxiss={[{ Label: "Temperature [°C]", Max: 50000 }]}
+			xMax={props.xMax}
+			Series={props.Series}
+			Height={props.Height}
 			Title="Heater Zones"
 			SubTitle={formatSubTitle()}
-			/>
+		/>
 	);
 }

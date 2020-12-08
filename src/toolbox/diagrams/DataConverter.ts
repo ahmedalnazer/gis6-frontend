@@ -54,7 +54,7 @@ class Base64Binary {
 
 	removePaddingChars(input:string) {
 		var lkey = this._keyStr.indexOf(input.charAt(input.length - 1));
-		if(lkey == 64){
+		if(lkey === 64){
 			return input.substring(0,input.length - 1);
 		}
 		return input;
@@ -79,7 +79,7 @@ class Base64Binary {
 		else
 			uarray = new Uint8Array(bytes);
 		
-		input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+		input = input.replace(/[^A-Za-z0-9+/=]/g, "");
 		
 		for (i=0; i<bytes; i+=3) {	
 			//get the 3 octects in 4 ascii chars
@@ -93,8 +93,8 @@ class Base64Binary {
 			chr3 = ((enc3 & 3) << 6) | enc4;
 	
 			uarray[i] = chr1;			
-			if (enc3 != 64) uarray[i+1] = chr2;
-			if (enc4 != 64) uarray[i+2] = chr3;
+			if (enc3 !== 64) uarray[i+1] = chr2;
+			if (enc4 !== 64) uarray[i+2] = chr3;
 		}
 	
 		return uarray;	
@@ -150,9 +150,10 @@ function parseSensorDataUint16(slice:SensorData)
 
 export function parseSensorData(slices:Array<SensorData>)
 {
+	if (slices.length===0) return []
 	let data = []
 	for (var i = 0; i<slices.length; i++) {
-		if (slices[i].slice!=i) {
+		if (slices[i].slice!==i) {
 			console.log("Invalid slice" + slices[i].slice + "!=" + i)
 			break;
 		}

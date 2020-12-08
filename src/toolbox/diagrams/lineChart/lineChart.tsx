@@ -1,7 +1,6 @@
 
 import React from 'react';
 import ReactEcharts from "echarts-for-react";
-// import "./styles.css"
 import "./styles.scss"
 
 export interface Serie {
@@ -24,24 +23,24 @@ type LineChartProps = Readonly<{
 }>;
 
 export function LineChart(props: LineChartProps) {
+	// // eslint-disable-next-line
+	// const [xAxisLabel, setxAxisLabel] = React.useState(props.xAxisLabel);
+	// // eslint-disable-next-line
+	// const [yAxiss, setyAxiss] = React.useState(props.yAxiss);
+	// // eslint-disable-next-line
+	// const [xMax, setxMax] = React.useState(props.xMax);
+	// // eslint-disable-next-line
+	// const [Series, setSeries] = React.useState(props.Series);
+	// // eslint-disable-next-line
+	// const [Height, setHeight] = React.useState(props.Height);
+	// // eslint-disable-next-line
+	// const [Title, setTitle] = React.useState(props.Title);
+	// // eslint-disable-next-line
+	// const [SubTitle, setSubTitle] = React.useState(props.SubTitle);
 	// eslint-disable-next-line
-	const [xAxisLabel, setxAxisLabel] = React.useState(props.xAxisLabel);
-	// eslint-disable-next-line
-	const [yAxiss, setyAxiss] = React.useState(props.yAxiss);
-	// eslint-disable-next-line
-	const [xMax, setxMax] = React.useState(props.xMax);
-	// eslint-disable-next-line
-	const [Series, setSeries] = React.useState(props.Series);
-	// eslint-disable-next-line
-	const [Height, setHeight] = React.useState(props.Height);
-	// eslint-disable-next-line
-	const [Title, setTitle] = React.useState(props.Title);
-	// eslint-disable-next-line
-	const [SubTitle, setSubTitle] = React.useState(props.SubTitle);
 	var echartsReactRef: any = React.useRef(null);
 
 
-	// //setxAxisLabel(1);
 	// function appendData(seriesIndex: number, data: Array<Array<Number>>) {
 	// 	echartsReactRef.appendData({ seriesIndex, data });
 	// }
@@ -54,24 +53,24 @@ export function LineChart(props: LineChartProps) {
 		return {
 			grid: {
 				top: 10,
-				left: 50,
+				left: 100,
 				right: 10,
 				bottom: 50
 			},
 			xAxis: {
 				type: 'value',
-				name: xAxisLabel,
+				name: props.xAxisLabel,
 				nameLocation: 'middle',
 				nameGap: 30,
 				min: 0,
-				max: xMax,
+				max: props.xMax,
 			},
-			yAxis: yAxiss.map(function (c, k) {
+			yAxis: props.yAxiss.map(function (c, k) {
 				return {
 					type: 'value',
 					name: c.Label,
 					nameLocation: 'middle',
-					nameGap: 30,
+					nameGap: 70,
 					min: 0,
 					max: c.Max
 				}
@@ -101,7 +100,7 @@ export function LineChart(props: LineChartProps) {
 				zoomOnMouseWheel: false,
 				moveOnMouseWheel: false,
 			}],
-			series: Series.map(function (el, elIndex) {
+			series: props.Series.map(function (el, elIndex) {
 				return {
 					data: el.data,
 					yAxisname: el.yAxisIndex,
@@ -114,10 +113,10 @@ export function LineChart(props: LineChartProps) {
 
 	return (
 		<div>
-			<h2>{Title}<small>{SubTitle}</small></h2>
+			<h2>{props.Title}<small>{props.SubTitle}</small></h2>
 			<ReactEcharts
 				option={getOption()}
-				style={{ height: Height + 'px', width: '100%' }}
+				style={{ height: props.Height + 'px', width: '100%' }}
 				ref={(e) => { echartsReactRef = e; }}
 				className='linechart' />
 		</div>

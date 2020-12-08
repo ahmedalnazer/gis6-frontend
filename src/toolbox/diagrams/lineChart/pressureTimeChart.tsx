@@ -8,24 +8,24 @@ type PressChartProps = Readonly<{
 }>;
 
 export default function PressureTimeChart(props: PressChartProps) {
-	// eslint-disable-next-line
-	const [xMax, setxMax] = React.useState(props.xMax);
-	// eslint-disable-next-line
-	const [Series, setSeries] = React.useState(props.Series);
-	// eslint-disable-next-line
-	const [Height, setHeight] = React.useState(props.Height);
+	// // eslint-disable-next-line
+	// const [xMax, setxMax] = React.useState(props.xMax);
+	// // eslint-disable-next-line
+	// const [Series, setSeries] = React.useState(props.Series);
+	// // eslint-disable-next-line
+	// const [Height, setHeight] = React.useState(props.Height);
 
 	function formatSubTitle() {
-		return " (" + Series.length + " cavities)"
+		return " (" + props.Series.length + " cavities)"
 	}
 
 	return (
 		<LineChart
 			xAxisLabel="Time [sec]"
 			yAxiss={[{Label: "Pressure [bar]", Max: 1000}]}
-			xMax={xMax}
-			Series={Series}
-			Height={Height}
+			xMax={props.xMax}
+			Series={props.Series}
+			Height={props.Height}
 			Title="Cavity Pressures"
 			SubTitle={formatSubTitle()}
 			/>
