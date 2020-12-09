@@ -2,19 +2,12 @@ import React from 'react';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
+import Typography from '@material-ui/core/Typography';
+
 import { styled } from '@material-ui/core';
-//import { makeStyles, styled } from '@material-ui/core';
-//import Typography from '@material-ui/core/Typography';
 
 class MinMaxView extends React.Component
 {
-	state = { selectedAge: 0 };
-
-	setAge(age: string)
-	{
-		this.setState({ selectedAge: parseInt(age) });
-	}
-
 	render()
 	{
 
@@ -43,11 +36,17 @@ class MinMaxView extends React.Component
 			color: 'black',
 		});
 		
-		//const myStyles = makeStyles(
-		//{
-		//	major: { fontSize:24 },
-		//	minor: { fontsize:12 },
-		//});
+		const MajorTypography = styled(Typography)(
+		{
+			fontSize: 24,
+		});
+		
+		const MinorTypography = styled(Typography)(
+		{
+			fontSize: 16,
+		});
+		
+		//const classes = useStyles();
 
 		return (
 			<div style={{padding:30}}>
@@ -55,13 +54,17 @@ class MinMaxView extends React.Component
 					<MyCard>
 						<MyCardHeader title="Temperature" subheader="Things are heating up!"/>
 						<MyCardContent>
-							<p><span>30&deg;C</span><br/>Highest:&nbsp;<span>Zone 10</span></p>
-							<p><span>25&deg;C</span><br/>Lowest:&nbsp;<span>Zone 5</span></p>
-							<p>
-								<span>Polypropylene</span>
+							<MajorTypography><span id="maxTemp">30&deg;C</span></MajorTypography>
+							<MinorTypography>Highest:&nbsp;<span id="maxTempLocale">Zone 10</span></MinorTypography>
+							<br/>
+							<MajorTypography><span id="minTemp">25&deg;C</span></MajorTypography>
+							<MinorTypography>Lowest:&nbsp;<span id="minTempLocale">Zone 5</span></MinorTypography>
+							<br/>
+							<MinorTypography>
+								<span id="material">Polypropylene</span>
 								&nbsp;|&nbsp;
-								<span>Range 250-270&deg;C</span>
-							</p>
+								Range&nbsp;<span id="minMaterialTemp">250</span>-<span id="maxMaterialTemp">270&deg;C</span>
+							</MinorTypography>
 						</MyCardContent>
 					</MyCard>
 				</div>
