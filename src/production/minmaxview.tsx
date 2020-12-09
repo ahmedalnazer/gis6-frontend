@@ -9,6 +9,13 @@ import { styled } from '@material-ui/core';
 
 class MinMaxView extends React.Component
 {
+	state =
+	{
+		maxTemp: 30, maxSensor: 'Zone 10',
+		minTemp: 25, minSensor: 'Zone 5',
+		material: 'Polypropylene', minMatTemp: 250, maxMatTemp: 270
+	};
+
 	render()
 	{
 
@@ -59,24 +66,22 @@ class MinMaxView extends React.Component
 						<MyCardContent>
 							<Grid container direction="column">
 								<MyGridItem item xs>
-									<MajorTypography><span id="maxTemp">30&deg;C</span></MajorTypography>
+									<MajorTypography>{this.state.maxTemp}&deg;C</MajorTypography>
 								</MyGridItem>
 								<MyGridItem item xs>
-									<MinorTypography>Highest:&nbsp;<span id="maxTempLocale">Zone 10</span></MinorTypography>
+									<MinorTypography>Highest: {this.state.maxSensor}</MinorTypography>
 								</MyGridItem>
 								<Grid item xs>&nbsp;</Grid>
 								<MyGridItem item xs>
-									<MajorTypography><span id="minTemp">25&deg;C</span></MajorTypography>
+									<MajorTypography>{this.state.minTemp}&deg;C</MajorTypography>
 								</MyGridItem>
 								<MyGridItem item xs>
-									<MinorTypography>Lowest:&nbsp;<span id="minTempLocale">Zone 5</span></MinorTypography>
+									<MinorTypography>Lowest: {this.state.maxSensor}</MinorTypography>
 								</MyGridItem>
 								<Grid item xs>&nbsp;</Grid>
 								<MyGridItem item xs>
 									<MinorTypography>
-										<span id="material">Polypropylene</span>
-										&nbsp;|&nbsp;
-										Range&nbsp;<span id="minMaterialTemp">250</span>-<span id="maxMaterialTemp">270&deg;C</span>
+										{this.state.material} | Range {this.state.minMatTemp}-{this.state.maxMatTemp}&deg;C
 									</MinorTypography>
 								</MyGridItem>
 							</Grid>
