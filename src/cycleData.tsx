@@ -25,7 +25,7 @@ export default function CycleData(props: CycleDataProps) {
 	const [VgData, setVgData] = React.useState(InitData);
 	const [PsData, setPsData] = React.useState(InitData);
 
-	async function loadTcData() {
+	async function loadTcData(CycleId:Number) {
 		const data = await fetchJson("/sensordata/?cycleid=" + CycleId + "&devtype=tc");
 
 		let diadata = parseSensorData(0.5, data);
@@ -34,14 +34,14 @@ export default function CycleData(props: CycleDataProps) {
 		
 	}
 
-	async function loadVgData() {
+	async function loadVgData(CycleId:Number) {
 		const data = await fetchJson("/sensordata/?cycleid=" + CycleId + "&devtype=vg");
 
 		let diadata = parseSensorData(0.04, data);
 		setVgData(diadata);
 	}
 
-	async function loadPsData() {
+	async function loadPsData(CycleId:Number) {
 		const data:any = []
 		//const data = await fetchJson("/sensordata/?cycleid=" + CycleId + "&devtype=em75");
 
@@ -50,11 +50,11 @@ export default function CycleData(props: CycleDataProps) {
 	}
 
 	React.useEffect(() => {
-		loadTcData();
-		loadVgData();
-		loadPsData();
+		loadTcData(CycleId);
+		loadVgData(CycleId);
+		loadPsData(CycleId);
 	},
-	[]);
+	[CycleId]);
 
 	return (
 		<div>

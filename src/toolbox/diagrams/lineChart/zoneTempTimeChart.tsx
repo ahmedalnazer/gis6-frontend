@@ -26,7 +26,7 @@ export default function ZoneTempTimeChart(props: ZoneTempChartProps) {
 	return (
 		<LineChart
 			xAxisLabel="Time [sec]"
-			yAxiss={[{ Label: "Temperature [°C]", Max: 50000 }]}
+			yAxiss={[{ Label: "Temperature [Â°C]", Max: 50000 }]}
 			xMax={props.xMax}
 			Series={props.Series}
 			Height={props.Height}
