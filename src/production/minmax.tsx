@@ -8,7 +8,7 @@ import Card from '@material-ui/core/Card';
 
 
 class MinMax extends React.Component {
-    state = { info: {}, isLoading: false };
+    state = { info: { min: 0, max: 0, min_zone: 0, max_zone: 0 }, isLoading: false };
 
     componentDidMount() {
         console.log("mounted");
