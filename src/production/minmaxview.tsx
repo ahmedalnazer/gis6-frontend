@@ -7,6 +7,14 @@ import Typography from '@material-ui/core/Typography';
 
 import { styled } from '@material-ui/core';
 
+interface IGetMinMax
+{
+	min: number,
+	max: number,
+	min_zone: number,
+	max_zone: number
+}
+
 class MinMaxView extends React.Component
 {
 	state =
@@ -14,7 +22,13 @@ class MinMaxView extends React.Component
 		maxTemp: 30, maxSensor: 'Zone 10',
 		minTemp: 25, minSensor: 'Zone 5',
 		material: 'Polypropylene', minMatTemp: 250, maxMatTemp: 270
-	};
+	}
+	
+	componentDidMount()
+	{
+		console.log("componentDidMount");
+		this.doFetch();
+	}
 
 	render()
 	{
@@ -76,7 +90,7 @@ class MinMaxView extends React.Component
 									<MajorTypography>{this.state.minTemp}&deg;C</MajorTypography>
 								</MyGridItem>
 								<MyGridItem item xs>
-									<MinorTypography>Lowest: {this.state.maxSensor}</MinorTypography>
+									<MinorTypography>Lowest: {this.state.minSensor}</MinorTypography>
 								</MyGridItem>
 								<Grid item xs>&nbsp;</Grid>
 								<MyGridItem item xs>
@@ -90,6 +104,28 @@ class MinMaxView extends React.Component
 				</div>
 			</div>
 		);
+	}
+	
+	doFetch()
+	{
+		let apiUrl = new URL(window.location.href);
+		apiUrl.port = "8000";
+		apiUrl.pathname = "system/1/getminmax";
+		console.log("fetching from " + apiUrl);
+		fetch(apiUrl.href)
+			.then(response => response.json())
+			.then(data => this.updateState(data));
+	}
+	
+	updateState(data: IGetMinMax)
+	{
+		this.setState(
+		{
+			minTemp: data['min'],
+			maxTemp: data['max'],
+			minSensor: "Zone " + data['min_zone'],
+			maxSensor: "Zone " + data['max_zone'],
+		});
 	}
 }
 
