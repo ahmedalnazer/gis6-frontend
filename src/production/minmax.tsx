@@ -8,7 +8,7 @@ import Card from '@material-ui/core/Card';
 
 
 class MinMax extends React.Component {
-    state = { info: [], isLoading: false };
+    state = { info: {}, isLoading: false };
 
     componentDidMount() {
         console.log("mounted");
@@ -21,7 +21,7 @@ class MinMax extends React.Component {
 
     doFetch() {
         console.log("fetching");
-        const apiUrl = 'http://localhost:8000/system1/getminmax';
+        const apiUrl = 'http://localhost:8000/system/1/getminmax';
         this.setState({isLoading: true});
         fetch(apiUrl)
             .then(response => response.json())
@@ -39,10 +39,10 @@ class MinMax extends React.Component {
                 <Table style={{ width: 800, alignItems: 'center', margin: 'auto'}}>
                 <TableHead>
                 <TableRow>
-                        <TableCell style={{textAlign: 'center', padding: '5px'}}>{this.state.info['min']}</TableCell>
-                        <TableCell style={{textAlign: 'center', padding: '5px'}}>{this.state.info['max']}</TableCell>
-                        <TableCell style={{textAlign: 'center', padding: '5px'}}>{this.state.info['min_zone']}</TableCell>
-                        <TableCell style={{textAlign: 'center', padding: '5px'}}>{this.state.info['max_zone']}</TableCell>
+                        <TableCell style={{textAlign: 'center', padding: '5px'}}>{this.state.info.min}</TableCell>
+                        <TableCell style={{textAlign: 'center', padding: '5px'}}>{this.state.info.max}</TableCell>
+                        <TableCell style={{textAlign: 'center', padding: '5px'}}>{this.state.info.min_zone}</TableCell>
+                        <TableCell style={{textAlign: 'center', padding: '5px'}}>{this.state.info.max_zone}</TableCell>
                 </TableRow>
                 </TableHead>
                 </Table>
