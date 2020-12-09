@@ -39,7 +39,7 @@ class OrderTable extends React.Component<IYoProps> {
 
     doFetch(age: string) {
         console.log("fetching");
-        const apiUrl = 'http://localhost:8000/orders';
+        const apiUrl = 'http://localhost:8000/order';
         this.setState({isLoading: true});
         fetch(apiUrl + "?age=" + age)
             .then(response => response.json())

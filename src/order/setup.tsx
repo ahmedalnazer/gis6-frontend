@@ -13,12 +13,12 @@ class OrderSetup extends React.Component {
                 <TopBanner name="GIS6 - Barnes Group" />
                 <br/>
                 <Paper  style={{width: 800, border: "none",  margin: 'auto', padding: "40px 40px 40px 40px"}}>
-                    <Typography variant="h6" style={{marginLeft: 0}}>
+                    <Typography variant="body1" style={{marginLeft: 50}}>
                         SET UP ORDER
                     </Typography>
                     <br/><br/>
                     <Card style={{width: 700, margin: 'auto', border: "none", boxShadow: "none"}}>
-                        <b>Order Details</b>
+                        <Typography variant="subtitle1">Order Details</Typography>
                         <OrderCreate/>
                     </Card>
                     <br/>

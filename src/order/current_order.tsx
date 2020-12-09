@@ -72,7 +72,7 @@ const CurrentOrder = () => {
             <Button style={{padding: "10px 20px 10px 20px"}} variant="contained" size="medium" color="secondary">Stop Order</Button>
             </div>
         </Card>
-    )
-}
+    );
+ }
 
 export default CurrentOrder;

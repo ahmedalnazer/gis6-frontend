@@ -1,5 +1,4 @@
 import React from 'react';
-import OrderCreate from './create';
 import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
 import Card from '@material-ui/core/Card';
@@ -28,7 +27,7 @@ const  OrderManagement = () => {
                     <Card style={{textTransform: "none", backgroundColor: "#dddddd", width: 300, alignContent: 'left', padding: '20px 20px 20px 20px'}}>
                         <Typography variant="h6">Historical Data</Typography>
                         <p/>
-                        <Typography variant="subtitle1">????</Typography>
+                        <Typography variant="subtitle1"></Typography>
                     </Card>
                 </Link>
             </Paper>

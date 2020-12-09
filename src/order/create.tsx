@@ -43,9 +43,22 @@ class OrderCreate extends React.Component {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name: this.state.orderName, targetParts: this.state.targetParts })
         };
-        fetch('http://localhost:8000/orders/', requestOptions)
+        fetch('http://localhost:8000/order/', requestOptions)
             .then(response => response.json())
-            .then(data => this.setState({ orderId: data.id }));
+            .then(data => this.setState({ orderId: data.id }))
+            .then( () => {
+                const requestOptions = {
+                    method: 'PUT',
+                };
+                fetch('http://localhost:8000/order/' + this.state.orderId + "/start/", requestOptions)
+                    .then(response => response.status)
+                    .then(status => {
+                        console.log("start status: " + status);
+                        if (status == 200) {
+                            this.setState({ submitSuccess: true });
+                        }
+                    });
+            });
         return true;
     }
 
