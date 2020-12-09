@@ -3,6 +3,7 @@ import {BrowserRouter as Router, Route} from 'react-router-dom';
 
 import "./App.css";
 
+import ViewFilter from './order/view_filter';
 import Landing from './toolbox/Landing';
 import lineChart1 from './toolbox/diagrams/lineChart/lineChart1';
 import lineChart2 from './toolbox/diagrams/lineChart/lineChart2';
@@ -27,8 +28,9 @@ function App() {
 			<a href="/timevalue/">Time Value</a>
 			<a href="/pchart/">Pressure Time Value</a>
 			<a href="/cycledata/">Cycle Data</a>
-
+        
 			<Route path="/" exact component={Landing} />
+			<Route path="/order/list" exact component={ViewFilter} />
 			<Route path="/linechart1/" exact component={lineChart1} />
 			<Route path="/linechart2/" exact component={lineChart2} />
 			<Route path="/linechart3/" exact component={lineChart3} />
