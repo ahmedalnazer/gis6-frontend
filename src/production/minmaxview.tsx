@@ -28,7 +28,7 @@ class MinMaxView extends React.Component
 	
 	componentDidMount()
 	{
-		this.doFetch("system/1/getminmax", this.updateState);
+		this.doFetch("system/1/getminmax", this.updateState, this.handleFailure);
 	}
 
 	render()
@@ -107,7 +107,32 @@ class MinMaxView extends React.Component
 		);
 	}
 	
-	doFetch(apiPath: string, onSuccess: Function)
+	handleFailure(self: React.Component, error: any)
+	{
+		console.log(error);
+		self.setState(
+		{
+			minTemp: 25,
+			maxTemp: 30,
+			minSensor: "Zone 5",
+			maxSensor: "Zone 10",
+			tempUnits: "C",
+		});
+	}
+	
+	updateState(self: React.Component, data: IGetMinMax)
+	{
+		self.setState(
+		{
+			minTemp: data['min'],
+			maxTemp: data['max'],
+			minSensor: "Zone " + data['min_zone'],
+			maxSensor: "Zone " + data['max_zone'],
+			tempUnits: "C",
+		});
+	}
+	
+	doFetch(apiPath: string, onSuccess: Function, onFailure: Function = () => {}, timeout: number = 1000)
 	{
 		// Set up the URL
 		let apiUrl = new URL(window.location.href);
@@ -116,37 +141,20 @@ class MinMaxView extends React.Component
 
 		// Prepare the timeout
 		const controller = new AbortController();
-		const timeoutId = setTimeout(() => controller.abort(), 1000);
+		const timeoutId = setTimeout(() => controller.abort(), timeout);
 		
+		// Fetch the data
 		fetch(apiUrl.href, {signal: controller.signal})
 			.then(response => { console.log(response.status); return response.json(); })
-			.then(data => this.updateState(data)
+			.then(data => onSuccess(this, data)
 			)
 			.catch((error) =>
 			{
-				this.setState(
-				{
-					minTemp: 25,
-					maxTemp: 30,
-					minSensor: "Zone 5",
-					maxSensor: "Zone 10",
-					tempUnits: "C",
-				});
+				onFailure(this, error);
 			});
 
+		// Clean up
 		clearTimeout(timeoutId);
-	}
-	
-	updateState(data: IGetMinMax)
-	{
-		this.setState(
-		{
-			minTemp: data['min'],
-			maxTemp: data['max'],
-			minSensor: "Zone " + data['min_zone'],
-			maxSensor: "Zone " + data['max_zone'],
-			tempUnits: "C",
-		});
 	}
 }
 
