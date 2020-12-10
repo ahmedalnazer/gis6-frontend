@@ -19,20 +19,20 @@ class MinMaxView extends React.Component
 {
 	state =
 	{
-		maxTemp: 30, maxSensor: 'Zone 10',
-		minTemp: 25, minSensor: 'Zone 5',
-		material: 'Polypropylene', minMatTemp: 250, maxMatTemp: 270
+		maxTemp: "", maxSensor: "",
+		minTemp: "", minSensor: "",
+		material: 'Polypropylene', minMatTemp: 250, maxMatTemp: 270,
+		tempUnits: ""
 	}
+	isFetching = false;
 	
 	componentDidMount()
 	{
-		console.log("componentDidMount");
-		this.doFetch();
+		this.doFetch("system/1/getminmax", this.updateState);
 	}
 
 	render()
 	{
-
 		// need to consolidate styles between here and OrderList
 		const MyCard = styled(Card)(
 		{
@@ -80,14 +80,14 @@ class MinMaxView extends React.Component
 						<MyCardContent>
 							<Grid container direction="column">
 								<MyGridItem item xs>
-									<MajorTypography>{this.state.maxTemp}&deg;C</MajorTypography>
+									<MajorTypography>{this.state.maxTemp}&deg;{this.state.tempUnits}</MajorTypography>
 								</MyGridItem>
 								<MyGridItem item xs>
 									<MinorTypography>Highest: {this.state.maxSensor}</MinorTypography>
 								</MyGridItem>
 								<Grid item xs>&nbsp;</Grid>
 								<MyGridItem item xs>
-									<MajorTypography>{this.state.minTemp}&deg;C</MajorTypography>
+									<MajorTypography>{this.state.minTemp}&deg;{this.state.tempUnits}</MajorTypography>
 								</MyGridItem>
 								<MyGridItem item xs>
 									<MinorTypography>Lowest: {this.state.minSensor}</MinorTypography>
@@ -95,7 +95,8 @@ class MinMaxView extends React.Component
 								<Grid item xs>&nbsp;</Grid>
 								<MyGridItem item xs>
 									<MinorTypography>
-										{this.state.material} | Range {this.state.minMatTemp}-{this.state.maxMatTemp}&deg;C
+										{this.state.material} | Range {this.state.minMatTemp}-
+										{this.state.maxMatTemp}&deg;{this.state.tempUnits}
 									</MinorTypography>
 								</MyGridItem>
 							</Grid>
@@ -106,15 +107,34 @@ class MinMaxView extends React.Component
 		);
 	}
 	
-	doFetch()
+	doFetch(apiPath: string, onSuccess: Function)
 	{
+		// Set up the URL
 		let apiUrl = new URL(window.location.href);
 		apiUrl.port = "8000";
-		apiUrl.pathname = "system/1/getminmax";
-		console.log("fetching from " + apiUrl);
-		fetch(apiUrl.href)
-			.then(response => response.json())
-			.then(data => this.updateState(data));
+		apiUrl.pathname = apiPath;
+
+		// Prepare the timeout
+		const controller = new AbortController();
+		const timeoutId = setTimeout(() => controller.abort(), 1000);
+		
+		fetch(apiUrl.href, {signal: controller.signal})
+			.then(response => { console.log(response.status); return response.json(); })
+			.then(data => this.updateState(data)
+			)
+			.catch((error) =>
+			{
+				this.setState(
+				{
+					minTemp: 25,
+					maxTemp: 30,
+					minSensor: "Zone 5",
+					maxSensor: "Zone 10",
+					tempUnits: "C",
+				});
+			});
+
+		clearTimeout(timeoutId);
 	}
 	
 	updateState(data: IGetMinMax)
@@ -125,6 +145,7 @@ class MinMaxView extends React.Component
 			maxTemp: data['max'],
 			minSensor: "Zone " + data['min_zone'],
 			maxSensor: "Zone " + data['max_zone'],
+			tempUnits: "C",
 		});
 	}
 }
