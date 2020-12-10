@@ -11,8 +11,8 @@ interface IGetMinMax
 {
 	min: number,
 	max: number,
-	min_zone: number,
-	max_zone: number
+	min_zone: string,
+	max_zone: string
 }
 
 class MinMaxView extends React.Component
@@ -145,8 +145,8 @@ class MinMaxView extends React.Component
 		{
 			minTemp: data['min'],
 			maxTemp: data['max'],
-			minSensor: "Zone " + data['min_zone'],
-			maxSensor: "Zone " + data['max_zone'],
+			minSensor: data['min_zone'],
+			maxSensor: data['max_zone'],
 			tempUnits: "C",
 		});
 	}
