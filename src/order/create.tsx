@@ -1,6 +1,5 @@
 import React from 'react';
 import Card from '@material-ui/core/Card';
-import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import Table from '@material-ui/core/Table';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -27,13 +26,12 @@ class OrderCreate extends React.Component {
         e.preventDefault();
 
         if (this.validateForm()) {
-            const submitSuccess: boolean = await this.submitForm();
+            const submitSuccess: boolean = this.submitForm();
             this.setState({ submitSuccess });
         }
     };
 
     private orderNumberChange(): boolean {
-//        this.setState({submitSuccess: true});
         return true;
     }
 
@@ -54,8 +52,8 @@ class OrderCreate extends React.Component {
                     .then(response => response.status)
                     .then(status => {
                         console.log("start status: " + status);
-                        if (status == 200) {
-                            this.setState({ submitSuccess: true });
+                        if (status != 200) {
+                            return false;
                         }
                     });
             });
@@ -91,7 +89,7 @@ class OrderCreate extends React.Component {
                             <br/><br/>
                             <TableRow>
                                 <MyTableCell><InputLabel>Number of Shots/Cycles/Parts</InputLabel></MyTableCell>
-                                <MyTableCell><InputLabel>Shutdown GI6 when complete</InputLabel></MyTableCell>
+                                <MyTableCell><InputLabel>Shutdown GIS6 when complete</InputLabel></MyTableCell>
                             </TableRow>
                             <TableRow>
                                 <MyTableCell><TextField fullWidth={true} onChange={this.orderNumberChange} variant="filled" name="targetParts" onInput={e=>{this.state.targetParts = (e.target as any).value}}/></MyTableCell>

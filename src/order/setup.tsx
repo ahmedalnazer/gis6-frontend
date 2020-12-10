@@ -6,7 +6,6 @@ import TopBanner from '../common/banner';
 import Typography from '@material-ui/core/Typography';
 
 class OrderSetup extends React.Component {
-
     render() {
         return(
             <div>
