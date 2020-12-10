@@ -24,11 +24,30 @@ class MinMaxView extends React.Component
 		material: 'Polypropylene', minMatTemp: 250, maxMatTemp: 270,
 		tempUnits: ""
 	}
+	
+	// TODO: These variables should go into a common class. Furthermore,
+	// this common class should have hooks to decide if polling is necessary,
+	// the frequency of the polling, and a callback function.
+	
+	// TODO: Verify that declaring variables outside of 'state' works.
+	// It seems that 'state' changes triggers 'render'. Changes in these
+	// variables should not trigger 'render'.
 	isFetching = false;
+	pollingId = setInterval(() => { if (!this.isFetching) this.myFetch(); }, 1000);
+	
+	myFetch()
+	{
+		this.doFetch("system/1/getminmax", this.updateState, this.handleFailure);
+	}
 	
 	componentDidMount()
 	{
-		this.doFetch("system/1/getminmax", this.updateState, this.handleFailure);
+		this.myFetch();
+	}
+	
+	componentWillUnmount()
+	{
+		clearInterval(this.pollingId);
 	}
 
 	render()
@@ -132,8 +151,11 @@ class MinMaxView extends React.Component
 		});
 	}
 	
+	// TODO: This should go into a common class
 	doFetch(apiPath: string, onSuccess: Function, onFailure: Function = () => {}, timeout: number = 1000)
 	{
+		this.isFetching = true;
+		
 		// Set up the URL
 		let apiUrl = new URL(window.location.href);
 		apiUrl.port = "8000";
@@ -155,6 +177,7 @@ class MinMaxView extends React.Component
 
 		// Clean up
 		clearTimeout(timeoutId);
+		this.isFetching = false;
 	}
 }
 
