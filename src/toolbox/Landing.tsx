@@ -32,7 +32,7 @@ function Landing() {
 	return (
 		<div className="Landing">
 			<header className="Landing-header">
-				<img src={process.env.PUBLIC_URL + 'barnes_logo.png'} className="Landing-logo" alt="logo" />
+				<img src={process.env.PUBLIC_URL + '/barnes_logo.png'} className="Landing-logo" alt="logo" />
 				<p className="HelloWorld">Hello World! it's {server_time} at GIS server</p>
 				<p>GIS6 version information: {version_info[0].message} created at: {version_info[0].created_at}</p>
 			</header>
