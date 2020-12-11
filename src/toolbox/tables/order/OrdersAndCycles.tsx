@@ -1,5 +1,5 @@
 import React from 'react';
-import {useHistory, Link} from "react-router-dom";
+import {Link} from "react-router-dom";
 import Box from '@material-ui/core/Box';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Collapse from '@material-ui/core/Collapse';
@@ -22,7 +22,8 @@ import VisibilityIcon from '@material-ui/icons/Visibility';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import LastPageIcon from '@material-ui/icons/LastPage';
-import { fetchJson } from './../restApi';
+import TableFilter from './table_filter';
+import { fetchJson } from './../../../restApi';
 
 import "./styles.scss"
 
@@ -117,7 +118,6 @@ function OrderRow(props: OrderRowProps) {
 	const [IsLoading, setIsLoading] = React.useState(true);
 	const [page, setPage] = React.useState(0);
 	const [rowsPerPage, setRowsPerPage] = React.useState(10);
-	const history = useHistory();
 
 	async function loadCycles(order: number) {
 		const cycles = await fetchJson("/order/" + order + "/cycles/");
@@ -226,10 +226,10 @@ function OrderRow(props: OrderRowProps) {
 	);
 }
 
-export default function CollapsibleTable() {
+export default function OrderAndCyclesTable() {
 	const [Orders, setOrders] = React.useState<Order[]>([]);
 	const [IsLoading, setIsLoading] = React.useState(true);
-	const [Age, setAge] = React.useState(128);
+	const [Age, setAge] = React.useState<string>("24");
 	const [page, setPage] = React.useState(0);
 	const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
@@ -239,8 +239,8 @@ export default function CollapsibleTable() {
 		{ name: 'endTime', title: 'Date Complete' },
 	];
 
-	async function loadOrders(age: Number) {
-		const orders = await fetchJson("/order" + "?age=" + age);
+	async function loadOrders(age: string) {
+		const orders = await fetchJson("/order?age=" + age);
 		setOrders(orders);
 		setIsLoading(false);
 	}
@@ -248,7 +248,7 @@ export default function CollapsibleTable() {
 	React.useEffect(() => {
 		loadOrders(Age);
 	},
-		[]);
+		[Age]);
 
 	const handleChangePage = (event: any, newPage: number) => {
 		setPage(newPage);
@@ -265,44 +265,47 @@ export default function CollapsibleTable() {
 	}
 
 	return (
-		<TableContainer component={Paper}>
-			<Table aria-label="collapsible table">
-				<TableHead>
-					<TableRow>
-						<TableCell />
-						{columns.map(
-							row => (
-								<TableCell>{row.title}</TableCell>
-							)
-						)}
-						<TableCell />
-					</TableRow>
-				</TableHead>
-				<TableBody>
-					{Orders.map((order) => (
-						<OrderRow key={order.id} order={order} />
-					))}
-				</TableBody>
-				<TableFooter>
-					<TableRow>
-						<TablePagination
-							rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-							colSpan={3}
-							count={Orders.length}
-							rowsPerPage={rowsPerPage}
-							labelRowsPerPage="Orders per page"
-							page={page}
-							SelectProps={{
-								inputProps: { 'aria-label': 'rows per page' },
-								native: true,
-							}}
-							onChangePage={handleChangePage}
-							onChangeRowsPerPage={handleChangeRowsPerPage}
-							ActionsComponent={TablePaginationActions}
-						/>
-					</TableRow>
-				</TableFooter>
-			</Table>
-		</TableContainer>
+		<>
+			<TableFilter onChangeAge={setAge} defaultAge={Age} />
+			<TableContainer component={Paper}>
+				<Table aria-label="collapsible table">
+					<TableHead>
+						<TableRow>
+							<TableCell />
+							{columns.map(
+								row => (
+									<TableCell>{row.title}</TableCell>
+								)
+							)}
+							<TableCell />
+						</TableRow>
+					</TableHead>
+					<TableBody>
+						{Orders.map((order) => (
+							<OrderRow key={order.id} order={order} />
+						))}
+					</TableBody>
+					<TableFooter>
+						<TableRow>
+							<TablePagination
+								rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+								colSpan={3}
+								count={Orders.length}
+								rowsPerPage={rowsPerPage}
+								labelRowsPerPage="Orders per page"
+								page={page}
+								SelectProps={{
+									inputProps: { 'aria-label': 'rows per page' },
+									native: true,
+								}}
+								onChangePage={handleChangePage}
+								onChangeRowsPerPage={handleChangeRowsPerPage}
+								ActionsComponent={TablePaginationActions}
+							/>
+						</TableRow>
+					</TableFooter>
+				</Table>
+			</TableContainer>
+		</>
 	);
 }
