@@ -11,7 +11,7 @@ class OrderSetup extends React.Component {
             <div>
                 <TopBanner name="GIS6 - Barnes Group" />
                 <br/>
-                <Paper  style={{width: 800, border: "none",  margin: 'auto', padding: "40px 40px 40px 40px"}}>
+                <Paper style={{width: 800, border: "none",  margin: 'auto', padding: "40px 40px 40px 40px"}}>
                     <Typography variant="body1" style={{marginLeft: 50}}>
                         SET UP ORDER
                     </Typography>
