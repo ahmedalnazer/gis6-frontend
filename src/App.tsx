@@ -5,6 +5,7 @@ import "./App.css";
 
 import ViewFilter from './order/view_filter';
 import OrderAndCyclesTable from './toolbox/tables/order/OrdersAndCycles';
+import MinMaxView from './production/minmaxview';
 import Landing from './toolbox/Landing';
 import lineChart6 from './toolbox/diagrams/lineChart/lineChart6';
 import OrderSetup from './order/setup';
@@ -36,11 +37,11 @@ function App() {
 			<Route path="/order/list/"><OrderAndCyclesTable /></Route>
 			<Route path="/order/create" exact component={OrderSetup} />
 			      
-      <Route path="/links/" exact component={get_links} />
+			<Route path="/links/" exact component={get_links} />
 			<Route path="/landing/" exact component={Landing} />
 			<Route path="/layout/" exact component={BaseLayout} />
-			<Route path="/linechart6/" exact component={lineChart6} />
-      <Route path="/timevalue/" exact component={timeValue} />
+			<Route path="/minmax/" exact component={MinMaxView} />
+			<Route path="/timevalue/" exact component={timeValue} />
 			<Route path="/pchart/"><PressureTimeChart xMax={10} Series={[]} Height={200} /></Route>
 			<Route path="/cycledata/:CycleId"><CycleData /></Route>
 		</Router>
