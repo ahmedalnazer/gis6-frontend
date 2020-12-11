@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Card from '@material-ui/core/Card';
 import Button from '@material-ui/core/Button';
 import Table from '@material-ui/core/Table';
@@ -12,46 +12,65 @@ import { styled } from '@material-ui/core';
 import Switch from '@material-ui/core/Switch';
 
 
-class OrderCreate extends React.Component {
-    state = {
-        submitSuccess: false,
-        orderName: "",
-        targetParts: 0,
-        orderId: 0
+const OrderCreate = () => {
+    const [submitSuccess, setSubmitSuccess] = useState(false);
+    var orderName: string = "";
+    var targetParts: string = "";
+
+    function setOrderName(value: string) {
+        orderName = value;
     }
 
-    private handleSubmit = async (
-        e: React.FormEvent<HTMLFormElement>
-    ): Promise<void> => {
-        e.preventDefault();
+    function setTargetParts(value: string) {
+        targetParts = value;
+    }
 
-        if (this.validateForm()) {
-            const submitSuccess: boolean = this.submitForm();
-            this.setState({ submitSuccess });
+    const MyTableCell = styled(TableCell) ({
+        borderBottom: 'none',
+        width: 300,
+        padding: '4px 18px',
+    });
+
+    const TextFieldComponent = (props: any) => {
+        const cb = props.callback;
+        const [value, setValue] = useState("");
+
+        function changeValue(e: any) {
+            // TODO: name validation
+            setValue(e.target.value as string);
+        }
+
+        useEffect(() => { cb(value) })
+
+        return (
+            <MyTableCell><TextField fullWidth={true} variant="filled" value={value} onInput={changeValue}/></MyTableCell>
+        )
+    }
+
+    function handleSubmit (e: React.FormEvent<HTMLFormElement>) : void {
+        e.preventDefault();
+        if (validateForm()) {
+            setSubmitSuccess(submitForm());
         }
     };
 
-    private orderNumberChange(): boolean {
-        return true;
-    }
-
-    private submitForm(): boolean {
+    function submitForm(): boolean {
+        console.log("order name: " + orderName + ", parts: " + targetParts);
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: this.state.orderName, targetParts: this.state.targetParts })
+            body: JSON.stringify({ name: orderName, targetParts: parseInt(targetParts, 10) })
         };
         fetch('http://localhost:8000/order/', requestOptions)
             .then(response => response.json())
-            .then(data => this.setState({ orderId: data.id }))
-            .then( () => {
+            .then(data => {return(data.id);})
+            .then( (id) => {
                 const requestOptions = {
                     method: 'PUT',
                 };
-                fetch('http://localhost:8000/order/' + this.state.orderId + "/start/", requestOptions)
+                fetch('http://localhost:8000/order/' + id + "/start/", requestOptions)
                     .then(response => response.status)
                     .then(status => {
-                        console.log("start status: " + status);
                         if (status !== 200) {
                             return false;
                         }
@@ -60,23 +79,15 @@ class OrderCreate extends React.Component {
         return true;
     }
 
-    private validateForm(): boolean {
-        // TODO: validate
+    function validateForm(): boolean {
+        // TODO: overall validation
         return true;
     }
 
-    render() {
-        console.log("current state: " + JSON.stringify(this.state));
-        const MyTableCell = styled(TableCell) ({
-            borderBottom: 'none',
-            width: 300,
-            padding: '4px 18px',
-        });
-
-        return (
+    return (
             <div style={{paddingTop: "10px"}}>
                 <Card style={{width: 700, margin: 'auto', border: 0, padding: "30px 20px 10px 20px", borderBottom: "0px"}}>
-                    <form onSubmit={this.handleSubmit}>
+                    <form onSubmit={handleSubmit}>
                         <Table size="small" style={{paddingTop: "40px", margin: 'auto', borderBottom: "none"}}>
                             <TableRow>
                                 <MyTableCell><InputLabel>Selected Process</InputLabel></MyTableCell>
@@ -84,29 +95,26 @@ class OrderCreate extends React.Component {
                             </TableRow>
                             <TableRow>
                                 <MyTableCell style={{borderSpacing: '0 25px'}}><Select fullWidth={true} variant="filled" value="Black PP Left Door"><MenuItem value="Black PP Left Door">Black PP Left Door</MenuItem></Select></MyTableCell>
-                <MyTableCell><TextField fullWidth={true} onChange={this.orderNumberChange} variant="filled" name="orderName"  onInput={e => this.setState({orderName: (e.target as any).value})}/></MyTableCell>
+                                <TextFieldComponent title="name" callback={setOrderName}/>
                             </TableRow>
                             <br/><br/>
                             <TableRow>
                                 <MyTableCell><InputLabel>Number of Shots/Cycles/Parts</InputLabel></MyTableCell>
-                                <MyTableCell><InputLabel>Shutdown GIS6 when complete</InputLabel></MyTableCell>
+                                <MyTableCell><InputLabel>Shutdown GI6 when complete</InputLabel></MyTableCell>
                             </TableRow>
                             <TableRow>
-                                <MyTableCell><TextField fullWidth={true} onChange={this.orderNumberChange} variant="filled" name="targetParts" onInput={e => this.setState({targetParts: (e.target as any).value})}/></MyTableCell>
+                                <TextFieldComponent title="targetParts" callback={setTargetParts}/>
                                 <MyTableCell><Switch color="primary"/></MyTableCell>
                             </TableRow>
                             <TableRow>
                                 <MyTableCell/>
-                                <TableCell style={{padding: "20px 18px", borderBottom: 'none'}} align="right"><Button type="submit" disabled={this.state.submitSuccess} variant="contained" size="large" color="primary">Done</Button></TableCell>
+                                <TableCell style={{padding: "20px 18px", borderBottom: 'none'}} align="right"><Button type="submit" disabled={submitSuccess} variant="contained" size="large" color="primary">Done</Button></TableCell>
                             </TableRow>
                         </Table>
                     </form>
                 </Card>
             </div>
         );
-        
-    }
-
 };
 
 export default OrderCreate;
