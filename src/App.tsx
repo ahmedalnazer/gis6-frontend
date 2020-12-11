@@ -15,7 +15,7 @@ import BaseLayout from './toolbox/layout/demobase';
 function get_links() {
 	return (
 		<>
-			<a href="/landing/">Home</a>
+			<a href="/landing/">Landing</a>
 			<a href="/layout/">Layout</a>
 			<a href="/linechart6/">LineChart6(echarts)</a>
 			<a href="/timevalue/">Time Value</a>
