@@ -101,7 +101,7 @@ export default class timeValue extends PureComponent {
 			},
 			yAxis: [{
 				type: 'value',
-				name: 'Temperature [°C]',
+				name: 'Temperature [Â°C]',
 				min: 0,
 				max: 100,
 			},

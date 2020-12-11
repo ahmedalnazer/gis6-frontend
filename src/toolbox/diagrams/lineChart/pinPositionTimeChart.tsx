@@ -22,7 +22,7 @@ export default function PinPositionTimeChart(props: PinPosChartProps) {
 	return (
 		<LineChart
 			xAxisLabel="Time [sec]"
-			yAxiss={[{Label: "Position [mm]", Max: 100000}]}
+			yAxiss={[{Label: "Position [mm]", Max: 1000}]}
 			xMax={props.xMax}
 			Series={props.Series}
 			Height={props.Height}
