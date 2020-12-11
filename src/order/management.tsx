@@ -9,6 +9,7 @@ import HistoricalDataCard from './historical_data_card';
 import TimeRemaining from './time_remaining';
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
+import MinMaxView from '../production/minmaxview';
 
 const  OrderManagement = () => {
     return (
@@ -19,18 +20,19 @@ const  OrderManagement = () => {
                 <Typography variant="subtitle2">PRODUCTION</Typography>
                 <br/>
                 <GridList cols={12}>
-            <GridListTile cols={6}>
-                    <Link href="/order/create" variant="button" style={{textDecoration: 'none' }}>
-                        <OrderSetupCard/>
-                    </Link>
-                    </GridListTile>
-            <GridListTile cols={6}>
-                        <Link href="/order/list" variant="button" style={{textDecoration: 'none' }}>
-                        <HistoricalDataCard/>
+                    <GridListTile cols={6} style={{height: 160}}>
+                        <Link href="/order/create" variant="button" style={{textDecoration: 'none' }}>
+                            <OrderSetupCard/>
                         </Link>
                     </GridListTile>
-            <GridListTile rows={2} cols={7}> <CurrentOrder/> </GridListTile>
-            <GridListTile rows={2} cols={5} style={{padding: "0 0 0 20px"}}> <TimeRemaining/> </GridListTile>
+                    <GridListTile cols={6} style={{height: 160}}>
+                        <Link href="/order/list" variant="button" style={{textDecoration: 'none' }}>
+                            <HistoricalDataCard/>
+                        </Link>
+                    </GridListTile>
+                    <GridListTile rows={2} cols={7} style={{height:300}}> <CurrentOrder/> </GridListTile>
+                    <GridListTile rows={2} cols={5} style={{height: 300, padding: "0 0 0 0px"}}> <TimeRemaining/> </GridListTile>
+                    <GridListTile rows={2} cols={5} style={{height:300}}><MinMaxView/></GridListTile>
                 </GridList>
             </Paper>
         </div>

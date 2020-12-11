@@ -92,8 +92,8 @@ class MinMaxView extends React.Component
 		});
 
 		return (
-			<div style={{padding:30}}>
-				<div style={{padding: 20}}>
+			<div>
+				<div>
 					<MyCard>
 						<MyCardHeader title="Temperature"/>
 						<MyCardContent>
@@ -143,8 +143,8 @@ class MinMaxView extends React.Component
 	{
 		self.setState(
 		{
-			minTemp: data['min'],
-			maxTemp: data['max'],
+			minTemp: data['min']/100,
+			maxTemp: data['max']/100,
 			minSensor: data['min_zone'],
 			maxSensor: data['max_zone'],
 			tempUnits: "C",
@@ -167,7 +167,7 @@ class MinMaxView extends React.Component
 		
 		// Fetch the data
 		fetch(apiUrl.href, {signal: controller.signal})
-			.then(response => { console.log(response.status); return response.json(); })
+			.then(response => { return response.json(); })
 			.then(data => onSuccess(this, data)
 			)
 			.catch((error) =>
