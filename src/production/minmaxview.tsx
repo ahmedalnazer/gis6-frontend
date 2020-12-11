@@ -95,7 +95,7 @@ class MinMaxView extends React.Component
 			<div>
 				<div>
 					<MyCard>
-						<MyCardHeader title="Temperature"/>
+						<MyCardHeader title="Temperature" titleTypographyProps={{variant: "h6"}}/>
 						<MyCardContent>
 							<Grid container direction="column">
 								<MyGridItem item xs>

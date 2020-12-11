@@ -31,21 +31,24 @@ const TimeRemaining = () => {
     useInterval( () => doFetch(), 1000);
 
     return (
-        <Card style={{borderColor: "#0000bb", textTransform: "none", backgroundColor: "#fefefe", width: 220, padding: "20px 20px 48px 0px"}}>
+        <Card variant="outlined" style={{textTransform: "none", backgroundColor: "#fefefe", height: 200, width: 205, padding: "15px 20px 45px 10px"}}>
             <Typography variant="h6" style={{padding: "0 0 0 10px"}}>Time Remaining</Typography>
             <p/>
-            <Box position="relative" style={{padding: "0 0 0 40px"}} display="inline-flex">
-                <CircularProgress value={good*100/(total + 0.01)} thickness={9} size={160} style={{padding: "0 0 0 0px", color: currentColor}} variant="determinate"/>
+            <Box position="relative" style={{padding: "0 0 0 26px"}} display="inline-flex">
+                <CircularProgress value={good*100/(total + 0.01)} thickness={8} size={160} style={{padding: "0 0 0 0px", color: currentColor}} variant="determinate"/>
                 <Box
                     top={0}
-                    left={40}
+                    left={25}
                     bottom={0}
                     right={0}
                     position="absolute"
                     display="flex"
                     alignItems="center"
                     justifyContent="center">
-                    <Typography variant="h6" component="div" color="textSecondary">{timeleft} s</Typography>
+                    <div>
+                        <Typography style={{textAlign: "center"}} variant="h4" component="div">{timeleft}</Typography>
+                        <Typography variant="caption" component="div" color="textSecondary">secs (est)</Typography>
+                    </div>
                 </Box>
             </Box>
         </Card>

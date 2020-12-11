@@ -30,8 +30,8 @@ const  OrderManagement = () => {
                             <HistoricalDataCard/>
                         </Link>
                     </GridListTile>
-                    <GridListTile rows={2} cols={7} style={{height:300}}> <CurrentOrder/> </GridListTile>
-                    <GridListTile rows={2} cols={5} style={{height: 300, padding: "0 0 0 0px"}}> <TimeRemaining/> </GridListTile>
+                    <GridListTile rows={2} cols={8} style={{height:280}}><CurrentOrder/></GridListTile>
+                    <GridListTile rows={2} cols={4} style={{height: 280}}><TimeRemaining/></GridListTile>
                     <GridListTile rows={2} cols={5} style={{height:300}}><MinMaxView/></GridListTile>
                 </GridList>
             </Paper>

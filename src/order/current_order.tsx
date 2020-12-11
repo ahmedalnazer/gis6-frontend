@@ -6,6 +6,7 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import useInterval from '../common/poll';
 import LinearProgress from '@material-ui/core/LinearProgress';
+import Divider from '@material-ui/core/Divider';
 
 const CurrentOrder = () => {
     const [good, setGood] = useState(0);
@@ -54,15 +55,15 @@ const CurrentOrder = () => {
     useInterval( () => doFetch(), 1000);
     
     return (
-        <Card style={{textTransform: "none", backgroundColor: "#fefefe", width: 370, alignContent: 'left', padding: '20px 20px 20px 20px'}}>
+        <Card variant="outlined" style={{textTransform: "none", boxShadow: "3", backgroundColor: "#fefefe", width: 460, alignContent: 'left', height: 220, padding: '20px 0px 20px 20px'}}>
             <Typography variant="h6">Good Parts</Typography>
             <p/>
             <GridList cols={2} style={{height: 80, padding: "0 0 0 0"}}>
-                <GridListTile style={{width:120}}>
+                <GridListTile style={{width:170}}>
                     <Typography variant="h4">{good}</Typography>
                     <Typography variant="subtitle2" style={{color: "#444444"}}>of {total}</Typography>
                 </GridListTile>
-                <GridListTile style={{width:240, height: 80, padding: "10px 0px 0px 0px"}}>
+                <GridListTile style={{width:260, height: 80, padding: "10px 0px 0px 0px"}}>
                     <LinearProgress variant="determinate" style={{height: 30, borderRadius: 0, padding: "0 0 0 0"}} value={good*100/(total + 0.01)} />
                     <GridList cols={2} style={{height: 20, padding: "0 0 0 0"}}>
                         <GridListTile style={{padding:"0 0px 0 2px"}}>
@@ -74,10 +75,12 @@ const CurrentOrder = () => {
                     </GridList>
                 </GridListTile>
             </GridList>
-            <hr/>
+            <div style={{padding: "0 0 7px 0"}}>
+            <Divider light style={{width: 430}}/>
+            </div>
             <Typography style={{color: "#444444"}} variant="subtitle2">{status}</Typography>
-            <div style={{padding: "20px 0 10px 140px"}}>
-                <Button style={{padding: "10px 20px 10px 20px"}} disabled={status !== "Running"} variant="contained" size="medium" color="secondary" onClick={stopOrder}>Stop Order</Button>
+            <div style={{padding: "10px 0 10px 150px", alignContent: "center"}}>
+                <Button style={{padding: "10px 20px 10px 20px", textTransform: "none"}} disabled={status !== "Running"} variant="contained" size="medium" color="secondary" onClick={stopOrder}>Stop Order</Button>
             </div>
         </Card>
     );
