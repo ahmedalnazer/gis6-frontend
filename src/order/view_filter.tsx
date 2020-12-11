@@ -15,78 +15,78 @@ import OrderTable from './table';
 
 class ViewFilter extends React.Component {
 
-    state = {
-        selectedAge: '24',
-    };
+	state = {
+		selectedAge: '24',
+	};
 
-    setAge(age: string) {
-        this.setState({selectedAge: age});
-    }
+	setAge(age: string) {
+		this.setState({ selectedAge: age });
+	}
 
-    render() {
+	render() {
 
-        // need to consolidate styles between here and OrderList
-        const MyCard = styled(Card)({
-            borderColor: 'coral',
-            margin: 'auto',
-            border: 1,
-            borderRadius: 3,
-            boxShadow: '1 0px 0px 0px rgba(51, 51, 255, .8)',
-            color: 'white',
-            width: 300,
-            alignItems: 'center',
-            padding: '0 0px'
-        })
+		// need to consolidate styles between here and OrderList
+		const MyCard = styled(Card)({
+			borderColor: 'coral',
+			margin: 'auto',
+			border: 1,
+			borderRadius: 3,
+			boxShadow: '1 0px 0px 0px rgba(51, 51, 255, .8)',
+			color: 'white',
+			width: 300,
+			alignItems: 'center',
+			padding: '0 0px'
+		})
 
-        return (
-            <div style={{padding:30}}>
-            <div style={{padding: 20}}>
-                <MyCard>
-                <Table>
-                <TableHead style={{border: 0}}>
-                <TableRow style={{border: 0, padding: 2}}>
-                <TableCell><InputLabel style={{fontSize: 14, fontWeight: 'bold'}}>View by</InputLabel></TableCell>
-                <TableCell><InputLabel style={{fontSize: 14, fontWeight: 'bold'}}>Range</InputLabel></TableCell>
-                </TableRow>
-                </TableHead>
-                <TableBody>
-                <TableRow>
-                <TableCell>
-                <Select
-            labelId="select-filled-label"
-            id="select-filled"
-            value="Order"
-                >
-                <MenuItem value="Order">
-                <em>Order</em>
-                </MenuItem>
-                </Select>
-                </TableCell>
-                <TableCell>
-                    <Select
-            labelId="select-filled-label"
-            id="select-filled"
-            value={this.state.selectedAge}
-            onChange={event => this.setAge(event.target.value as string)}
-                >
-                <MenuItem value="">
-                <em>None</em>
-                </MenuItem>
-                <MenuItem value={24}>24 hrs</MenuItem>
-                <MenuItem value={48}>48 hrs</MenuItem>
-                <MenuItem value={168}>1 Week</MenuItem>
-                </Select>
-                </TableCell></TableRow>
-                </TableBody>
-                </Table>
-                </MyCard>
-                </div>
-                <div>
-                <OrderTable name="Order List" age={this.state.selectedAge} />
-                </div>
-                </div>
-        );
-    }
+		return (
+			<div style={{ padding: 30 }}>
+				<div style={{ padding: 20 }}>
+					<MyCard>
+						<Table>
+							<TableHead style={{ border: 0 }}>
+								<TableRow style={{ border: 0, padding: 2 }}>
+									<TableCell><InputLabel style={{ fontSize: 14, fontWeight: 'bold' }}>View by</InputLabel></TableCell>
+									<TableCell><InputLabel style={{ fontSize: 14, fontWeight: 'bold' }}>Range</InputLabel></TableCell>
+								</TableRow>
+							</TableHead>
+							<TableBody>
+								<TableRow>
+									<TableCell>
+										<Select
+											labelId="select-filled-label"
+											id="select-filled"
+											value="Order"
+										>
+											<MenuItem value="Order">
+												<em>Order</em>
+											</MenuItem>
+										</Select>
+									</TableCell>
+									<TableCell>
+										<Select
+											labelId="select-filled-label"
+											id="select-filled"
+											value={this.state.selectedAge}
+											onChange={event => this.setAge(event.target.value as string)}
+										>
+											<MenuItem value="">
+												<em>None</em>
+											</MenuItem>
+											<MenuItem value={24}>24 hrs</MenuItem>
+											<MenuItem value={48}>48 hrs</MenuItem>
+											<MenuItem value={168}>1 Week</MenuItem>
+										</Select>
+									</TableCell></TableRow>
+							</TableBody>
+						</Table>
+					</MyCard>
+				</div>
+				<div>
+					<OrderTable name="Order List" age={this.state.selectedAge} />
+				</div>
+			</div>
+		);
+	}
 
 }
 

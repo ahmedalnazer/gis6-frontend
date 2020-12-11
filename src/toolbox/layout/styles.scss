@@ -1,0 +1,105 @@
+$color_light_alarm: #ff8f73;
+$color_light_good: #5f9944;
+$color_light_warning: yellow;
+$color_light_unrated: #4c9aff;
+$color_background_dark: #364860;
+$color_background_bright: #eeeff4;
+
+
+//$frame_color: lightgreen;
+$frame_color: $color_light_alarm;
+$border_radius: 2px;
+$frame_size: 5px;
+$header_footer_height: 100px;
+
+html,
+body {
+	width: 100%;
+	height: 100%;
+}
+
+#root {
+	width: 100%;
+	height: 100%;
+	// background-color: $frame_color;
+}
+
+.main {
+	display: flex;
+	flex-direction: column;
+
+	box-sizing: border-box;
+	width: 100%;
+	height: 100%;
+
+	border-style: solid;
+	border-color: $frame_color;
+	border-radius: $border_radius;
+	border-top-width: $frame_size;
+	border-left-width: $frame_size;
+	border-right-width: $frame_size;
+	border-bottom-width: 4*$frame_size;
+
+	background-color: $frame_color;
+}
+
+.main-header {
+	background-color: $color_background_dark;
+	width: 100%;
+	height: $header_footer_height;
+	border-top-left-radius: $border_radius;
+	border-top-right-radius: $border_radius;
+
+	box-shadow: 0px 2px 10px grey;
+	z-index: 2;
+}
+
+.main-footer {
+	background-color: $color_background_dark;
+	width: 100%;
+	height: $header_footer_height;
+	border-bottom-left-radius: $border_radius;
+	border-bottom-right-radius: $border_radius;
+
+	z-index: 2;
+}
+
+.main-content {
+	background-color: $color_background_bright;
+	height: 100%;
+
+	z-index: 1;
+}
+
+.overlay {
+	display: block;
+	//display: none;
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+
+	width: 100%;
+	height: 100%;
+
+	background-color: rgb(0, 0, 0);
+	background-color: rgba(0, 0, 0, 0.2);
+		
+	z-index: 10;
+}
+
+.overlay-content {
+	background-color: #fefefe;
+	// margin: 5% auto;
+	margin-top: 1.5*$header_footer_height;
+	margin-bottom: 1.5*$header_footer_height;
+	margin-left: 2%;
+	margin-right: 2%;
+
+	box-sizing: border-box;
+	border: 1px solid #888;
+	// width: 100%;
+	min-height: 70%;
+	box-shadow: 0px 2px 10px grey;
+}
