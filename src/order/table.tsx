@@ -39,7 +39,7 @@ class OrderTable extends React.Component<IYoProps> {
 
     doFetch(age: string) {
         console.log("fetching");
-        const apiUrl = 'http://localhost:8000/orders';
+        const apiUrl = 'http://localhost:8000/order';
         this.setState({isLoading: true});
         fetch(apiUrl + "?age=" + age)
             .then(response => response.json())
@@ -59,9 +59,9 @@ class OrderTable extends React.Component<IYoProps> {
             { name: 'endTime', title: 'Completed Date' },
         ];
         var rows: Order[] = [];
-        this.state.orders.map((order) => {
+        this.state.orders.forEach((order) => {
             var d = new Date(order['endTime']);
-            rows.push({id: order['id'], cycles: order['cycles'], endTime: d.toLocaleString()});
+            rows.push({id: order['name'], cycles: order['cycles'], endTime: d.toLocaleString()});
           }
         )
 
@@ -74,7 +74,7 @@ class OrderTable extends React.Component<IYoProps> {
                 </TableCell>
                 {columns.map(
                     row => (
-                        <TableCell style={{fontSize: 14, fontWeight: 'bold', textAlign: 'center'}}>{row.title}</TableCell>
+                        <TableCell style={{fontSize: 14, fontWeight: 'bold', textAlign: 'left'}}>{row.title}</TableCell>
                     )
                 )}
                 </TableRow>
@@ -83,10 +83,10 @@ class OrderTable extends React.Component<IYoProps> {
                 {this.state.orders.map((order) => {
                     var d = new Date(order['endTime']);
                     return(<TableRow  style={{textAlign: 'center'}}>
-                        <TableCell style={{textAlign: 'center', padding: '5px'}}><Checkbox/></TableCell>
-                        <TableCell style={{textAlign: 'center', padding: '5px'}}>{order['id']}</TableCell>
-                        <TableCell style={{textAlign: 'center', padding: '5px'}}>{order['cycles']}</TableCell>
-                        <TableCell style={{textAlign: 'center', padding: '5px'}}>{d.toLocaleString()}</TableCell>
+                        <TableCell style={{textAlign: 'left', padding: '5px'}}><Checkbox/></TableCell>
+                        <TableCell style={{textAlign: 'left', padding: '5px'}}>{order['name']}</TableCell>
+                        <TableCell style={{textAlign: 'left', padding: '5px'}}>{order['cycles']}</TableCell>
+                        <TableCell style={{textAlign: 'left', padding: '5px'}}>{d.toLocaleString()}</TableCell>
                         </TableRow>);
                 })}
                 </TableBody>

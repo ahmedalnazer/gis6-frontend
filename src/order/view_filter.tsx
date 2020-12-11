@@ -1,9 +1,7 @@
 import React from 'react';
 import Select from '@material-ui/core/Select';
 import Card from '@material-ui/core/Card';
-import Paper from '@material-ui/core/Paper';
 import InputLabel from '@material-ui/core/InputLabel';
-import FormControl from '@material-ui/core/FormControl'
 import MenuItem from '@material-ui/core/MenuItem';
 import { styled } from '@material-ui/core';
 import Table from '@material-ui/core/Table';
@@ -12,6 +10,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import OrderTable from './table';
+import TopBanner from '../common/banner';
 
 class ViewFilter extends React.Component {
 
@@ -39,12 +38,13 @@ class ViewFilter extends React.Component {
         })
 
         return (
-            <div style={{padding:30}}>
+            <div>
+            <TopBanner name="GIS6 - Barnes Group" />
             <div style={{padding: 20}}>
                 <MyCard>
                 <Table>
-                <TableHead style={{border: 0}}>
-                <TableRow style={{border: 0, padding: 2}}>
+                <TableHead style={{borderBottom: 0}}>
+                <TableRow style={{borderBottom: 0, padding: 1}}>
                 <TableCell><InputLabel style={{fontSize: 14, fontWeight: 'bold'}}>View by</InputLabel></TableCell>
                 <TableCell><InputLabel style={{fontSize: 14, fontWeight: 'bold'}}>Range</InputLabel></TableCell>
                 </TableRow>
