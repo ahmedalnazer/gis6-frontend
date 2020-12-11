@@ -11,6 +11,6 @@
 			"port": 9297,
 			"webRoot": "${workspaceFolder}",
 			"url": "http://localhost:3000"
-		},
+		}
 	]
 }

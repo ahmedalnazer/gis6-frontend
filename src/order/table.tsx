@@ -59,7 +59,7 @@ class OrderTable extends React.Component<IYoProps> {
             { name: 'endTime', title: 'Completed Date' },
         ];
         var rows: Order[] = [];
-        this.state.orders.map((order) => {
+        this.state.orders.forEach((order) => {
             var d = new Date(order['endTime']);
             rows.push({id: order['name'], cycles: order['cycles'], endTime: d.toLocaleString()});
           }

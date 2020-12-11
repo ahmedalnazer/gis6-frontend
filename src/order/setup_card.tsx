@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Card from '@material-ui/core/Card';
 import Typography from '@material-ui/core/Typography';
-import GridList from '@material-ui/core/GridList';
-import GridListTile from '@material-ui/core/GridListTile';
 import useInterval from '../common/poll';
 
 

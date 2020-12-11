@@ -43,7 +43,7 @@ const CurrentOrder = () => {
         };
         fetch('http://localhost:8000/order/' + orderid + '/stop/', requestOptions)
         .then(response => {
-            if (response.status == 200) {
+            if (response.status === 200) {
                 setStatus('Cancelled');
             }
         });
@@ -77,7 +77,7 @@ const CurrentOrder = () => {
             <hr/>
             <Typography style={{color: "#444444"}} variant="subtitle2">{status}</Typography>
             <div style={{padding: "20px 0 10px 140px"}}>
-                <Button style={{padding: "10px 20px 10px 20px"}} disabled={status != "Running"} variant="contained" size="medium" color="secondary" onClick={stopOrder}>Stop Order</Button>
+                <Button style={{padding: "10px 20px 10px 20px"}} disabled={status !== "Running"} variant="contained" size="medium" color="secondary" onClick={stopOrder}>Stop Order</Button>
             </div>
         </Card>
     );

@@ -52,7 +52,7 @@ class OrderCreate extends React.Component {
                     .then(response => response.status)
                     .then(status => {
                         console.log("start status: " + status);
-                        if (status != 200) {
+                        if (status !== 200) {
                             return false;
                         }
                     });
@@ -84,7 +84,7 @@ class OrderCreate extends React.Component {
                             </TableRow>
                             <TableRow>
                                 <MyTableCell style={{borderSpacing: '0 25px'}}><Select fullWidth={true} variant="filled" value="Black PP Left Door"><MenuItem value="Black PP Left Door">Black PP Left Door</MenuItem></Select></MyTableCell>
-                                <MyTableCell><TextField fullWidth={true} onChange={this.orderNumberChange} variant="filled" name="orderName"  onInput={e=>{this.state.orderName = (e.target as any).value}}/></MyTableCell>
+                <MyTableCell><TextField fullWidth={true} onChange={this.orderNumberChange} variant="filled" name="orderName"  onInput={e => this.setState({orderName: (e.target as any).value})}/></MyTableCell>
                             </TableRow>
                             <br/><br/>
                             <TableRow>
@@ -92,7 +92,7 @@ class OrderCreate extends React.Component {
                                 <MyTableCell><InputLabel>Shutdown GIS6 when complete</InputLabel></MyTableCell>
                             </TableRow>
                             <TableRow>
-                                <MyTableCell><TextField fullWidth={true} onChange={this.orderNumberChange} variant="filled" name="targetParts" onInput={e=>{this.state.targetParts = (e.target as any).value}}/></MyTableCell>
+                                <MyTableCell><TextField fullWidth={true} onChange={this.orderNumberChange} variant="filled" name="targetParts" onInput={e => this.setState({targetParts: (e.target as any).value})}/></MyTableCell>
                                 <MyTableCell><Switch color="primary"/></MyTableCell>
                             </TableRow>
                             <TableRow>
