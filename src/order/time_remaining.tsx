@@ -20,7 +20,7 @@ const TimeRemaining = () => {
                 setGood(obj['good_cycles']);
                 setTimeleft(obj['time_remain']);
                 if (timeleft > 0) {
-                    setCurrentColor("#000088");
+                    setCurrentColor("#3f51b5");
                 } else {
                     setCurrentColor('#eeeeee');
                 }
@@ -35,7 +35,7 @@ const TimeRemaining = () => {
             <Typography variant="h6" style={{padding: "0 0 0 10px"}}>Time Remaining</Typography>
             <p/>
             <Box position="relative" style={{padding: "0 0 0 40px"}} display="inline-flex">
-                <CircularProgress value={good*100/(total + 0.01)} thickness={10} size={160} style={{padding: "0 0 0 0px", color: currentColor}} variant="determinate"/>
+                <CircularProgress value={good*100/(total + 0.01)} thickness={9} size={160} style={{padding: "0 0 0 0px", color: currentColor}} variant="determinate"/>
                 <Box
                     top={0}
                     left={40}
