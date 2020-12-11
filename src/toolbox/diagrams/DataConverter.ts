@@ -106,7 +106,7 @@ export interface Serie {
 	name: string;
 }
 
-function convertToGraphData(sampleTime:number, data:Array<Uint16Array>) {
+function convertToGraphData(sampleTime:number, faktor:number, data:Array<Uint16Array>) {
 	let NewData: Array<Serie> = Array(data[0].length);
 
 	for (var i=0; i<NewData.length; i++) {
@@ -116,7 +116,7 @@ function convertToGraphData(sampleTime:number, data:Array<Uint16Array>) {
 	// Now reorganize the data
 	for (var slice = 0; slice < data.length; slice++) {
 		for (var signal = 0; signal < data[slice].length; signal++) {
-			NewData[signal].data.push([sampleTime*slice, data[slice][signal]])
+			NewData[signal].data.push([sampleTime*slice, faktor*data[slice][signal]])
 
 			//ToDo slice must be recalulated to time
 			//ToDo signal must be recalculated to real unit
@@ -148,7 +148,7 @@ function parseSensorDataUint16(slice:SensorData)
 	return dataValues;
 }
 
-export function parseSensorData(sampleTime:number, slices:Array<SensorData>)
+export function parseSensorData(sampleTime:number, faktor:number, slices:Array<SensorData>)
 {
 	if (slices.length===0) return []
 	let data = []
@@ -159,5 +159,5 @@ export function parseSensorData(sampleTime:number, slices:Array<SensorData>)
 		}
 		data.push(parseSensorDataUint16(slices[i]));
 	}
-	return  convertToGraphData(sampleTime, data)
+	return  convertToGraphData(sampleTime, faktor, data)
 }

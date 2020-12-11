@@ -20,7 +20,7 @@ export default function CycleData() {
 	async function loadTcData(CycleId:Number) {
 		const data = await fetchJson("/sensordata/?cycleid=" + CycleId + "&devtype=tc");
 
-		let diadata = parseSensorData(0.5, data);
+		let diadata = parseSensorData(0.5, 0.01, data);
 
 		setTcData(diadata);
 		
@@ -29,7 +29,7 @@ export default function CycleData() {
 	async function loadVgData(CycleId:Number) {
 		const data = await fetchJson("/sensordata/?cycleid=" + CycleId + "&devtype=vg");
 
-		let diadata = parseSensorData(0.04, data);
+		let diadata = parseSensorData(0.04, 0.01, data);
 		setVgData(diadata);
 	}
 
@@ -37,7 +37,7 @@ export default function CycleData() {
 		const data:any = []
 		//const data = await fetchJson("/sensordata/?cycleid=" + CycleId + "&devtype=em75");
 
-		let diadata = parseSensorData(0.004, data);
+		let diadata = parseSensorData(0.004, 0.01, data);
 		setPsData(diadata);
 	}
 
