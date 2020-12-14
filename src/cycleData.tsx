@@ -29,15 +29,14 @@ export default function CycleData() {
 	async function loadVgData(CycleId:Number) {
 		const data = await fetchJson("/sensordata/?cycleid=" + CycleId + "&devtype=vg");
 
-		let diadata = parseSensorData(0.04, 0.01, data);
+		let diadata = parseSensorData(0.04, 0.0004, data);
 		setVgData(diadata);
 	}
 
 	async function loadPsData(CycleId:Number) {
-		const data:any = []
-		//const data = await fetchJson("/sensordata/?cycleid=" + CycleId + "&devtype=em75");
+		const data = await fetchJson("/sensordata/?cycleid=" + CycleId + "&devtype=tc");
 
-		let diadata = parseSensorData(0.004, 0.01, data);
+		let diadata = parseSensorData(0.5, 0.02, data);
 		setPsData(diadata);
 	}
 
