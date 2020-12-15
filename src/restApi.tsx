@@ -1,6 +1,6 @@
 
-//export const BACKEND_URL: string = "http://localhost:8000"
-export const BACKEND_URL: string = "http://192.168.22.54:8000"
+export const BACKEND_URL: string = "http://localhost:8000"
+//export const BACKEND_URL: string = "http://192.168.22.54:8000"
 
 export async function fetchJson(path:string, options?:any) {
 	const url = `${BACKEND_URL}${path}`;
