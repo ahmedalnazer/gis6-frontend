@@ -10,6 +10,7 @@ import Select from '@material-ui/core/Select';
 import { InputLabel } from '@material-ui/core';
 import { styled } from '@material-ui/core';
 import Switch from '@material-ui/core/Switch';
+import {BACKEND_URL} from './../restApi';
 
 
 const OrderCreate = () => {
@@ -61,14 +62,14 @@ const OrderCreate = () => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name: orderName, targetParts: parseInt(targetParts, 10) })
         };
-        fetch('http://localhost:8000/order/', requestOptions)
+        fetch(BACKEND_URL + '/order/', requestOptions)
             .then(response => response.json())
             .then(data => {return(data.id);})
             .then( (id) => {
                 const requestOptions = {
                     method: 'PUT',
                 };
-                fetch('http://localhost:8000/order/' + id + "/start/", requestOptions)
+                fetch(BACKEND_URL + '/order/' + id + "/start/", requestOptions)
                     .then(response => response.status)
                     .then(status => {
                         if (status !== 200) {

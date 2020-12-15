@@ -4,7 +4,7 @@ import Typography from '@material-ui/core/Typography';
 import useInterval from '../common/poll';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Box from '@material-ui/core/Box';
-
+import {BACKEND_URL} from './../restApi';
 
 const TimeRemaining = () => {
     const [timeleft, setTimeleft] = useState(0);
@@ -13,7 +13,7 @@ const TimeRemaining = () => {
     const [total, setTotal] = useState(0);
 
     function doFetch() {
-        fetch('http://localhost:8000/system/')
+        fetch(BACKEND_URL + '/system/')
             .then(response => response.json())
             .then(obj => {
                 setTotal(obj['target']);

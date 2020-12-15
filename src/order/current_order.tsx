@@ -7,6 +7,7 @@ import Typography from '@material-ui/core/Typography';
 import useInterval from '../common/poll';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Divider from '@material-ui/core/Divider';
+import {BACKEND_URL} from './../restApi';
 
 const CurrentOrder = () => {
     const [good, setGood] = useState(0);
@@ -15,7 +16,7 @@ const CurrentOrder = () => {
     const [orderid, setOrderid] = useState(-1);
 
     function doFetch() {
-       fetch('http://localhost:8000/system/')
+       fetch(BACKEND_URL + '/system/')
         .then(response => response.json())
            .then(obj => {
                setTotal(obj['target']);
@@ -42,7 +43,7 @@ const CurrentOrder = () => {
         const requestOptions = {
             method: 'PUT',
         };
-        fetch('http://localhost:8000/order/' + orderid + '/stop/', requestOptions)
+        fetch(BACKEND_URL + '/order/' + orderid + '/stop/', requestOptions)
         .then(response => {
             if (response.status === 200) {
                 setStatus('Cancelled');

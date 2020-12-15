@@ -55,6 +55,7 @@ export default function TableFilter(props: TableFilterProps) {
 							<MenuItem value={24}>24 hrs</MenuItem>
 							<MenuItem value={48}>48 hrs</MenuItem>
 							<MenuItem value={168}>1 Week</MenuItem>
+							<MenuItem value={672}>1 Month</MenuItem>
 						</Select>
 					</TableCell></TableRow>
 			</TableBody>
