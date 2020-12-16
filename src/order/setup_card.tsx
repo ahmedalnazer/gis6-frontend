@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Card from '@material-ui/core/Card';
 import Typography from '@material-ui/core/Typography';
 import useInterval from '../common/poll';
-
+import {BACKEND_URL} from './../restApi';
 
 const OrderSetupCard = () => {
     const [, setOrderId] = useState(0);
@@ -10,7 +10,7 @@ const OrderSetupCard = () => {
     const [lastTime, setLastTime] = useState("-none-");
 
     function doFetch() {
-        fetch('http://localhost:8000/order/1/lastcompleted/')
+        fetch(BACKEND_URL + '/order/1/lastcompleted/')
             .then(response => response.json())
             .then(order => {
                 setOrderId(order['id']);
