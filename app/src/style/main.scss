@@ -1,0 +1,28 @@
+// main.scss
+
+// Normalize
+// ––––––––––––––––––––––––––––––––––––––––––––––––––
+@import './normalize';
+* { box-sizing: border-box; } // Don't add padding to width ANYWHERE!
+
+// Theme
+// ––––––––––––––––––––––––––––––––––––––––––––––––––
+@import './theme';
+
+// Layout
+// ––––––––––––––––––––––––––––––––––––––––––––––––––
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+.viewport {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  main {
+    flex: 1;
+    overflow: scroll;
+  }
+}

@@ -1,12 +1,12 @@
 ## GIS Front End
 
-This is the GIS6 Front End web application developed using React.
+This is the GIS6 Front End web application developed using Svelte.
 
 ## Pre-requisites
 
 The project toolchain is run using [NodeJS](https://nodejs.org/en/), a JavaScript runtime built on Chrome's V8 JavaScript engine. NPM is NodeJS package manager.
 
-You’ll need to have Node >= 12 and npm >= 6 on your machine.  Please install Node using one of the install mechanisms for [your platform](https://nodejs.org/en/download/package-manager/).  
+You’ll need to have Node >= 12 and npm >= 6 on your machine.  Please install Node using one of the install mechanisms for [your platform](https://nodejs.org/en/download/package-manager/).
 
 
 ## Available Scripts
@@ -23,16 +23,16 @@ You will also see any lint errors in the console.
 
 ### `npm test`
 
+Run cypress tests in headless mode.<br />
+
+### `npm run show_tests`
+
 Launches the test runner in the interactive watch mode.<br />
 
 
 ### `npm run build`
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+Build process is WIP
 
 
 
