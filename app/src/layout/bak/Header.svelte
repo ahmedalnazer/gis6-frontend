@@ -1,11 +1,10 @@
 <script>
-  import status from 'data/status';
-  import UpdateIcon from "./../style/images/UpdateIcon.svelte";
+  import status from 'data/status'
 </script>
 
 <header class={$status.level}>
   <div class='logo'>
-    <img class='logo-image' src="/images/barnes logo-white ball.png" alt="barnes_logo" />
+    LOGO
   </div>
 
   <div class='status'>
@@ -18,18 +17,16 @@
   </div>
 
   <div class='icon'>
-    <UpdateIcon />
+    ICON
   </div>
 </header>
 
 <style lang="scss">
   header {
-    height: 10vh;
     color: white;
     display: flex;
     align-items: center;
     font-size: 1.8em;
-    text-align: center;
 
     &.info {
       background: var(--green);
@@ -42,28 +39,14 @@
     }
   }
 
-  // .logo_ {
-  //   padding: 48px 32px;
-  //   min-height: 96px;
-  //   border-right: 2px solid black;
-  //   margin-right: 32px;
-  //   display: flex;
-  //   align-items: center;
-  //   justify-content: center;
-  // }
-
   .logo {
-    padding: 10px 10px 10px 20px;
+    padding: 48px 32px;
     min-height: 96px;
     border-right: 2px solid black;
     margin-right: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
-  }
-
-  .logo-image {
-    max-width:35px;
   }
 
   .status {

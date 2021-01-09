@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="14px" height="30px" viewBox="0 0 14 30" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>icon setpoint standby</title>
+    <g id="Style-Guide" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g transform="translate(-1034.000000, -1067.000000)" fill="#364860" id="icon-setpoint-standby">
+            <g transform="translate(1041.000000, 1082.000000) rotate(-180.000000) translate(-1041.000000, -1082.000000) translate(1034.000000, 1067.000000)">
+                <polygon id="Triangle" points="6.66666667 2.0250468e-13 13.3333333 12.2222222 -6.05737682e-13 12.2222222"></polygon>
+                <polygon id="Triangle-Copy" points="6.66666667 17.7777778 13.3333333 30 -6.05737682e-13 30"></polygon>
+            </g>
+        </g>
+    </g>
+</svg>
