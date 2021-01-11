@@ -9,9 +9,9 @@
 
   const login = async e => {
     e.preventDefault()
+    await api.login(userId, password)
     // TODO: api login
     user.set($users.find(x => x.id == userId))
-    goBack()
   }
 
   let password = ''
@@ -28,7 +28,7 @@
     <select bind:value={userId}>
       <option value=''>{$_('Select...')}</option>
       {#each $users as user (user.id)}
-        <option value={user.id}>{user.username}</option>
+        <option>{user.username}</option>
       {/each}
     </select>
 

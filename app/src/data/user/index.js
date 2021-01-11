@@ -8,6 +8,14 @@ export default user
 /** All available users */
 export const users = writable([])
 
+export const roles = {
+  1: "Administrator",
+  2: "Operator",
+  3: "Process Engineer",
+  4: "Setup",
+  5: "Plant Manager"
+}
+
 export const defaultUser = {
   first_name: '',
   last_name: '',

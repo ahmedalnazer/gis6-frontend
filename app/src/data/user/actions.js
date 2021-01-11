@@ -5,7 +5,23 @@ import { users } from './index'
 
 // load all current users into state
 const loadUsers = async () => {
-  users.set(await api.get('/auth/user/list'))
+  const u = await api.get('/auth/user/list')
+  if(u && u.length == 0) {
+    try {
+      await api.post('auth/user/create/', {
+        username: 'Admin',
+        password: 'G!S64Ever.',
+        email: 'admin@gis6.com',
+        role: 1,
+        first_name: 'GIS6',
+        last_name: 'Admin',
+        language: 'en-US'
+      })
+    } catch(e) {
+      // ignore 445 error if needed
+    }
+  }
+  users.set(u || [])
 }
 
 

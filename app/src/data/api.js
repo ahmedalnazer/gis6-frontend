@@ -16,7 +16,7 @@ class API {
   // TODO: finalize and document
   update = async () => {
     try {
-      this.status = await this.get('check-status')
+      this.status = await this.get('auth/status')
     } catch(e) {
       console.error(e)
       this.status = { user: {}}
@@ -25,11 +25,16 @@ class API {
   }
 
   // TODO: finalize and document
-  login = async (user, password) => {
-    const data = await this.post('login', { user, password })
-    if(data.error) {
-      notify.error(data.error)
+  login = async (username, password) => {
+    const data = await this.post('auth/token/obtain', { username, password })
+    console.log(data)
+    if(!data.access) {
+      notify.error('Invalid username or password')
     } else {
+
+      this.token = data.access
+      this.refresh = data.refresh
+
       await this.update()
       notify.success(`Signed in`)
     }
@@ -65,14 +70,20 @@ class API {
         return resolve(stubs[method][url](data))
       }
 
+      if(method == 'POST' && !url.endsWith('/')) url = url + '/'
+
       // prefix all routes with api
       let opts = {
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json'
         },
-        credentials: 'omit',
+        credentials: 'same-origin',
         method: method
+      }
+
+      if(this.token) {
+        opts.headers['Authorization'] = `Bearer ${this.token}`
       }
       if(method != 'GET' && data) {
         opts.body = JSON.stringify(data)
@@ -83,12 +94,12 @@ class API {
           notify.error(msg || 'Sorry, we seem to be having trouble connecting to the server')
         }
       }
-      fetch(`http://localhost:8000/${url}`, opts)
+      fetch(`/${url}`, opts)
         .then(async resp => {
           if(resp && resp.status == 403) {
             fail('Sorry, it seems like your admin session has expired, please try logging in again')
             return reject(resp)
-          } else if(!resp || resp.status != 200) {
+          } else if(!resp || resp.status > 500) {
             fail()
             return reject(resp)
           }
