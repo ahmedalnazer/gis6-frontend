@@ -30,23 +30,24 @@
         fetch(`${apiEndpointUrl}/system`)
             .then((response) => response.json())
             .then((data) => {
-                goodpartfrom = data.good_cycles;
-                goodparttotal = data.target;
-                badpartcount = 0;
-                progressStatus = Math.round(
-                    (goodpartfrom * 100) / goodparttotal + 0.01,
-                    0
-                );
+                if (data.order_id == orderId) {
+                    goodpartfrom = data.good_cycles;
+                    goodparttotal = data.target;
+                    badpartcount = 0;
+                    progressStatus = Math.round(
+                        (goodpartfrom * 100) / goodparttotal + 0.01,
+                        0
+                    );
 
-                series = [progressStatus];
+                    series = [progressStatus];
+                }
             });
     };
 
     const startOrder = () => {
         fetch(`${apiEndpointUrl}/order/${orderId}/start/`, { method: "PUT" })
-            .then((response) => 
-            {
-                response.json()
+            .then((response) => {
+                response.json();
             })
             .then((data) => {
                 if ((apitype = "API")) {
