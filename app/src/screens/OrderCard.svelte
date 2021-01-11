@@ -32,28 +32,37 @@
                 goodpartfrom = data.good_cycles;
                 goodparttotal = data.target;
                 badpartcount = 0;
-                progressStatus = Math.round(goodpartfrom * 100 / goodparttotal + 0.01, 0);
+                progressStatus = Math.round(
+                    (goodpartfrom * 100) / goodparttotal + 0.01,
+                    0
+                );
 
                 series = [progressStatus];
             });
     };
 
     const startOrder = () => {
-        fetch(`${apiEndpointUrl}/order/${orderId}/start/`, {method: 'PUT'})
+        fetch(`${apiEndpointUrl}/order/${orderId}/start/`, { method: "PUT" })
             .then((response) => response.json())
-            .then((data) => { 
-                // console.log(data);               
+            .then((data) => {
+                if ((apitype = "API")) {
+                    setInterval(function () {
+                        // Use long polling
+                        // TODO: Move api to common place
+                        getOrderCardData();
+                    }, longPollingInterval);
+                }
             });
     };
 
     onMount(() => {
-        if ((apitype = "API")) {
-            setInterval(function () {
-                // Use long polling
-                // TODO: Move api to common place
-                getOrderCardData();
-            }, longPollingInterval);
-        } 
+        // if ((apitype = "API")) {
+        //     setInterval(function () {
+        //         // Use long polling
+        //         // TODO: Move api to common place
+        //         getOrderCardData();
+        //     }, longPollingInterval);
+        // }
     });
 
     const startOrderClick = () => {
