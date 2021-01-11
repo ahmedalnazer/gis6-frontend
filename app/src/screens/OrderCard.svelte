@@ -9,6 +9,7 @@
     let goodpartfrom = 0;
     let goodparttotal = 0;
     let badpartcount = 0;
+    let hoursleft = 0;
 
     const apiEndpointUrl = "http://localhost:8000"; // TODO: Move to env
     let apitype = "API";
@@ -43,7 +44,10 @@
 
     const startOrder = () => {
         fetch(`${apiEndpointUrl}/order/${orderId}/start/`, { method: "PUT" })
-            .then((response) => response.json())
+            .then((response) => 
+            {
+                response.json()
+            })
             .then((data) => {
                 if ((apitype = "API")) {
                     setInterval(function () {
@@ -182,7 +186,7 @@
                                 thickness="14" />
                         </div>
 
-                        <span style="font-size: 2em;">5.4</span>
+                        <span style="font-size: 2em;">{hoursleft}</span>
                         <div class="item-label-sub">
                             Hours Left
                             <span class="item-label-subsection">(est.)</span>
