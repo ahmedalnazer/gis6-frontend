@@ -1,13 +1,20 @@
 <script>
+    import { onMount, beforeUpdate, afterUpdate, onDestroy } from "svelte";
     import Card from "@smui/card";
     import language from "data/language/current";
     import ProgressBar from "@okrad/svelte-progressbar";
     import time from "data/time";
     import axios from "axios";
     // import CheckCircle from "./../style/images/CheckCircle.svelte";
-    let goodpartfrom = 27;
-    let goodparttotal = 150;
-    let badpartcount = 8;
+    let goodpartfrom = 0;
+    let goodparttotal = 0;
+    let badpartcount = 0;
+
+    const apiEndpointUrl = "http://localhost:8000"; // TODO: Move to env
+    let apitype = "API";
+    let longPollingInterval = 5000;
+    let progressStatus = 0;
+    let orderId = 175;
 
     const dateOptions = { year: "numeric", month: "short", day: "numeric" };
 
@@ -18,36 +25,39 @@
         },
     ];
 
-    // TODO: MOVE THIS TO A SHARED LOCATION
-    const axiosAPI = axios.create({
-        // TODO: Move to env variable
-        baseURL: "https://localhost:8080/api",
-    });
+    const getOrderCardData = () => {
+        fetch(`${apiEndpointUrl}/system`)
+            .then((response) => response.json())
+            .then((data) => {
+                goodpartfrom = data.good_cycles;
+                goodparttotal = data.target;
+                badpartcount = 0;
+                progressStatus = Math.round(goodpartfrom * 100 / goodparttotal + 0.01, 0);
 
-    // implement a method to execute all the request from here.
-    const apiRequest = (method, url, request) => {
-        const headers = {
-            authorization: "",
-        };
-        //using the axios instance to perform the request that received from each http method
-        return axiosAPI({
-            method,
-            url,
-            data: request,
-            headers,
-        })
-            .then((res) => {
-                return Promise.resolve(res.data);
-            })
-            .catch((err) => {
-                return Promise.reject(err);
+                series = [progressStatus];
             });
     };
 
-    const manageOrder = () => {
-        let url = "https://localhost:8080/api";
-        let request = {};
-        apiRequest("get", url, request);
+    const startOrder = () => {
+        fetch(`${apiEndpointUrl}/order/${orderId}/start/`, {method: 'PUT'})
+            .then((response) => response.json())
+            .then((data) => { 
+                // console.log(data);               
+            });
+    };
+
+    onMount(() => {
+        if ((apitype = "API")) {
+            setInterval(function () {
+                // Use long polling
+                // TODO: Move api to common place
+                getOrderCardData();
+            }, longPollingInterval);
+        } 
+    });
+
+    const startOrderClick = () => {
+        startOrder();
     };
 </script>
 
@@ -186,8 +196,8 @@
             <div style="float:right;">
                 <button
                     class="btn action-button action-button-raised actionBtn"
-                    on:click={() => manageOrder()}>
-                    Manage Order
+                    on:click={() => startOrderClick()}>
+                    Start Order
                 </button>
 
                 <!-- <div>
