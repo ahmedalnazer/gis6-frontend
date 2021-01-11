@@ -3,18 +3,45 @@
     import Card from "@smui/card";
     import CheckCircle from "./../style/images/CheckCircle.svelte";
     import io from "socket.io-client";
+    
+    const apiEndpointUrl = "http://localhost:8000"; // TODO: Move to env
     let hrValue = {};
-    let hrHigherZoneTemp = "0";
+    let hrHigherZoneTemp = 0;
     let hrLowerZoneTemp = 0;
-    let socket = io("http://localhost:8090");
+    let hrHigherZone = "";
+    let hrLowerZone = "";
+    let socket = io(apiEndpointUrl);
+    let apitype = "API";
     export let isLayoutView = false;
+    let orderId = 175;
+    let longPollingInterval = 5000;
+    
+    const getData = () => {
+        fetch(`${apiEndpointUrl}/system/${orderId}/getminmax`)
+            .then((response) => response.json())
+            .then((data) => {
+                hrLowerZoneTemp = (data.min / 100);
+                hrHigherZoneTemp = (data.max / 100);
+                hrLowerZone = data.min_zone;
+                hrHigherZone = data.max_zone;
+                hrValue = data;
+            });
+    };
 
     onMount(() => {
-        socket.on("message", (data) => {
-            hrValue = data;
-            hrHigherZoneTemp = hrValue.HRHigherZoneTemp;
-            hrLowerZoneTemp = hrValue.HRLowerZoneTemp;
-        });
+        if ((apitype = "API")) {
+            setInterval(function () {
+                // Use long polling
+                // TODO: Move api to common place
+                getData();
+            }, longPollingInterval);
+        } else {
+            socket.on("message", (data) => {
+                hrValue = data;
+                hrHigherZoneTemp = hrValue.HRHigherZoneTemp;
+                hrLowerZoneTemp = hrValue.HRLowerZoneTemp;
+            });
+        }
     });
 </script>
 
@@ -80,11 +107,11 @@
             <div class="center">
                 <div>
                     <div class="zoneTemp">{hrHigherZoneTemp} C</div>
-                    <div class="zoneInfo">Highest Zone 10</div>
+                    <div class="zoneInfo">Highest {hrHigherZone}</div>
                 </div>
                 <div>
                     <div class="zoneTemp">{hrLowerZoneTemp} C</div>
-                    <div class="zoneInfo">Lowest Zone 5</div>
+                    <div class="zoneInfo">Lowest {hrLowerZone}</div>
                 </div>
             </div>
 

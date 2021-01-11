@@ -195,13 +195,14 @@
 
               <div class="section-body">
                 <div style="display: flex; justify-content: space-evenly;">
-                  {#each mouldData as mouldDataItem}
+                    <Mold {isLayoutView} />
+                    <!-- {#each mouldData as mouldDataItem}
                     <div style="width: 50%;">
                       <div style="padding: 5px;">
                         <Mold {mouldDataItem} {isLayoutView} />
                       </div>
                     </div>
-                  {/each}
+                  {/each} -->
                 </div>
               </div>
             </div>
@@ -266,13 +267,14 @@
 
               <div class="section-body">
                 <div style="display: flex; justify-content: space-evenly;">
-                  {#each mouldData as mouldDataItem}
+                  <Mold {isLayoutView} />
+                  <!-- {#each mouldData as mouldDataItem}
                     <div style="width: 50%;">
                       <div style="padding: 5px;">
                         <Mold {mouldDataItem} />
                       </div>
                     </div>
-                  {/each}
+                  {/each} -->
                 </div>
               </div>
             </div>
