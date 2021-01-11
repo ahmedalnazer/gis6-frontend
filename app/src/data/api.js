@@ -1,13 +1,19 @@
 import user from './user'
 import notify from './notifications'
+import stubs from './api-stubs'
+
 
 let disconnectLock
 
+/**
+ * Base API interaction class
+ */
 class API {
   constructor() {
     this.update()
   }
 
+  // TODO: finalize and document
   update = async () => {
     try {
       this.status = await this.get('check-status')
@@ -15,9 +21,10 @@ class API {
       console.error(e)
       this.status = { user: {}}
     }
-    user.set(this.status.user)
+    user.set(this.status && this.status.user)
   }
 
+  // TODO: finalize and document
   login = async (user, password) => {
     const data = await this.post('login', { user, password })
     if(data.error) {
@@ -28,6 +35,7 @@ class API {
     }
   }
 
+  // TODO: finalize and document
   logout = async () => {
     await this.post('logout')
     await this.update()
@@ -35,19 +43,35 @@ class API {
   }
 
 
-  // generic request function, essentially contextualized fetch request
+  /**
+   * generic request function, essentially contextualized fetch request
+   * @param {string} url  -  requested url, optionally beginning with '/'
+   * @param {Object} data  -  data to be passed to API (ignored for GET requests)
+   * @param {Object} options = configuration options
+   * @param {string} options.method = request method, e.g. 'GET' or 'POST'
+   *
+   * @returns {Promise} returns request
+   */
   request = (url, data, { method }) => {
 
     // make initial slash optional
     if (url.startsWith('/')) url = url.slice(1)
+
     return new Promise(async (resolve, reject) => {
+
+      // call stub function if available and return
+      if(stubs && stubs[method] && stubs[method][url]) {
+        console.warn(`RETURNING STUB DATA FOR '${url}'`)
+        return resolve(stubs[method][url](data))
+      }
+
       // prefix all routes with api
       let opts = {
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json'
         },
-        credentials: 'include',
+        credentials: 'omit',
         method: method
       }
       if(method != 'GET' && data) {
@@ -59,7 +83,7 @@ class API {
           notify.error(msg || 'Sorry, we seem to be having trouble connecting to the server')
         }
       }
-      fetch(`/api/${url}`, opts)
+      fetch(`http://localhost:8000/${url}`, opts)
         .then(async resp => {
           if(resp && resp.status == 403) {
             fail('Sorry, it seems like your admin session has expired, please try logging in again')
@@ -81,6 +105,15 @@ class API {
     })
   }
 
+  /**
+   * make GET request, essentially contextualized fetch request
+   * @param {string} url - requested url, optionally beginning with '/'
+   * @param {Object} data - data to be passed (must be serializable, will be appended to query string)
+   * @param {Object} options - configuration options
+   *
+   *
+   * @returns {Promise} returns GET request response
+   */
   get = (url, data, options) => {
     if(data) {
       const queries = Object.keys(data).map(key => `${key}=${data[key]}`)
@@ -89,6 +122,14 @@ class API {
     return this.request(url, {}, { ...options, method: 'GET' })
   }
 
+  /**
+   * make POST request, essentially contextualized fetch request
+   * @param {string} url  -  requested url, optionally beginning with '/'
+   * @param {Object} data  -  Object to be posted to the url
+   * @param {Object} options - configuration options
+   *
+   * @returns {Promise} returns POST request response
+   */
   post = (url, data, options) => {
     return this.request(url, data, { ...options, method: 'POST' })
   }

@@ -1,6 +1,9 @@
 import Dashboard from 'screens/Dashboard'
 import Login from 'screens/Login'
 import ForgotPassword from 'screens/ForgotPassword'
+import ManageUsers from 'screens/users/ManageUsers'
+import AddUser from 'screens/users/AddUser'
+import UserProfile from 'screens/users/UserProfile'
 
 /**
  *
@@ -14,7 +17,10 @@ import ForgotPassword from 'screens/ForgotPassword'
 const routes = {
   '/': Dashboard,
   '/login': Login,
-  '/forgot-password': ForgotPassword
+  '/forgot-password': ForgotPassword,
+  '/manage-users': ManageUsers,
+  '/add-user': AddUser,
+  '/user-profile/:userId': UserProfile
 }
 
 export default routes

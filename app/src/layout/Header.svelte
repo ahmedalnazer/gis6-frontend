@@ -24,7 +24,7 @@
 
 <style lang="scss">
   header {
-    height: 10vh;
+    // height: 10vh;
     color: white;
     display: flex;
     align-items: center;
@@ -53,7 +53,8 @@
   // }
 
   .logo {
-    padding: 10px 10px 10px 20px;
+    // padding: 10px 10px 10px 20px;
+    padding: 16px 32px;
     min-height: 96px;
     border-right: 2px solid black;
     margin-right: 32px;
@@ -63,7 +64,7 @@
   }
 
   .logo-image {
-    max-width:35px;
+    max-width: 48px;
   }
 
   .status {

@@ -15,7 +15,8 @@
   <div class='wrapper'>
     {#each $notifications as n (n.id)}
       <div class='notification {n.type}' transition:slide|local on:click={() => dismiss(n.id)}>
-      <i class='fa fa-{icons[n.type] || n.type}' /> <span class='message'>{n.msg}</span>
+      <!-- <i class='fa fa-{icons[n.type] || n.type}' />  -->
+      <span class='message'>{n.msg}</span>
       </div>
     {/each}
   </div>
@@ -24,20 +25,22 @@
 
 <style lang="scss">
   .notifications {
-    font-family: sans-serif;
     font-size: 16px;
     position: fixed;
-    bottom: 0;
+    bottom: 180px;
     right: 0;
-    width: 360px;
+    width: 100%;
+    pointer-events: none;
     z-index: 2;
     .wrapper {
       position: absolute;
       bottom: 0;
       right: 0;
+      width: 100%;
     }
     .notification {
-      max-width: 360px;
+      pointer-events: all;
+      width: 100%;
       background: #ddd;
       box-shadow: -2px 2px 4px rgba(0, 0, 0, .1);
       border-radius: 4px 0 0 4px;
@@ -45,15 +48,16 @@
       color: white;
       display: flex;
       overflow: hidden;
-      > i {
-        width: 40px;
-        flex-grow: 0;
-        flex-shrink: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background: rgba(0, 0, 0, .2);
-      }
+      text-align: center;
+      // > i {
+      //   width: 40px;
+      //   flex-grow: 0;
+      //   flex-shrink: 0;
+      //   display: flex;
+      //   justify-content: center;
+      //   align-items: center;
+      //   background: rgba(0, 0, 0, .2);
+      // }
       .message {
         flex: 1;
         padding: 16px;
@@ -62,13 +66,13 @@
         color: #333
       }
       &.success {
-        background: green;
+        background: var(--green);
       }
       &.warning {
         background: gold;
       }
       &.error {
-        background: red;
+        background: var(--danger);
       }
     }
   }
