@@ -1,12 +1,12 @@
 <script>
-  import { default as _user } from 'data/user'
+  import { default as _user, roles } from 'data/user'
   export let user
   export let onDelete
 </script>
 
 <div class='card user-card'>
   <h3>{user.username}</h3>
-  <p class='muted'>{user.role}</p>
+  <p class='muted'>{roles[user.role]}</p>
   <div class='tools'>
     {#if onDelete && user.id != ($_user && $_user.id)}
       <div class='trash' on:click={() => onDelete(user)}>

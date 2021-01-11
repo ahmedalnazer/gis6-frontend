@@ -1,5 +1,5 @@
 <script>
-  import user from 'data/user'
+  import user, { roles } from 'data/user'
   import language from 'data/language/current'
   import _ from 'data/language'
   import { Collapsible } from 'components'
@@ -8,16 +8,13 @@
   import time from 'data/time'
 
   const dateOptions = { year: 'numeric', month: 'short', day: 'numeric' }
-
-  // for testing
-  const dummyUser = { name: 'MJacobi' }
 </script>
 
 <footer>
   <div class='container'>
     <div class='user'>
       {#if $user && $user.id}
-        <h3>{$_($user.role)}</h3>
+        <h3>{$_(roles[$user.role])}</h3>
         <p>{$user.username}</p>
       {:else}
         <a class='button blue' href='/login'>{$_('Log In')}</a>
