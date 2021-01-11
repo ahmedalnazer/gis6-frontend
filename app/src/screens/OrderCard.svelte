@@ -1,19 +1,61 @@
 <script>
     import Card from "@smui/card";
-    import CheckCircle from "./../style/images/CheckCircle.svelte";
+    import language from "data/language/current";
+    import ProgressBar from "@okrad/svelte-progressbar";
+    import time from "data/time";
+    import axios from "axios";
+    // import CheckCircle from "./../style/images/CheckCircle.svelte";
+    let goodpartfrom = 27;
+    let goodparttotal = 150;
+    let badpartcount = 8;
+
+    const dateOptions = { year: "numeric", month: "short", day: "numeric" };
+
+    export let series = [
+        {
+            perc: 0,
+            color: "#2196f3",
+        },
+    ];
+
+    // TODO: MOVE THIS TO A SHARED LOCATION
+    const axiosAPI = axios.create({
+        // TODO: Move to env variable
+        baseURL: "https://localhost:8080/api",
+    });
+
+    // implement a method to execute all the request from here.
+    const apiRequest = (method, url, request) => {
+        const headers = {
+            authorization: "",
+        };
+        //using the axios instance to perform the request that received from each http method
+        return axiosAPI({
+            method,
+            url,
+            data: request,
+            headers,
+        })
+            .then((res) => {
+                return Promise.resolve(res.data);
+            })
+            .catch((err) => {
+                return Promise.reject(err);
+            });
+    };
+
+    const manageOrder = () => {
+        let url = "https://localhost:8080/api";
+        let request = {};
+        apiRequest("get", url, request);
+    };
 </script>
 
-
 <style>
-    .zoneTemp {
-        font-size: 25px;
-        text-align: center;
-    }
-
     .zoneInfo {
         font-size: 14px;
         color: #70777f;
-        text-align: center;
+        text-align: left;
         line-height: 19px;
         padding-bottom: 10px;
     }
@@ -28,41 +70,135 @@
         padding: 5px;
     }
 
-    .zoneContainer {
+    .sectionAction {
         padding: 8px 8px 13px 8px;
     }
 
-    .layoutView {
-        max-height: 130px;
-        opacity: 0.4;
-        cursor: move;
+    .section-body {
+        padding: 10px;
+    }
+
+    .item-section {
+        padding: 1px;
+        min-width: 150px;
+        min-height: 68px;
+        /* background-color: #70777f; */
+    }
+
+    .item-label {
+        font-size: 2em;
+    }
+
+    .item-label-sub {
+        font-size: 0.8em;
+    }
+
+    .actionBtn {
+        height: 40px;
+        padding: 10px;
+        border: 1px solid #358dca;
+        color: #358dca;
+        background-color: #ffffff;
+        cursor: pointer;
+    }
+
+    .action-button:hover {
+        opacity: 0.8;
+    }
+
+    .action-button-raised {
+        box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2),
+            0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+        transition: box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .sectionProgress {
+        display: inline-block;
+        /* border: 1px solid #333333; */
+        padding-top: 15px;
+        padding-bottom: 10px;
+    }
+
+    .item-label-subsection {
+        font-size: 10px;
     }
 </style>
 
 <Card>
     <div class="sectionHeader">
-        <!-- <div style="padding-top:5px; float: left;">
-            <CheckCircle size="1.5em" />
-        </div> -->
         <div style="margin-left: 3px; padding-top:5px;">Order</div>
     </div>
-    <div class="zoneContainer">
-        <div class="zoneInfo">Modified 10/08/2020 12:45 PM</div>
-        <div>
-            <div style="float:left; padding:10px;">
-                <div>
-                    <span style="font-size: 2em;">27</span> of 150
+    <div class="section-body">
+        <div class="zoneContainer">
+            <div class="zoneInfo">
+                {new Date().toLocaleDateString($language, dateOptions)}
+                {$time}
+            </div>
+            <div>
+                <div
+                    style="float:left; padding:10px; border-left: 5px solid #358dca;">
+                    <div class="item-section">
+                        <span class="item-label">{goodpartfrom}</span>
+                        of
+                        {goodparttotal}
+                        <div class="item-label-sub">Good Parts</div>
+                    </div>
+                </div>
+                <div
+                    style="float:left; padding:10px; border-left: 5px solid #f06a1d;">
+                    <div class="item-section">
+                        <span style="font-size: 2em;">{badpartcount}</span>
+                        <div class="item-label-sub">Bad Parts</div>
+                    </div>
+                </div>
+                <div
+                    style="float:left; padding:10px; border-left: 5px solid #c2c2c2;">
+                    <div class="item-section">
+                        <div style="float:left; margin-top: -4px;">
+                            <ProgressBar
+                                {series}
+                                width={60}
+                                bgFillColor="#FFFFFF"
+                                style="radial"
+                                thickness="14" />
+                        </div>
+
+                        <span style="font-size: 2em;">5.4</span>
+                        <div class="item-label-sub">
+                            Hours Left
+                            <span class="item-label-subsection">(est.)</span>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div style="float:left; padding:10px;">
-                <div>
-                    <span style="font-size: 2em;">3</span>
-                </div>
+        </div>
+        <div class="sectionProgress">
+            <div>
+                <ProgressBar
+                    {series}
+                    width={517}
+                    thickness="1"
+                    height="9"
+                    textSize="20" />
             </div>
-            <div style="float:left; padding:10px;">
-                <div>
-                    <span style="font-size: 2em;">5.4</span>
-                </div>
+        </div>
+        <div class="sectionAction">
+            <div style="float:right;">
+                <button
+                    class="btn action-button action-button-raised actionBtn"
+                    on:click={() => manageOrder()}>
+                    Manage Order
+                </button>
+
+                <!-- <div>
+                    <br/>
+                    <button on:click={() => (series = [{
+                        perc: 30,
+                        color: '#2196f3'
+                    }])}>fill</button>
+                    <button on:click={() => (series = [100])}>Test Fill</button>
+                    <button on:click={() => (series = [0])}>Test Clear</button>
+                </div> -->
             </div>
         </div>
     </div>
