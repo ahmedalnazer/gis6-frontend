@@ -8,9 +8,7 @@
   import DragIndicator from "./../style/images/DragIndicator.svelte";
   import SortableList from "svelte-sortable-list";
   import SplashScreen from "screens/SplashScreen";
-
-  let hideHeader = false;
-  let hideFooter = false;
+  
   let isLayoutView = false;
   let showSplashScreen = true;
   let showSetupProductionButton = true;
@@ -148,7 +146,7 @@
 {#if showSplashScreen}
   <SplashScreen on:splashScreen={(e) => { showSplashScreen = e.detail.showSplashScreen; }}/>
 {:else}
-<Screen {hideHeader} {hideFooter} class='dashboard-screen'>
+<Screen dashboard class='dashboard-screen'>
   <ActionsPanel on:actionsPanel={(e) => { showSetupProductionButton = e.detail.showSetupProductionButton; }} />
 
   <!-- <div class="dashboard-body">
@@ -308,25 +306,6 @@
       {/each}
     </div>
   {/if}
-
-  <div class="dashboard-body">
-    <div style="float:right; padding:10px; cursor:pointer;">
-      <span
-        class="panelItem"
-        on:click={() => (isLayoutView = !isLayoutView)}
-        title="Edit Page Layout">Layout</span>
-      &nbsp;|&nbsp;
-      <span
-        class="panelItem"
-        on:click={() => (hideHeader = !hideHeader)}
-        title="Show/Hide Header">Header</span>
-      &nbsp;|&nbsp;
-      <span
-        class="panelItem"
-        on:click={() => (hideFooter = !hideFooter)}
-        title="Show/Hide Footer">Footer</span>
-    </div>
-  </div>
 </Screen>
 
 {/if}
