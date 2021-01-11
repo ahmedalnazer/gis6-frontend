@@ -16,7 +16,7 @@
 <footer>
   <div class='container'>
     <div class='user'>
-      {#if $user}
+      {#if $user && $user.id}
         <h3>{$_($user.role)}</h3>
         <p>{$user.username}</p>
       {:else}

@@ -7,10 +7,9 @@
   import OrderCard from "./OrderCard.svelte";
   import DragIndicator from "./../style/images/DragIndicator.svelte";
   import SortableList from "svelte-sortable-list";
-  import SplashScreen from "screens/SplashScreen";
-  
+
   let isLayoutView = false;
-  let showSplashScreen = true;
+  
   let showSetupProductionButton = true;
   let sectionData = [
     { id: 1, sectionName: "FUNCTIONS", itemOrder: 1 },
@@ -143,9 +142,6 @@
   <title>Dashboard</title>
 </svelte:head>
 
-{#if showSplashScreen}
-  <SplashScreen on:splashScreen={(e) => { showSplashScreen = e.detail.showSplashScreen; }}/>
-{:else}
 <Screen dashboard class='dashboard-screen'>
   <ActionsPanel on:actionsPanel={(e) => { showSetupProductionButton = e.detail.showSetupProductionButton; }} />
 
@@ -307,6 +303,4 @@
     </div>
   {/if}
 </Screen>
-
-{/if}
 

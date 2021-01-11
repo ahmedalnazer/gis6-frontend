@@ -4,9 +4,9 @@
 </script>
 
 <header class={$status.level}>
-  <div class='logo'>
+  <a href='/' class='logo'>
     <img class='logo-image' src="/images/barnes logo-white ball.png" alt="barnes_logo" />
-  </div>
+  </a>
 
   <div class='status'>
     <div class='status-icon'>
