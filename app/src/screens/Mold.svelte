@@ -2,7 +2,7 @@
     import Card from "@smui/card";
     import { onMount, beforeUpdate, afterUpdate, onDestroy } from "svelte";
     export let mouldDataItem = { title: "", itemDesc: "", itemImageUrl: "" };
-    export let processDataItem = { title: "", itemDesc: "", itemImageUrl: "" };
+    export let processDataItem = { title: "Manage Process", itemDesc: "", itemImageUrl: "" };
     export let isLayoutView = false;
 
     const apiEndpointUrl = "http://localhost:8000"; // TODO: Move to env
@@ -26,7 +26,7 @@
             .then((response) => response.json())
             .then((data) => {
                 if (data.length) {
-                    processDataItem.title = data[0].name;
+                    // processDataItem.title = data[0].name;
                     processDataItem.itemDesc = data[0].part_name;
                     processDataItem.itemImageUrl = data[0].image;
                 }
