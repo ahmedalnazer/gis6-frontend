@@ -1,5 +1,5 @@
 <script>
-  import Screen from 'layout/screen'
+  import Screen from 'layout/Screen'
   import UserForm from './UserForm'
   import _ from 'data/language'
   import { updateUser } from 'data/user/actions'

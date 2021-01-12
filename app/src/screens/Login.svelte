@@ -1,5 +1,5 @@
 <script>
-  import Screen from 'layout/screen'
+  import Screen from 'layout/Screen'
   import api from 'data/api'
   import user, { users } from 'data/user'
   import _ from 'data/language'

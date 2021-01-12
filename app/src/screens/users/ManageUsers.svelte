@@ -1,5 +1,5 @@
 <script>
-  import Screen from 'layout/screen'
+  import Screen from 'layout/Screen'
   import { users } from 'data/user'
   import { deleteUser } from 'data/user/actions'
   import _ from 'data/language'
