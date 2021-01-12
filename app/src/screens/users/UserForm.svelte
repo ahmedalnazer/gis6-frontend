@@ -89,33 +89,33 @@
     <div class='input'>
       <label>{$_('Security Level / Role')}</label>
       <select bind:value={user.role}>
-        <option>{$_('Process Engineer')}</option>
-        <option>{$_('Operator')}</option>
-        <option>{$_('Setup')}</option>
-        <option>{$_('Plant Manager')}</option>
-        <option>{$_('Administrator')}</option>
+        <option value={3}>{$_('Process Engineer')}</option>
+        <option value={2}>{$_('Operator')}</option>
+        <option value={4}>{$_('Setup')}</option>
+        <option value={5}>{$_('Plant Manager')}</option>
+        <option value={1}>{$_('Administrator')}</option>
       </select>
     </div>
     <h4>{$_('Category')}</h4>
     <div class='checks'>
-      <CheckBox bind:checked={user.permissions.edit_process} label={$_('Edit Process')} />
-      <CheckBox bind:checked={user.permissions.process_temp_setpoint} label={$_('Process Temperature Setpoint')} />
+      <CheckBox bind:checked={user.can_edit_process} label={$_('Edit Process')} />
+      <CheckBox bind:checked={user.can_process_temperature} label={$_('Process Temperature Setpoint')} />
 
-      <CheckBox bind:checked={user.permissions.edit_hardware} label={$_('Edit Hardware')} />
-      <CheckBox bind:checked={user.permissions.automatic_manual} label={$_('Automatic - Manual Mode')} />
+      <CheckBox bind:checked={user.can_edit_hardware} label={$_('Edit Hardware')} />
+      <CheckBox bind:checked={user.can_set_automatic_manual_mode} label={$_('Automatic - Manual Mode')} />
 
-      <CheckBox bind:checked={user.permissions.edit_order} label={$_('Edit Order')} />
-      <CheckBox bind:checked={user.permissions.zone_off} label={$_('Turn Zone Off')} />
+      <CheckBox bind:checked={user.can_edit_order} label={$_('Edit Order')} />
+      <CheckBox bind:checked={user.can_turn_zone_off} label={$_('Turn Zone Off')} />
 
-      <CheckBox bind:checked={user.permissions.home_calibration} label={$_('Home / Calibration')} />
-      <CheckBox bind:checked={user.permissions.trim_setpoint} label={$_('Trim Setpoint')} />
+      <CheckBox bind:checked={user.can_edit_calibration} label={$_('Home / Calibration')} />
+      <CheckBox bind:checked={user.can_trim_setpoint} label={$_('Trim Setpoint')} />
 
 
-      <CheckBox bind:checked={user.permissions.lock_zone_off} label={$_('Lock Zone Off')} />
-      <CheckBox bind:checked={user.permissions.deviation_setpoint} label={$_('Deviation Setpoint')} />
+      <CheckBox bind:checked={user.can_lock_zone_off} label={$_('Lock Zone Off')} />
+      <CheckBox bind:checked={user.can_deviation_setpoint} label={$_('Deviation Setpoint')} />
 
-      <CheckBox bind:checked={user.permissions.zone_on} label={$_('Turn Zone On')} />
-      <CheckBox bind:checked={user.permissions.auto_standby} label={$_('Auto-standby Setpoint')} />
+      <CheckBox bind:checked={user.can_turn_zone_on} label={$_('Turn Zone On')} />
+      <CheckBox bind:checked={user.can_auto_standby} label={$_('Auto-standby Setpoint')} />
 
     </div>
   </div>
@@ -124,6 +124,7 @@
 <style lang="scss">
   .card.border {
     padding: 48px;
+    text-align: left;
   }
 
   .personal-inputs {

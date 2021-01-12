@@ -8,7 +8,7 @@ const loadUsers = async () => {
   const u = await api.get('/auth/user/list')
   if(u && u.length == 0) {
     try {
-      await api.post('auth/user/create/', {
+      await createUser({
         username: 'Admin',
         password: 'G!S64Ever.',
         email: 'admin@gis6.com',
@@ -39,11 +39,10 @@ loadUsers()
  * @param {string} user.username  -  User's "login id"
  * @param {string} user.password  -  User's cleartext password
  * @param {string} user.role  -  User's security level / role
- * @param {string[]} user.categories  -  List of user's categories
  */
 export const createUser = async user => {
   // post new user
-  const u = await api.post('/create-user', user)
+  const u = await api.post('auth/user/create/', user)
   if(u.error) {
     // notify user if there's an error
     notify.error(u.error)
