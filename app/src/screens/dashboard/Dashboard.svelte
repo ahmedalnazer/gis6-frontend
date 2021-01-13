@@ -5,7 +5,7 @@
   import Mold from "./Mold.svelte";
   import ManagementPart from "./ManagementPart.svelte";
   import OrderCard from "./OrderCard.svelte";
-  import DragIndicator from "./../style/images/DragIndicator.svelte";
+  import DragIndicator from "style/images/DragIndicator.svelte";
   import SortableList from "svelte-sortable-list";
 
   let isLayoutView = false;
@@ -61,8 +61,6 @@
 //   }
 
   .dashboard-body {
-    margin-left: 20px;
-    margin-right: 20px;
     padding: 8px;
     text-align: left;
   }
@@ -95,55 +93,14 @@
   }
 </style>
 
-<!--<style>
-
-	.zoneTemp {
-		font-size: 25px;
-		text-align: center;
-	}
-
-	.zoneInfo {
-		font-size: 14px;
-		color: #70777F;
-		text-align: center;
-		line-height: 19px;
-	}
-
-	.center {
-		margin: auto;
-		width: 80%;
-		padding: 10px;
-	}
-
-	.section-title {
-		font-weight: 600; 
-		padding: 5px;
-		color: #FFFFFF;
-		cursor: pointer;
-		margin-top: 10px;
-    margin-bottom: 3px;
-	}
-
-	.flexy {
-		display: flex;
-		flex-wrap: wrap;
-	}
-
-	.flexor-content {
-		flex-basis: 0;
-		height: 0;
-		flex-grow: 1;
-		overflow: auto;
-	}
-
-</style>-->
-
 <svelte:head>
   <title>Dashboard</title>
 </svelte:head>
 
 <Screen dashboard class='dashboard-screen'>
-  <ActionsPanel on:actionsPanel={(e) => { showSetupProductionButton = e.detail.showSetupProductionButton; }} />
+  <div slot='tasks'>
+    <ActionsPanel on:actionsPanel={(e) => { showSetupProductionButton = e.detail.showSetupProductionButton; }} />
+  </div>
 
   <!-- <div class="dashboard-body">
     {#if isLayoutView}

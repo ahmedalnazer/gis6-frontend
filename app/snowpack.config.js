@@ -31,7 +31,8 @@ module.exports = {
     "screens": "./src/screens",
     "data": "./src/data",
     "layout": "./src/layout",
-    "router": "./src/router"
+    "router": "./src/router",
+    "style": "./src/style"
     /* ... */
   },
 }

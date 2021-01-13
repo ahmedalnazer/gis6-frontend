@@ -46,7 +46,7 @@ document.body.addEventListener('click', e => {
   const href = e.target.getAttribute('href')
   if(!e.metaKey && href) {
 
-    if(!href.startsWith('http') && !href.startsWith('//')) {
+    if(href == '/' || (!href.startsWith('http') && !href.startsWith('//'))) {
 
       // prevent default behavior for local links
       e.preventDefault()

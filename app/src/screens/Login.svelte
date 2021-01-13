@@ -38,8 +38,6 @@
     <a href='/forgot-password'>{$_('Forgot Password?')}</a>
 
     <button class='button active'>{$_('Log In')}</button>
-
-    <i class='close' on:click={() => history.back()}>X</i>
   </form>
 </Screen>
 
@@ -55,6 +53,7 @@
   }
   form {
     width: 300px;
+    text-align: left;
     margin: 0 auto;
     display: flex;
     flex-direction: column;

@@ -4,8 +4,6 @@
     import language from "data/language/current";
     import ProgressBar from "@okrad/svelte-progressbar";
     import time from "data/time";
-    import axios from "axios";
-    // import CheckCircle from "./../style/images/CheckCircle.svelte";
     let goodpartfrom = 0;
     let goodparttotal = 0;
     let badpartcount = 0;

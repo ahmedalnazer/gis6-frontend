@@ -1,8 +1,8 @@
 <script>
     import { onMount, beforeUpdate, afterUpdate, onDestroy } from "svelte";
     import Card from "@smui/card";
-    import CheckCircle from "./../style/images/CheckCircle.svelte";
-    import io from "socket.io-client";
+    import CheckCircle from "style/images/CheckCircle.svelte";
+    import api from 'data/api'
     
     const apiEndpointUrl = "http://localhost:8000"; // TODO: Move to env
     let hrValue = {};
@@ -10,39 +10,32 @@
     let hrLowerZoneTemp = 0;
     let hrHigherZone = "";
     let hrLowerZone = "";
-    let socket = io(apiEndpointUrl);
-    let apitype = "API";
     export let isLayoutView = false;
     let orderId = 175;
     let longPollingInterval = 5000;
     
-    const getData = () => {
-        fetch(`${apiEndpointUrl}/system/${orderId}/getminmax`)
-            .then((response) => response.json())
-            .then((data) => {
-                hrLowerZoneTemp = (data.min / 100);
-                hrHigherZoneTemp = (data.max / 100);
-                hrLowerZone = data.min_zone;
-                hrHigherZone = data.max_zone;
-                hrValue = data;
-            });
+    const getData = async () => {
+        const data = await api.get(`system/${orderId}/getminmax`)
+        if(data) {
+            hrLowerZoneTemp = (data.min / 100);
+            hrHigherZoneTemp = (data.max / 100);
+            hrLowerZone = data.min_zone;
+            hrHigherZone = data.max_zone;
+            hrValue = data;
+        }
     };
 
+    let intvl
+
     onMount(() => {
-        if ((apitype = "API")) {
-            setInterval(function () {
-                // Use long polling
-                // TODO: Move api to common place
-                getData();
-            }, longPollingInterval);
-        } else {
-            socket.on("message", (data) => {
-                hrValue = data;
-                hrHigherZoneTemp = hrValue.HRHigherZoneTemp;
-                hrLowerZoneTemp = hrValue.HRLowerZoneTemp;
-            });
-        }
+        intvl = setInterval(function () {
+            // Use long polling
+            // TODO: Move api to common place
+            getData();
+        }, longPollingInterval);
     });
+
+    onDestroy(() => clearInterval(intvl))
 </script>
 
 <style>

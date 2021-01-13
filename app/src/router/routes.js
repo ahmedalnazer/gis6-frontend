@@ -1,4 +1,4 @@
-import Dashboard from 'screens/Dashboard'
+import Dashboard from 'screens/dashboard/Dashboard'
 import Login from 'screens/Login'
 import ForgotPassword from 'screens/ForgotPassword'
 import ManageUsers from 'screens/users/ManageUsers'

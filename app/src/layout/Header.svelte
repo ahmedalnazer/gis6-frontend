@@ -18,7 +18,7 @@
   </div>
 
   <div class='icon'>
-    <UpdateIcon />
+    <img src='/images/icons/icon-history.svg' />
   </div>
 </header>
 
@@ -29,7 +29,9 @@
     display: flex;
     align-items: center;
     font-size: 1.8em;
-    text-align: center;
+    z-index: 2;
+
+    box-shadow: 0 2px 4px rgba(0, 0, 0, .3);
 
     &.info {
       background: var(--green);
@@ -42,19 +44,9 @@
     }
   }
 
-  // .logo_ {
-  //   padding: 48px 32px;
-  //   min-height: 96px;
-  //   border-right: 2px solid black;
-  //   margin-right: 32px;
-  //   display: flex;
-  //   align-items: center;
-  //   justify-content: center;
-  // }
-
   .logo {
     // padding: 10px 10px 10px 20px;
-    padding: 16px 32px;
+    padding: 36px 40px;
     min-height: 96px;
     border-right: 2px solid black;
     margin-right: 32px;
