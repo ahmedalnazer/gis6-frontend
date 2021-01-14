@@ -39,14 +39,14 @@
         // min-height: 300px;
         padding: 40px;
         text-align: center;
-        height: 85%;
+        height: 50%;
     }
 
     .splash-logo-container img {
         vertical-align: middle;
         display: table-cell;
         background-position: center center;
-        top: 35%;
+        top: 50%;
         position: relative;
     }
 
@@ -92,7 +92,7 @@
 
     .splash-img {
         display: block;
-        width: 200px;
+        max-width: 200px;
         animation-name: spin;
         animation-duration: 2000ms;
         transition: transform 1s;
