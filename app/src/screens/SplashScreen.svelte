@@ -4,10 +4,10 @@
     const dispatchSetupProduction = createEventDispatcher();
     let showSplashScreen = false;
 
-    // setTimeout(function () {
-    //     showSplashScreen = false;
-    //     dispatchSetupProduction("splashScreen", { showSplashScreen });
-    // }, 3000);
+    setTimeout(function () {
+        showSplashScreen = false;
+        dispatchSetupProduction("splashScreen", { showSplashScreen });
+    }, 3000);
 </script>
 
 <style lang="scss">
