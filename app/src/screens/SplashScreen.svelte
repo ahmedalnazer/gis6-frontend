@@ -1,13 +1,13 @@
 <script>
-    import { fade, slide, scale } from "svelte/transition";
-    import { createEventDispatcher } from "svelte";
-    const dispatchSetupProduction = createEventDispatcher();
-    let showSplashScreen = false;
+    import { fade, slide, scale } from "svelte/transition"
+    import { createEventDispatcher } from "svelte"
+    const dispatchSetupProduction = createEventDispatcher()
+    let showSplashScreen = false
 
     setTimeout(function () {
-        showSplashScreen = false;
-        dispatchSetupProduction("splashScreen", { showSplashScreen });
-    }, 3000);
+      showSplashScreen = false
+      dispatchSetupProduction("splashScreen", { showSplashScreen })
+    }, 3000)
 </script>
 
 <style lang="scss">
@@ -18,6 +18,12 @@
         padding: 5px;
         height: 100%;
         font-family: Arial, Helvetica, sans-serif;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        z-index: 99999999;
     }
 
     .splash-header {

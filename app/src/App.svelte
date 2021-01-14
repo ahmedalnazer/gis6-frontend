@@ -14,7 +14,7 @@
 
 <Header />
 <!-- skip splash on internal screens -->
-{#if showSplashScreen && window.location.href == '/'}
+{#if showSplashScreen && window.location.pathname == '/'}
   <SplashScreen on:splashScreen={(e) => { showSplashScreen = e.detail.showSplashScreen }}/>
 {:else}
   <Router />
