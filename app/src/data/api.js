@@ -94,25 +94,24 @@ class API {
           notify.error(msg || 'Sorry, we seem to be having trouble connecting to the server')
         }
       }
-      fetch(`/${url}`, opts)
-        .then(async resp => {
-          if(resp && resp.status == 403) {
-            fail('Sorry, it seems like your admin session has expired, please try logging in again')
-            return reject(resp)
-          } else if(!resp || resp.status > 500) {
-            fail()
-            return reject(resp)
-          }
-          try {
-            resolve(resp.json().catch(e => reject(e)))
-          } catch (e) {
-            resolve(resp)
-          }
-        })
-        .catch(async err => {
+      try {
+        const resp = await fetch(`/${url}`, opts)
+        if (resp && resp.status == 403) {
+          fail('Sorry, it seems like your admin session has expired, please try logging in again')
+          return reject(resp)
+        } else if (!resp || resp.status > 500) {
           fail()
-          reject(err)
-        })
+          // return reject(resp)
+        }
+        try {
+          resolve(resp.json().catch(e => reject(e)))
+        } catch (e) {
+          resolve(resp)
+        }
+      } catch(e) {
+        fail()
+        // reject(err)
+      }
     })
   }
 
@@ -143,6 +142,42 @@ class API {
    */
   post = (url, data, options) => {
     return this.request(url, data, { ...options, method: 'POST' })
+  }
+
+  /**
+   * make PUT request, essentially contextualized fetch request
+   * @param {string} url  -  requested url, optionally beginning with '/'
+   * @param {Object} data  -  Object to be sent to the url
+   * @param {Object} options - configuration options
+   *
+   * @returns {Promise} returns POST request response
+   */
+  put = (url, data, options) => {
+    return this.request(url, data, { ...options, method: 'PUT' })
+  }
+
+  /**
+   * make PATCH request, essentially contextualized fetch request
+   * @param {string} url  -  requested url, optionally beginning with '/'
+   * @param {Object} data  -  Object to be sent to the url
+   * @param {Object} options - configuration options
+   *
+   * @returns {Promise} returns PATCH request response
+   */
+  patch = (url, data, options) => {
+    return this.request(url, data, { ...options, method: 'PATCH' })
+  }
+
+  /**
+   * make DELETE request, essentially contextualized fetch request
+   * @param {string} url  -  requested url, optionally beginning with '/'
+   * @param {Object} data  -  Object to be sent to the url
+   * @param {Object} options - configuration options
+   *
+   * @returns {Promise} returns DELETE request response
+   */
+  delete = (url, data, options) => {
+    return this.request(url, data, { ...options, method: 'DELETE' })
   }
 }
 

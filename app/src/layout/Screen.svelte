@@ -11,10 +11,6 @@
 
   let tasksEmpty
 
-  $: {
-    console.log(tasksEmpty)
-  }
-
 </script>
 
 
@@ -63,7 +59,7 @@
     z-index: 2;
     overflow: auto;
   }
-
+  
   .screen-header + .screen-body {
     padding-top: 16px;
   }

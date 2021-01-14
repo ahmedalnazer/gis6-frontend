@@ -1,21 +1,21 @@
 <script>
-  import Screen from "layout/Screen";
-  import ActionsPanel from "./ActionsPanel.svelte";
-  import Function from "./Function.svelte";
-  import Mold from "./Mold.svelte";
-  import ManagementPart from "./ManagementPart.svelte";
-  import OrderCard from "./OrderCard.svelte";
-  import DragIndicator from "style/images/DragIndicator.svelte";
-  import SortableList from "svelte-sortable-list";
+  import Screen from "layout/Screen"
+  import ActionsPanel from "./ActionsPanel.svelte"
+  import Function from "./Function.svelte"
+  import Mold from "./Mold.svelte"
+  import OrderCard from "./OrderCard.svelte"
+  import DragIndicator from "style/images/DragIndicator.svelte"
+  import SortableList from "svelte-sortable-list"
+  import Management from "./Management.svelte"
 
-  let isLayoutView = false;
+  let isLayoutView = false
   
-  let showSetupProductionButton = true;
+  let showSetupProductionButton = true
   let sectionData = [
     { id: 1, sectionName: "FUNCTIONS", itemOrder: 1 },
     { id: 2, sectionName: "MOLD", itemOrder: 2 },
     { id: 3, sectionName: "MANAGEMENT", itemOrder: 3 },
-  ];
+  ]
 
   let mouldData = [
     {
@@ -28,29 +28,12 @@
       itemDesc: "Black PP Left Door",
       itemImageUrl: "/images/moldimages/black_pp_left_door.png",
     },
-  ];
+  ]
 
-  let managementData = [
-    {
-      title: "View Change Log ",
-      itemDesc: "Modified 10/8/2020 12:45 PM",
-      itemImageUrl: "/images/moldimages/mx232.png",
-    },
-    {
-      title: "Historical Data ",
-      itemDesc: "Modified 10/9/2020 12:05 PM",
-      itemImageUrl: "/images/moldimages/black_pp_left_door.png",
-    },
-    {
-      title: "Diagnostics ",
-      itemDesc: "Modified 11/9/2020 1:05 PM",
-      itemImageUrl: "/images/moldimages/black_pp_left_door.png",
-    },
-  ];
 
   const sortSectionDataList = (ev) => {
-    sectionData = ev.detail;
-  };
+    sectionData = ev.detail
+  }
 
 </script>
 
@@ -91,6 +74,13 @@
   .panelItem:hover {
     opacity: 0.8;
   }
+
+  :global(.dashboard-body .card) {
+    background: white;
+    a {
+      color: inherit;
+    }
+  }
 </style>
 
 <svelte:head>
@@ -99,7 +89,7 @@
 
 <Screen dashboard class='dashboard-screen'>
   <div slot='tasks'>
-    <ActionsPanel on:actionsPanel={(e) => { showSetupProductionButton = e.detail.showSetupProductionButton; }} />
+    <ActionsPanel on:actionsPanel={(e) => { showSetupProductionButton = e.detail.showSetupProductionButton }} />
   </div>
 
   <!-- <div class="dashboard-body">
@@ -164,14 +154,7 @@
               </div>
             </div>
           {:else if item.sectionName == 'MANAGEMENT'}
-            <div style="padding:0px 0px 0px 0px;">
-              <div class="section-title">
-                <div class="dragIcon">
-                  <DragIndicator size="1.1em" />
-                </div>
-                <div>{item.sectionName}</div>
-              </div>
-            </div>
+            <Management />
           {/if}
         </div>
       </SortableList>
@@ -236,26 +219,7 @@
               </div>
             </div>
           {:else if sectionDataItem.sectionName == 'MANAGEMENT'}
-            <div style="padding:0px 0px 0px 0px;">
-              <div class="section-title">
-                <div class="dragIcon">
-                  <DragIndicator size="1.1em" />
-                </div>
-                <div>{sectionDataItem.sectionName}</div>
-              </div>
-
-              <div class="section-body">
-                <div style="display: flex;">
-                  {#each managementData as managementDataItem}
-                    <div style="width: 25%;">
-                      <div style="padding: 5px;">
-                        <ManagementPart {managementDataItem} />
-                      </div>
-                    </div>
-                  {/each}
-                </div>
-              </div>
-            </div>
+            <Management />
           {/if}
         </div>
       {/each}
