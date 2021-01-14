@@ -14,7 +14,16 @@
 </a>
 
 <style>
-  a {
-    color: inherit
+  a.card {
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+  }
+  .body {
+    flex: 1;
+  }
+  .footer {
+    display: flex;
+    justify-content: flex-end;
   }
 </style>

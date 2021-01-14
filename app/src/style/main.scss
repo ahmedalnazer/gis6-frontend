@@ -17,6 +17,11 @@ body {
   overflow: hidden;
 }
 
+body {
+  display: flex;
+  flex-direction: column;
+}
+
 .viewport {
   height: 100%;
   display: flex;

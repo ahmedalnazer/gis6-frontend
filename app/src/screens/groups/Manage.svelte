@@ -5,6 +5,7 @@
   import ZoneGroup from './ZoneGroup'
   import { Modal } from 'components'
   import GroupForm from './GroupForm'
+  import ZoneTasks from 'components/taskbars/ZoneTasks'
 
   let selectedGroup = null
   let selectedZones = []
@@ -19,11 +20,12 @@
     console.log(`CREATING NEW GROUP, name: ${newName}, color: ${newColor}`)
   }
 
-
-
 </script>
 
 <Screen title={$_('Manage Groups')}>
+  <div slot='tasks'>
+    <ZoneTasks />
+  </div>
   <div class='group-selector'>
     <div class='tab'>{$_('All Zones')}</div>
     {#each groups as group (group.id)}
