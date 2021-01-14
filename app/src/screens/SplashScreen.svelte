@@ -4,10 +4,10 @@
     const dispatchSetupProduction = createEventDispatcher();
     let showSplashScreen = false;
 
-    setTimeout(function () {
-        showSplashScreen = false;
-        dispatchSetupProduction("splashScreen", { showSplashScreen });
-    }, 3000);
+    // setTimeout(function () {
+    //     showSplashScreen = false;
+    //     dispatchSetupProduction("splashScreen", { showSplashScreen });
+    // }, 3000);
 </script>
 
 <style lang="scss">
@@ -36,9 +36,18 @@
     }
 
     .splash-logo-container {
-        min-height: 300px;
+        // min-height: 300px;
         padding: 40px;
         text-align: center;
+        height: 85%;
+    }
+
+    .splash-logo-container img {
+        vertical-align: middle;
+        display: table-cell;
+        background-position: center center;
+        top: 35%;
+        position: relative;
     }
 
     .splash-footer {
