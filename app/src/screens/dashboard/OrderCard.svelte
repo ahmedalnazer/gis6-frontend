@@ -8,6 +8,7 @@
     let goodparttotal = 0;
     let badpartcount = 0;
     let hoursleft = 0;
+    let intvl;
 
     const apiEndpointUrl = "http://localhost:8000"; // TODO: Move to env
     let apitype = "API";
@@ -49,7 +50,7 @@
             })
             .then((data) => {
                 if ((apitype = "API")) {
-                    setInterval(function () {
+                    intvl = setInterval(function () {
                         // Use long polling
                         // TODO: Move api to common place
                         getOrderCardData();
@@ -71,6 +72,9 @@
     const startOrderClick = () => {
         startOrder();
     };
+
+    onDestroy(() => clearInterval(intvl))
+
 </script>
 
 <style>
@@ -211,6 +215,12 @@
                     on:click={() => startOrderClick()}>
                     Start Order
                 </button>
+
+                <button
+                class="btn action-button action-button-raised actionBtn"
+                on:click={() => startOrderClick()}>
+                Manage Order
+            </button>
 
                 <!-- <div>
                     <br/>
