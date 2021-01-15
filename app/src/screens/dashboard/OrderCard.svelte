@@ -33,11 +33,11 @@
     const getOrderCardData = async (isInit) => {
         const data = await api.get(`${apiPrefix}/system`);
         if (data) {
-            debugger
             if (data.order_id == orderId) {
                 // For the first load show only few fields
                 if (isInit) {
                     goodparttotal = data.target;
+                    hoursleft = data.time_remain;
                 } else {
                     goodpartfrom = data.good_cycles;
                     goodparttotal = data.target;
@@ -46,8 +46,15 @@
                         (goodpartfrom * 100) / goodparttotal + 0.01,
                         0
                     );
+                    hoursleft = data.time_remain;
 
                     series = [progressStatus];
+
+                    console.log("progressStatus");
+                    console.log(progressStatus);
+                    if (progressStatus == 100) {
+                        orderStatus = "COMPLETE_ORDER";
+                    }
                 }
             }
         }
@@ -298,7 +305,11 @@
                         Complete Order
                     </button>
                 {:else if orderStatus == 'COMPLETE_ORDER'}
-                    <div />
+                    <button
+                        class="btn action-button action-button-raised actionBtn"
+                        on:click={() => orderActionClick(orderStatus)}>
+                        Complete Order
+                    </button>
                 {/if}
 
                 <button
