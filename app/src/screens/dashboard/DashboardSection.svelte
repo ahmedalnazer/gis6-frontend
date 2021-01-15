@@ -1,16 +1,11 @@
 <script>
-  import DragIndicator from 'style/images/DragIndicator'
+  import DragHeading from 'components/DragHeading'
   export let title
 </script>
 
 
 <div class='dashboard-section'>
-  <div class="section-title">
-    <div class="dragIcon">
-      <DragIndicator size="1.1em" />
-    </div>
-    <div>{title}</div>
-  </div>
+  <DragHeading>{title}</DragHeading>
 
   <div class="section-body">
     <slot />
