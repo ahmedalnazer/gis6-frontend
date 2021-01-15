@@ -14,13 +14,14 @@
     };
     export let isLayoutView = false;
 
+    const apiPrefix = "/api";
     let hasMoldData = false;
     let hasProcessData = false;
 
     let longPollingInterval = 5000;
 
     const getMoldData = async () => {
-        const data = await api.get("mold");
+        const data = await api.get(`${apiPrefix}/mold`);
         if (data && data.length) {
             // mouldDataItem.title = data[0].name;
             mouldDataItem.itemDesc = data[0].part_name;
@@ -30,7 +31,8 @@
     };
 
     const getProcessData = async () => {
-        const data = await api.get("process");
+        const data = await api.get(`${apiPrefix}/process`);
+
         if (data && data.length) {
             // processDataItem.title = data[0].name;
             processDataItem.itemDesc = data[0].part_name;
@@ -80,7 +82,7 @@
 
     .itemImage {
         width: 100%;
-        height: 350px;
+        min-height: 250px;
     }
 
     .layoutView {
@@ -135,7 +137,7 @@
                 <div class="flexy cardContainer">
                     <div class="flexor-content itemLeftContent">
                         <div>{mouldDataItem.title}</div>
-                        <div class="no-data">No data found</div>
+                        <div class="no-data">Loading..</div>
                     </div>
                 </div>
             </Card>
@@ -173,7 +175,7 @@
                 <div class="flexy cardContainer">
                     <div class="flexor-content itemLeftContent">
                         <div>{processDataItem.title}</div>
-                        <div class="no-data">No data found</div>
+                        <div class="no-data">Loading..</div>
                     </div>
                 </div>
             </Card>

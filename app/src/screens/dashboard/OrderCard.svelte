@@ -4,17 +4,22 @@
     import language from "data/language/current";
     import ProgressBar from "@okrad/svelte-progressbar";
     import time from "data/time";
+    import api from "data/api";
+
+    const apiPrefix = "/api";
+
     let goodpartfrom = 0;
     let goodparttotal = 0;
     let badpartcount = 0;
     let hoursleft = 0;
     let intvl;
 
-    const apiEndpointUrl = "http://localhost:8000"; // TODO: Move to env
+    const apiEndpointUrl = "http://localhost:8000/api"; // TODO: Move to env
     let apitype = "API";
     let longPollingInterval = 5000;
     let progressStatus = 0;
     let orderId = 175;
+    let orderStatus = "";
 
     const dateOptions = { year: "numeric", month: "short", day: "numeric" };
 
@@ -25,11 +30,15 @@
         },
     ];
 
-    const getOrderCardData = () => {
-        fetch(`${apiEndpointUrl}/system`)
-            .then((response) => response.json())
-            .then((data) => {
-                if (data.order_id == orderId) {
+    const getOrderCardData = async (isInit) => {
+        const data = await api.get(`${apiPrefix}/system`);
+        if (data) {
+            debugger
+            if (data.order_id == orderId) {
+                // For the first load show only few fields
+                if (isInit) {
+                    goodparttotal = data.target;
+                } else {
                     goodpartfrom = data.good_cycles;
                     goodparttotal = data.target;
                     badpartcount = 0;
@@ -40,10 +49,38 @@
 
                     series = [progressStatus];
                 }
-            });
+            }
+        }
+
+        // TODO: Remove the commented code after task is done
+        // fetch(`${apiEndpointUrl}/system`)
+        //     .then((response) => response.json())
+        //     .then((data) => {
+        //         if (data.order_id == orderId) {
+        //             goodpartfrom = data.good_cycles;
+        //             goodparttotal = data.target;
+        //             badpartcount = 0;
+        //             progressStatus = Math.round(
+        //                 (goodpartfrom * 100) / goodparttotal + 0.01,
+        //                 0
+        //             );
+
+        //             series = [progressStatus];
+        //         }
+        //     });
     };
 
-    const startOrder = () => {
+    const startOrder = async () => {
+        // const data = await api.put(`${apiPrefix}/order/${orderId}/start/`);
+        // if (data && data.length) {
+        //     if ((apitype = "API")) {
+        //         intvl = setInterval(function () {
+        //             // Use long polling
+        //             getOrderCardData(false);
+        //         }, longPollingInterval);
+        //     }
+        // }
+
         fetch(`${apiEndpointUrl}/order/${orderId}/start/`, { method: "PUT" })
             .then((response) => {
                 response.json();
@@ -52,29 +89,55 @@
                 if ((apitype = "API")) {
                     intvl = setInterval(function () {
                         // Use long polling
-                        // TODO: Move api to common place
-                        getOrderCardData();
+                        getOrderCardData(false);
                     }, longPollingInterval);
+
+                    orderStatus = "ORDER_STARTED";
                 }
+            })
+            .catch(function () {
+                console.log("error");
+            });
+    };
+
+    const pauseOrder = async () => {
+        fetch(`${apiEndpointUrl}/order/${orderId}/pause/`, { method: "PUT" })
+            .then((response) => {
+                response.json();
+            })
+            .then((data) => {
+                orderStatus = "PAUSED_ORDER";
+            })
+            .catch(function () {
+                console.log("error");
             });
     };
 
     onMount(() => {
-        // if ((apitype = "API")) {
-        //     setInterval(function () {
-        //         // Use long polling
-        //         // TODO: Move api to common place
-        //         getOrderCardData();
-        //     }, longPollingInterval);
-        // }
+        if ((apitype = "API")) {
+            getOrderCardData(true);
+        }
     });
 
-    const startOrderClick = () => {
-        startOrder();
+    const orderActionClick = (currentOrderStatus) => {
+        console.log(currentOrderStatus);
+        if (orderStatus == "") {
+            startOrder();
+            //TODO: Move orderStatus to after api success
+            // orderStatus = "ORDER_STARTED";
+        } else if (orderStatus == "ORDER_STARTED") {
+            pauseOrder();
+            // orderStatus = "PAUSED_ORDER";
+        } else if (orderStatus == "PAUSED_ORDER") {
+            orderStatus = "RESUME_ORDER";
+        } else if (orderStatus == "RESUME_ORDER") {
+            orderStatus = "COMPLETE_ORDER";
+        }
     };
 
-    onDestroy(() => clearInterval(intvl))
+    const manageOrderClick = () => {};
 
+    onDestroy(() => clearInterval(intvl));
 </script>
 
 <style>
@@ -210,17 +273,39 @@
         </div>
         <div class="sectionAction">
             <div style="float:right;">
-                <button
-                    class="btn action-button action-button-raised actionBtn"
-                    on:click={() => startOrderClick()}>
-                    Start Order
-                </button>
+                {#if orderStatus == ''}
+                    <button
+                        class="btn action-button action-button-raised actionBtn"
+                        on:click={() => orderActionClick(orderStatus)}>
+                        Start Order
+                    </button>
+                {:else if orderStatus == 'ORDER_STARTED'}
+                    <button
+                        class="btn action-button action-button-raised actionBtn"
+                        on:click={() => orderActionClick(orderStatus)}>
+                        Pause Order
+                    </button>
+                {:else if orderStatus == 'PAUSED_ORDER'}
+                    <button
+                        class="btn action-button action-button-raised actionBtn"
+                        on:click={() => orderActionClick(orderStatus)}>
+                        Resume Order
+                    </button>
+                {:else if orderStatus == 'RESUME_ORDER'}
+                    <button
+                        class="btn action-button action-button-raised actionBtn"
+                        on:click={() => orderActionClick(orderStatus)}>
+                        Complete Order
+                    </button>
+                {:else if orderStatus == 'COMPLETE_ORDER'}
+                    <div />
+                {/if}
 
                 <button
-                class="btn action-button action-button-raised actionBtn"
-                on:click={() => startOrderClick()}>
-                Manage Order
-            </button>
+                    class="btn action-button action-button-raised actionBtn"
+                    on:click={() => manageOrderClick()}>
+                    Manage Order
+                </button>
 
                 <!-- <div>
                     <br/>

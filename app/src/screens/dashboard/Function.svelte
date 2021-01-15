@@ -4,7 +4,8 @@
     import CheckCircle from "style/images/CheckCircle.svelte";
     import api from 'data/api'
     
-    const apiEndpointUrl = "http://localhost:8000"; // TODO: Move to env
+    const apiPrefix = "/api";
+    
     let hrValue = {};
     let hrHigherZoneTemp = 0;
     let hrLowerZoneTemp = 0;
@@ -15,7 +16,7 @@
     let longPollingInterval = 5000;
     
     const getData = async () => {
-        const data = await api.get(`system/${orderId}/getminmax`)
+        const data = await api.get(`${apiPrefix}/system/${orderId}/getminmax`)
         if(data) {
             hrLowerZoneTemp = (data.min / 100);
             hrHigherZoneTemp = (data.max / 100);
@@ -30,7 +31,6 @@
     onMount(() => {
         intvl = setInterval(function () {
             // Use long polling
-            // TODO: Move api to common place
             getData();
         }, longPollingInterval);
     });
