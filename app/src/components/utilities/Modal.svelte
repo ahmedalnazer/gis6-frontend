@@ -32,7 +32,7 @@
     height: 100%;
     background: rgba(0, 0, 0, .3);
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
   }
   .modal-wrapper {
@@ -41,6 +41,7 @@
     max-height: calc(100vh - 32px);
     overflow: scroll;
     width: 100%;
+    margin-top: 240px;
 
     .modal-body, .modal-header {
       padding: 32px;

@@ -1,27 +1,20 @@
 <script>
-  import Header from './Header'
-  import Footer from './Footer'
   import { goBack } from 'router/history'
   import IconBackArrow from 'style/images/icon_backarrow'
-
-  export let hideHeader = false
-  export let hideFooter = false
   export let dashboard = false
   export let title = ''
 
   let tasksEmpty
 
-  $: {
-    console.log(tasksEmpty)
-  }
-
 </script>
 
 
 <div {...$$restProps} class:hide-tasks={tasksEmpty} class="viewport {$$restProps.class || ''}">
-  {#if !hideHeader}
-    <Header />
-  {/if}
+  <div class='tasks'>
+    <slot name='tasks'>
+      <div bind:this={tasksEmpty} />
+    </slot>
+  </div>
   {#if !dashboard}
     <div class='screen-header'>
       <div class='back' on:click={goBack}>
@@ -30,17 +23,9 @@
       <h1>{title}</h1>
     </div>
   {/if}
-  <div class='tasks'>
-    <slot name='tasks'>
-      <div bind:this={tasksEmpty} />
-    </slot>
-  </div>
   <main class="screen-body">
     <slot />
   </main>
-  {#if !hideFooter}
-    <Footer />
-  {/if}
 </div>
 
 
@@ -63,7 +48,7 @@
     z-index: 2;
     overflow: auto;
   }
-
+  
   .screen-header + .screen-body {
     padding-top: 16px;
   }
@@ -74,6 +59,10 @@
     display: flex;
     align-items: center;
     padding: 32px 40px;
+
+    > :global(*) {
+      width: 100%;
+    }
 
     :global(.button) {
       background: linear-gradient(0deg, #3c4f69, #4f6483);

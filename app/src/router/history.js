@@ -41,12 +41,25 @@ export const goBack = () => {
 }
 
 
+function findLink(el) {
+  if (el.tagName == 'A' && el.getAttribute('href')) {
+    return el.getAttribute('href')
+  } else if (el.parentElement) {
+    return findLink(el.parentElement)
+  } else {
+    return null
+  }
+};
+
+
 // hijack links and push to history instead of default page load where applicable
 document.body.addEventListener('click', e => {
-  const href = e.target.getAttribute('href')
+  const href = findLink(e.target)
+  if(!href) return
+  
   if(!e.metaKey && href) {
 
-    if(href == '/' || (!href.startsWith('http') && !href.startsWith('//'))) {
+    if(href == '/' || !href.startsWith('http') && !href.startsWith('//')) {
 
       // prevent default behavior for local links
       e.preventDefault()
