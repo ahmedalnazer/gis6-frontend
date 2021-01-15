@@ -1,5 +1,6 @@
 <script>
-  import _zones from 'data/zones'
+  import DragHeading from 'components/DragHeading.svelte'
+import _zones from 'data/zones'
   import ZoneButton from './ZoneButton'
   export let group
   $: zones = group.id == 'unassigned' 
@@ -8,9 +9,7 @@
 </script>
 
 <div class='zone-group'>
-  <div class='group-heading'>
-    {group.name}
-  </div>
+  <DragHeading>{group.name}</DragHeading>
   <div class='zones'>
     {#each zones as zone (zone.id)}
       <ZoneButton zone={zone} active={false} />
