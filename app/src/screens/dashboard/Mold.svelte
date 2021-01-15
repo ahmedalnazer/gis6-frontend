@@ -14,6 +14,7 @@
     };
     export let isLayoutView = false;
 
+    const apiEndpointUrl = "http://localhost:8000"; // TODO: Move to env
     const apiPrefix = "/api";
     let hasMoldData = false;
     let hasProcessData = false;
@@ -21,24 +22,46 @@
     let longPollingInterval = 5000;
 
     const getMoldData = async () => {
-        const data = await api.get(`${apiPrefix}/mold`);
-        if (data && data.length) {
-            // mouldDataItem.title = data[0].name;
-            mouldDataItem.itemDesc = data[0].part_name;
-            mouldDataItem.itemImageUrl = data[0].image;
-            hasMoldData = true;
-        }
+        // const data = await api.get(`${apiPrefix}/mold`);
+        // if (data && data.length) {
+        //     // mouldDataItem.title = data[0].name;
+        //     mouldDataItem.itemDesc = data[0].part_name;
+        //     mouldDataItem.itemImageUrl = data[0].image;
+        //     hasMoldData = true;
+        // }
+
+        fetch(`${apiEndpointUrl}/mold`)
+            .then((response) => response.json())
+            .then((data) => {
+                if (data && data.length) {
+                    // mouldDataItem.title = data[0].name;
+                    mouldDataItem.itemDesc = data[0].part_name;
+                    mouldDataItem.itemImageUrl = data[0].image;
+                    hasMoldData = true;
+                }
+            });
     };
 
     const getProcessData = async () => {
-        const data = await api.get(`${apiPrefix}/process`);
+        // const data = await api.get(`${apiPrefix}/process`);
 
-        if (data && data.length) {
-            // processDataItem.title = data[0].name;
-            processDataItem.itemDesc = data[0].part_name;
-            processDataItem.itemImageUrl = data[0].image;
-            hasProcessData = true;
-        }
+        // if (data && data.length) {
+        //     // processDataItem.title = data[0].name;
+        //     processDataItem.itemDesc = data[0].part_name;
+        //     processDataItem.itemImageUrl = data[0].image;
+        //     hasProcessData = true;
+        // }
+
+        fetch(`${apiEndpointUrl}/process`)
+            .then((response) => response.json())
+            .then((data) => {
+                if (data && data.length) {
+                    // processDataItem.title = data[0].name;
+                    processDataItem.itemDesc = data[0].part_name;
+                    processDataItem.itemImageUrl = data[0].image;
+                    hasProcessData = true;
+                }
+            });
     };
 
     let intvl;
@@ -121,12 +144,12 @@
                         <div class="itemDesc">{mouldDataItem.itemDesc}</div>
                     </div>
                     {#if mouldDataItem.itemImageUrl !== ''}
-                    <div class="flexor-content itemImageUrl">
-                        <img
-                            src={mouldDataItem.itemImageUrl}
-                            alt=""
-                            class="itemImage" />
-                    </div>
+                        <div class="flexor-content itemImageUrl">
+                            <img
+                                src={mouldDataItem.itemImageUrl}
+                                alt=""
+                                class="itemImage" />
+                        </div>
                     {/if}
                 </div>
             </Card>
@@ -163,7 +186,7 @@
                                 alt=""
                                 class="itemImage" />
                         </div>
-                    <!-- {:else}
+                        <!-- {:else}
                         <div class="flexor-content itemImageUrl">No Image</div> -->
                     {/if}
                 </div>

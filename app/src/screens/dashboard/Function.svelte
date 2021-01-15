@@ -2,10 +2,11 @@
     import { onMount, beforeUpdate, afterUpdate, onDestroy } from "svelte";
     import Card from "@smui/card";
     import CheckCircle from "style/images/CheckCircle.svelte";
-    import api from 'data/api'
-    
+    import api from "data/api";
+
+    const apiEndpointUrl = "http://localhost:8000"; // TODO: Move to env
     const apiPrefix = "/api";
-    
+
     let hrValue = {};
     let hrHigherZoneTemp = 0;
     let hrLowerZoneTemp = 0;
@@ -14,19 +15,31 @@
     export let isLayoutView = false;
     let orderId = 175;
     let longPollingInterval = 5000;
-    
+
     const getData = async () => {
-        const data = await api.get(`${apiPrefix}/system/${orderId}/getminmax`)
-        if(data) {
-            hrLowerZoneTemp = (data.min / 100);
-            hrHigherZoneTemp = (data.max / 100);
-            hrLowerZone = data.min_zone;
-            hrHigherZone = data.max_zone;
-            hrValue = data;
-        }
+        // const data = await api.get(`${apiPrefix}/system/${orderId}/getminmax`)
+        // if(data) {
+        //     hrLowerZoneTemp = (data.min / 100);
+        //     hrHigherZoneTemp = (data.max / 100);
+        //     hrLowerZone = data.min_zone;
+        //     hrHigherZone = data.max_zone;
+        //     hrValue = data;
+        // }
+
+        fetch(`${apiEndpointUrl}/system/${orderId}/getminmax`)
+            .then((response) => response.json())
+            .then((data) => {
+                if (data) {
+                    hrLowerZoneTemp = data.min / 100;
+                    hrHigherZoneTemp = data.max / 100;
+                    hrLowerZone = data.min_zone;
+                    hrHigherZone = data.max_zone;
+                    hrValue = data;
+                }
+            });
     };
 
-    let intvl
+    let intvl;
 
     onMount(() => {
         intvl = setInterval(function () {
@@ -35,7 +48,7 @@
         }, longPollingInterval);
     });
 
-    onDestroy(() => clearInterval(intvl))
+    onDestroy(() => clearInterval(intvl));
 </script>
 
 <style>
