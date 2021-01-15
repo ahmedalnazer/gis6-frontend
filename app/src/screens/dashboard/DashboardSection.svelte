@@ -11,10 +11,3 @@
     <slot />
   </div>
 </div>
-
-<style>
-  .section-title {
-    display: flex;
-    margin-bottom: 16px;
-  }
-</style>

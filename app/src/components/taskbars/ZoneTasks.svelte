@@ -2,6 +2,7 @@
   import _ from "data/language"
 </script>
 
+
 <div class='buttons'>
   <div class='button'>
     <div class='icon circle' />
@@ -25,6 +26,7 @@
     {$_('Setpoint')}
   </div>
 </div>
+
 
 <style lang='scss'>
   $white: #F5F6F9;

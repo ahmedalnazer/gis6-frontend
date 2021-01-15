@@ -8,7 +8,6 @@
   export let selection = []
 
   const toggle = id => {
-    console.log('toggling id', id)
     if(selection.includes(id)) {
       selection = selection.filter(x => x != id)
     } else {

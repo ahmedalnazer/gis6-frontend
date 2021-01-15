@@ -8,10 +8,8 @@
   import ZoneTasks from 'components/taskbars/ZoneTasks'
 
   let selectedGroup = null
-  let selectedZones = []
 
   $: groups = selectedGroup ? [ selectedGroup ] : $_groups.concat([ { id: 'unassigned', name: 'Unassigned' } ])
-
 
   let creating = false
   let newName, newColor
@@ -22,7 +20,18 @@
 
   let selection = {}
 
-  $: console.log(selection)
+  const clearSelection = () => {
+    for(let key of Object.keys(selection)) {
+      selection[key] = []
+    }
+  }
+
+  $: selectedZones = Object.keys(selection)
+    .map(x => selection[x].map(zone => ({ zone, group: x })))
+    .reduce((all, arr) => all.concat(arr), [])
+
+  $: console.log(selection, selectedZones)
+  
 </script>
 
 <Screen title={$_('Manage Groups')}>
@@ -36,6 +45,9 @@
     {/each}
   </div>
   <div class='tools'>
+    {#if selectedZones.length}
+      <span class='link' on:click={clearSelection}>{$_('Clear Selection')}</span>
+    {/if}
     <span class='link' on:click={() => creating = true}>{$_('Create Group')}</span>
   </div>
 
