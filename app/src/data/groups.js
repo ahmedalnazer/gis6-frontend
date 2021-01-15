@@ -44,5 +44,19 @@ export const defaultNames = [
 ]
 
 export const groupColors = [
-
+  '#B2DFDB',
+  '#4DB6AC',
+  '#009688',
+  '#00796B',
+  '#004D40',
+  '#D1C4E9',
+  '#9575CD',
+  '#673AB7',
+  '#512DA8',
+  '#311B92',
+  '#F8BBD0',
+  '#F06292',
+  '#E91E63',
+  '#C2185B',
+  '#880E4F'
 ]
