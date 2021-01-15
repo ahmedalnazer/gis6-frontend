@@ -43,6 +43,12 @@
   .zone-button {
     box-shadow: var(--shadow);
     border-radius: 0px 0px 3px 3px;
+    margin: 2px;
     margin-bottom: 8px;
+  }
+  .active {
+    border: 2px solid var(--selected);
+    margin: 0px;
+    margin-bottom: 6px
   }
 </style>

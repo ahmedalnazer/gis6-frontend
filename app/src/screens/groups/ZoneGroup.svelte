@@ -1,8 +1,21 @@
 <script>
   import DragHeading from 'components/DragHeading.svelte'
-import _zones from 'data/zones'
+  import _zones from 'data/zones'
   import ZoneButton from './ZoneButton'
+
+
   export let group
+  export let selection = []
+
+  const toggle = id => {
+    console.log('toggling id', id)
+    if(selection.includes(id)) {
+      selection = selection.filter(x => x != id)
+    } else {
+      selection = selection.concat(id)
+    }
+  }
+  
   $: zones = group.id == 'unassigned' 
     ? $_zones.filter(x => !x.groups || x.groups.length == 0)
     : $_zones.filter(x => x.groups && x.groups.contains(group && group.id)) 
@@ -12,7 +25,11 @@ import _zones from 'data/zones'
   <DragHeading>{group.name}</DragHeading>
   <div class='zones'>
     {#each zones as zone (zone.id)}
-      <ZoneButton zone={zone} active={false} />
+      <ZoneButton 
+        zone={zone} 
+        active={selection.includes(zone.id)} 
+        on:click={() => toggle(zone.id)}
+      />
     {/each}
   </div>
 </div>

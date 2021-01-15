@@ -20,6 +20,9 @@
     console.log(`CREATING NEW GROUP, name: ${newName}, color: ${newColor}`)
   }
 
+  let selection = {}
+
+  $: console.log(selection)
 </script>
 
 <Screen title={$_('Manage Groups')}>
@@ -37,7 +40,7 @@
   </div>
 
   {#each groups as group (group.id)}
-    <ZoneGroup group={group} />
+    <ZoneGroup group={group} bind:selection={selection[group.id]}/>
   {/each}
 </Screen>
 
