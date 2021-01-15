@@ -14,7 +14,7 @@
     let hoursleft = 0;
     let intvl;
 
-    const apiEndpointUrl = "http://localhost:8000/api"; // TODO: Move to env
+    const apiEndpointUrl = "http://localhost:8000"; // TODO: Move to env
     let apitype = "API";
     let longPollingInterval = 5000;
     let progressStatus = 0;
@@ -31,9 +31,38 @@
     ];
 
     const getOrderCardData = async (isInit) => {
-        const data = await api.get(`${apiPrefix}/system`);
-        if (data) {
-            if (data.order_id == orderId) {
+        // const data = await api.get(`${apiPrefix}/system`);
+        // if (data) {
+        //     if (data.order_id == orderId) {
+        //         // For the first load show only few fields
+        //         if (isInit) {
+        //             goodparttotal = data.target;
+        //             hoursleft = data.time_remain;
+        //         } else {
+        //             goodpartfrom = data.good_cycles;
+        //             goodparttotal = data.target;
+        //             badpartcount = 0;
+        //             progressStatus = Math.round(
+        //                 (goodpartfrom * 100) / goodparttotal + 0.01,
+        //                 0
+        //             );
+        //             hoursleft = data.time_remain;
+
+        //             series = [progressStatus];
+
+        //             if (progressStatus == 100) {
+        //                 clearInterval(intvl);
+        //                 orderStatus = "COMPLETE_ORDER";
+        //             }
+        //         }
+        //     }
+        // }
+
+        // TODO: using fetch for now
+        fetch(`${apiEndpointUrl}/system`)
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.order_id == orderId) {
                 // For the first load show only few fields
                 if (isInit) {
                     goodparttotal = data.target;
@@ -50,14 +79,13 @@
 
                     series = [progressStatus];
 
-                    console.log("progressStatus");
-                    console.log(progressStatus);
                     if (progressStatus == 100) {
+                        clearInterval(intvl);
                         orderStatus = "COMPLETE_ORDER";
                     }
                 }
             }
-        }
+            });
 
         // TODO: Remove the commented code after task is done
         // fetch(`${apiEndpointUrl}/system`)
