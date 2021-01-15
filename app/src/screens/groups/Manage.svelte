@@ -6,6 +6,7 @@
   import { Modal } from 'components'
   import GroupForm from './GroupForm'
   import ZoneTasks from 'components/taskbars/ZoneTasks'
+import { startSelection } from './selectZones'
 
   let selectedGroup = null
 
@@ -31,29 +32,40 @@
     .reduce((all, arr) => all.concat(arr), [])
 
   $: console.log(selection, selectedZones)
-  
+
+  const boxSelect = nodes => {
+    console.log(nodes)
+  }
+
+
 </script>
 
 <Screen title={$_('Manage Groups')}>
   <div slot='tasks'>
     <ZoneTasks />
   </div>
-  <div class='group-selector'>
-    <div class='tab'>{$_('All Zones')}</div>
+
+
+  <div class='selection-area' on:mousedown={e => startSelection(e, boxSelect)}>
+    <div class='group-selector'>
+      <div class='tab'>{$_('All Zones')}</div>
+      {#each groups as group (group.id)}
+        <div class='tab'>{group.name}</div>
+      {/each}
+    </div>
+    <div class='tools'>
+
+      {#if selectedZones.length}
+        <span class='link' on:click={clearSelection}>{$_('Clear Selection')}</span>
+      {/if}
+      <span class='link' on:click={() => creating = true}>{$_('Create Group')}</span>
+
+    </div>
     {#each groups as group (group.id)}
-      <div class='tab'>{group.name}</div>
+      <ZoneGroup group={group} bind:selection={selection[group.id]}/>
     {/each}
   </div>
-  <div class='tools'>
-    {#if selectedZones.length}
-      <span class='link' on:click={clearSelection}>{$_('Clear Selection')}</span>
-    {/if}
-    <span class='link' on:click={() => creating = true}>{$_('Create Group')}</span>
-  </div>
 
-  {#each groups as group (group.id)}
-    <ZoneGroup group={group} bind:selection={selection[group.id]}/>
-  {/each}
 </Screen>
 
 {#if creating}
