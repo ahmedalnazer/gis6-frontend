@@ -1,5 +1,6 @@
 import { writable, derived } from 'svelte/store'
 import api from 'data/api'
+import { getId } from './tools'
 
 const _groups = writable([])
 
@@ -15,7 +16,29 @@ const groups = derived([ _groups, group_order ], ([ $_groups, $group_order ]) =>
 
 
 groups.reload = async () => {
-  _groups.set(await api.get('zonegroups'))
+  console.log('reloading')
+  let zoneGroups = await api.get('zonegroups')
+
+  // TODO: remove dummy groups
+  if (zoneGroups.length == 0) {
+    await api.post('zonegroups', {
+      name: `Tips`,
+      color: '#E91E63'
+    })
+    await api.post('zonegroups', {
+      name: `Manifold`,
+      color: '#004D40'
+    })
+    await api.post('zonegroups', {
+      name: `Other`,
+      color: '#311B92'
+    })
+    zoneGroups = await api.get('zones')
+  }
+
+  console.log(zoneGroups)
+
+  _groups.set(zoneGroups)
 }
 
 groups.create = async group => {
@@ -33,6 +56,7 @@ groups.delete = async group => {
   await groups.reload()
 }
 
+groups.reload()
 
 export default groups
 

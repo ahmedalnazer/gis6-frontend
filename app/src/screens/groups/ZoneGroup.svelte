@@ -1,5 +1,6 @@
 <script>
   import DragHeading from 'components/DragHeading.svelte'
+  import _ from 'data/language'
   import _zones from 'data/zones'
   import ZoneButton from './ZoneButton'
 
@@ -17,26 +18,29 @@
   
   $: zones = group.id == 'unassigned' 
     ? $_zones.filter(x => !x.groups || x.groups.length == 0)
-    : $_zones.filter(x => x.groups && x.groups.contains(group && group.id)) 
+    : $_zones.filter(x => x.groups && x.groups.includes(group && group.id)) 
 </script>
 
 <div class='zone-group'>
   <DragHeading>{group.name}</DragHeading>
+  {#if zones.length == 0}
+      <p class='muted'>{$_('No zones have been assigned to this group')}</p>
+  {/if}
   <div class='zones'>
     {#each zones as zone (zone.id)}
-      <ZoneButton 
+      <ZoneButton
         zone={zone} 
         active={selection.includes(zone.id)} 
         on:click={() => toggle(zone.id)}
       />
     {/each}
   </div>
+  
 </div>
 
 <style>
-  .zones {
-    display: grid;
-    grid-template-columns: repeat(8, 1fr);
-    grid-gap: 8px;
+  .muted {
+    padding: 16px;
+    margin-bottom: 16px;
   }
 </style>

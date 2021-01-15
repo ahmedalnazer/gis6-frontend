@@ -3,3 +3,4 @@ export { default as Collapsible } from './widgets/Collapsible'
 
 export { default as Input } from './input/Input'
 export { default as CheckBox } from './input/CheckBox'
+export { default as Icon } from './Icon'
