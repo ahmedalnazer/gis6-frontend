@@ -4,19 +4,12 @@
   export let active
 
   let tabs = []
-  $: {
-    tabs = []
-    for(let x of zone.groups || []) {
-      const group = $groups.find(group => x.id == group.id)
-      if(group) {
-        tabs.push(group.color)
-      }
-    }
-    if(tabs.length == 0) {
-      tabs.push('#00E5FF')
-    }
-  }
+
+  $: tabs = zone.groups && zone.groups.length
+    ? $groups.filter(x => (zone.groups || []).includes(x.id) ).map(x => x.color)
+    : [ '#00E5FF' ]
 </script>
+
 
 <div on:click class:active class='zone-button'>
   <div class='group-colors'>
@@ -28,6 +21,7 @@
     {zone.name}
   </div>
 </div>
+
 
 <style>
   .group-colors {

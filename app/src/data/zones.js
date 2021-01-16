@@ -1,7 +1,14 @@
 import { writable, derived } from 'svelte/store'
 import api from 'data/api'
 
-const zones = writable([])
+const rawZones = writable([])
+
+const zones = derived([ rawZones ], ([ $raw ]) => {
+  let sorted = [ ...$raw ]
+  var collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' })
+  sorted.sort((a,b) => collator.compare(a.name, b.name))
+  return sorted
+})
 
 
 zones.reload = async () => {
@@ -18,7 +25,7 @@ zones.reload = async () => {
     z = await api.get('zones')
   }
 
-  zones.set(z)
+  rawZones.set(z)
 }
 
 zones.create = async zone => {
@@ -26,9 +33,9 @@ zones.create = async zone => {
   await zones.reload()
 }
 
-zones.update = async zone => {
+zones.update = async (zone, options = {}) => {
   await api.patch('zones', zone)
-  await zones.reload()
+  if(!options.skipReload) await zones.reload()
 }
 
 zones.delete = async zone => {

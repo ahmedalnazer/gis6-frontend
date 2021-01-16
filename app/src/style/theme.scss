@@ -5,6 +5,7 @@
   --primary: #358cca;
   // alias
   --lightBlue: #358cca;
+  --darkBlue: #011F3E;
   --selected: #FFE503;
   --green: #017D02;
   --pale: #f5f6f9;
@@ -12,6 +13,11 @@
   --danger: #b32024;
   --muted: #aaa;
   --grayBorder: #aaa;
+  --gray: #ddd;
+
+
+  --textMain: var(--darkBlue);
+  --textSecondary: #70777F;
 
 
   // box-shadow
@@ -21,6 +27,7 @@
 body {
   font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
   font-weight: 300;
+  color: --textMain;
 }
 
 a, .link {
@@ -52,6 +59,13 @@ a, .link {
   &.blue {
     background: var(--blue);
     color: white;
+  }
+
+  &.disabled {
+    background: var(--gray);
+    color: white;
+    pointer-events: none;
+    border: 1px solid var(--gray);
   }
 }
 
@@ -92,3 +106,6 @@ input, select {
   color: var(--muted);
 }
 
+.danger {
+  color: var(--danger);
+}

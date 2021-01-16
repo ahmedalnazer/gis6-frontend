@@ -1,5 +1,6 @@
 <script>
   import { slide, fade } from 'svelte/transition'
+  import { Icon } from 'components'
   export let onClose
   export let title
 </script>
@@ -14,7 +15,9 @@
         {/if}
         <slot name='header' />
       </div>
-      <div class='close' on:click={onClose}>X</div>
+      <div class='close' on:click={onClose}>
+        <Icon icon='close' />
+      </div>
     </div>
     <div class='modal-body'>
       <slot />
@@ -35,13 +38,14 @@
     align-items: flex-start;
     justify-content: center;
   }
+
   .modal-wrapper {
     background: white;
     border-radius: 4px;
     max-height: calc(100vh - 32px);
     overflow: scroll;
     width: 100%;
-    margin-top: 240px;
+    margin-top: 280px;
 
     .modal-body, .modal-header {
       padding: 32px;
@@ -49,6 +53,9 @@
 
     .modal-header {
       padding-bottom: 0;
+      :global(.icon) {
+        width: 24px;
+      }
     }
 
     .modal-header {
