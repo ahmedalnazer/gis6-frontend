@@ -5,6 +5,7 @@ import ManageUsers from 'screens/users/ManageUsers'
 import AddUser from 'screens/users/AddUser'
 import UserProfile from 'screens/users/UserProfile'
 import GroupManagement from 'screens/groups/Manage'
+import EditGroup from 'screens/groups/EditGroup'
 
 /**
  *
@@ -22,7 +23,8 @@ const routes = {
   '/manage-users': ManageUsers,
   '/add-user': AddUser,
   '/user-profile/:userId': UserProfile,
-  '/group-management': GroupManagement
+  '/group-management': GroupManagement,
+  '/edit-group': EditGroup
 }
 
 export default routes

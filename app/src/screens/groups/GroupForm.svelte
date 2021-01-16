@@ -1,6 +1,7 @@
 <script>
   import { Input } from 'components'
   import { defaultNames, groupColors } from 'data/groups'
+  import EditGroup from 'screens/groups/EditGroup'
 
   /**
    * defaultNames contains the list of names for the dropdown
@@ -18,6 +19,7 @@
 </script>
 
 <form on:submit|preventDefault={onSubmit}>
-  CREATE GROUP
-  <Input value={name} on:change={e => name = e.target.value} />
+  <h1>CREATE GROUP</h1>
+  <EditGroup />
+  <!-- <Input value={name} on:change={e => name = e.target.value} /> -->
 </form>
