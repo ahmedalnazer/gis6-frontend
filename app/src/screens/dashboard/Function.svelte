@@ -3,6 +3,7 @@
     import Card from "@smui/card";
     import CheckCircle from "style/images/CheckCircle.svelte";
     import api from "data/api";
+    export let isLayoutView = false;
 
     const apiEndpointUrl = "http://localhost:8000"; // TODO: Move to env
     const apiPrefix = "/api";
@@ -12,7 +13,6 @@
     let hrLowerZoneTemp = 0;
     let hrHigherZone = "";
     let hrLowerZone = "";
-    export let isLayoutView = false;
     let orderId = 175;
     let longPollingInterval = 5000;
 

@@ -23,9 +23,22 @@
 
   let newName, newColor
 
-  const createGroup = () => {
-    creating = false
-    console.log(`CREATING NEW GROUP, name: ${newName}, color: ${newColor}`)
+  const createGroup = async () => {
+    creating = false;
+    debugger
+    // let newGrp = {name: newName, color: "newColor", id: Math.random()};
+    let newGrp = {name: newName, color: "newColor", id: Math.random()};
+    await groups.create(newGrp, { skipReload: true })
+    // await groups.update([...$groups, newGrp], { skipReload: true })
+
+    // await groups.update(currGrp => {
+    //   return [newGrp, ...currGrp];
+    // }, { skipReload: true })
+
+    await groups.reload()
+    
+    console.log($groups);
+    // console.log(`CREATING NEW GROUP, name: ${newName}, color: ${newColor}`)
   }
 
   // selection when sorted by groups
@@ -108,6 +121,7 @@
       {#if !selectedGroup}
         <CheckBox label={$_('Show Groups')} bind:checked={sortGroups} />
       {/if}
+
       {#if selectedZones.length}
         <span class='link' on:click={clearSelection}>{$_('Clear Selection')}</span>
         <span class='link' on:click={() => creating = true}>{$_('Create Group')}</span>
@@ -115,6 +129,7 @@
         <span class='link' on:click={() => removing = true}>{$_('Remove from Group')}</span>
       {/if}
     </div>
+
     {#if !selectedGroup && sortGroups}
 
       {#each displayedGroups as group (group.id)}
@@ -141,7 +156,7 @@
 
 {#if creating}
   <Modal onClose={() => creating = false}>
-    <GroupForm bind:name={newName} bind:color={newColor} onSubmit={createGroup}/>
+    <GroupForm onClose={() => { console.log(newName); creating = false; createGroup() }} bind:name={newName} bind:color={newColor} bind:groupList={displayedGroups}  onSubmit={createGroup}/>
   </Modal>
 {/if}
 
@@ -184,5 +199,9 @@
       background: var(--darkBlue);
       color: white;
     }
+  }
+
+  .link {
+    cursor: pointer;
   }
 </style>

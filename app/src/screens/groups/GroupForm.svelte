@@ -1,5 +1,5 @@
 <script>
-  import { Input } from 'components'
+  // import { Input } from 'components'
   import { defaultNames, groupColors } from 'data/groups'
   import EditGroup from 'screens/groups/EditGroup'
 
@@ -10,6 +10,8 @@
   export let onSubmit
   export let name = ''
   export let color = 1
+  export let groupList = []
+  export let onClose
 
   /**
    * name and color are bound to vars in the parent component, so all we 
@@ -20,6 +22,6 @@
 
 <form on:submit|preventDefault={onSubmit}>
   <h1>CREATE GROUP</h1>
-  <EditGroup />
+  <EditGroup {groupList} onClose={onClose} bind:name={name} bind:color={color} />
   <!-- <Input value={name} on:change={e => name = e.target.value} /> -->
 </form>
