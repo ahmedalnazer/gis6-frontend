@@ -33,7 +33,11 @@ groups.reload = async () => {
       name: `Other`,
       color: '#311B92'
     })
-    zoneGroups = await api.get('zones')
+    await api.post('zonegroups', {
+      name: `Test`,
+      color: '#4DB6AC'
+    })
+    zoneGroups = await api.get('zonegroups')
   }
 
   console.log(zoneGroups)

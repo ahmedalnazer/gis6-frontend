@@ -26,5 +26,6 @@
   }
   .title {
     text-transform: uppercase;
+    flex: 1;
   }
 </style>

@@ -27,14 +27,14 @@
 
   // Create group and assign zone
   const createGroup = async () => {
-    creating = false;
-    let newGrp = {name: newName, color: newColor};
+    creating = false
+    let newGrp = { name: newName, color: newColor }
 
     await groups.create(newGrp, { skipReload: true })
     await groups.reload()
     
-    let selGrp = displayedGroups.filter(x => x.name == newName);
-    let _zones = $zones.filter(x => {return activeSelection.includes(x.id);})
+    let selGrp = displayedGroups.filter(x => x.name == newName)
+    let _zones = $zones.filter(x => {return activeSelection.includes(x.id)})
 
     for(let z of _zones) {
       z.groups = (z.groups || []).concat(selGrp[0].id)
@@ -45,14 +45,14 @@
     await zones.reload()
 
     //Reset for next input
-    newName = "";
-    newColor = "";
+    newName = ""
+    newColor = ""
   }
 
   const editGroup = async () => {
-    editing = false;
+    editing = false
     await groups.update(currState => {
-      console.log(currState);
+      console.log(currState)
       let editGrp = currState.filter(x => x.id == editGroupId)
       if (editGrp.length) {
         editGrp[0].name = "Test"
@@ -111,6 +111,8 @@
     clearSelection()
   }
 
+  let openGroups = {}
+
 </script>
 
 <Screen title={$_('Manage Groups')}>
@@ -157,7 +159,7 @@
     {#if !selectedGroup && sortGroups}
 
       {#each displayedGroups as group (group.id)}
-        <ZoneGroup group={group} bind:selection={selection[group.id]}/>
+        <ZoneGroup bind:open={openGroups[group.id]} group={group} bind:selection={selection[group.id]}/>
       {/each}
 
     {:else}
@@ -192,13 +194,13 @@
 {/if}
 
 {#if adding}
-  <Modal title={$_('Add to Group')} onClose={() => adding = false}>
+  <Modal title={$_('Add to Group')} onClose={() => {clearSelection(); adding = false}}>
     <ModifyZones zones={zonesToModify} onCommit={commitModify} adding />
   </Modal>
 {/if}
 
 {#if removing}
-  <Modal title={$_('Remove from Group')} onClose={() => removing = false}>
+  <Modal title={$_('Remove from Group')} onClose={() => {clearSelection(); removing = false}}>
     <ModifyZones zones={zonesToModify} onCommit={commitModify} />
   </Modal>
 {/if}

@@ -5,8 +5,10 @@
 
   let tabs = []
 
-  $: tabs = zone.groups && zone.groups.length
-    ? $groups.filter(x => (zone.groups || []).includes(x.id) ).map(x => x.color)
+  $: zoneGroups = (zone.groups || []).map(x => $groups.find(y => y.id == x)).filter(x => !!x)
+
+  $: tabs = zoneGroups.length
+    ? zoneGroups.map(x => x.color)
     : [ '#00E5FF' ]
 </script>
 
