@@ -148,6 +148,19 @@
             });
     };
 
+    const resumeOrder = async () => {
+        fetch(`${apiEndpointUrl}/order/${orderId}/resume/`, { method: "PUT" })
+            .then((response) => {
+                response.json();
+            })
+            .then((data) => {
+                orderStatus = "RESUME_ORDER";
+            })
+            .catch(function () {
+                console.log("error");
+            });
+    };
+
     onMount(() => {
         if ((apitype = "API")) {
             getOrderCardData(true);
@@ -164,7 +177,8 @@
             pauseOrder();
             // orderStatus = "PAUSED_ORDER";
         } else if (orderStatus == "PAUSED_ORDER") {
-            orderStatus = "RESUME_ORDER";
+            resumeOrder();
+            // orderStatus = "RESUME_ORDER";
         } else if (orderStatus == "RESUME_ORDER") {
             orderStatus = "COMPLETE_ORDER";
         }
