@@ -16,6 +16,7 @@
   let sortGroups = true
 
   $: displayedGroups = selectedGroup ? [ selectedGroup ] : $groups.concat([ { id: 'unassigned', name: 'Unassigned' } ])
+  // $: console.log(`disp grps: ${displayedGroups}`);
 
   let creating = false
   let adding = false
@@ -23,22 +24,28 @@
 
   let newName, newColor
 
+  // Create group and assign zone
   const createGroup = async () => {
     creating = false;
-    debugger
-    // let newGrp = {name: newName, color: "newColor", id: Math.random()};
-    let newGrp = {name: newName, color: "newColor", id: Math.random()};
+    let newGrp = {name: newName, color: newColor};
+
     await groups.create(newGrp, { skipReload: true })
-    // await groups.update([...$groups, newGrp], { skipReload: true })
-
-    // await groups.update(currGrp => {
-    //   return [newGrp, ...currGrp];
-    // }, { skipReload: true })
-
     await groups.reload()
     
-    console.log($groups);
-    // console.log(`CREATING NEW GROUP, name: ${newName}, color: ${newColor}`)
+    let selGrp = displayedGroups.filter(x => x.name == newName);
+    let _zones = $zones.filter(x => {return activeSelection.includes(x.id);})
+
+    for(let z of _zones) {
+      z.groups = (z.groups || []).concat(selGrp[0].id)
+      z.groups = [ ... new Set(z.groups) ]
+      await zones.update(z, { skipReload: true })
+    }
+
+    await zones.reload()
+
+    //Reset for next input
+    newName = "";
+    newColor = "";
   }
 
   // selection when sorted by groups
@@ -156,7 +163,7 @@
 
 {#if creating}
   <Modal onClose={() => creating = false}>
-    <GroupForm onClose={() => { console.log(newName); creating = false; createGroup() }} bind:name={newName} bind:color={newColor} bind:groupList={displayedGroups}  onSubmit={createGroup}/>
+    <GroupForm onClose={() => { creating = false; createGroup() }} bind:name={newName} bind:color={newColor} bind:groupList={displayedGroups}  onSubmit={createGroup}/>
   </Modal>
 {/if}
 

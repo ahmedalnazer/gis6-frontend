@@ -7,11 +7,11 @@
    * defaultNames contains the list of names for the dropdown
    */
 
-  export let onSubmit
-  export let name = ''
-  export let color = 1
-  export let groupList = []
-  export let onClose
+  export let onSubmit;
+  export let name = "";
+  export let color = "";
+  export let groupList = [];
+  export let onClose;
 
   /**
    * name and color are bound to vars in the parent component, so all we 

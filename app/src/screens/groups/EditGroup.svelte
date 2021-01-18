@@ -1,11 +1,15 @@
 <script>
+    import groups from "data/groups";
     import { defaultNames, groupColors } from "data/groups";
     import { Input } from "components";
     import { get_binding_group_value } from "svelte/internal";
+    import _ from "data/language";
 
     export let name = "";
+    export let color = "";
     export let groupList = [];
     export let onClose;
+    export let formType = "CREATE";
 
     let validationError = "";
     let selectedColor = "";
@@ -15,21 +19,24 @@
     const handleEditGroupClick = () => {
         // Validate form errors
         validationError = "";
-
+        debugger;
         if (selectedColor == "" || name == "") {
-            
             if (name == "" && selectedColor == "") {
-                validationError = "Please enter/select group name and color";
+                validationError =
+                    "Please enter/select 'Group Name' and 'Group Color'";
+            } else if (name == "") {
+                validationError = "Please enter 'Group Name'";
+            } else if (selectedColor == "") {
+                validationError += "Please select the 'Group Color'";
             }
-            else if(name == "") {
-                validationError = "Please enter group name";
-            }            
-            else if (selectedColor == "") {
-                validationError += "Please select the group color";
-            }
-        }
-        else {
+        } else if (groupList.filter((x) => x.name.toLowerCase() == name.toLowerCase()).length > 0) {
+            validationError = `Group Name ${name} already exist. Please select another name.`;
+        } 
+        else if (groupList.filter((x) => x.color == selectedColor).length > 0) {
+            validationError = `Group Color is assigned to another group. Please select another color.`;
+        } else {
             // Close modal
+            color = selectedColor;
             onClose();
         }
     };
@@ -57,6 +64,11 @@
         font-size: 22px;
     }
 
+    .required {
+        color: red;
+        font-size: 22px;
+        font-weight: 700;
+    }
 
     .groupSection1 {
         padding: 5px;
@@ -89,8 +101,8 @@
     }
 
     .colorSelected {
-        border: 3px solid #FFE503;
-        box-shadow: 2 2px 2px #FFE503;
+        border: 3px solid #ffe503;
+        box-shadow: 2 2px 2px #ffe503;
     }
 
     .editGroupButton {
@@ -109,15 +121,30 @@
         <div class="groupSection1">
             <div class="groupLabel">Select a Group Name</div>
             <div>
-                <select>
-                    <option value="">-- Select One --</option>
-                    {#each groupList || [] as grpLst}
-                        <option value={grpLst.name}>{grpLst.name}</option>
-                    {/each}
-                </select>
+                {#if formType == 'CREATE'}
+                    <select>
+                        <option value="">Custom</option>
+                    </select>
+                    <div class="sepOr">&nbsp;</div>
+                    <div class="groupLabel">
+                        Group Name
+                        <span class="required">*</span>
+                    </div>
+                {:else if formType == 'EDIT'}
+                    <select>
+                        <option value="">-- Select One --</option>
+                        {#each groupList || [] as grpLst}
+                            <option value={grpLst.name}>{grpLst.name}</option>
+                        {/each}
+                    </select>
+                    <div class="sepOr">or</div>
+                    <div class="groupLabel">
+                        Group Name
+                        <span class="required">*</span>
+                    </div>
+                {/if}
             </div>
-            <div class="sepOr">or</div>
-            <div class="groupLabel">Group Name</div>
+
             <div>
                 <Input
                     value={name}
@@ -126,7 +153,10 @@
         </div>
 
         <div class="groupSection2">
-            <div class="groupLabel">Select Group Color</div>
+            <div class="groupLabel">
+                Select Group Color
+                <span class="required">*</span>
+            </div>
             <div class="colorContainer">
                 {#each groupColors || [] as color}
                     <div
@@ -141,11 +171,7 @@
 
     <div class="editGroupButton">
         <div on:click={handleEditGroupClick} class="button active">
-            Done
+            {$_('Done')}
         </div>
-
-        <!-- <button on:click={handleEditGroupClick} class="button active">
-            Done
-        </button> -->
     </div>
 </div>
