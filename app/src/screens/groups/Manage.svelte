@@ -21,8 +21,9 @@
   let creating = false
   let adding = false
   let removing = false
+  let editing = false
 
-  let newName, newColor
+  let newName, newColor, editGroupId
 
   // Create group and assign zone
   const createGroup = async () => {
@@ -46,6 +47,21 @@
     //Reset for next input
     newName = "";
     newColor = "";
+  }
+
+  const editGroup = async () => {
+    editing = false;
+    await groups.update(currState => {
+      console.log(currState);
+      let editGrp = currState.filter(x => x.id == editGroupId)
+      if (editGrp.length) {
+        editGrp[0].name = "Test"
+      }
+
+      return currState
+    }, { skipReload: true })
+
+    await groups.reload()
   }
 
   // selection when sorted by groups
@@ -134,6 +150,7 @@
         <span class='link' on:click={() => creating = true}>{$_('Create Group')}</span>
         <span class='link' on:click={() => adding = true}>{$_('Add to Group')}</span>
         <span class='link' on:click={() => removing = true}>{$_('Remove from Group')}</span>
+        <span class='link' on:click={() => editing = true}>{$_('Edit Group')}</span>
       {/if}
     </div>
 
@@ -151,7 +168,7 @@
         {#each displayedZones as zone (zone.id)}
           <ZoneButton
             zone={zone} 
-            active={selectedZoneIds.includes(zone.id)} 
+            active={selectedZoneIds.includes(zone.id)}
             on:click={() => toggle(zone.id)}
           />
         {/each}
@@ -163,7 +180,14 @@
 
 {#if creating}
   <Modal onClose={() => creating = false}>
-    <GroupForm onClose={() => { creating = false; createGroup() }} bind:name={newName} bind:color={newColor} bind:groupList={displayedGroups}  onSubmit={createGroup}/>
+    <GroupForm onClose={() => { creating = false; createGroup() }} bind:name={newName} bind:color={newColor} bind:groupList={displayedGroups} formType="CREATE" />
+    <!-- onSubmit={createGroup} -->
+</Modal>
+{/if}
+
+{#if editing}
+  <Modal onClose={() => editing = false}>
+    <GroupForm onClose={() => { editing = false; editGroup() }} bind:name={newName} bind:color={newColor} bind:groupList={displayedGroups} formType="EDIT" bind:selectedGroupId={editGroupId} />
   </Modal>
 {/if}
 

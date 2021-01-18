@@ -10,51 +10,33 @@
     export let color = "";
     export let groupList = [];
     export let onClose;
-    export let selectedGroupId = "";
 
     let validationError = "";
     let selectedColor = "";
-    let selectedGroup = "";
-    let selectedColorInitial = "";
 
-    $: name = selectedGroup;
-    $: selectedColor = getSelectedColor(selectedGroup);
+    // $: console.log(selectedColor);
 
     onMount(() => {});
-
-    const getSelectedColor = (selGrp) => {
-        let selectedColorItem = "";
-        let selectedGrpItem = groupList.filter((x) => (x.name == selGrp));
-        if (selectedGrpItem.length) {
-            selectedColorItem = selectedGrpItem[0].color;
-            selectedGroupId = selectedGrpItem[0].id;
-        }
-
-        selectedColorInitial = selectedColorItem? selectedColorItem : "";
-        return selectedColorInitial;
-    }
 
     const handleEditGroupClick = () => {
         // Validate form errors
         validationError = "";
 
-        if (selectedGroup == "" || selectedColor == "" || name == "") {
-            if (selectedGroup == "" && name == "" && selectedColor == "") {
+        if (selectedColor == "" || name == "") {
+            if (name == "" && selectedColor == "") {
                 validationError =
-                    "Please enter/select 'Group Name', 'New Name' and 'Group Color'";
+                    "Please enter/select 'Group Name' and 'Group Color'";
             } else if (name == "") {
-                validationError = "Please enter 'New Name'";
-            } else if (selectedGroup == "") {
-                validationError += "Please select the 'Group Name'";
+                validationError = "Please enter 'Group Name'";
             } else if (selectedColor == "") {
                 validationError += "Please select the 'Group Color'";
             }
-        } else if (name !== selectedGroup && 
+        } else if (
             groupList.filter((x) => x.name.toLowerCase() == name.toLowerCase())
                 .length > 0
         ) {
             validationError = `Group Name ${name} already exist. Please select another name.`;
-        } else if (selectedColorInitial !== selectedColor && 
+        } else if (
             groupList.filter((x) => x.color == selectedColor).length > 0
         ) {
             validationError = `Group Color is assigned to another group. Please select another color.`;
@@ -145,18 +127,14 @@
     <div class="editGroupMessage">{validationError}</div>
     <div class="editGroupBodyContainer">
         <div class="groupSection1">
-            <div class="groupLabel">Select a Group Name <span class="required">*</span></div>
+            <div class="groupLabel">Select a Group Name</div>
             <div>
-                <!-- svelte-ignore a11y-no-onchange -->
-                <select bind:value={selectedGroup}>
-                    <option value="">-- Select One --</option>
-                    {#each groupList || [] as grpLst}
-                        <option value={grpLst.name}>{grpLst.name}</option>
-                    {/each}
+                <select>
+                    <option value="">Custom</option>
                 </select>
-                <div class="sepOr">or</div>
+                <div class="sepOr">&nbsp;</div>
                 <div class="groupLabel">
-                    New Name
+                    Group Name
                     <span class="required">*</span>
                 </div>
             </div>
