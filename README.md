@@ -39,15 +39,22 @@ npm run show_tests
 
 ## Available Scripts
 
-In the project directory, you can run:
+From the project root directory, you can run:
 
 ### `cd app; npm start`
 
 Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Should open a browser tab at [http://localhost:8080](http://localhost:8080).
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+The development server offers HMR, detailed error messages and other useful development features. 
+
+**NOTE: not for use in production**
+
+
+### `cd app; npm run build`
+
+Build to static files which can be served by Nginx in production
+
 
 ### `npm test`
 
@@ -56,11 +63,6 @@ Run cypress tests in headless mode.<br />
 ### `npm run show_tests`
 
 Launches the test runner in the interactive watch mode.<br />
-
-
-### `npm run build`
-
-Build to static files which can be served by Nginx
 
 
 
