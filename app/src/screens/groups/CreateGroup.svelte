@@ -10,6 +10,7 @@
     export let color = "";
     export let groupList = [];
     export let onClose;
+
     // export let selectedGroupId = "";
 
     let validationError = "";

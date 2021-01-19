@@ -12,12 +12,14 @@
     export let onClose;
     export let selectedGroupId = "";
     export let selectedGroupItem = "";
+    export let selectedColorSingleItem = "";
 
     let validationError = "";
     let selectedColor = "";
     let selectedGroup = "";
     let selectedColorInitial = "";
     let groupListItems = [];
+    let singleItem = false;
 
     $: name = selectedGroup;
     $: selectedColor = getSelectedColor(selectedGroup);
@@ -25,28 +27,45 @@
 
     onMount(() => {
         if (selectedGroupItem) {
-            groupListItems = $groups.filter(x => x.id == selectedGroupItem);
-        }
-        else {
+            groupListItems = $groups.filter((x) => x.id == selectedGroupItem);
+            if (groupListItems.length == 1) {
+                selectedGroup = groupListItems[0].name;
+                selectedColorSingleItem = groupListItems[0].color;
+                selectedGroupId = groupListItems[0].id;
+                // selectedColor = selectedColorSingleItem;
+                singleItem = true;
+            }
+        } else {
             groupListItems = groupList;
         }
     });
 
     const getSelectedColor = (selGrp) => {
         let selectedColorItem = "";
-        let selectedGrpItem = groupList.filter((x) => (x.name == selGrp));
+        let selectedGrpItem = groupList.filter((x) => {
+            if (x.name !== undefined) {
+                return x.name === selGrp;
+            } else {
+                return x === [selGrp];
+            }
+        });
+
         if (selectedGrpItem.length) {
             selectedColorItem = selectedGrpItem[0].color;
             selectedGroupId = selectedGrpItem[0].id;
         }
 
-        selectedColorInitial = selectedColorItem? selectedColorItem : "";
+        selectedColorInitial = selectedColorItem ? selectedColorItem : "";
         return selectedColorInitial;
-    }
+    };
 
     const handleEditGroupClick = () => {
         // Validate form errors
         validationError = "";
+
+        if (singleItem) {
+            selectedColor = selectedColorSingleItem;
+        }
 
         if (selectedGroup == "" || selectedColor == "" || name == "") {
             if (selectedGroup == "" && name == "" && selectedColor == "") {
@@ -59,13 +78,21 @@
             } else if (selectedColor == "") {
                 validationError += "Please select the 'Group Color'";
             }
-        } else if (name !== selectedGroup && 
-            groupList.filter((x) => x.name.toLowerCase() == name.toLowerCase())
-                .length > 0
+        } else if (
+            name !== selectedGroup &&
+            groupList.filter((x) => {
+                if (x.name && name) {
+                    return x.name.toLowerCase() == name.toLowerCase();
+                } else {
+                    return false;
+                }
+            }).length > 0
         ) {
             validationError = `Group Name ${name} already exist. Please select another name.`;
-        } else if (selectedColorInitial !== selectedColor && 
-            groupList.filter((x) => x.color == selectedColor).length > 0
+        } else if (
+            selectedColorInitial !== selectedColor &&
+            (groupList.filter((x) => x.color == selectedColor).length > 0 ||
+                $groups.filter((x) => x.color == selectedColor && x.id !== selectedGroupId).length > 0)
         ) {
             validationError = `Group Color is assigned to another group. Please select another color.`;
         } else {
@@ -77,6 +104,10 @@
 
     const handleColorSelectedClick = (e) => {
         selectedColor = e.target.getAttribute("data-color");
+    };
+
+    const handleColorSingleSelectedClick = (e) => {
+        selectedColorSingleItem = e.target.getAttribute("data-color");
     };
 
     onDestroy(() => {});
@@ -155,13 +186,18 @@
     <div class="editGroupMessage">{validationError}</div>
     <div class="editGroupBodyContainer">
         <div class="groupSection1">
-            <div class="groupLabel">Select a Group Name <span class="required">*</span></div>
+            <div class="groupLabel">
+                Select a Group Name
+                <span class="required">*</span>
+            </div>
             <div>
                 <!-- svelte-ignore a11y-no-onchange -->
                 <select bind:value={selectedGroup}>
                     <option value="">-- Select One --</option>
                     {#each groupListItems || [] as grpLstItem}
-                        <option value={grpLstItem.name}>{grpLstItem.name}</option>
+                        <option value={grpLstItem.name}>
+                            {grpLstItem.name}
+                        </option>
                     {/each}
                 </select>
                 <div class="sepOr">or</div>
@@ -184,13 +220,23 @@
                 <span class="required">*</span>
             </div>
             <div class="colorContainer">
-                {#each groupColors || [] as color}
-                    <div
-                        class={selectedColor === color ? 'colorTile colorSelected' : 'colorTile'}
-                        style="background-color: {color}"
-                        data-color={color}
-                        on:click={handleColorSelectedClick} />
-                {/each}
+                {#if singleItem}
+                    {#each groupColors || [] as color}
+                        <div
+                            class={selectedColorSingleItem === color ? 'colorTile colorSelected' : 'colorTile'}
+                            style="background-color: {color};"
+                            data-color={color}
+                            on:click={handleColorSingleSelectedClick} />
+                    {/each}
+                {:else}
+                    {#each groupColors || [] as color}
+                        <div
+                            class={selectedColor === color ? 'colorTile colorSelected' : 'colorTile'}
+                            style="background-color: {color};"
+                            data-color={color}
+                            on:click={handleColorSelectedClick} />
+                    {/each}
+                {/if}
             </div>
         </div>
     </div>

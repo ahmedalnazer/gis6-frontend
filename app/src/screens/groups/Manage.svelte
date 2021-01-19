@@ -63,6 +63,10 @@
 
     await groups.update(editGroupItem);
     await groups.reload();
+    
+    //Reset for next input
+    newName = "";
+    newColor = "";
   };
 
   // selection when sorted by groups
@@ -197,6 +201,10 @@
         <span
           class="link"
           on:click={() => (removing = true)}>{$_('Remove from Group')}</span>
+        <span
+          class="link"
+          on:click={() => (editing = true)}>{$_('Edit Group')}</span>
+      {:else if (selectedGroup)}
         <span
           class="link"
           on:click={() => (editing = true)}>{$_('Edit Group')}</span>
