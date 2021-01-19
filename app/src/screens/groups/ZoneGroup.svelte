@@ -16,8 +16,6 @@
       selection = selection.concat(id)
     }
   }
-
-  $: console.log($_zones.map(x => x.groups), $groups.map(x => x.id))
   
   $: zones = group.id == 'unassigned' 
     ? $_zones.filter(x => (x.groups || []).map(x => $groups.find(y => y.id == x)).filter(x => !!x).length == 0 )
@@ -56,7 +54,8 @@
     margin-bottom: 16px;
   }
   .heading :global(svg) {
-    width: 24px;
+    width: 12px;
+    margin-right: 8px;
     transform: rotate(-90deg);
     transition: transform .3s;
   }

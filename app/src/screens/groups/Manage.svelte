@@ -93,8 +93,6 @@
     }
   }
 
-  // $: console.log(selection, selectedZones)
-
   const boxSelect = (nodes) => {
     console.log(nodes)
   }
@@ -107,8 +105,6 @@
     selectedGroup || !sortGroups
       ? selectedZoneIds
       : selectedZones.map((x) => x.zone)
-
-  $: console.log(activeSelection)
 
   $: zonesToModify = $zones.filter((z) => {
     return activeSelection.includes(z.id)

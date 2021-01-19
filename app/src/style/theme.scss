@@ -30,6 +30,11 @@ body {
   color: --textMain;
 }
 
+*:focus {
+  outline: 0;
+  border: 0;
+}
+
 a, .link {
   text-decoration: none;
   color: var(--primary);
