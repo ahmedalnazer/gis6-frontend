@@ -16,6 +16,7 @@
   export let groupList = [];
   export let onClose;
   export let formType = "CREATE";
+  export let selectedGroupItem = "";
 
   /**
    * name and color are bound to vars in the parent component, so all we
@@ -26,7 +27,7 @@
 <form on:submit|preventDefault={onSubmit}>
   {#if formType == 'EDIT'}
     <h1>{$_('EDIT GROUP')}</h1>
-    <EditGroup {groupList} {onClose} bind:name bind:color bind:selectedGroupId />
+    <EditGroup {groupList} {onClose} bind:name bind:color bind:selectedGroupId bind:selectedGroupItem={selectedGroupItem} />
   {:else}
     <h1>{$_('CREATE GROUP')}</h1>
     <CreateGroup {groupList} {onClose} bind:name bind:color />

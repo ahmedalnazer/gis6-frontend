@@ -11,26 +11,16 @@
     export let groupList = [];
     export let onClose;
     export let selectedGroupId = "";
-    export let selectedGroupItem = "";
 
     let validationError = "";
     let selectedColor = "";
     let selectedGroup = "";
     let selectedColorInitial = "";
-    let groupListItems = [];
 
     $: name = selectedGroup;
     $: selectedColor = getSelectedColor(selectedGroup);
-    // $: selectedGroupItem, console.log(selectedGroupItem)
 
-    onMount(() => {
-        if (selectedGroupItem) {
-            groupListItems = $groups.filter(x => x.id == selectedGroupItem);
-        }
-        else {
-            groupListItems = groupList;
-        }
-    });
+    onMount(() => {});
 
     const getSelectedColor = (selGrp) => {
         let selectedColorItem = "";
@@ -51,23 +41,23 @@
         if (selectedGroup == "" || selectedColor == "" || name == "") {
             if (selectedGroup == "" && name == "" && selectedColor == "") {
                 validationError =
-                    "Please enter/select 'Group Name', 'New Name' and 'Group Color'";
+                    $_("Please enter/select 'Group Name', 'New Name' and 'Group Color'");
             } else if (name == "") {
-                validationError = "Please enter 'New Name'";
+                validationError = $_("Please enter 'New Name'");
             } else if (selectedGroup == "") {
-                validationError += "Please select the 'Group Name'";
+                validationError += $_("Please select the 'Group Name'");
             } else if (selectedColor == "") {
-                validationError += "Please select the 'Group Color'";
+                validationError += $_("Please select the 'Group Color'");
             }
         } else if (name !== selectedGroup && 
             groupList.filter((x) => x.name.toLowerCase() == name.toLowerCase())
                 .length > 0
         ) {
-            validationError = `Group Name ${name} already exist. Please select another name.`;
+            validationError = $_(`Group Name ${name} already exist. Please select another name.`);
         } else if (selectedColorInitial !== selectedColor && 
             groupList.filter((x) => x.color == selectedColor).length > 0
         ) {
-            validationError = `Group Color is assigned to another group. Please select another color.`;
+            validationError = $_(`Group Color is assigned to another group. Please select another color.`);
         } else {
             // Close modal
             color = selectedColor;
@@ -160,8 +150,8 @@
                 <!-- svelte-ignore a11y-no-onchange -->
                 <select bind:value={selectedGroup}>
                     <option value="">-- Select One --</option>
-                    {#each groupListItems || [] as grpLstItem}
-                        <option value={grpLstItem.name}>{grpLstItem.name}</option>
+                    {#each groupList || [] as grpLst}
+                        <option value={grpLst.name}>{grpLst.name}</option>
                     {/each}
                 </select>
                 <div class="sepOr">or</div>

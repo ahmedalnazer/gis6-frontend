@@ -10,36 +10,54 @@
     export let color = "";
     export let groupList = [];
     export let onClose;
+    // export let selectedGroupId = "";
 
     let validationError = "";
     let selectedColor = "";
+    let selectedGroup = "";
+    let defaultUnselectedGroupList = [];
 
+    // $: console.log(selectedGroup);
     // $: console.log(selectedColor);
 
-    onMount(() => {});
+    onMount(() => {
+        defaultUnselectedGroupList = defaultNames.filter((x) => {
+            let grpContains = groupList.filter((g) => g.name == x);
+            return !grpContains.length;
+        });
+    });
 
-    const handleEditGroupClick = () => {
+    const handleEditGroupClick_Create = () => {
         // Validate form errors
         validationError = "";
 
+        if (selectedGroup !== "__CUSTOM__") {
+            name = selectedGroup;
+        }
+
         if (selectedColor == "" || name == "") {
             if (name == "" && selectedColor == "") {
-                validationError =
-                    "Please enter/select 'Group Name' and 'Group Color'";
+                validationError = $_(
+                    "Please enter/select 'Group Name' and 'Group Color'"
+                );
             } else if (name == "") {
-                validationError = "Please enter 'Group Name'";
+                validationError = $_("Please enter 'Group Name'");
             } else if (selectedColor == "") {
-                validationError += "Please select the 'Group Color'";
+                validationError += $_("Please select the 'Group Color'");
             }
         } else if (
             groupList.filter((x) => x.name.toLowerCase() == name.toLowerCase())
                 .length > 0
         ) {
-            validationError = `Group Name ${name} already exist. Please select another name.`;
+            validationError = $_(
+                `Group Name ${name} already exist. Please select another name.`
+            );
         } else if (
             groupList.filter((x) => x.color == selectedColor).length > 0
         ) {
-            validationError = `Group Color is assigned to another group. Please select another color.`;
+            validationError = $_(
+                `Group Color is assigned to another group. Please select another color.`
+            );
         } else {
             // Close modal
             color = selectedColor;
@@ -47,7 +65,7 @@
         }
     };
 
-    const handleColorSelectedClick = (e) => {
+    const handleColorSelectedClick_Create = (e) => {
         selectedColor = e.target.getAttribute("data-color");
     };
 
@@ -127,28 +145,39 @@
     <div class="editGroupMessage">{validationError}</div>
     <div class="editGroupBodyContainer">
         <div class="groupSection1">
-            <div class="groupLabel">Select a Group Name</div>
+            <div class="groupLabel">{$_('Select a Group Name')}</div>
             <div>
-                <select>
-                    <option value="">Custom</option>
+                <select bind:value={selectedGroup}>
+                    <option value="">--Select One--</option>
+                    <option value="__CUSTOM__">Custom</option>
+
+                    <!-- {#each groupList || [] as grpLst}
+                        <option value={grpLst.name}>{grpLst.name}--</option>
+                    {/each} -->
+
+                    {#each defaultUnselectedGroupList || [] as defaultNames}
+                        <option value={defaultNames}>{defaultNames}</option>
+                    {/each}
                 </select>
                 <div class="sepOr">&nbsp;</div>
-                <div class="groupLabel">
-                    Group Name
-                    <span class="required">*</span>
-                </div>
-            </div>
 
-            <div>
-                <Input
-                    value={name}
-                    on:change={(e) => (name = e.target.value)} />
+                {#if selectedGroup == '__CUSTOM__'}
+                    <div class="groupLabel">
+                        {$_('Group Name')}
+                        <span class="required">*</span>
+                    </div>
+                    <div>
+                        <Input
+                            value={name}
+                            on:change={(e) => (name = e.target.value)} />
+                    </div>
+                {/if}
             </div>
         </div>
 
         <div class="groupSection2">
             <div class="groupLabel">
-                Select Group Color
+                {$_('Select Group Color')}
                 <span class="required">*</span>
             </div>
             <div class="colorContainer">
@@ -157,14 +186,14 @@
                         class={selectedColor === color ? 'colorTile colorSelected' : 'colorTile'}
                         style="background-color: {color}"
                         data-color={color}
-                        on:click={handleColorSelectedClick} />
+                        on:click={handleColorSelectedClick_Create} />
                 {/each}
             </div>
         </div>
     </div>
 
     <div class="editGroupButton">
-        <div on:click={handleEditGroupClick} class="button active">
+        <div on:click={handleEditGroupClick_Create} class="button active">
             {$_('Done')}
         </div>
     </div>

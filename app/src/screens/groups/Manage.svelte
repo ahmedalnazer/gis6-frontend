@@ -17,6 +17,7 @@
 
   $: displayedGroups = selectedGroup ? [ selectedGroup ] : $groups.concat([ { id: 'unassigned', name: 'Unassigned' } ])
   // $: console.log(`disp grps: ${displayedGroups}`);
+  // $: selectedGroup,     console.log(selectedGroup)
 
   let creating = false
   let adding = false
@@ -24,7 +25,6 @@
   let editing = false
 
   let newName, newColor, editGroupId
-
   // Create group and assign zone
   const createGroup = async () => {
     creating = false;
@@ -47,20 +47,16 @@
     //Reset for next input
     newName = "";
     newColor = "";
+
+    // Clear selection
+    clearSelection();
   }
 
   const editGroup = async () => {
     editing = false;
-    await groups.update(currState => {
-      console.log(currState);
-      let editGrp = currState.filter(x => x.id == editGroupId)
-      if (editGrp.length) {
-        editGrp[0].name = "Test"
-      }
-
-      return currState
-    }, { skipReload: true })
-
+    let editGroupItem = {name: newName, color: newColor, id: editGroupId}
+    
+    await groups.update(editGroupItem)
     await groups.reload()
   }
 
@@ -89,7 +85,7 @@
     }
   }
 
-  $: console.log(selection, selectedZones)
+  // $: console.log(selection, selectedZones)
 
   const boxSelect = nodes => {
     console.log(nodes)
@@ -177,17 +173,16 @@
   </div>
 </Screen>
 
-
 {#if creating}
   <Modal onClose={() => creating = false}>
-    <GroupForm onClose={() => { creating = false; createGroup() }} bind:name={newName} bind:color={newColor} bind:groupList={displayedGroups} formType="CREATE" />
+    <GroupForm onClose={() => { creating = false; createGroup() }} bind:name={newName} bind:color={newColor} bind:groupList={displayedGroups} FormType="CREATE" />
     <!-- onSubmit={createGroup} -->
 </Modal>
 {/if}
 
 {#if editing}
   <Modal onClose={() => editing = false}>
-    <GroupForm onClose={() => { editing = false; editGroup() }} bind:name={newName} bind:color={newColor} bind:groupList={displayedGroups} formType="EDIT" bind:selectedGroupId={editGroupId} />
+    <GroupForm onClose={() => { editing = false; editGroup() }} bind:name={newName} bind:color={newColor} bind:groupList={displayedGroups} formType="EDIT" bind:selectedGroupId={editGroupId} bind:selectedGroupItem={selectedGroup} />
   </Modal>
 {/if}
 

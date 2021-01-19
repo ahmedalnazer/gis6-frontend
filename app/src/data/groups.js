@@ -64,6 +64,12 @@ export default groups
 export const defaultNames = [
   'Tips',
   'Manifold',
+  'Default 1',
+  'Default 2',
+  'Default 3',
+  'Default 4',
+  'Default 5',
+  'Default 6',
   // TODO: get full list
 ]
 
