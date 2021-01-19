@@ -2,6 +2,7 @@
   import groups from 'data/groups'
   import _ from 'data/language'
   import zones from 'data/zones'
+  import { Icon } from 'components'
 
   let _zones
   export { _zones as zones }
@@ -17,32 +18,59 @@
     }
   }
 
+  let undo = []
+
   const commit = async () => {
     console.log(_zones)
+    undo = []
     for(let z of _zones) {
-      console.log(z)
+      const curGroups = z.groups || []
+      undo.push(() => zones.update({ ...z, groups: curGroups }, { skipReload: true }))
       if(adding) {
-        z.groups = (z.groups || []).concat(selectedGroups)
+        z.groups = curGroups.concat(selectedGroups)
       } else {
-        z.groups = (z.groups || []).filter(x => !selectedGroups.includes(x))
+        z.groups = curGroups.filter(x => !selectedGroups.includes(x))
       }
       z.groups = [ ... new Set(z.groups) ]
       await zones.update(z, { skipReload: true })
     }
+    selectedGroups = []
     await zones.reload()
-    onCommit()
+    // onCommit()
   }
 
-  $: maxGroups = adding ? _zones.map(z => z.groups ? z.groups.length : 0).reduce((max, cur) => cur > max ? cur : max, 0) : 0
+  const commitUndo = async () => {
+    for(let fn of undo) {
+      await fn()
+    }
+    undo = []
+    await zones.reload()
+  }
+
+  $: groupIds = $groups.map(x => x.id)
+
+  $: maxGroups = adding 
+    ? _zones.map(z => [ ... new Set(
+      (z.groups || []).filter(x => groupIds.includes(x)).concat(selectedGroups))
+    ].length)
+      .reduce((max, cur) => cur > max ? cur : max, 0) 
+    : 0
   $: console.log(maxGroups)
 
 </script>
 
 <div class='modify-zones'>
   <div class='status-bar'>
-    {#if maxGroups >= 3}
-      <p class='danger'>Part of your selection is already in the maximum (3) number of groups and cannot be added to another.</p>
+    {#if undo.length}
+      <div class='undo link' on:click={commitUndo}>
+        <Icon icon='undo' /> Undo
+      </div>
     {/if}
+    <div class='message'>
+      {#if maxGroups > 3}
+        <p class='danger'>Part of your selection will exceed the maximum (3) number of groups and cannot be added to another.</p>
+      {/if}
+    </div>
   </div>
   
   <div class='group-options'>
@@ -58,13 +86,13 @@
   </div>
 
   <div class='done'>
-    <div class='button active' on:click={commit} class:disabled={maxGroups >= 3 || !selectedGroups.length}>
+    <div class='button active' on:click={commit} class:disabled={maxGroups > 3 || !selectedGroups.length}>
       {$_('Done')}
     </div>
   </div>
 </div>
 
-<style>
+<style lang="scss">
   .group-options {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -77,5 +105,19 @@
   .status-bar {
     min-height: 32px;
     margin-bottom: 32px;
+    display: flex;
+  }
+
+  .undo {
+    display: flex;
+    align-items: center;
+    margin-right: 16px;
+    :global(svg) {
+      width: 24px;
+      margin-right: 8px;
+    }
+    :global(.icon-fill) {
+      fill: var(--primary);
+    }
   }
 </style>
