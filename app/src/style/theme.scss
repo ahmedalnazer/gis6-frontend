@@ -69,10 +69,12 @@ a, .link {
   }
 }
 
-.card {
+.card, .mdc-card {
   display: block;
   box-shadow: var(--shadow);
   padding: 16px;
+  background: white;
+  border-radius: 3px;
 
   &.border {
     border: 1px solid var(--grayBorder);

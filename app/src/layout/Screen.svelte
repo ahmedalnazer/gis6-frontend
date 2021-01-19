@@ -9,7 +9,7 @@
 </script>
 
 
-<div {...$$restProps} class:hide-tasks={tasksEmpty} class="viewport {$$restProps.class || ''}">
+<div {...$$restProps} class:hide-tasks={tasksEmpty} class:dashboard class="viewport {$$restProps.class || ''}">
   <div class='tasks'>
     <slot name='tasks'>
       <div bind:this={tasksEmpty} />
@@ -47,6 +47,8 @@
     padding: 40px;
     z-index: 2;
     overflow: auto;
+    display: flex;
+    flex-direction: column;
   }
   
   .screen-header + .screen-body {
@@ -82,5 +84,9 @@
     .tasks {
       display: none;
     }
+  }
+
+  .dashboard {
+    background: #EEEFF4;
   }
 </style>

@@ -26,8 +26,9 @@ body {
   height: 100%;
   display: flex;
   flex-direction: column;
+  overflow: auto;
   main {
     flex: 1;
-    overflow: scroll;
+    overflow: auto;
   }
 }
