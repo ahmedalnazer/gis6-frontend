@@ -8,6 +8,7 @@
 
   export let group
   export let selection = []
+  export let onDelete = () => {}
 
   const toggle = id => {
     if(selection.includes(id)) {
@@ -30,6 +31,12 @@
     <span>{group.name}</span>
 
     <Icon icon='chevron' />
+    {#if group.id != 'unassigned'}
+      <Icon icon='close' on:click={e => {
+        e.stopPropagation()
+        onDelete()
+      }} />
+    {/if}
   </div></DragHeading>
   {#if zones.length == 0}
       <p class='muted'>{$_('No zones have been assigned to this group')}</p>
@@ -55,15 +62,17 @@
   }
   .heading :global(svg) {
     width: 12px;
-    margin-right: 8px;
+    margin-right: 16px;
+  }
+  .heading :global(svg:first-of-type) {
+    margin-left: auto;
     transform: rotate(-90deg);
     transition: transform .3s;
   }
   .heading {
     display:flex;
-    justify-content: space-between;
   }
-  .heading.open :global(svg) {
+  .heading.open :global(svg:first-of-type) {
     transform: rotate(90deg)
   }
 </style>

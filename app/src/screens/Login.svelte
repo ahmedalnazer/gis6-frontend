@@ -10,8 +10,6 @@
   const login = async e => {
     e.preventDefault()
     await api.login(userId, password)
-    // TODO: api login
-    user.set($users.find(x => x.id == userId))
   }
 
   let password = ''

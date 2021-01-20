@@ -70,9 +70,11 @@ class API {
         return resolve(stubs[method][url](data))
       }
 
-      if(method == 'POST' && !url.endsWith('/')) url = url + '/'
+      if(!url.endsWith('/')) url = url + '/'
 
       // prefix all routes with api
+      if(url.startsWith('api/')) url = url.replace('api/', '')
+
       let opts = {
         headers: {
           Accept: 'application/json',
@@ -83,7 +85,7 @@ class API {
       }
 
       if(this.token) {
-        opts.headers['Authorization'] = `Bearer ${this.token}`
+        opts.headers['Authorization'] = `JWT ${this.token}`
       }
       if(method != 'GET' && data) {
         opts.body = JSON.stringify(data)
@@ -95,7 +97,7 @@ class API {
         }
       }
       try {
-        const resp = await fetch(`/${url}`, opts)
+        const resp = await fetch(`/api/${url}`, opts)
         if (resp && resp.status == 403) {
           fail('Sorry, it seems like your admin session has expired, please try logging in again')
           return reject(resp)

@@ -4,7 +4,7 @@
 </script>
 
 {#if icon == 'close'}
-  <svg class='icon' viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <svg on:click class='icon' viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
       <title>D725E3D3-EF85-404C-9E3D-0DE8D4AB290A</title>
       <g id="Components" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
           <g id="Style-Guide" transform="translate(-1218.000000, -473.000000)" style='fill:{color}'>
@@ -15,7 +15,7 @@
 {/if}
 
 {#if icon == 'grabby'}
-  <svg class='icon' viewBox="0 0 16 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <svg on:click class='icon' viewBox="0 0 16 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <title>7EECDAA0-F59B-4423-96E3-7311323C3D97</title>
     <g id="Components" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
         <g id="Style-Guide" transform="translate(-1222.000000, -347.000000)" style='fill:{color}' fill-rule="nonzero">
@@ -26,7 +26,7 @@
 {/if}
 
 {#if icon == 'undo'}
-  <svg viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <svg on:click viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <title>382468A9-4D6A-43A1-BD46-A7B4EB625DB8</title>
     <g id="Standards" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
         <g id="Style-Guide" class='icon-fill' transform="translate(-1352.000000, -599.000000)" style='fill:{color}'>
@@ -37,7 +37,7 @@
 {/if}
 
 {#if icon =='chevron'}
-  <svg viewBox="0 0 16 26" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <svg on:click viewBox="0 0 16 26" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <title>538E2E21-54D2-4486-8764-31EBA22064FF</title>
     <g id="Standards" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
         <g id="Style-Guide" class='icon-fill icon-stroke' transform="translate(-1357.000000, -408.000000)" style='fill:{color};stroke:{color}'>

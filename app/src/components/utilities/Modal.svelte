@@ -37,6 +37,16 @@
     display: flex;
     align-items: flex-start;
     justify-content: center;
+
+    :global(.modal-buttons) {
+      margin-top: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      :global(.button) {
+        margin: 32px;
+      }
+    }
   }
 
   .modal-wrapper {

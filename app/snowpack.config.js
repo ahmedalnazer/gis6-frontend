@@ -24,7 +24,6 @@ module.exports = {
     /* ... */
   },
   proxy: {
-    "/auth": "http://localhost:8000/auth",
     "/api": "http://localhost:8000/api"
   },
   alias: {

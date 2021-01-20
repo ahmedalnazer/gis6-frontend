@@ -1,117 +1,116 @@
 <script>
-    import { onMount, beforeUpdate, afterUpdate, onDestroy } from "svelte";
-    import groups from "data/groups";
-    import { defaultNames, groupColors } from "data/groups";
-    import { Input } from "components";
-    import { get_binding_group_value } from "svelte/internal";
-    import _ from "data/language";
+    import { onMount, beforeUpdate, afterUpdate, onDestroy } from "svelte"
+    import groups from "data/groups"
+    import { defaultNames, groupColors } from "data/groups"
+    import { Input } from "components"
+    import { get_binding_group_value } from "svelte/internal"
+    import _ from "data/language"
 
-    export let name = "";
-    export let color = "";
-    export let groupList = [];
-    export let onClose;
-    export let selectedGroupId = "";
-    export let selectedGroupItem = "";
-    export let selectedColorSingleItem = "";
+    export let name = ""
+    export let color = ""
+    export let groupList = []
+    export let onClose
+    export let selectedGroupId = ""
+    export let selectedGroupItem = ""
+    export let selectedColorSingleItem = ""
 
-    let validationError = "";
-    let selectedColor = "";
-    let selectedGroup = "";
-    let selectedColorInitial = "";
-    let groupListItems = [];
-    let singleItem = false;
+    let validationError = ""
+    let selectedColor = ""
+    let selectedGroup = ""
+    let selectedColorInitial = ""
+    let groupListItems = []
+    let singleItem = false
 
-    $: name = selectedGroup;
-    $: selectedColor = getSelectedColor(selectedGroup);
+    $: name = selectedGroup
+    $: selectedColor = getSelectedColor(selectedGroup)
     // $: selectedGroupItem, console.log(selectedGroupItem)
 
     onMount(() => {
-        if (selectedGroupItem) {
-            groupListItems = $groups.filter((x) => x.id == selectedGroupItem);
-            if (groupListItems.length == 1) {
-                selectedGroup = groupListItems[0].name;
-                selectedColorSingleItem = groupListItems[0].color;
-                selectedGroupId = groupListItems[0].id;
-                // selectedColor = selectedColorSingleItem;
-                singleItem = true;
-            }
-        } else {
-            groupListItems = groupList;
+      if (selectedGroupItem) {
+        groupListItems = $groups.filter((x) => x.id == selectedGroupItem)
+        if (groupListItems.length == 1) {
+          selectedGroup = groupListItems[0].name
+          selectedColorSingleItem = groupListItems[0].color
+          selectedGroupId = groupListItems[0].id
+          // selectedColor = selectedColorSingleItem;
+          singleItem = true
         }
-    });
+      } else {
+        groupListItems = groupList
+      }
+    })
 
     const getSelectedColor = (selGrp) => {
-        let selectedColorItem = "";
-        let selectedGrpItem = groupList.filter((x) => {
-            if (x.name !== undefined) {
-                return x.name === selGrp;
-            } else {
-                return x === [selGrp];
-            }
-        });
-
-        if (selectedGrpItem.length) {
-            selectedColorItem = selectedGrpItem[0].color;
-            selectedGroupId = selectedGrpItem[0].id;
+      let selectedColorItem = ""
+      let selectedGrpItem = groupList.filter((x) => {
+        if (x.name !== undefined) {
+          return x.name === selGrp
+        } else {
+          return x === [ selGrp ]
         }
+      })
 
-        selectedColorInitial = selectedColorItem ? selectedColorItem : "";
-        return selectedColorInitial;
-    };
+      if (selectedGrpItem.length) {
+        selectedColorItem = selectedGrpItem[0].color
+        selectedGroupId = selectedGrpItem[0].id
+      }
+
+      selectedColorInitial = selectedColorItem ? selectedColorItem : ""
+      return selectedColorInitial
+    }
 
     const handleEditGroupClick = () => {
-        // Validate form errors
-        validationError = "";
+      // Validate form errors
+      validationError = ""
 
-        if (singleItem) {
-            selectedColor = selectedColorSingleItem;
+      if (singleItem) {
+        selectedColor = selectedColorSingleItem
+      }
+
+      if (selectedGroup == "" || selectedColor == "" || name == "") {
+        if (selectedGroup == "" && name == "" && selectedColor == "") {
+          validationError =
+                    "Please enter/select 'Group Name', 'New Name' and 'Group Color'"
+        } else if (name == "") {
+          validationError = "Please enter 'New Name'"
+        } else if (selectedGroup == "") {
+          validationError += "Please select the 'Group Name'"
+        } else if (selectedColor == "") {
+          validationError += "Please select the 'Group Color'"
         }
-
-        if (selectedGroup == "" || selectedColor == "" || name == "") {
-            if (selectedGroup == "" && name == "" && selectedColor == "") {
-                validationError =
-                    "Please enter/select 'Group Name', 'New Name' and 'Group Color'";
-            } else if (name == "") {
-                validationError = "Please enter 'New Name'";
-            } else if (selectedGroup == "") {
-                validationError += "Please select the 'Group Name'";
-            } else if (selectedColor == "") {
-                validationError += "Please select the 'Group Color'";
-            }
-        } else if (
-            name !== selectedGroup &&
-            (groupList.filter((x) => {
-                if (x.name && name) {
-                    return x.name.toLowerCase() == name.toLowerCase();
-                } else {
-                    return false;
-                }
-            }).length > 0 ||
-            $groups.filter((x) => x.name == name && x.id !== selectedGroupId).length > 0)
-        ) {
-            validationError = `Group Name ${name} already exist. Please select another name.`;
-        } else if (
-            selectedColorInitial !== selectedColor &&
+      } else if (
+        name !== selectedGroup &&
+            groupList.filter((x) => {
+              if (x.name && name) {
+                return x.name.toLowerCase() == name.toLowerCase()
+              } else {
+                return false
+              }
+            }).length > 0
+      ) {
+        validationError = `Group Name ${name} already exist. Please select another name.`
+      } else if (
+        selectedColorInitial !== selectedColor &&
             (groupList.filter((x) => x.color == selectedColor).length > 0 ||
                 $groups.filter((x) => x.color == selectedColor && x.id !== selectedGroupId).length > 0)
-        ) {
-            validationError = `Group Color is assigned to another group. Please select another color.`;
-        } else {
-            // Close modal
-            color = selectedColor;
-            onClose();
-        }
-    };
+      ) {
+        validationError = `Group Color is assigned to another group. Please select another color.`
+      } else {
+        // Close modal
+        color = selectedColor
+        onClose()
+      }
+    }
 
     const handleColorSelectedClick = (e) => {
-        selectedColor = e.target.getAttribute("data-color");
-    };
+      selectedColor = e.target.getAttribute("data-color")
+    }
 
     const handleColorSingleSelectedClick = (e) => {
-        selectedColorSingleItem = e.target.getAttribute("data-color");
-    };
+      selectedColorSingleItem = e.target.getAttribute("data-color")
+    }
 
-    onDestroy(() => {});
+    onDestroy(() => {})
 </script>
 
 <style>
@@ -211,7 +210,7 @@
             <div>
                 <Input
                     value={name}
-                    on:change={(e) => (name = e.target.value)} />
+                    on:change={(e) => name = e.target.value} />
             </div>
         </div>
 
@@ -222,7 +221,7 @@
             </div>
             <div class="colorContainer">
                 {#if singleItem}
-                    {#each groupColors || [] as color}
+                    {#each Object.entries(groupColors || {}) as [key, color]}
                         <div
                             class={selectedColorSingleItem === color ? 'colorTile colorSelected' : 'colorTile'}
                             style="background-color: {color};"
@@ -230,7 +229,7 @@
                             on:click={handleColorSingleSelectedClick} />
                     {/each}
                 {:else}
-                    {#each groupColors || [] as color}
+                    {#each Object.entries(groupColors || {}) as [key, color]}
                         <div
                             class={selectedColor === color ? 'colorTile colorSelected' : 'colorTile'}
                             style="background-color: {color};"

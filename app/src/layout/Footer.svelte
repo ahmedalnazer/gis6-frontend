@@ -25,6 +25,8 @@
       selectingLanguage = true
     }
   }
+
+  $: console.log($user)
 </script>
 
 <footer>

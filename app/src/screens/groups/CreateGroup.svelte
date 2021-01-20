@@ -1,76 +1,76 @@
 <script>
-    import { onMount, beforeUpdate, afterUpdate, onDestroy } from "svelte";
-    import groups from "data/groups";
-    import { defaultNames, groupColors } from "data/groups";
-    import { Input } from "components";
-    import { get_binding_group_value } from "svelte/internal";
-    import _ from "data/language";
+    import { onMount, beforeUpdate, afterUpdate, onDestroy } from "svelte"
+    import groups from "data/groups"
+    import { defaultNames, groupColors } from "data/groups"
+    import { Input } from "components"
+    import { get_binding_group_value } from "svelte/internal"
+    import _ from "data/language"
 
-    export let name = "";
-    export let color = "";
-    export let groupList = [];
-    export let onClose;
+    export let name = ""
+    export let color = ""
+    export let groupList = []
+    export let onClose
 
     // export let selectedGroupId = "";
 
-    let validationError = "";
-    let selectedColor = "";
-    let selectedGroup = "";
-    let defaultUnselectedGroupList = [];
+    let validationError = ""
+    let selectedColor = ""
+    let selectedGroup = ""
+    let defaultUnselectedGroupList = []
 
     // $: console.log(selectedGroup);
     // $: console.log(selectedColor);
 
     onMount(() => {
-        defaultUnselectedGroupList = defaultNames.filter((x) => {
-            let grpContains = groupList.filter((g) => g.name == x);
-            return !grpContains.length;
-        });
-    });
+      defaultUnselectedGroupList = defaultNames.filter((x) => {
+        let grpContains = groupList.filter((g) => g.name == x)
+        return !grpContains.length
+      })
+    })
 
     const handleEditGroupClick_Create = () => {
-        // Validate form errors
-        validationError = "";
+      // Validate form errors
+      validationError = ""
 
-        if (selectedGroup !== "__CUSTOM__") {
-            name = selectedGroup;
-        }
+      if (selectedGroup !== "__CUSTOM__") {
+        name = selectedGroup
+      }
 
-        if (selectedColor == "" || name == "") {
-            if (name == "" && selectedColor == "") {
-                validationError = $_(
-                    "Please enter/select 'Group Name' and 'Group Color'"
-                );
-            } else if (name == "") {
-                validationError = $_("Please enter 'Group Name'");
-            } else if (selectedColor == "") {
-                validationError += $_("Please select the 'Group Color'");
-            }
-        } else if (
-            groupList.filter((x) => x.name.toLowerCase() == name.toLowerCase())
-                .length > 0
-        ) {
-            validationError = $_(
-                `Group Name ${name} already exist. Please select another name.`
-            );
-        } else if (
-            groupList.filter((x) => x.color == selectedColor).length > 0
-        ) {
-            validationError = $_(
-                `Group Color is assigned to another group. Please select another color.`
-            );
-        } else {
-            // Close modal
-            color = selectedColor;
-            onClose();
+      if (selectedColor == "" || name == "") {
+        if (name == "" && selectedColor == "") {
+          validationError = $_(
+            "Please enter/select 'Group Name' and 'Group Color'"
+          )
+        } else if (name == "") {
+          validationError = $_("Please enter 'Group Name'")
+        } else if (selectedColor == "") {
+          validationError += $_("Please select the 'Group Color'")
         }
-    };
+      } else if (
+        groupList.filter((x) => x.name.toLowerCase() == name.toLowerCase())
+          .length > 0
+      ) {
+        validationError = $_(
+          `Group Name ${name} already exist. Please select another name.`
+        )
+      } else if (
+        groupList.filter((x) => x.color == selectedColor).length > 0
+      ) {
+        validationError = $_(
+          `Group Color is assigned to another group. Please select another color.`
+        )
+      } else {
+        // Close modal
+        color = selectedColor
+        onClose()
+      }
+    }
 
     const handleColorSelectedClick_Create = (e) => {
-        selectedColor = e.target.getAttribute("data-color");
-    };
+      selectedColor = e.target.getAttribute("data-color")
+    }
 
-    onDestroy(() => {});
+    onDestroy(() => {})
 </script>
 
 <style>
@@ -170,7 +170,7 @@
                     <div>
                         <Input
                             value={name}
-                            on:change={(e) => (name = e.target.value)} />
+                            on:change={(e) => name = e.target.value} />
                     </div>
                 {/if}
             </div>
@@ -182,7 +182,7 @@
                 <span class="required">*</span>
             </div>
             <div class="colorContainer">
-                {#each groupColors || [] as color}
+                {#each Object.entries(groupColors || {}) as [key, color]}
                     <div
                         class={selectedColor === color ? 'colorTile colorSelected' : 'colorTile'}
                         style="background-color: {color}"

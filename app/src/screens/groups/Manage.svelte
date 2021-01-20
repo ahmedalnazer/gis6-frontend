@@ -25,6 +25,7 @@
   let adding = false
   let removing = false
   let editing = false
+  let deleting = null
 
   let newName, newColor, editGroupId
 
@@ -179,7 +180,7 @@
       {#if !selectedGroup && sortGroups}
 
         {#each displayedGroups as group (group.id)}
-          <ZoneGroup bind:open={openGroups[group.id]} {group} bind:selection={selection[group.id]}/>
+          <ZoneGroup bind:open={openGroups[group.id]} {group} onDelete={() => deleting = group} bind:selection={selection[group.id]}/>
         {/each}
 
       {:else}
@@ -231,6 +232,19 @@
   </Modal>
 {/if}
 
+{#if deleting}
+  <Modal title={$_('Delete Group')} onClose={() => deleting = null}>
+    <div class='modal'>
+      <p>Are you sure you want to delete the {deleting.name} group? This is a permanent action and cannot be undone.</p>
+
+      <div class='modal-buttons'>
+        <div class='button' on:click={() => deleting = null}>Cancel</div>
+        <div class='button active' on:click={() => {groups.delete(deleting); deleting = null}}>Yes, delete group</div>
+      </div>
+    </div>
+  </Modal>
+{/if}
+
 {#if adding}
   <Modal
     title={$_('Add to Group')}
@@ -262,8 +276,10 @@
 
   .group-selector {
     display: flex;
+    overflow: auto;
     .tab {
       padding: 16px 32px;
+      white-space: nowrap;
     }
   }
   .tools {
@@ -303,5 +319,9 @@
 
   .link {
     cursor: pointer;
+  }
+
+  .modal {
+    text-align: center;
   }
 </style>
