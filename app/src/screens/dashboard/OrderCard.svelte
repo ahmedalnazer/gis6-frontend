@@ -11,7 +11,7 @@
     let goodpartfrom = 0;
     let goodparttotal = 0;
     let badpartcount = 0;
-    let hoursleft = 0;
+    let timeleft = 0;
     let intvl;
 
     const apiEndpointUrl = "http://localhost:8000"; // TODO: Move to env
@@ -30,6 +30,22 @@
         },
     ];
 
+    const pad = (num) => {
+        return ("0"+num).slice(-2);
+    }
+
+    const getTimeRemainingFormatted = (timeInSeconds) => {
+        let minutes = Math.floor(timeInSeconds / 60);
+        let seconds = timeInSeconds%60;
+        let hours = Math.floor(minutes/60);
+        minutes = minutes%60;
+
+        // let timewithsecond = `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+
+        if (seconds >= 30) { minutes += 1}
+        return `${pad(hours)}:${pad(minutes)}`;
+    }
+
     const getOrderCardData = async (isInit) => {
         // const data = await api.get(`${apiPrefix}/system`);
         // if (data) {
@@ -37,7 +53,7 @@
         //         // For the first load show only few fields
         //         if (isInit) {
         //             goodparttotal = data.target;
-        //             hoursleft = data.time_remain;
+        //             timeleft = data.time_remain;
         //         } else {
         //             goodpartfrom = data.good_cycles;
         //             goodparttotal = data.target;
@@ -46,7 +62,7 @@
         //                 (goodpartfrom * 100) / goodparttotal + 0.01,
         //                 0
         //             );
-        //             hoursleft = data.time_remain;
+        //             timeleft = data.time_remain;
 
         //             series = [progressStatus];
 
@@ -66,7 +82,7 @@
                 // For the first load show only few fields
                 if (isInit) {
                     goodparttotal = data.target;
-                    hoursleft = data.time_remain;
+                    timeleft = getTimeRemainingFormatted(data.time_remain);
                 } else {
                     goodpartfrom = data.good_cycles;
                     goodparttotal = data.target;
@@ -75,7 +91,7 @@
                         (goodpartfrom * 100) / goodparttotal + 0.01,
                         0
                     );
-                    hoursleft = data.time_remain;
+                    timeleft = getTimeRemainingFormatted(data.time_remain);
 
                     series = [progressStatus];
 
@@ -301,9 +317,9 @@
                                 thickness="14" />
                         </div>
 
-                        <span style="font-size: 2em;">{hoursleft}</span>
+                        <span style="font-size: 2em;">{timeleft}</span>
                         <div class="item-label-sub">
-                            Hours Left
+                            Hours/minutes left
                             <span class="item-label-subsection">(est.)</span>
                         </div>
                     </div>
