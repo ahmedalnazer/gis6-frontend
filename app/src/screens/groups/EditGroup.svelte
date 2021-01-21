@@ -67,8 +67,6 @@
         selectedColor = selectedColorSingleItem
       }
 
-      debugger
-
       if (selectedGroup == "" || selectedColor == "" || name == "") {
         if (selectedGroup == "" && name == "" && selectedColor == "") {
           validationError =
