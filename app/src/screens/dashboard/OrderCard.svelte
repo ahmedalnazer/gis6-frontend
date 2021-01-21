@@ -11,7 +11,7 @@
     let goodpartfrom = 0;
     let goodparttotal = 0;
     let badpartcount = 0;
-    let timeleft = 0;
+    let timeleft = "00.00";
     let intvl;
 
     const apiEndpointUrl = "http://localhost:8000"; // TODO: Move to env

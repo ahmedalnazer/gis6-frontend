@@ -67,6 +67,8 @@
         selectedColor = selectedColorSingleItem
       }
 
+      debugger
+
       if (selectedGroup == "" || selectedColor == "" || name == "") {
         if (selectedGroup == "" && name == "" && selectedColor == "") {
           validationError =
@@ -78,15 +80,30 @@
         } else if (selectedColor == "") {
           validationError += "Please select the 'Group Color'"
         }
+      // } else if (
+      //       name !== selectedGroup &&
+      //       (groupList.filter((x) => {
+      //           if (x.name && name) {
+      //               return x.name.toLowerCase() == name.toLowerCase();
+      //           } else {
+      //               return false;
+      //           }
+      //       }).length > 0 ||
+      //       $groups.filter((x) => x.name == name && x.id !== selectedGroupId).length > 0)
+      //   ) {
+      //       validationError = `Group Name ${name} already exist. Please select another name.`;
+      //   } 
+
       } else if (
         name !== selectedGroup &&
-            groupList.filter((x) => {
+            (groupList.filter((x) => {
               if (x.name && name) {
                 return x.name.toLowerCase() == name.toLowerCase()
               } else {
                 return false
               }
-            }).length > 0
+            }).length > 0 ||
+            $groups.filter((x) => x.name == name && x.id !== selectedGroupId).length > 0)
       ) {
         validationError = `Group Name ${name} already exist. Please select another name.`
       } else if (

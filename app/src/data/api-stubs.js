@@ -41,18 +41,22 @@ const deleteItem = (label, data) => {
 
 const stubs = {
   GET: {
+    'zonegroup': () => getCollection('groups'),
     // 'zonegroups': () => getCollection('groups'),
     'zones': () => getCollection('zones')
   },
   POST: {
+    'zonegroup': data => create('groups', data),
     // 'zonegroups': data => create('groups', data),
     'zones': data => create('zones', data)
   },
   PATCH: {
+    'zonegroup': data => update('groups', data),
     // 'zonegroups': data => update('groups', data),
     'zones': data => update('zones', data)
   },
   DELETE: {
+    'zonegrous': data => deleteItem('groups', data),
     // 'zonegroups': data => deleteItem('groups', data),
     'zones': data => deleteItem('zones', data)
   }

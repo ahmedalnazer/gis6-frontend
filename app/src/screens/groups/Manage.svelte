@@ -25,7 +25,7 @@
   let adding = false
   let removing = false
   let editing = false
-  let deleting = null
+  let deleting = false
 
   let newName, newColor, editGroupId
 
@@ -169,10 +169,16 @@
         <span
           class="link"
           on:click={() => editing = true}>{$_('Edit Group')}</span>
+        <span
+          class="link"
+          on:click={() => deleting = true}>{$_('Delete Group')}</span>          
       {:else if (selectedGroup)}
         <span
           class="link"
           on:click={() => editing = true}>{$_('Edit Group')}</span>
+        <span
+          class="link"
+          on:click={() => deleting = true}>{$_('Delete Group')}</span>
       {/if}
     </div>
 
