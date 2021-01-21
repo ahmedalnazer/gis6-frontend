@@ -2,6 +2,10 @@ import user from './user'
 import notify from './notifications'
 import stubs from './api-stubs'
 
+const apiTarget = import.meta.env.SNOWPACK_PUBLIC_API_URL || ''
+if(apiTarget) {
+  console.warn(`Overriding default API integration, targeting "${apiTarget}"`)
+}
 
 let disconnectLock
 
@@ -97,7 +101,7 @@ class API {
         }
       }
       try {
-        const resp = await fetch(`/api/${url}`, opts)
+        const resp = await fetch(`${apiTarget}/api/${url}`, opts)
         if (resp && resp.status == 403) {
           fail('Sorry, it seems like your admin session has expired, please try logging in again')
           return reject(resp)
