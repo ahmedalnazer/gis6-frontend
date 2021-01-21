@@ -95,5 +95,3 @@ let groupColorIndex = {}
 for(let [ key, value ] of Object.entries(groupColors)) {
   groupColorIndex[value] = parseInt(key)
 }
-
-console.log(groupColorIndex)
