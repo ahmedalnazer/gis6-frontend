@@ -16,6 +16,7 @@
     "sass": "^1.26.2",
     "shortid": "^2.2.16",
     "socket.io-client": "^3.0.5",
+    "sortablejs": "^1.13.0",
     "svelte": "^3.31.2",
     "svelte-preprocess": "^4.6.1",
     "svelte-sortable-list": "^1.1.0"

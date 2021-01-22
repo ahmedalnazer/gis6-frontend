@@ -1,179 +1,198 @@
 <script>
-  import Screen from "layout/Screen"
-  import groups, { activeGroup } from "data/groups"
-  import zones from "data/zones"
-  import _ from "data/language"
-  import ZoneGroup from "./ZoneGroup"
-  import { Modal } from "components"
-  import GroupForm from "./GroupForm"
-  import ZoneTasks from "components/taskbars/ZoneTasks"
-  import { startSelection } from "./selectZones"
-  import ZoneButton from "./ZoneButton"
-  import { CheckBox } from "components/"
-  import ModifyZones from "./ModifyZones"
-  import GroupSelector from 'components/GroupSelector.svelte'
+  import { onMount, beforeUpdate, afterUpdate, onDestroy } from "svelte";
+  import Screen from "layout/Screen";
+  import groups, { activeGroup } from "data/groups";
+  import zones from "data/zones";
+  import _ from "data/language";
+  import ZoneGroup from "./ZoneGroup";
+  import { Modal } from "components";
+  import GroupForm from "./GroupForm";
+  import ZoneTasks from "components/taskbars/ZoneTasks";
+  import { startSelection } from "./selectZones";
+  import ZoneButton from "./ZoneButton";
+  import { CheckBox } from "components/";
+  import ModifyZones from "./ModifyZones";
+  import GroupSelector from "components/GroupSelector.svelte";
+  import Sortable from "sortablejs";
 
-  $: selectedGroup = $activeGroup
-  let sortGroups = true
+  $: selectedGroup = $activeGroup;
+  let sortGroups = true;
 
   $: displayedGroups = selectedGroup
-    ? [ selectedGroup ]
-    : $groups.concat([ { id: "unassigned", name: "Unassigned" } ])
+    ? [selectedGroup]
+    : $groups.concat([{ id: "unassigned", name: "Unassigned" }]);
   // $: console.log(`disp grps: ${displayedGroups}`);
   // $: selectedGroup,     console.log(selectedGroup)
 
-  let creating = false
-  let adding = false
-  let removing = false
-  let editing = false
-  let deleting = null
+  let creating = false;
+  let adding = false;
+  let removing = false;
+  let editing = false;
+  let deleting = null;
 
-  let newName, newColor, editGroupId
+  let newName, newColor, editGroupId;
 
   // Create group and assign zone
   const createGroup = async () => {
-    creating = false
-    let newGrp = { name: newName, color: newColor }
+    creating = false;
+    let newGrp = { name: newName, color: newColor };
 
-    await groups.create(newGrp, { skipReload: true })
-    await groups.reload()
+    await groups.create(newGrp, { skipReload: true });
+    await groups.reload();
 
-    let selGrp = displayedGroups.filter((x) => x.name == newName)
+    let selGrp = displayedGroups.filter((x) => x.name == newName);
     let _zones = $zones.filter((x) => {
-      return activeSelection.includes(x.id)
-    })
+      return activeSelection.includes(x.id);
+    });
 
     for (let z of _zones) {
-      z.groups = (z.groups || []).concat(selGrp[0].id)
-      z.groups = [ ...new Set(z.groups) ]
-      await zones.update(z, { skipReload: true })
+      z.groups = (z.groups || []).concat(selGrp[0].id);
+      z.groups = [...new Set(z.groups)];
+      await zones.update(z, { skipReload: true });
     }
 
-    await zones.reload()
+    await zones.reload();
 
     //Reset for next input
-    newName = ""
-    newColor = ""
+    newName = "";
+    newColor = "";
 
     // Clear selection
-    clearSelection()
-  }
+    clearSelection();
+  };
 
   const editGroup = async () => {
-    editing = false
-    let editGroupItem = { name: newName, color: newColor, id: editGroupId }
+    editing = false;
+    let editGroupItem = { name: newName, color: newColor, id: editGroupId };
 
-    await groups.update(editGroupItem)
-    await groups.reload()
+    await groups.update(editGroupItem);
+    await groups.reload();
 
     //Reset for next input
-    newName = ""
-    newColor = ""
-  }
+    newName = "";
+    newColor = "";
+  };
 
   // selection when sorted by groups
-  let selection = {}
+  let selection = {};
 
   // selection when single group or unsorted
-  let selectedZoneIds = []
+  let selectedZoneIds = [];
 
   const clearSelection = () => {
     for (let key of Object.keys(selection)) {
-      selection[key] = []
+      selection[key] = [];
     }
-  }
+  };
 
   $: selectedZones = Object.keys(selection)
     .map((x) => selection[x].map((zone) => ({ zone, group: x })))
-    .reduce((all, arr) => all.concat(arr), [])
+    .reduce((all, arr) => all.concat(arr), []);
 
   const toggle = (id) => {
     if (selectedZoneIds.includes(id)) {
-      selectedZoneIds = selectedZoneIds.filter((x) => x != id)
+      selectedZoneIds = selectedZoneIds.filter((x) => x != id);
     } else {
-      selectedZoneIds = selectedZoneIds.concat(id)
+      selectedZoneIds = selectedZoneIds.concat(id);
     }
-  }
+  };
 
   const boxSelect = (nodes) => {
-    console.log(nodes)
-  }
+    console.log(nodes);
+  };
 
   $: displayedZones = selectedGroup
     ? $zones.filter((x) => x.groups && x.groups.includes(selectedGroup))
-    : $zones
+    : $zones;
 
   $: activeSelection =
     selectedGroup || !sortGroups
       ? selectedZoneIds
-      : selectedZones.map((x) => x.zone)
+      : selectedZones.map((x) => x.zone);
 
   $: zonesToModify = $zones.filter((z) => {
-    return activeSelection.includes(z.id)
-  })
+    return activeSelection.includes(z.id);
+  });
 
   const commitModify = () => {
-    adding = false
-    removing = false
-    clearSelection()
-  }
+    adding = false;
+    removing = false;
+    clearSelection();
+  };
 
-  let openGroups = {}
+  let openGroups = {};
+
+  onMount(() => {
+    let objGroupSortedList = document.getElementById("groupSortedListContainer");
+    let sortableContainer = Sortable.create(objGroupSortedList);
+  });
+
+  onDestroy(() => {});
 </script>
 
-
-<Screen title={$_('Manage Groups')} id='group_management'>
-  <div slot='tasks'>
+<Screen title={$_("Manage Groups")} id="group_management">
+  <div slot="tasks">
     <ZoneTasks />
   </div>
 
   <div
     class="selection-area"
-    on:mousedown={(e) => startSelection(e, boxSelect)}>
+    on:mousedown={(e) => startSelection(e, boxSelect)}
+  >
     <GroupSelector />
     <div class="tools">
       {#if !selectedGroup}
-        <CheckBox label={$_('Show Groups')} bind:checked={sortGroups} />
+        <CheckBox label={$_("Show Groups")} bind:checked={sortGroups} />
       {/if}
 
       {#if selectedZones.length}
-        <span
-          class="link"
-          on:click={clearSelection}>{$_('Clear Selection')}</span>
-        <span
-          class="link"
-          on:click={() => creating = true}>{$_('Create Group')}</span>
-        <span
-          class="link"
-          on:click={() => adding = true}>{$_('Add to Group')}</span>
-        <span
-          class="link"
-          on:click={() => removing = true}>{$_('Remove from Group')}</span>
-        <span
-          class="link"
-          on:click={() => editing = true}>{$_('Edit Group')}</span>        
-      {:else if (selectedGroup)}
-        <span
-          class="link"
-          on:click={() => editing = true}>{$_('Edit Group')}</span>
+        <span class="link" on:click={clearSelection}
+          >{$_("Clear Selection")}</span
+        >
+        <span class="link" on:click={() => (creating = true)}
+          >{$_("Create Group")}</span
+        >
+        <span class="link" on:click={() => (adding = true)}
+          >{$_("Add to Group")}</span
+        >
+        <span class="link" on:click={() => (removing = true)}
+          >{$_("Remove from Group")}</span
+        >
+        <span class="link" on:click={() => (editing = true)}
+          >{$_("Edit Group")}</span
+        >
+      {:else if selectedGroup}
+        <span class="link" on:click={() => (editing = true)}
+          >{$_("Edit Group")}</span
+        >
       {/if}
     </div>
 
-    <div class='zone-container'>
+    <div class="zone-container">
       {#if !selectedGroup && sortGroups}
-
-        {#each displayedGroups as group (group.id)}
-          <ZoneGroup bind:open={openGroups[group.id]} {group} onDelete={() => deleting = group} bind:selection={selection[group.id]}/>
-        {/each}
-
+        <ul id="groupSortedListContainer" class="ulSortedListContainer">
+          {#each displayedGroups as group (group.id)}
+            <li class="liSortedList">
+              <div class="divSortableList">
+                <div class="divHeaderSortableList">&nbsp;</div>
+                <ZoneGroup
+                  bind:open={openGroups[group.id]}
+                  {group}
+                  onDelete={() => (deleting = group)}
+                  bind:selection={selection[group.id]}
+                />
+              </div>
+            </li>
+          {/each}
+        </ul>
       {:else}
         {#if selectedGroup && !displayedZones.length}
-          <p class='muted'>{$_('No zones have been assigned to this group')}</p>
+          <p class="muted">{$_("No zones have been assigned to this group")}</p>
         {/if}
-        <div class='zones'>
+        <div class="zones">
           {#each displayedZones as zone (zone.id)}
             <ZoneButton
-              zone={zone} 
+              {zone}
               active={selectedZoneIds.includes(zone.id)}
               on:click={() => toggle(zone.id)}
             />
@@ -185,45 +204,56 @@
 </Screen>
 
 {#if creating}
-  <Modal onClose={() => creating = false}>
+  <Modal onClose={() => (creating = false)}>
     <GroupForm
       onClose={() => {
-        creating = false
-        createGroup()
+        creating = false;
+        createGroup();
       }}
       bind:name={newName}
       bind:color={newColor}
       bind:groupList={displayedGroups}
       zones={zonesToModify}
-      FormType="CREATE" />
+      FormType="CREATE"
+    />
     <!-- onSubmit={createGroup} -->
   </Modal>
 {/if}
 
 {#if editing}
-  <Modal onClose={() => editing = false}>
+  <Modal onClose={() => (editing = false)}>
     <GroupForm
       onClose={() => {
-        editing = false
-        editGroup()
+        editing = false;
+        editGroup();
       }}
       bind:name={newName}
       bind:color={newColor}
       bind:groupList={displayedGroups}
       formType="EDIT"
       bind:selectedGroupId={editGroupId}
-      bind:selectedGroupItem={selectedGroup} />
+      bind:selectedGroupItem={selectedGroup}
+    />
   </Modal>
 {/if}
 
 {#if deleting}
-  <Modal title={$_('Delete Group')} onClose={() => deleting = null}>
-    <div class='modal'>
-      <p>Are you sure you want to delete the {deleting.name} group? This is a permanent action and cannot be undone.</p>
+  <Modal title={$_("Delete Group")} onClose={() => (deleting = null)}>
+    <div class="modal">
+      <p>
+        Are you sure you want to delete the {deleting.name} group? This is a permanent
+        action and cannot be undone.
+      </p>
 
-      <div class='modal-buttons'>
-        <div class='button' on:click={() => deleting = null}>Cancel</div>
-        <div class='button active' on:click={() => {groups.delete(deleting); deleting = null}}>Yes, delete group</div>
+      <div class="modal-buttons">
+        <div class="button" on:click={() => (deleting = null)}>Cancel</div>
+        <div
+          class="button active"
+          on:click={() => {
+            groups.delete(deleting);
+            deleting = null;
+          }}
+        >Yes, delete group</div>
       </div>
     </div>
   </Modal>
@@ -231,28 +261,29 @@
 
 {#if adding}
   <Modal
-    title={$_('Add to Group')}
+    title={$_("Add to Group")}
     onClose={() => {
-      clearSelection()
-      adding = false
-    }}>
+      clearSelection();
+      adding = false;
+    }}
+  >
     <ModifyZones zones={zonesToModify} onCommit={commitModify} adding />
   </Modal>
 {/if}
 
 {#if removing}
   <Modal
-    title={$_('Remove from Group')}
+    title={$_("Remove from Group")}
     onClose={() => {
-      clearSelection()
-      removing = false
-    }}>
+      clearSelection();
+      removing = false;
+    }}
+  >
     <ModifyZones zones={zonesToModify} onCommit={commitModify} />
   </Modal>
 {/if}
 
-
-<style lang='scss'>
+<style lang="scss">
   :global(#group_management) .screen-body {
     display: flex;
     flex-direction: column;
@@ -290,4 +321,24 @@
   .modal {
     text-align: center;
   }
+
+  .ulSortedListContainer {
+    list-style-type: none;
+  }
+
+  .liSortedList {
+    padding: 5px;
+  }
+
+  .liSortedList:hover {
+    background-color: #F5F5F5;
+    // padding: 8px;
+  }
+
+  .divSortableList {
+    padding: 2px;
+  }
+
+  // .divHeaderSortableList{ }
+
 </style>
