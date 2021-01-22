@@ -338,10 +338,7 @@
     padding: 5px;
   }
 
-  .liSortedList:hover {
-    background-color: #F5F5F5;
-    // padding: 8px;
-  }
+  // .liSortedList:hover { }
 
   .divSortableList {
     padding: 2px;
