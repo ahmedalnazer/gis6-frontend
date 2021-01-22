@@ -4,7 +4,7 @@
   import _ from 'data/language'
   import Sortable from 'sortablejs'
 
-  $: console.log($groups)
+  // $: console.log($groups)
 
   let selector
 
@@ -58,6 +58,7 @@
       white-space: nowrap;
       border: 1px solid var(--darkBlue);
       color: var(--darkBlue);
+      background: white;
       &.active {
         background: var(--darkBlue);
         color: white;

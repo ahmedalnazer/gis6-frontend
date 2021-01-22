@@ -53,7 +53,7 @@ zones.reload = async () => {
     z = await getZones()
   }
 
-  console.log(z)
+  // console.log(z)
   rawZones.set(z)
 }
 
@@ -63,7 +63,7 @@ zones.create = async zone => {
 }
 
 zones.update = async (zone, options = {}) => {
-  debugger
+  // debugger
   await api.put(`zone/${zone.id}`, encodeZone(zone))
   if(!options.skipReload) await zones.reload()
 }

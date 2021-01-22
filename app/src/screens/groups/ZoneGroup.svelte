@@ -56,6 +56,9 @@
 </div>
 
 <style lang="scss">
+  .zone-group {
+    padding-bottom: 16px;
+  }
   .muted {
     padding: 16px;
     margin-bottom: 16px;

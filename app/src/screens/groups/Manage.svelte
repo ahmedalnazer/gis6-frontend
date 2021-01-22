@@ -122,9 +122,10 @@
 
   let openGroups = {}
 
+  let sortList
+
   onMount(() => {
-    let objGroupSortedList = document.getElementById("groupSortedListContainer")
-    let sortableContainer = Sortable.create(objGroupSortedList, {
+    let sortableContainer = Sortable.create(sortList, {
       store: {
         get: sortable => $group_order,
         set: sortable => {
@@ -178,21 +179,26 @@
 
     <div class="zone-container">
       {#if !selectedGroup && sortGroups}
-        <ul id="groupSortedListContainer" class="ulSortedListContainer">
-          {#each displayedGroups as group (group.id)}
-            <li class="liSortedList">
-              <div class="divSortableList">
-                <div class="divHeaderSortableList">&nbsp;</div>
-                <ZoneGroup
-                  bind:open={openGroups[group.id]}
-                  {group}
-                  onDelete={() => deleting = group}
-                  bind:selection={selection[group.id]}
-                />
-              </div>
-            </li>
+        <div bind:this={sortList}>
+          {#each displayedGroups.filter(x => x.id != 'unassigned') as group (group.id)}
+            <div data-id={group.id}>
+              <ZoneGroup
+                bind:open={openGroups[group.id]}
+                {group}
+                onDelete={() => deleting = group}
+                bind:selection={selection[group.id]}
+              />
+            </div>
           {/each}
-        </ul>
+        </div>
+        {#each displayedGroups.filter(x => x.id == 'unassigned') as group (group.id)}
+            <ZoneGroup
+              bind:open={openGroups[group.id]}
+              {group}
+              onDelete={() => deleting = group}
+              bind:selection={selection[group.id]}
+            />
+        {/each}
       {:else}
         {#if selectedGroup && !displayedZones.length}
           <p class="muted">{$_("No zones have been assigned to this group")}</p>
@@ -328,20 +334,6 @@
 
   .modal {
     text-align: center;
-  }
-
-  .ulSortedListContainer {
-    list-style-type: none;
-  }
-
-  .liSortedList {
-    padding: 5px;
-  }
-
-  // .liSortedList:hover { }
-
-  .divSortableList {
-    padding: 2px;
   }
 
   // .divHeaderSortableList{ }

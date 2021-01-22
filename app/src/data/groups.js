@@ -21,11 +21,9 @@ export const setGroupOrder = arr => {
 const groups = derived([ _groups, group_order ], ([ $_groups, $group_order ]) => {
   let sorted = []
   for(let g of $group_order.map(x => parseInt(x))) {
-    const f = $_groups.find(x => console.log(g, x, x.id == g) || x.id == g)
-    console.log(f)
+    const f = $_groups.find(x => x.id == g)
     sorted.push(f)
   }
-  console.log(sorted)
   return sorted.concat($_groups.filter(x => !sorted.includes(x))).filter(x => !!x)
 })
 
