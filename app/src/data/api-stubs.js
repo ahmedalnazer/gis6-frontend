@@ -1,5 +1,7 @@
 import { getId } from 'data/tools'
 
+const offline = import.meta.env.SNOWPACK_PUBLIC_OFFLINE == 'true'
+
 // functions for CRUD on dummy data
 
 const getCollection = label => {

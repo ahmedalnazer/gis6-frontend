@@ -2,7 +2,7 @@ import { writable, derived } from 'svelte/store'
 import api from 'data/api'
 import { getId } from './tools'
 
-const _isDevEnv = true
+const _isDevEnv = false
 const _groups = writable([])
 
 const group_order = writable([])
@@ -134,5 +134,3 @@ let groupColorIndex = {}
 for(let [ key, value ] of Object.entries(groupColors)) {
   groupColorIndex[value] = parseInt(key)
 }
-
-console.log(groupColorIndex)

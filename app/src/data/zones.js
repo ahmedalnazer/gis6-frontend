@@ -1,5 +1,6 @@
 import { writable, derived } from 'svelte/store'
 import api from 'data/api'
+import ws from 'data/realtime/ws'
 
 const rawZones = writable([])
 

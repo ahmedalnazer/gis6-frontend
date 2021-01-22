@@ -1,80 +1,55 @@
 <script>
-    import Card from "@smui/card";
-    import api from "data/api";
-    import { onMount, beforeUpdate, afterUpdate, onDestroy } from "svelte";
+    import Card from "@smui/card"
+    import api from "data/api"
+    import { onMount, beforeUpdate, afterUpdate, onDestroy } from "svelte"
     export let mouldDataItem = {
-        title: "Manage Mould",
-        itemDesc: "",
-        itemImageUrl: "",
-    };
+      title: "Manage Mould",
+      itemDesc: "",
+      itemImageUrl: "",
+    }
     export let processDataItem = {
-        title: "Manage Process",
-        itemDesc: "",
-        itemImageUrl: "",
-    };
-    export let isLayoutView = false;
+      title: "Manage Process",
+      itemDesc: "",
+      itemImageUrl: "",
+    }
+    export let isLayoutView = false
 
-    const apiEndpointUrl = "http://localhost:8000"; // TODO: Move to env
-    const apiPrefix = "/api";
-    let hasMoldData = false;
-    let hasProcessData = false;
+    let hasMoldData = false
+    let hasProcessData = false
 
-    let longPollingInterval = 5000;
+    let longPollingInterval = 5000
 
     const getMoldData = async () => {
-        // const data = await api.get(`${apiPrefix}/mold`);
-        // if (data && data.length) {
-        //     // mouldDataItem.title = data[0].name;
-        //     mouldDataItem.itemDesc = data[0].part_name;
-        //     mouldDataItem.itemImageUrl = data[0].image;
-        //     hasMoldData = true;
-        // }
-
-        fetch(`${apiEndpointUrl}/mold`)
-            .then((response) => response.json())
-            .then((data) => {
-                if (data && data.length) {
-                    // mouldDataItem.title = data[0].name;
-                    mouldDataItem.itemDesc = data[0].part_name;
-                    mouldDataItem.itemImageUrl = data[0].image;
-                    hasMoldData = true;
-                }
-            });
-    };
+      const data = await api.get(`/mold`)
+      if (data && data.length) {
+        // mouldDataItem.title = data[0].name;
+        mouldDataItem.itemDesc = data[0].part_name
+        mouldDataItem.itemImageUrl = data[0].image
+        hasMoldData = true
+      }
+    }
 
     const getProcessData = async () => {
-        // const data = await api.get(`${apiPrefix}/process`);
+      const data = await api.get(`process`)
+      if (data && data.length) {
+        // processDataItem.title = data[0].name;
+        processDataItem.itemDesc = data[0].part_name
+        processDataItem.itemImageUrl = data[0].image
+        hasProcessData = true
+      }
+    }
 
-        // if (data && data.length) {
-        //     // processDataItem.title = data[0].name;
-        //     processDataItem.itemDesc = data[0].part_name;
-        //     processDataItem.itemImageUrl = data[0].image;
-        //     hasProcessData = true;
-        // }
-
-        fetch(`${apiEndpointUrl}/process`)
-            .then((response) => response.json())
-            .then((data) => {
-                if (data && data.length) {
-                    // processDataItem.title = data[0].name;
-                    processDataItem.itemDesc = data[0].part_name;
-                    processDataItem.itemImageUrl = data[0].image;
-                    hasProcessData = true;
-                }
-            });
-    };
-
-    let intvl;
+    let intvl
 
     onMount(() => {
-        intvl = setInterval(() => {
-            // Use long polling
-            getMoldData();
-            getProcessData();
-        }, longPollingInterval);
-    });
+      intvl = setInterval(() => {
+        // Use long polling
+        getMoldData()
+        getProcessData()
+      }, longPollingInterval)
+    })
 
-    onDestroy(() => clearInterval(intvl));
+    onDestroy(() => clearInterval(intvl))
 </script>
 
 <style>
