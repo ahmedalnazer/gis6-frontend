@@ -37,6 +37,8 @@
     creating = false;
     let newGrp = { name: newName, color: newColor };
 
+    debugger
+
     await groups.create(newGrp, { skipReload: true });
     await groups.reload();
 
@@ -124,7 +126,7 @@
 
   onMount(() => {
     let objGroupSortedList = document.getElementById("groupSortedListContainer");
-    let sortableContainer = Sortable.create(objGroupSortedList);
+    let sortableContainer = Sortable.create(objGroupSortedList, {handle: ".drag-header"});
   });
 
   onDestroy(() => {});

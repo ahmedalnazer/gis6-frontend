@@ -1,7 +1,7 @@
 import { writable, derived } from 'svelte/store'
 import api from 'data/api'
 
-const _isDevEnv = false
+const _isDevEnv = true
 const _groups = writable([])
 
 export const group_order = writable(JSON.parse(localStorage.getItem('group_order') || '[]'))

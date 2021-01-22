@@ -1,6 +1,7 @@
 import { writable, derived } from 'svelte/store'
 import api from 'data/api'
 import ws from 'data/realtime/ws'
+import { debug } from 'svelte/internal'
 
 const rawZones = writable([])
 
@@ -39,6 +40,8 @@ const getZones = async () => (await api.get('zone')).map(x => decodeZone(x))
 zones.reload = async () => {
   let z = await getZones()
 
+  // debugger
+
   // TODO: remove dummy zones
   if(z.length == 0) {
     for(let i = 0; i < 50; i++) {
@@ -60,6 +63,7 @@ zones.create = async zone => {
 }
 
 zones.update = async (zone, options = {}) => {
+  debugger
   await api.put(`zone/${zone.id}`, encodeZone(zone))
   if(!options.skipReload) await zones.reload()
 }
