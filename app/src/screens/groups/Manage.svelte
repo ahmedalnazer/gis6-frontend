@@ -1,6 +1,6 @@
 <script>
   import Screen from "layout/Screen"
-  import groups from "data/groups"
+  import groups, { activeGroup } from "data/groups"
   import zones from "data/zones"
   import _ from "data/language"
   import ZoneGroup from "./ZoneGroup"
@@ -11,8 +11,9 @@
   import ZoneButton from "./ZoneButton"
   import { CheckBox } from "components/"
   import ModifyZones from "./ModifyZones"
+  import GroupSelector from 'components/GroupSelector.svelte'
 
-  let selectedGroup = null
+  $: selectedGroup = $activeGroup
   let sortGroups = true
 
   $: displayedGroups = selectedGroup
@@ -129,25 +130,7 @@
   <div
     class="selection-area"
     on:mousedown={(e) => startSelection(e, boxSelect)}>
-    <div class="group-selector">
-      <div
-        class="tab"
-        on:click={() => selectedGroup = null}
-        class:active={!selectedGroup}>
-        {$_('All Zones')}
-      </div>
-
-      {#each $groups as group (group.id)}
-        {#if group.id != 'unassigned'}
-          <div
-            class="tab"
-            on:click={() => selectedGroup = group.id}
-            class:active={selectedGroup == group.id}>
-            {group.name}
-          </div>
-        {/if}
-      {/each}
-    </div>
+    <GroupSelector />
     <div class="tools">
       {#if !selectedGroup}
         <CheckBox label={$_('Show Groups')} bind:checked={sortGroups} />
@@ -274,15 +257,6 @@
     display: flex;
     flex-direction: column;
   }
-
-  .group-selector {
-    display: flex;
-    overflow: auto;
-    .tab {
-      padding: 16px 32px;
-      white-space: nowrap;
-    }
-  }
   .tools {
     margin: 48px 0;
     > :global(*) {
@@ -307,15 +281,6 @@
     grid-template-columns: repeat(8, 1fr);
     grid-gap: 8px;
     overflow: auto;
-  }
-
-  .tab {
-    border: 1px solid var(--darkBlue);
-    color: var(--darkBlue);
-    &.active {
-      background: var(--darkBlue);
-      color: white;
-    }
   }
 
   .link {

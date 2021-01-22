@@ -10,7 +10,9 @@ export const setGroupOrder = arr => {
   group_order.set(arr)
 }
 
-
+/**
+ * Sorted list of currently available groups
+ */
 const groups = derived([ _groups, group_order ], ([ $_groups, $group_order ]) => {
   const decoded = $_groups.map(x => decodeGroup(x))
   let sorted = []
@@ -19,6 +21,13 @@ const groups = derived([ _groups, group_order ], ([ $_groups, $group_order ]) =>
   }
   return sorted.concat(decoded.filter(x => !sorted.includes(x)))
 })
+
+
+/**
+ * Store containing currently selected group
+ */
+export const activeGroup = writable(null)
+
 
 const decodeGroup = g => {
   const d = {
@@ -51,28 +60,27 @@ groups.create = async group => {
 groups.update = async group => {
   if (_isDevEnv) {
     // This code is for development environment
-    let tempData = localStorage.getItem("all-groups");
+    let tempData = localStorage.getItem("all-groups")
     let tempSaveData = JSON.parse(tempData)
     let tempSaveDataFiltered = tempSaveData.filter(x => x.id == group.id)
-    let groupColor = "";
+    let groupColor = ""
 
     for(let [ key, value ] of Object.entries(groupColors)) {
       if (value == group.color) {
-        groupColor = key;
+        groupColor = key
       }
     }
 
     if (tempSaveDataFiltered.length) {
-      tempSaveDataFiltered[0].GroupName = group.name;
-      tempSaveDataFiltered[0].GroupColor = groupColor;
+      tempSaveDataFiltered[0].GroupName = group.name
+      tempSaveDataFiltered[0].GroupColor = groupColor
     }
 
-    localStorage.setItem("all-groups", JSON.stringify(tempSaveData));
+    localStorage.setItem("all-groups", JSON.stringify(tempSaveData))
 
     // await api.patch('zonegroups', group)
     await groups.reload()  
-  }
-  else {
+  } else {
     const { id } = group
     delete group.id
     await api.put(`zonegroup/${id}`, encodeGroup(group))
@@ -83,11 +91,11 @@ groups.update = async group => {
 groups.delete = async group => {
   if (_isDevEnv) {
     // This code is for development environment
-    let tempData = localStorage.getItem("all-groups");
+    let tempData = localStorage.getItem("all-groups")
     let tempSaveData = JSON.parse(tempData)
     let tempSaveDataFiltered = tempSaveData.filter(x => x.id !== group.id)
 
-    localStorage.setItem("all-groups", JSON.stringify(tempSaveDataFiltered));
+    localStorage.setItem("all-groups", JSON.stringify(tempSaveDataFiltered))
 
     // await api.delete('zonegroups', group)
     await groups.reload()

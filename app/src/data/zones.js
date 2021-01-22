@@ -16,17 +16,20 @@ const decodeZone = z => {
     ...z,
     name: z.ZoneName,
     number: z.ZoneNumber,
-    id: z.id
+    id: z.id,
+    groups: (z.ZoneGroups || '').split(',').map(x => parseInt(x))
   }
   delete d.ZoneName
   delete d.ZoneNumber
+  delete d.ZoneGroups
   return d
 }
 
 const encodeZone = z => {
   return {
     ZoneName: z.name,
-    ZoneNumber: z.number || z.id
+    ZoneNumber: z.number || z.id,
+    ZoneGroups: (z.groups || []).filter(x => !!x).join(',')
   }
 }
 
@@ -47,6 +50,7 @@ zones.reload = async () => {
     z = await getZones()
   }
 
+  console.log(z)
   rawZones.set(z)
 }
 
