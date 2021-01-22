@@ -96,12 +96,19 @@
         name !== selectedGroup &&
             (groupList.filter((x) => {
               if (x.name && name) {
-                return x.name.toLowerCase() == name.toLowerCase()
+                return x.name.trim().toLowerCase() == name.trim().toLowerCase()
               } else {
-                return false
+                return x.name == name
               }
             }).length > 0 ||
-            $groups.filter((x) => x.name == name && x.id !== selectedGroupId).length > 0)
+            $groups.filter((x) => 
+            {
+              if (x.name && name) {
+                return x.name.trim().toLowerCase() == name.trim().toLowerCase() && x.id !== selectedGroupId
+              } else {
+                return x.name == name && x.id !== selectedGroupId
+              }              
+            }).length > 0)
       ) {
         validationError = `Group Name ${name} already exist. Please select another name.`
       } else if (

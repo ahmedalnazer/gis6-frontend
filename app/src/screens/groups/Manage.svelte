@@ -25,7 +25,7 @@
   let adding = false
   let removing = false
   let editing = false
-  let deleting = false
+  let deleting = null
 
   let newName, newColor, editGroupId
 
@@ -64,7 +64,7 @@
 
     await groups.update(editGroupItem)
     await groups.reload()
-    
+
     //Reset for next input
     newName = ""
     newColor = ""
@@ -168,17 +168,11 @@
           on:click={() => removing = true}>{$_('Remove from Group')}</span>
         <span
           class="link"
-          on:click={() => editing = true}>{$_('Edit Group')}</span>
-        <span
-          class="link"
-          on:click={() => deleting = true}>{$_('Delete Group')}</span>          
+          on:click={() => editing = true}>{$_('Edit Group')}</span>        
       {:else if (selectedGroup)}
         <span
           class="link"
           on:click={() => editing = true}>{$_('Edit Group')}</span>
-        <span
-          class="link"
-          on:click={() => deleting = true}>{$_('Delete Group')}</span>
       {/if}
     </div>
 
@@ -217,6 +211,7 @@
       bind:name={newName}
       bind:color={newColor}
       bind:groupList={displayedGroups}
+      zones={zonesToModify}
       FormType="CREATE" />
     <!-- onSubmit={createGroup} -->
   </Modal>

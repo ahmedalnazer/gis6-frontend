@@ -18,6 +18,8 @@
   export let formType = "CREATE";
   export let selectedGroupItem = "";
 
+  let _zones;
+  export { _zones as zones };
   /**
    * name and color are bound to vars in the parent component, so all we
    * need to do is update with the user's selections and submit the form (trigger onSubmit)
@@ -30,6 +32,6 @@
     <EditGroup {groupList} {onClose} bind:name bind:color bind:selectedGroupId bind:selectedGroupItem={selectedGroupItem} />
   {:else}
     <h1>{$_('CREATE GROUP')}</h1>
-    <CreateGroup {groupList} {onClose} bind:name bind:color />
+    <CreateGroup {groupList} {onClose} bind:name bind:color zones={_zones} />
   {/if}
 </form>

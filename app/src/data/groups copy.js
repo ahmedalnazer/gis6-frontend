@@ -2,7 +2,6 @@ import { writable, derived } from 'svelte/store'
 import api from 'data/api'
 import { getId } from './tools'
 
-const _isDevEnv = true
 const _groups = writable([])
 
 const group_order = writable([])
@@ -45,53 +44,15 @@ groups.create = async group => {
 }
 
 groups.update = async group => {
-  if (_isDevEnv) {
-    // This code is for development environment
-    let tempData = localStorage.getItem("all-groups");
-    let tempSaveData = JSON.parse(tempData)
-    let tempSaveDataFiltered = tempSaveData.filter(x => x.id == group.id)
-    let groupColor = "";
-
-    for(let [ key, value ] of Object.entries(groupColors)) {
-      if (value == group.color) {
-        groupColor = key;
-      }
-    }
-
-    if (tempSaveDataFiltered.length) {
-      tempSaveDataFiltered[0].GroupName = group.name;
-      tempSaveDataFiltered[0].GroupColor = groupColor;
-    }
-
-    localStorage.setItem("all-groups", JSON.stringify(tempSaveData));
-
-    // await api.patch('zonegroups', group)
-    await groups.reload()  
-  }
-  else {
-    const { id } = group
-    delete group.id
-    await api.put(`zonegroup/${id}`, encodeGroup(group))
-    await groups.reload()
-  }
+  const { id } = group
+  delete group.id
+  await api.put(`zonegroup/${id}`, encodeGroup(group))
+  await groups.reload()
 }
 
 groups.delete = async group => {
-  if (_isDevEnv) {
-    // This code is for development environment
-    let tempData = localStorage.getItem("all-groups");
-    let tempSaveData = JSON.parse(tempData)
-    let tempSaveDataFiltered = tempSaveData.filter(x => x.id !== group.id)
-
-    localStorage.setItem("all-groups", JSON.stringify(tempSaveDataFiltered));
-
-    // await api.delete('zonegroups', group)
-    await groups.reload()
-  } 
-  else {
-    await api.delete(`zonegroup/${group.id}`)
-    await groups.reload()
-  }
+  await api.delete(`zonegroup/${group.id}`)
+  await groups.reload()
 }
 
 groups.reload()
