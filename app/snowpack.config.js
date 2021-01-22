@@ -1,3 +1,5 @@
+console.log('TESTING CONFIG FILE')
+
 module.exports = {
   mount: {
     public: '/',

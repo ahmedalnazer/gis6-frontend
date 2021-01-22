@@ -1,6 +1,6 @@
 import user from './user'
 import notify from './notifications'
-import stubs from './api-stubs'
+import getStub from './api-stubs'
 
 const apiTarget = import.meta.env.SNOWPACK_PUBLIC_API_URL || ''
 if(apiTarget) {
@@ -69,9 +69,9 @@ class API {
     return new Promise(async (resolve, reject) => {
 
       // call stub function if available and return
-      if(stubs && stubs[method] && stubs[method][url]) {
-        console.warn(`RETURNING STUB DATA FOR '${url}'`)
-        return resolve(stubs[method][url](data))
+      const stub = getStub(method, url, data)
+      if(stub) {
+        return resolve(stub)
       }
 
       if(!url.endsWith('/')) url = url + '/'

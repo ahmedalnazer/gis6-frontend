@@ -4,6 +4,7 @@
   import DashboardSection from './DashboardSection'
   import ChangeLog from './cards/ChangeLog'
   import GroupManagement from './cards/GroupManagement'
+  import UserManagement from './cards/UserManagement'
 
   let cards = [
     {
@@ -15,6 +16,11 @@
       id: 2,
       roles: [ 'all' ],
       component: GroupManagement
+    },
+    {
+      id: 3,
+      roles: [ 'all' ],
+      component: UserManagement
     }
   ]
 

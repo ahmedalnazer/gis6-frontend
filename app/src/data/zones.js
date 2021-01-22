@@ -11,36 +11,57 @@ const zones = derived([ rawZones ], ([ $raw ]) => {
   return sorted
 })
 
+const decodeZone = z => {
+  const d = {
+    ...z,
+    name: z.ZoneName,
+    number: z.ZoneNumber,
+    id: z.id
+  }
+  delete d.ZoneName
+  delete d.ZoneNumber
+  return d
+}
+
+const encodeZone = z => {
+  return {
+    ZoneName: z.name,
+    ZoneNumber: z.number || z.id
+  }
+}
+
+
+const getZones = async () => (await api.get('zone')).map(x => decodeZone(x))
 
 zones.reload = async () => {
-  let z = await api.get('zones')
+  let z = await getZones()
 
   // TODO: remove dummy zones
   if(z.length == 0) {
     for(let i = 0; i < 50; i++) {
-      await api.post('zones', {
+      await api.post('zone', encodeZone({
         name: `Zone ${i}`,
         id: i
-      })
+      }))
     }
-    z = await api.get('zones')
+    z = await getZones()
   }
 
   rawZones.set(z)
 }
 
 zones.create = async zone => {
-  await api.post('zones', zone)
+  await api.post('zone', encodeZone(zone))
   await zones.reload()
 }
 
 zones.update = async (zone, options = {}) => {
-  await api.patch('zones', zone)
+  await api.put(`zone/${zone.id}`, encodeZone(zone))
   if(!options.skipReload) await zones.reload()
 }
 
 zones.delete = async zone => {
-  await api.delete('zones', zone)
+  await api.delete(`zone/${zone.id}`)
   await zones.reload()
 }
 

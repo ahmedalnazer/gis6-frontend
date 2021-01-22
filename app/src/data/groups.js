@@ -1,11 +1,15 @@
 import { writable, derived } from 'svelte/store'
 import api from 'data/api'
-import { getId } from './tools'
 
 const _isDevEnv = false
 const _groups = writable([])
 
-const group_order = writable([])
+export const group_order = writable(JSON.parse(localStorage.getItem('group_order') || '[]'))
+export const setGroupOrder = arr => {
+  localStorage.setItem('group_order', JSON.stringify(arr))
+  group_order.set(arr)
+}
+
 
 const groups = derived([ _groups, group_order ], ([ $_groups, $group_order ]) => {
   const decoded = $_groups.map(x => decodeGroup(x))

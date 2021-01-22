@@ -1,6 +1,9 @@
 import { getId } from 'data/tools'
+import Route from 'route-parser'
 
 const offline = import.meta.env.SNOWPACK_PUBLIC_OFFLINE == 'true'
+console.log(offline)
+
 
 // functions for CRUD on dummy data
 
@@ -41,28 +44,41 @@ const deleteItem = (label, data) => {
   return u
 }
 
-const stubs = {
+let stubs = {
   GET: {
     'zonegroup': () => getCollection('groups'),
-    // 'zonegroups': () => getCollection('groups'),
-    'zones': () => getCollection('zones')
+    'zone': () => getCollection('zones')
   },
   POST: {
     'zonegroup': data => create('groups', data),
-    // 'zonegroups': data => create('groups', data),
-    'zones': data => create('zones', data)
+    'zone': data => create('zones', data)
   },
-  PATCH: {
-    'zonegroup': data => update('groups', data),
-    // 'zonegroups': data => update('groups', data),
-    'zones': data => update('zones', data)
+  PUT: {
+    'zonegroup/:id': data => update('groups', data),
+    'zone/:id': data => update('zones', data)
   },
   DELETE: {
-    'zonegrous': data => deleteItem('groups', data),
-    // 'zonegroups': data => deleteItem('groups', data),
-    'zones': data => deleteItem('zones', data)
+    'zonegroup/:id': data => deleteItem('groups', data),
+    'zone/:id': data => deleteItem('zones', data)
   }
 }
 
+if(!offline) {
+  stubs = {}
+}
 
-export default stubs
+export default function getStub(method, url, data) {
+  if (stubs && stubs[method] && stubs[method][url]) {
+    const routes = Object.keys(stubs[method]).map(x => ({
+      route: new Route(x),
+      fn: stubs[method][x]
+    }))
+
+    for (let r of routes) {
+      const m = r.route.match(url.toLowerCase())
+      console.warn(`RETURNING STUB DATA FOR '${url}'`)
+      if (m) return r.fn(data, m)
+    }
+  }
+  return null
+}
