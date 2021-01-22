@@ -19,12 +19,14 @@ export const setGroupOrder = arr => {
  * Sorted list of currently available groups
  */
 const groups = derived([ _groups, group_order ], ([ $_groups, $group_order ]) => {
-  const decoded = $_groups.map(x => decodeGroup(x))
   let sorted = []
-  for(let g of $group_order) {
-    sorted.push(decoded.find(x => x.id == g))
+  for(let g of $group_order.map(x => parseInt(x))) {
+    const f = $_groups.find(x => console.log(g, x, x.id == g) || x.id == g)
+    console.log(f)
+    sorted.push(f)
   }
-  return sorted.concat(decoded.filter(x => !sorted.includes(x)))
+  console.log(sorted)
+  return sorted.concat($_groups.filter(x => !sorted.includes(x))).filter(x => !!x)
 })
 
 
@@ -53,7 +55,7 @@ const encodeGroup = g => {
 }
 
 groups.reload = async () => {
-  let zoneGroups = await api.get('zonegroup')
+  let zoneGroups = (await api.get('zonegroup') || []).map(x => decodeGroup(x))
   _groups.set(zoneGroups)
 }
 
