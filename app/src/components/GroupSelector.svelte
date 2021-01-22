@@ -24,7 +24,7 @@
 <div class="group-selector">
   <div
     class="tab"
-    on:click={() => console.log('test') || activeGroup.set(null)}
+    on:click={() => activeGroup.set(null)}
     class:active={!$activeGroup}>
     {$_('All Zones')}
   </div>
