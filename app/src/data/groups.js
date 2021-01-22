@@ -5,6 +5,11 @@ const _isDevEnv = false
 const _groups = writable([])
 
 export const group_order = writable(JSON.parse(localStorage.getItem('group_order') || '[]'))
+
+/**
+ * Set the display order of the groups globally and persist to localStorage
+ * @param {Array} arr - array of group ids in the desired order
+ */
 export const setGroupOrder = arr => {
   localStorage.setItem('group_order', JSON.stringify(arr))
   group_order.set(arr)
