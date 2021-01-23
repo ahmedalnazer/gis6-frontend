@@ -65,7 +65,7 @@
         validationError += $_("Please select the 'Group Color'");
       }
     } else if (
-      groupList.filter((x) => x.name.toLowerCase() == name.toLowerCase())
+      groupList.filter((x) => (x.name || "").toLowerCase() == (name || "").toLowerCase())
         .length > 0
     ) {
       validationError = $_(

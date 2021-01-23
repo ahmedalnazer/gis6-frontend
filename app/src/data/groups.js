@@ -60,8 +60,27 @@ groups.reload = async () => {
 }
 
 groups.create = async group => {
-  await api.post('zonegroup', encodeGroup(group))
-  await groups.reload()
+  if (_isDevEnv) {
+    let grp = []
+    let tempData = localStorage.getItem("all-groups")
+    if (!tempData) { 
+      tempData = encodeGroup(group); 
+      grp.push(tempData); 
+    }
+    else {
+      grp = JSON.parse(tempData);
+      grp.push(group); 
+    }
+
+    localStorage.setItem("all-groups", JSON.stringify(grp))
+
+    // await api.post('zonegroup', encodeGroup(group))
+    await groups.reload()
+  }
+  else {
+    await api.post('zonegroup', encodeGroup(group))
+    await groups.reload()
+  }
 }
 
 groups.update = async group => {

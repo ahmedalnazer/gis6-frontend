@@ -36,7 +36,6 @@
   const createGroup = async () => {
     creating = false
     let newGrp = { name: newName, color: newColor }
-
     await groups.create(newGrp, { skipReload: true })
     await groups.reload()
 
@@ -46,9 +45,11 @@
     })
 
     for (let z of _zones) {
-      z.groups = (z.groups || []).concat(selGrp[0].id)
-      z.groups = [ ...new Set(z.groups) ]
-      await zones.update(z, { skipReload: true })
+      if (selGrp.length && selGrp[0].id) {
+        z.groups = (z.groups || []).concat(selGrp[0].id)
+        z.groups = [ ...new Set(z.groups) ]
+        await zones.update(z, { skipReload: true })
+      }
     }
 
     await zones.reload()

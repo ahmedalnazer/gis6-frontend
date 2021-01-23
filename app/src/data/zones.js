@@ -3,6 +3,7 @@ import api from 'data/api'
 import ws from 'data/realtime/ws'
 import { debug } from 'svelte/internal'
 
+const _isDevEnv = true
 const rawZones = writable([])
 
 const zones = derived([ rawZones ], ([ $raw ]) => {
@@ -64,8 +65,27 @@ zones.create = async zone => {
 
 zones.update = async (zone, options = {}) => {
   debugger
-  await api.put(`zone/${zone.id}`, encodeZone(zone))
-  if(!options.skipReload) await zones.reload()
+  if (_isDevEnv) {
+    let grp = []
+    let tempData = localStorage.getItem("all-zones")
+    if (!tempData) { 
+      tempData = encodeGroup(zone);
+      grp.push(tempData); 
+    }
+    else {
+      grp = JSON.parse(tempData);
+      grp.push(group); 
+    }
+
+    localStorage.setItem("all-zones", JSON.stringify(grp))
+
+    // await api.put(`zone/${zone.id}`, encodeZone(zone))
+    if(!options.skipReload) await zones.reload()  
+  }
+  else {
+    await api.put(`zone/${zone.id}`, encodeZone(zone))
+    if(!options.skipReload) await zones.reload()  
+  }
 }
 
 zones.delete = async zone => {
