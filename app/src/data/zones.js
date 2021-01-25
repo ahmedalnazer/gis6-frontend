@@ -3,13 +3,14 @@ import api from 'data/api'
 import ws from 'data/realtime/ws'
 import { debug } from 'svelte/internal'
 
+// const offline = import.meta.env.SNOWPACK_PUBLIC_OFFLINE == 'true'
 const _isDevEnv = true
 const rawZones = writable([])
 
-const zones = derived([ rawZones ], ([ $raw ]) => {
-  let sorted = [ ...$raw ]
+const zones = derived([rawZones], ([$raw]) => {
+  let sorted = [...$raw]
   var collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' })
-  sorted.sort((a,b) => collator.compare(a.name, b.name))
+  sorted.sort((a, b) => collator.compare(a.name, b.name))
   return sorted
 })
 
@@ -19,8 +20,12 @@ const decodeZone = z => {
     name: z.ZoneName,
     number: z.ZoneNumber,
     id: z.id,
-    groups: (z.ZoneGroups || '').split(',').map(x => parseInt(x))
+    groups: (z.ZoneGroups || '').split(',').map(x => x)
   }
+
+  //Removed parseInt because the id in dev is a string
+  // groups_OLD: (z.ZoneGroups || '').split(',').map(x => parseInt(x)),
+
   delete d.ZoneName
   delete d.ZoneNumber
   delete d.ZoneGroups
@@ -41,20 +46,27 @@ const getZones = async () => (await api.get('zone')).map(x => decodeZone(x))
 zones.reload = async () => {
   let z = await getZones()
 
-  // debugger
-
   // TODO: remove dummy zones
-  if(z.length == 0) {
-    for(let i = 0; i < 50; i++) {
-      await api.post('zone', encodeZone({
-        name: `Zone ${i}`,
-        id: i
-      }))
+  if (z.length == 0) {
+    for (let i = 0; i < 50; i++) {
+      // Removed await for dev mode
+      if (_isDevEnv) {
+        api.post('zone', encodeZone({
+          name: `Zone ${i}`,
+          id: i
+        }))
+      }
+      else {
+        await api.post('zone', encodeZone({
+          name: `Zone ${i}`,
+          id: i
+        }))
+      }
     }
     z = await getZones()
   }
 
-  console.log(z)
+  // console.log(z)
   rawZones.set(z)
 }
 
@@ -64,27 +76,34 @@ zones.create = async zone => {
 }
 
 zones.update = async (zone, options = {}) => {
-  debugger
   if (_isDevEnv) {
-    let grp = []
-    let tempData = localStorage.getItem("all-zones")
-    if (!tempData) { 
-      tempData = encodeGroup(zone);
-      grp.push(tempData); 
-    }
-    else {
-      grp = JSON.parse(tempData);
-      grp.push(group); 
-    }
 
-    localStorage.setItem("all-zones", JSON.stringify(grp))
+    let z = await getZones();
+    let newZ = [];
+    
+    if (z) {
+      z.forEach(element => {
+        if (element.number == zone.number) {
+          let newZone = encodeZone(zone);
+          newZ.push(newZone);
+        }
+        else {
+          let newZone = encodeZone(element);
+          newZ.push(newZone);
+        }
+      });
 
-    // await api.put(`zone/${zone.id}`, encodeZone(zone))
-    if(!options.skipReload) await zones.reload()  
+      localStorage.setItem(`all-zones`, JSON.stringify(newZ))
+
+      // let updated = [...(z.filter(x => x.id != zone.id )), zone]
+      // let updated = [...(z.filter(x => x.id != zone.id )), zone]
+    }
+    
+    if (!options.skipReload) await zones.reload()
   }
   else {
     await api.put(`zone/${zone.id}`, encodeZone(zone))
-    if(!options.skipReload) await zones.reload()  
+    if (!options.skipReload) await zones.reload()
   }
 }
 

@@ -4,7 +4,7 @@
   import _ from 'data/language'
   import Sortable from 'sortablejs'
 
-  $: console.log($groups)
+  // $: console.log($groups)
 
   let selector
 
@@ -24,7 +24,7 @@
 <div class="group-selector">
   <div
     class="tab"
-    on:click={() => console.log('test') || activeGroup.set(null)}
+    on:click={() => activeGroup.set(null)}
     class:active={!$activeGroup}>
     {$_('All Zones')}
   </div>
@@ -58,6 +58,7 @@
       white-space: nowrap;
       border: 1px solid var(--darkBlue);
       color: var(--darkBlue);
+      background: white;
       &.active {
         background: var(--darkBlue);
         color: white;

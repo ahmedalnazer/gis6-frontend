@@ -2,7 +2,13 @@ import { getId } from 'data/tools'
 import Route from 'route-parser'
 
 const offline = import.meta.env.SNOWPACK_PUBLIC_OFFLINE == 'true'
-console.log(offline)
+if(offline) {
+  console.warn(`
+INITIALIZED IN OFFLINE MODE
+
+Dummy data will be pulled in from 'api-stubs.js' where available, be sure to switch this off when testing API integration
+  `)
+}
 
 
 // functions for CRUD on dummy data
