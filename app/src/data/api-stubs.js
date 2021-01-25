@@ -41,13 +41,14 @@ const create = (label, data) => {
 }
 
 const update = (label, data) => {
+  console.log(label, data)
   setCollection(label, getCollection(label).map(x => x.id == data.id ? { ...x, ...data } : x))
   return data
 }
 
 const deleteItem = (label, data) => {
   setCollection(label, getCollection(label).filter(x => x.id != data.id))
-  return u
+  return data
 }
 
 let stubs = {
@@ -60,12 +61,12 @@ let stubs = {
     'zone': data => create('zones', data)
   },
   PUT: {
-    'zonegroup/:id': data => update('groups', data),
-    'zone/:id': data => update('zones', data)
+    'zonegroup/:id': (data, { id }) => update('groups', { ...data, id }),
+    'zone/:id': (data, { id }) => update('zones', { ...data, id })
   },
   DELETE: {
-    'zonegroup/:id': data => deleteItem('groups', data),
-    'zone/:id': data => deleteItem('zones', data)
+    'zonegroup/:id': (data, { id }) => deleteItem('groups', { ...data, id }),
+    'zone/:id': (data, { id }) => deleteItem('zones', { ...data, id })
   }
 }
 
@@ -74,7 +75,8 @@ if(!offline) {
 }
 
 export default function getStub(method, url, data) {
-  if (stubs && stubs[method] && stubs[method][url]) {
+  console.log(method, url, data)
+  if (stubs && stubs[method]) {
     const routes = Object.keys(stubs[method]).map(x => ({
       route: new Route(x),
       fn: stubs[method][x]
@@ -83,7 +85,7 @@ export default function getStub(method, url, data) {
     for (let r of routes) {
       const m = r.route.match(url.toLowerCase())
       console.warn(`RETURNING STUB DATA FOR '${url}'`)
-      if (m) return r.fn(data, m)
+      if (m) return r.fn(data || {}, m)
     }
   }
   return null

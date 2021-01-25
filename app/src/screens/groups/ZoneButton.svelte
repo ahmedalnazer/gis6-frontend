@@ -5,7 +5,7 @@
 
   let tabs = []
 
-  $: zoneGroups = (zone.groups || []).map(x => $groups.find(y => y.id == x)).filter(x => !!x)
+  $: zoneGroups = $groups.filter(x => zone.groups && zone.groups.includes(x.id))
 
   $: tabs = zoneGroups.length
     ? zoneGroups.map(x => x.color)

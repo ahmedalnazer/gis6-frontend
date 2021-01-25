@@ -1,10 +1,8 @@
 import { writable, derived } from 'svelte/store'
 import api from 'data/api'
 import ws from 'data/realtime/ws'
-import { debug } from 'svelte/internal'
+import { id } from './tools'
 
-// const offline = import.meta.env.SNOWPACK_PUBLIC_OFFLINE == 'true'
-const _isDevEnv = false
 const rawZones = writable([])
 
 const zones = derived([ rawZones ], ([ $raw ]) => {
@@ -20,11 +18,8 @@ const decodeZone = z => {
     name: z.ZoneName,
     number: z.ZoneNumber,
     id: z.id,
-    groups: (z.ZoneGroups || '').split(',').map(x => parseInt(x))
+    groups: (z.ZoneGroups || '').split(',').map(x => id(x))
   }
-
-  //Removed parseInt because the id in dev is a string
-  // groups_OLD: (z.ZoneGroups || '').split(',').map(x => parseInt(x)),
 
   delete d.ZoneName
   delete d.ZoneNumber
@@ -49,19 +44,10 @@ zones.reload = async () => {
   // TODO: remove dummy zones
   if (z.length == 0) {
     for (let i = 0; i < 50; i++) {
-      // Removed await for dev mode
-      if (_isDevEnv) {
-        api.post('zone', encodeZone({
-          name: `Zone ${i}`,
-          id: i
-        }))
-      }
-      else {
-        await api.post('zone', encodeZone({
-          name: `Zone ${i}`,
-          id: i
-        }))
-      }
+      await api.post('zone', encodeZone({
+        name: `Zone ${i}`,
+        id: i
+      }))
     }
     z = await getZones()
   }
@@ -76,34 +62,8 @@ zones.create = async zone => {
 }
 
 zones.update = async (zone, options = {}) => {
-  if (_isDevEnv) {
-
-    let z = await getZones()
-    let newZ = []
-    
-    if (z) {
-      z.forEach(element => {
-        if (element.number == zone.number) {
-          let newZone = encodeZone(zone)
-          newZ.push(newZone)
-        }
-        else {
-          let newZone = encodeZone(element)
-          newZ.push(newZone)
-        }
-      })
-
-      localStorage.setItem(`all-zones`, JSON.stringify(newZ))
-
-      // let updated = [...(z.filter(x => x.id != zone.id )), zone]
-    }
-    
-    if (!options.skipReload) await zones.reload()
-  }
-  else {
-    await api.put(`zone/${zone.id}`, encodeZone(zone))
-    if (!options.skipReload) await zones.reload()
-  }
+  await api.put(`zone/${zone.id}`, encodeZone(zone))
+  if (!options.skipReload) await zones.reload()
 }
 
 zones.delete = async zone => {
