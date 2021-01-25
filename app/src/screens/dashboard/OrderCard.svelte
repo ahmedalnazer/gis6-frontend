@@ -32,7 +32,7 @@
 
     let longPollingInterval = 5000
     let progressStatus = 0
-    let orderId = 175
+    let orderId = 0
     let orderStatus = ""
 
     const dateOptions = { year: "numeric", month: "short", day: "numeric" }
@@ -64,13 +64,18 @@
     const getOrderCardData = async (isInit) => {
       const data = await api.get(`system`)
 
+      if (isInit && orderId == 0) {
+        // TODO: Done for testing       
+        orderId = data.order_id + 1;
+      }
+
       if (data.order_id == orderId) {
         // For the first load show only few fields
         if (isInit) {
           goodparttotal = data.target
           timeleft = getTimeRemainingFormatted(data.time_remain)
         } else {
-          goodpartfrom = data.good_cycles
+          goodpartfrom = data.good_parts
           goodparttotal = data.target
           badpartcount = 0
           progressStatus = Math.round(
@@ -129,9 +134,11 @@
     }
 
     onMount(() => {
-      if (apitype = "API") {
         getOrderCardData(true)
-      }
+
+    //   if (apitype = "API") {
+    //     getOrderCardData(true)
+    //   }
     })
 
     const orderActionClick = (currentOrderStatus) => {
