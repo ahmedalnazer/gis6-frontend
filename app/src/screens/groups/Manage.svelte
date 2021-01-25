@@ -123,21 +123,22 @@
 
   let openGroups = {}
 
-  let sortList
+  let sortList, sortable
 
-  onMount(() => {
-    let sortableContainer = Sortable.create(sortList, {
-      store: {
-        get: sortable => $group_order,
-        set: sortable => {
-          setGroupOrder(sortable.toArray())
-        }
-      },
-      handle: ".drag-header"
-    })
-  })
-
-  onDestroy(() => {})
+  $: {
+    if(sortList && !sortable && sortGroups) {
+      sortable = Sortable.create(sortList, {
+        store: {
+          get: s => $group_order,
+          set: s => setGroupOrder(s.toArray())
+        },
+        handle: ".drag-header"
+      })
+    }
+    if(!sortGroups) {
+      sortable = undefined
+    }
+  }
 </script>
 
 <Screen title={$_("Manage Groups")} id="group_management">
