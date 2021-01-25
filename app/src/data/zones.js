@@ -4,7 +4,7 @@ import ws from 'data/realtime/ws'
 import { debug } from 'svelte/internal'
 
 // const offline = import.meta.env.SNOWPACK_PUBLIC_OFFLINE == 'true'
-const _isDevEnv = true
+const _isDevEnv = false
 const rawZones = writable([])
 
 const zones = derived([rawZones], ([$raw]) => {
@@ -95,7 +95,6 @@ zones.update = async (zone, options = {}) => {
 
       localStorage.setItem(`all-zones`, JSON.stringify(newZ))
 
-      // let updated = [...(z.filter(x => x.id != zone.id )), zone]
       // let updated = [...(z.filter(x => x.id != zone.id )), zone]
     }
     
