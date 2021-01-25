@@ -7,8 +7,8 @@ import { debug } from 'svelte/internal'
 const _isDevEnv = false
 const rawZones = writable([])
 
-const zones = derived([rawZones], ([$raw]) => {
-  let sorted = [...$raw]
+const zones = derived([ rawZones ], ([ $raw ]) => {
+  let sorted = [ ...$raw ]
   var collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' })
   sorted.sort((a, b) => collator.compare(a.name, b.name))
   return sorted
@@ -20,7 +20,7 @@ const decodeZone = z => {
     name: z.ZoneName,
     number: z.ZoneNumber,
     id: z.id,
-    groups: (z.ZoneGroups || '').split(',').map(x => x)
+    groups: (z.ZoneGroups || '').split(',').map(x => parseInt(x))
   }
 
   //Removed parseInt because the id in dev is a string
@@ -78,20 +78,20 @@ zones.create = async zone => {
 zones.update = async (zone, options = {}) => {
   if (_isDevEnv) {
 
-    let z = await getZones();
-    let newZ = [];
+    let z = await getZones()
+    let newZ = []
     
     if (z) {
       z.forEach(element => {
         if (element.number == zone.number) {
-          let newZone = encodeZone(zone);
-          newZ.push(newZone);
+          let newZone = encodeZone(zone)
+          newZ.push(newZone)
         }
         else {
-          let newZone = encodeZone(element);
-          newZ.push(newZone);
+          let newZone = encodeZone(element)
+          newZ.push(newZone)
         }
-      });
+      })
 
       localStorage.setItem(`all-zones`, JSON.stringify(newZ))
 
