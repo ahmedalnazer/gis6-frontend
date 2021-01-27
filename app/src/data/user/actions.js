@@ -1,6 +1,11 @@
+import { writable } from 'svelte/store'
 import api from '../api'
 import notify from '../notifications'
 import { users } from './index'
+
+
+export const loggingIn = writable(false)
+export const logIn = () => loggingIn.set(true)
 
 
 // load all current users into state

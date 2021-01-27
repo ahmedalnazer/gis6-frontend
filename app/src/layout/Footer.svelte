@@ -7,6 +7,8 @@
   import process from 'data/process'
   import time from 'data/time'
   import Icon from 'components/Icon.svelte'
+  import { logIn } from 'data/user/actions'
+  import api from 'data/api'
 
   const dateOptions = { year: 'numeric', month: 'short', day: 'numeric' }
 
@@ -26,18 +28,60 @@
     }
   }
 
+
+  let loginSelector
+  let selectingLogin = false
+
+  const toggleLogin = () => {
+    if($user) {
+      if(selectingLogin) {
+        loginSelector.blur()
+      } else {
+        selectingLogin = true
+      }
+    }
+  }
+
   // $: console.log($user)
 </script>
 
 <footer>
   <div class='container'>
-    <div class='user'>
-      {#if $user && $user.id}
-        <h3>{$_(roles[$user.role])}</h3>
-        <p>{$user.username}</p>
-      {:else}
-        <a class='button blue' href='/login'>{$_('Log In')}</a>
-      {/if}
+    <div class='user' 
+      tabindex='-1' 
+      on:blur={() => selectingLogin = false}
+      bind:this={loginSelector}
+    >
+      <div class='selector'>
+        <Collapsible open={selectingLogin}>
+            {#if $user}
+              <div class='selection'>
+              <div>
+                <a href='/user-profile/{$user.id}'>{$_('User Profile')}</a>
+              </div>
+              <div>
+                <a href='/user-settings/{$user.id}'>{$_('Settings')}</a>
+              </div>
+              <div>
+                <a on:click={() => api.logout()}>{$_('Logout')}</a>
+              </div>
+            </div>
+          {/if}
+        </Collapsible>
+      </div>
+      <div class='selected-user' class:open={selectingLogin} on:click={toggleLogin}>
+        {#if $user && $user.id}
+          <h3>{$_(roles[$user.role])}</h3>
+          <div class='user-info'>
+            <div class='label'>{$user.username}</div>
+            <div class='icon'>
+              <Icon color='white' icon={'chevron'} />
+            </div>
+          </div>
+        {:else}
+          <span class='button blue link' on:click={e => logIn()}>{$_('Log In')}</span>
+        {/if}
+      </div>
     </div>
 
     <div class='mold'>
@@ -71,12 +115,6 @@
             <Icon color='white' icon={'chevron'} />
           </div>
         </div>
-
-        <!-- <select on:change={e => console.log(e.target.value) || language.set(e.target.value)} value={$language}>
-          <option value='en-US'>English</option>
-          <option value='de-DE'>Deutsche</option>
-          <option value='fr-FR'>Français</option>
-        </select> -->
       </div>
 
       <div class='time-stamp'>
@@ -88,7 +126,8 @@
 
 <style lang="scss">
   footer {
-    padding: 32px 16px;
+    max-height: 120px;
+    padding: 16px;
     background: var(--blue);
     position: relative;
     .container {
@@ -132,13 +171,17 @@
 
   .selection {
     > div {
-      padding: 24px 16px;
-      text-align: center;
+      padding: 32px;
+      // text-align: center;
       min-width: 180px;
     }
   }
 
-  .lang {
+  .lang .selection {
+    text-align: center;
+  }
+
+  .lang, .user {
     margin-bottom: 8px;
     .selector {
       position: absolute;
@@ -148,8 +191,28 @@
     }
   }
 
+  .user {
+    .selector {
+      right: auto;
+      left: 0;
+    }
+  }
+
+  .user-info {
+    margin-top: 10px;
+    display: flex;
+  }
+
   .time-stamp {
     text-align: right;
     padding-right: 32px;
+  }
+  p {
+    margin: 0;
+    padding: 0;
+    margin-top: 10px;
+  }
+  a, a:hover, a:visited {
+    color: white;
   }
 </style>

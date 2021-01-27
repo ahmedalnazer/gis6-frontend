@@ -14,32 +14,23 @@
     },
     {
       id: 2,
-      roles: [ 'all' ],
+      roles: [ 1 ],
       component: GroupManagement
     },
     {
       id: 3,
-      roles: [ 'all' ],
+      roles: [ 1 ],
       component: UserManagement
     }
   ]
 
-  $: availableCards = cards.filter(x => x.roles.includes('all') || x.roles.includes($user.role))
+  $: availableCards = cards.filter(x => x.roles.includes('all') || x.roles.includes($user && $user.role))
 </script>
 
 <DashboardSection title={$_('Management')}>
-  <div class='cards'>
+  <div class='card-grid'>
     {#each availableCards as card (card.id)}
       <svelte:component this={card.component} />
     {/each}
   </div>
 </DashboardSection>
-
-
-<style>
-  .cards {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-gap: 16px;
-  }
-</style>

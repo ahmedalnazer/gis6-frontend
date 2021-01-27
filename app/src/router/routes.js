@@ -1,5 +1,4 @@
 import Dashboard from 'screens/dashboard/Dashboard'
-import Login from 'screens/Login'
 import ForgotPassword from 'screens/ForgotPassword'
 import ManageUsers from 'screens/users/ManageUsers'
 import AddUser from 'screens/users/AddUser'
@@ -18,7 +17,6 @@ import EditGroup from 'screens/groups/EditGroup'
  */
 const routes = {
   '/': Dashboard,
-  '/login': Login,
   '/forgot-password': ForgotPassword,
   '/manage-users': ManageUsers,
   '/add-user': AddUser,

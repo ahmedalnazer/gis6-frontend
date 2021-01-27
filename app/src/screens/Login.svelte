@@ -1,27 +1,28 @@
 <script>
-  import Screen from 'layout/Screen'
   import api from 'data/api'
   import user, { users } from 'data/user'
   import _ from 'data/language'
-  import { goBack } from 'router/history'
+  import { Modal } from 'components'
+  import { loggingIn } from 'data/user/actions'
 
   let userId
 
   const login = async e => {
     e.preventDefault()
-    await api.login(userId, password)
+    if(await api.login(userId, password)) {
+      loggingIn.set(false)
+    }
   }
 
   let password = ''
 
 </script>
 
-<Screen class='login-form'>
+<Modal onClose={() => loggingIn.set(false)}>
   <div class='image'>
-    BARNES
+    <img src='/images/barnes_logo_b.png' />
   </div>
   <form on:submit={login}>
-
     <label>{$_('Username')}</label>
     <select bind:value={userId}>
       <option value=''>{$_('Select...')}</option>
@@ -37,17 +38,17 @@
 
     <button class='button active'>{$_('Log In')}</button>
   </form>
-</Screen>
+</Modal>
 
 <style>
-  :global(.login-form main) {
-    position: relative;
-  }
   .image {
     text-align: center;
     font-size: 3em;
     margin: 32px 0;
     margin-top: 64px;
+  }
+  .image img {
+    max-height: 120px;
   }
   form {
     width: 300px;
@@ -55,6 +56,7 @@
     margin: 0 auto;
     display: flex;
     flex-direction: column;
+    padding-bottom: 120px;
   }
 
   label {
