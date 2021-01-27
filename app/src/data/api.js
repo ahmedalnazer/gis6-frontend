@@ -1,33 +1,50 @@
 import user from './user'
 import notify from './notifications'
+import getStub from './api-stubs'
+
+const apiTarget = import.meta.env.SNOWPACK_PUBLIC_API_URL || ''
+if(apiTarget) {
+  console.warn(`Overriding default API integration, targeting "${apiTarget}"`)
+}
 
 let disconnectLock
 
+/**
+ * Base API interaction class
+ */
 class API {
   constructor() {
     this.update()
   }
 
+  // TODO: finalize and document
   update = async () => {
     try {
-      this.status = await this.get('check-status')
+      this.status = await this.get('auth/status')
     } catch(e) {
       console.error(e)
       this.status = { user: {}}
     }
-    user.set(this.status.user)
+    user.set(this.status && this.status.user)
   }
 
-  login = async (user, password) => {
-    const data = await this.post('login', { user, password })
-    if(data.error) {
-      notify.error(data.error)
+  // TODO: finalize and document
+  login = async (username, password) => {
+    const data = await this.post('auth/token/obtain', { username, password })
+    console.log(data)
+    if(!data.access) {
+      notify.error('Invalid username or password')
     } else {
+
+      this.token = data.access
+      this.refresh = data.refresh
+
       await this.update()
       notify.success(`Signed in`)
     }
   }
 
+  // TODO: finalize and document
   logout = async () => {
     await this.post('logout')
     await this.update()
@@ -35,13 +52,33 @@ class API {
   }
 
 
-  // generic request function, essentially contextualized fetch request
+  /**
+   * generic request function, essentially contextualized fetch request
+   * @param {string} url  -  requested url, optionally beginning with '/'
+   * @param {Object} data  -  data to be passed to API (ignored for GET requests)
+   * @param {Object} options = configuration options
+   * @param {string} options.method = request method, e.g. 'GET' or 'POST'
+   *
+   * @returns {Promise} returns request
+   */
   request = (url, data, { method }) => {
 
     // make initial slash optional
     if (url.startsWith('/')) url = url.slice(1)
+
     return new Promise(async (resolve, reject) => {
+
+      // call stub function if available and return
+      const stub = getStub(method, url, data)
+      if(stub) {
+        return resolve(stub)
+      }
+
+      if(!url.endsWith('/')) url = url + '/'
+
       // prefix all routes with api
+      if(url.startsWith('api/')) url = url.replace('api/', '')
+
       let opts = {
         headers: {
           Accept: 'application/json',
@@ -49,6 +86,10 @@ class API {
         },
         credentials: 'include',
         method: method
+      }
+
+      if(this.token) {
+        opts.headers['Authorization'] = `JWT ${this.token}`
       }
       if(method != 'GET' && data) {
         opts.body = JSON.stringify(data)
@@ -59,28 +100,36 @@ class API {
           notify.error(msg || 'Sorry, we seem to be having trouble connecting to the server')
         }
       }
-      fetch(`/api/${url}`, opts)
-        .then(async resp => {
-          if(resp && resp.status == 403) {
-            fail('Sorry, it seems like your admin session has expired, please try logging in again')
-            return reject(resp)
-          } else if(!resp || resp.status != 200) {
-            fail()
-            return reject(resp)
-          }
-          try {
-            resolve(resp.json().catch(e => reject(e)))
-          } catch (e) {
-            resolve(resp)
-          }
-        })
-        .catch(async err => {
+      try {
+        const resp = await fetch(`${apiTarget}/api/${url}`, opts)
+        if (resp && resp.status == 403) {
+          fail('Sorry, it seems like your admin session has expired, please try logging in again')
+          return reject(resp)
+        } else if (!resp || resp.status > 500) {
           fail()
-          reject(err)
-        })
+          // return reject(resp)
+        }
+        try {
+          resolve(resp.json().catch(e => reject(e)))
+        } catch (e) {
+          resolve(resp)
+        }
+      } catch(e) {
+        fail()
+        // reject(err)
+      }
     })
   }
 
+  /**
+   * make GET request, essentially contextualized fetch request
+   * @param {string} url - requested url, optionally beginning with '/'
+   * @param {Object} data - data to be passed (must be serializable, will be appended to query string)
+   * @param {Object} options - configuration options
+   *
+   *
+   * @returns {Promise} returns GET request response
+   */
   get = (url, data, options) => {
     if(data) {
       const queries = Object.keys(data).map(key => `${key}=${data[key]}`)
@@ -89,8 +138,52 @@ class API {
     return this.request(url, {}, { ...options, method: 'GET' })
   }
 
+  /**
+   * make POST request, essentially contextualized fetch request
+   * @param {string} url  -  requested url, optionally beginning with '/'
+   * @param {Object} data  -  Object to be posted to the url
+   * @param {Object} options - configuration options
+   *
+   * @returns {Promise} returns POST request response
+   */
   post = (url, data, options) => {
     return this.request(url, data, { ...options, method: 'POST' })
+  }
+
+  /**
+   * make PUT request, essentially contextualized fetch request
+   * @param {string} url  -  requested url, optionally beginning with '/'
+   * @param {Object} data  -  Object to be sent to the url
+   * @param {Object} options - configuration options
+   *
+   * @returns {Promise} returns POST request response
+   */
+  put = (url, data, options) => {
+    return this.request(url, data, { ...options, method: 'PUT' })
+  }
+
+  /**
+   * make PATCH request, essentially contextualized fetch request
+   * @param {string} url  -  requested url, optionally beginning with '/'
+   * @param {Object} data  -  Object to be sent to the url
+   * @param {Object} options - configuration options
+   *
+   * @returns {Promise} returns PATCH request response
+   */
+  patch = (url, data, options) => {
+    return this.request(url, data, { ...options, method: 'PATCH' })
+  }
+
+  /**
+   * make DELETE request, essentially contextualized fetch request
+   * @param {string} url  -  requested url, optionally beginning with '/'
+   * @param {Object} data  -  Object to be sent to the url
+   * @param {Object} options - configuration options
+   *
+   * @returns {Promise} returns DELETE request response
+   */
+  delete = (url, data, options) => {
+    return this.request(url, data, { ...options, method: 'DELETE' })
   }
 }
 

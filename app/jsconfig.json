@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonJS",
+    "baseUrl": "./",
+    "paths": {
+      "data/*": ["./src/data/*"],
+      "screens/*": ["./src/screens/*"],
+      "layout/*": ["./src/layout/*"],
+      "components/*": ["./src/components/*"],
+      "router/*": ["./src/router/*"],
+      "style/*": ["./src/style/*"]
+    }
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

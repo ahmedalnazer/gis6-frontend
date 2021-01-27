@@ -7,7 +7,7 @@ import fr from './translations/fr.json'
 const _ = derived([ current ], ([ $current ]) => {
   return (text, options) => {
     options = options || {}
-    if($current == 'en_US') return text
+    if($current == 'en-US') return text
     let datasets = {
       'de-DE': de,
       'fr-FR': fr

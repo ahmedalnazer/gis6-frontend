@@ -1,18 +1,17 @@
 <script>
-  import Screen from 'layout/screen'
+  import Screen from 'layout/Screen'
   import api from 'data/api'
-  import user from 'data/user'
+  import user, { users } from 'data/user'
   import _ from 'data/language'
-  import history from 'router/history'
+  import { goBack } from 'router/history'
+
+  let userId
 
   const login = async e => {
     e.preventDefault()
-    // TODO: api login
-    user.set({ name: 'MJacobi', id: 'MJacobi' })
-    history.back()
+    await api.login(userId, password)
   }
 
-  let username = ''
   let password = ''
 
 </script>
@@ -24,9 +23,11 @@
   <form on:submit={login}>
 
     <label>{$_('Username')}</label>
-    <select bind:value={username}>
+    <select bind:value={userId}>
       <option value=''>{$_('Select...')}</option>
-      <option value={'MJacobi'}>MJacobi</option>
+      {#each $users as user (user.id)}
+        <option>{user.username}</option>
+      {/each}
     </select>
 
     <label>{$_('Password')}</label>
@@ -34,9 +35,7 @@
 
     <a href='/forgot-password'>{$_('Forgot Password?')}</a>
 
-    <button class='button primary'>{$_('Log In')}</button>
-
-    <i class='close' on:click={() => history.back()}>X</i>
+    <button class='button active'>{$_('Log In')}</button>
   </form>
 </Screen>
 
@@ -52,6 +51,7 @@
   }
   form {
     width: 300px;
+    text-align: left;
     margin: 0 auto;
     display: flex;
     flex-direction: column;

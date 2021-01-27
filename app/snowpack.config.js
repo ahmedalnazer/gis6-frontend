@@ -1,3 +1,5 @@
+console.log('TESTING CONFIG FILE')
+
 module.exports = {
   mount: {
     public: '/',
@@ -6,7 +8,6 @@ module.exports = {
   plugins: [
     '@snowpack/plugin-svelte',
     '@snowpack/plugin-dotenv',
-    '@snowpack/plugin-webpack',
     '@snowpack/plugin-sass'
   ],
   install: [
@@ -14,6 +15,9 @@ module.exports = {
   ],
   installOptions: {
     /* ... */
+    rollup: {
+      plugins: [ require('rollup-plugin-scss')() ]
+    }
   },
   devOptions: {
     /* ... */
@@ -22,14 +26,19 @@ module.exports = {
     /* ... */
   },
   proxy: {
-    // '/api': "http://localhost:3010/api"
+    "/api": "http://localhost:8000/api",
+    // "/ws": {
+    //   target: "ws://localhost:5000",
+    //   ws: true
+    // }
   },
   alias: {
     "components": "./src/components",
     "screens": "./src/screens",
     "data": "./src/data",
     "layout": "./src/layout",
-    "router": "./src/router"
+    "router": "./src/router",
+    "style": "./src/style"
     /* ... */
   },
 }

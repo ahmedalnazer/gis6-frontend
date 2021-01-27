@@ -10,8 +10,14 @@ const _history = createBrowserHistory()
 const history = writable(window.location)
 
 
+let historyLog = []
+
 // listen to history changes, update application state on change
 _history.listen(({ location, action }) => {
+  history.subscribe(x => {
+    historyLog.push(x)
+    historyLog = historyLog.slice(-100)
+  })()
   history.set(location)
 })
 
@@ -22,12 +28,38 @@ history.go = _history.go
 history.back = _history.back
 
 
+/**
+ * Go back (if possible) and track history changes
+ */
+export const goBack = () => {
+  if(window.history.length > 0) {
+    _history.back()
+    historyLog.pop()
+  } else {
+    _history.push('/')
+  }
+}
+
+
+function findLink(el) {
+  if (el.tagName == 'A' && el.getAttribute('href')) {
+    return el.getAttribute('href')
+  } else if (el.parentElement) {
+    return findLink(el.parentElement)
+  } else {
+    return null
+  }
+};
+
+
 // hijack links and push to history instead of default page load where applicable
 document.body.addEventListener('click', e => {
-  const href = e.target.getAttribute('href')
+  const href = findLink(e.target)
+  if(!href) return
+  
   if(!e.metaKey && href) {
 
-    if(!href.startsWith('http') && !href.startsWith('//')) {
+    if(href == '/' || !href.startsWith('http') && !href.startsWith('//')) {
 
       // prevent default behavior for local links
       e.preventDefault()
