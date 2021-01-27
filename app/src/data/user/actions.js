@@ -10,7 +10,7 @@ const loadUsers = async () => {
     try {
       await createUser({
         username: 'Admin',
-        password: 'G!S64Ever.',
+        password: 'G!S64Ever',
         email: 'admin@gis6.com',
         role: 1,
         first_name: 'GIS6',

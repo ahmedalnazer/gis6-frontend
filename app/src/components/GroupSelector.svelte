@@ -1,24 +1,29 @@
 <script>
-  import { onMount } from 'svelte'
+  import { tick } from 'svelte'
   import groups, { activeGroup, group_order, setGroupOrder } from 'data/groups'
   import _ from 'data/language'
   import Sortable from 'sortablejs'
 
   // $: console.log($groups)
 
-  let selector
+  let selector, sortable
 
-  onMount(() => {
-    let sortableContainer = Sortable.create(selector, { 
-      direction: 'horizontal',
+  const resetSortable = async () => {
+    await tick()
+    if(sortable) sortable.destroy()
+    sortable = Sortable.create(selector, {
       store: {
-        get: sortable => $group_order,
-        set: sortable => {
-          setGroupOrder(sortable.toArray())
-        }
+        get: s => $group_order,
+        set: s => setGroupOrder(s.toArray())
       }
     })
-  })
+  }
+
+  $: {
+    if(selector && $group_order) {
+      resetSortable()
+    }
+  }
 </script>
 
 <div class="group-selector">
