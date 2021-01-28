@@ -1,5 +1,5 @@
 <script>
-  import { onMount, beforeUpdate, afterUpdate, onDestroy } from "svelte"
+  import { tick } from "svelte"
   import Screen from "layout/Screen"
   import groups, { activeGroup, group_order, setGroupOrder } from "data/groups"
   import zones from "data/zones"
@@ -125,18 +125,21 @@
 
   let sortList, sortable
 
+  const resetSortable = async () => {
+    await tick()
+    if(sortable) sortable.destroy()
+    sortable = Sortable.create(sortList, {
+      store: {
+        get: s => $group_order,
+        set: s => setGroupOrder(s.toArray())
+      },
+      handle: ".drag-header"
+    })
+  }
+
   $: {
-    if(sortList && !sortable && sortGroups) {
-      sortable = Sortable.create(sortList, {
-        store: {
-          get: s => $group_order,
-          set: s => setGroupOrder(s.toArray())
-        },
-        handle: ".drag-header"
-      })
-    }
-    if(!sortGroups) {
-      sortable = undefined
+    if(sortList && sortGroups && $group_order) {
+      resetSortable()
     }
   }
 </script>

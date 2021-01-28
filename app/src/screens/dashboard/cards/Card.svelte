@@ -1,14 +1,15 @@
 <script>
-  export let link
+  export let link = undefined
+  export let span = 1
 </script>
 
-<a href={link} class='card'>
+<a href={link} class='card' style='grid-column: span {span};'>
   <div class='body'>
     <slot />
   </div>
   <div class='footer'>
     {#if link}
-      <img src='/images/icons/expand.svg' />
+      <img src='/images/icons/expand.svg' alt='expand'/>
     {/if}
   </div>
 </a>
@@ -18,6 +19,19 @@
     color: inherit;
     display: flex;
     flex-direction: column;
+    padding: 16px;
+    min-height: 160px;
+  }
+  a :global(h2) {
+    padding: 0;
+    margin: 0;
+    margin-bottom: 10px;
+  }
+  a :global(p) {
+    font-size: 14px;
+    padding: 0;
+    margin: 0;
+    padding-bottom: 10px;
   }
   .body {
     flex: 1;

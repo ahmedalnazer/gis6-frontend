@@ -4,6 +4,6 @@
 </script>
 
 <Card link='/change-log'>
-  <h3>{$_('View Change Log')}</h3>
-  <p>Modified 10/8/2020 12:45 PM</p>
+  <h2>{$_('View Change Log')}</h2>
+  <p class='muted'>Modified 10/8/2020 12:45 PM</p>
 </Card>

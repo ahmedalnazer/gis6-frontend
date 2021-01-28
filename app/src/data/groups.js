@@ -1,10 +1,23 @@
 import { writable, derived } from 'svelte/store'
 import api from 'data/api'
+import { id } from 'data/tools'
 
-const _isDevEnv = false
 const _groups = writable([])
+const _groupOrder = writable(JSON.parse(localStorage.getItem('group_order') || '[]'))
 
-export const group_order = writable(JSON.parse(localStorage.getItem('group_order') || '[]'))
+/**
+ * Store which returns an Array containing group ids in desired display order
+ */
+export const group_order = derived([ _groups, _groupOrder ], ([ $_groups, $_groupOrder ]) => {
+  // filter non-existent groups from the order list
+  const _order = $_groupOrder.map(x => id(x))
+  const order = _order
+    .filter(x => !!$_groups.find(g => id(g.id) == x))
+    .concat(
+      $_groups.filter(x => !_order.includes(id(x.id))).map(x => id(x.id))
+    )
+  return order
+})
 
 /**
  * Set the display order of the groups globally and persist to localStorage
@@ -12,7 +25,7 @@ export const group_order = writable(JSON.parse(localStorage.getItem('group_order
  */
 export const setGroupOrder = arr => {
   localStorage.setItem('group_order', JSON.stringify(arr))
-  group_order.set(arr)
+  _groupOrder.set(arr)
 }
 
 /**
@@ -20,11 +33,12 @@ export const setGroupOrder = arr => {
  */
 const groups = derived([ _groups, group_order ], ([ $_groups, $group_order ]) => {
   let sorted = []
-  for(let g of $group_order.map(x => parseInt(x))) {
+  for(let g of $group_order.map(x => id(x))) {
     const f = $_groups.find(x => x.id == g)
     sorted.push(f)
   }
-  return sorted.concat($_groups.filter(x => !sorted.includes(x))).filter(x => !!x)
+  const groups = sorted.concat($_groups.filter(x => !sorted.includes(x))).filter(x => !!x)
+  return groups
 })
 
 
@@ -58,76 +72,20 @@ groups.reload = async () => {
 }
 
 groups.create = async group => {
-  if (_isDevEnv) {
-    let grp = []
-    let tempData = localStorage.getItem("all-groups")
-    if (!tempData) { 
-      tempData = encodeGroup(group); 
-      grp.push(tempData); 
-    }
-    else {
-      grp = JSON.parse(tempData);
-      grp.push(encodeGroup(group)); 
-    }
-
-    localStorage.setItem("all-groups", JSON.stringify(grp))
-
-    // await api.post('zonegroup', encodeGroup(group))
-    await groups.reload()
-  }
-  else {
-    await api.post('zonegroup', encodeGroup(group))
-    await groups.reload()
-  }
+  await api.post('zonegroup', encodeGroup(group))
+  await groups.reload()
 }
 
 groups.update = async group => {
-  if (_isDevEnv) {
-    // This code is for development environment
-    let tempData = localStorage.getItem("all-groups")
-    let tempSaveData = JSON.parse(tempData)
-    let tempSaveDataFiltered = tempSaveData.filter(x => x.id == group.id)
-    let groupColor = ""
-
-    for(let [ key, value ] of Object.entries(groupColors)) {
-      if (value == group.color) {
-        groupColor = key
-      }
-    }
-
-    if (tempSaveDataFiltered.length) {
-      tempSaveDataFiltered[0].GroupName = group.name
-      tempSaveDataFiltered[0].GroupColor = groupColor
-    }
-
-    localStorage.setItem("all-groups", JSON.stringify(tempSaveData))
-
-    // await api.patch('zonegroups', group)
-    await groups.reload()  
-  } else {
-    const { id } = group
-    delete group.id
-    await api.put(`zonegroup/${id}`, encodeGroup(group))
-    await groups.reload()
-  }
+  const { id } = group
+  delete group.id
+  await api.put(`zonegroup/${id}`, encodeGroup(group))
+  await groups.reload()
 }
 
 groups.delete = async group => {
-  if (_isDevEnv) {
-    // This code is for development environment
-    let tempData = localStorage.getItem("all-groups")
-    let tempSaveData = JSON.parse(tempData)
-    let tempSaveDataFiltered = tempSaveData.filter(x => x.id !== group.id)
-
-    localStorage.setItem("all-groups", JSON.stringify(tempSaveDataFiltered))
-
-    // await api.delete('zonegroups', group)
-    await groups.reload()
-  } 
-  else {
-    await api.delete(`zonegroup/${group.id}`)
-    await groups.reload()
-  }
+  await api.delete(`zonegroup/${group.id}`)
+  await groups.reload()
 }
 
 groups.reload()

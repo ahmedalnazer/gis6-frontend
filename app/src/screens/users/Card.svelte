@@ -1,4 +1,5 @@
 <script>
+  import { Icon } from 'components'
   import { default as _user, roles } from 'data/user'
   export let user
   export let onDelete
@@ -10,10 +11,12 @@
   <div class='tools'>
     {#if onDelete && user.id != ($_user && $_user.id)}
       <div class='trash' on:click={() => onDelete(user)}>
-        T
+        <Icon icon='trash' color='var(--primary)' />
       </div>
     {/if}
-    <a class='profile-link' href='/user-profile/{user.id}'>{'<-->'}</a>
+    <a class='profile-link' href='/user-profile/{user.id}'>
+      <Icon icon='expand' color='var(--muted)' />
+    </a>
   </div>
 </div>
 

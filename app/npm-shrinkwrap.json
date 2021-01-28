@@ -21,6 +21,7 @@
         "sortablejs": "^1.13.0",
         "svelte": "^3.31.2",
         "svelte-preprocess": "^4.6.1",
+        "svelte-select": "^3.16.1",
         "svelte-sortable-list": "^1.1.0"
       },
       "devDependencies": {
@@ -6951,6 +6952,11 @@
         "node": ">=8"
       }
     },
+    "node_modules/svelte-select": {
+      "version": "3.16.1",
+      "resolved": "https://registry.npmjs.org/svelte-select/-/svelte-select-3.16.1.tgz",
+      "integrity": "sha512-y2E1LA50hbOlolaBS0TsWWcWXFIp9TIeCmohMg51pZuJF5ngkPajoKmRjE893P2jIRZDV//qf1gMb6KjrEYIGQ=="
+    },
     "node_modules/svelte-sortable-list": {
       "version": "1.1.0",
       "resolved": "https://registry.npmjs.org/svelte-sortable-list/-/svelte-sortable-list-1.1.0.tgz",
@@ -12949,6 +12955,11 @@
           }
         }
       }
+    },
+    "svelte-select": {
+      "version": "3.16.1",
+      "resolved": "https://registry.npmjs.org/svelte-select/-/svelte-select-3.16.1.tgz",
+      "integrity": "sha512-y2E1LA50hbOlolaBS0TsWWcWXFIp9TIeCmohMg51pZuJF5ngkPajoKmRjE893P2jIRZDV//qf1gMb6KjrEYIGQ=="
     },
     "svelte-sortable-list": {
       "version": "1.1.0",

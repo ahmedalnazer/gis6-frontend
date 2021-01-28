@@ -29,10 +29,10 @@
   .modal {
     position: fixed;
     z-index:99999;
-    top: 0;
+    top: 284px;
     left: 0;
+    bottom: 120px;
     width: 100%;
-    height: 100%;
     background: rgba(0, 0, 0, .3);
     display: flex;
     align-items: flex-start;
@@ -55,7 +55,7 @@
     max-height: calc(100vh - 32px);
     overflow: scroll;
     width: 100%;
-    margin-top: 280px;
+    margin-top: 0;
 
     .modal-body, .modal-header {
       padding: 32px;

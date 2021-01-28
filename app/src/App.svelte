@@ -5,6 +5,9 @@
   import SplashScreen from "screens/SplashScreen"
   import Header from 'layout/Header'
   import Footer from 'layout/Footer'
+  import Login from 'screens/Login'
+  import { loggingIn } from 'data/user/actions'
+
 
   let showSplashScreen = true
   
@@ -21,5 +24,8 @@
 {/if}
 <Footer />
 
+{#if $loggingIn}
+  <Login />
+{/if}
 <Notifications />
 <Confirm />

@@ -86,11 +86,10 @@ a, .link {
   }
 }
 
-.input {
-  label {
-    margin-bottom: 16px;
-    display: block;
-  }
+label {
+  margin-bottom: 16px;
+  display: block;
+  font-weight: 600;
 }
 input, select {
   background: var(--pale);

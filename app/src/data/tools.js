@@ -18,3 +18,14 @@ const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+")
  * @param {string} email - email address to validate
  */
 export const isEmail = email => emailRegex.test(email)
+
+
+/**
+ * Return id parsed as integer if possible
+ * @param _id string or number to be tested and converted where possible
+ */
+export const id = _id => {
+  const n = parseInt(_id)
+  if(isNaN(n)) return _id
+  return n
+}

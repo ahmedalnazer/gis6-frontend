@@ -31,24 +31,24 @@ class API {
   // TODO: finalize and document
   login = async (username, password) => {
     const data = await this.post('auth/token/obtain', { username, password })
-    console.log(data)
     if(!data.access) {
       notify.error('Invalid username or password')
+      return false
     } else {
-
       this.token = data.access
       this.refresh = data.refresh
-
       await this.update()
       notify.success(`Signed in`)
+      return true
     }
   }
 
   // TODO: finalize and document
   logout = async () => {
-    await this.post('logout')
-    await this.update()
-    notify('You have succesfully been logged out')
+    await this.post('auth/logout', { refresh_token: this.refresh })
+    this.status.user = {}
+    user.set(null)
+    notify('You have succesfully logged out')
   }
 
 

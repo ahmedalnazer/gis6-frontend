@@ -3,5 +3,5 @@
 </script>
 
 <Card link='/group-management'>
-  <h3>Manage Groups</h3>
+  <h2>Manage Groups</h2>
 </Card>

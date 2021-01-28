@@ -11,3 +11,9 @@
     <slot />
   </div>
 </div>
+
+<style>
+  .dashboard-section {
+    margin-bottom: 32px;
+  }
+</style>
