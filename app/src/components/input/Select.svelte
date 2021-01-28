@@ -11,13 +11,9 @@
     selectedValue = options.find(x => x[id] == value)
   }
 
-  $: console.log(options, selectedValue)
-
   const select = e => {
-    console.log(e.detail)
     value = e.detail[id]
     selectedValue = e.detail
-    console.log(value, selectedValue)
   }
 </script>
 

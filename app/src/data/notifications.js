@@ -1,7 +1,7 @@
 import { writable } from 'svelte/store'
 import { getId } from './tools'
 
-const test = true
+const test = false
 
 // store containing current notifications
 export const notifications = writable([])
