@@ -1,13 +1,18 @@
 <script>
   import { notifications } from 'data/notifications'
   import { slide } from 'svelte/transition'
+  import { Icon } from 'components'
 
   const dismiss = id => notifications.update(n => n.filter(x => x.id != id))
 
   const icons = {
-    success: 'check',
-    error: 'exclamation-circle',
-    warning: 'exclamation-triangle'
+    success: {
+      icon: 'check',
+      color: 'var(--green)'
+    },
+    error: {},
+    warning: {},
+    info: {}
   }
 </script>
 
@@ -15,8 +20,11 @@
   <div class='wrapper'>
     {#each $notifications as n (n.id)}
       <div class='notification {n.type}' transition:slide|local on:click={() => dismiss(n.id)}>
-      <!-- <i class='fa fa-{icons[n.type] || n.type}' />  -->
-      <span class='message'>{n.msg}</span>
+        <Icon icon={icons[n.type].icon} color={icons[n.type].color}/>
+        <span class='message'>{n.msg}</span>
+        <div class='close'>
+          <Icon icon='close' />
+        </div>
       </div>
     {/each}
   </div>
@@ -26,54 +34,63 @@
 <style lang="scss">
   .notifications {
     font-size: 16px;
+    font-weight: 600;
     position: fixed;
-    bottom: 180px;
+    top: 284px;
     right: 0;
     width: 100%;
     pointer-events: none;
-    z-index: 2;
+    z-index: 9999;
     .wrapper {
       position: absolute;
-      bottom: 0;
-      right: 0;
+      top:0;
+      left: 0;
       width: 100%;
     }
-    .notification {
-      pointer-events: all;
-      width: 100%;
-      background: #ddd;
-      box-shadow: -2px 2px 4px rgba(0, 0, 0, .1);
-      border-radius: 4px 0 0 4px;
-      margin-bottom: 8px;
-      color: white;
-      display: flex;
-      overflow: hidden;
-      text-align: center;
-      // > i {
-      //   width: 40px;
-      //   flex-grow: 0;
-      //   flex-shrink: 0;
-      //   display: flex;
-      //   justify-content: center;
-      //   align-items: center;
-      //   background: rgba(0, 0, 0, .2);
-      // }
-      .message {
-        flex: 1;
-        padding: 16px;
-      }
-      &.info {
-        color: #333
-      }
-      &.success {
-        background: var(--green);
-      }
-      &.warning {
-        background: gold;
-      }
-      &.error {
-        background: var(--danger);
-      }
+  }
+
+  .notification {
+    pointer-events: all;
+    width: 100%;
+    background: white;
+    box-shadow: -2px 2px 4px rgba(0, 0, 0, .4);
+    border-radius: 4px 0 0 4px;
+    margin-bottom: 8px;
+    color: white;
+    display: flex;
+    overflow: hidden;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 0 64px;
+    .message {
+      padding: 48px 10px;;
+    }
+    &.info {
+      color: #333
+    }
+    &.success {
+      color: var(--green);
+    }
+    &.warning {
+      color: gold;
+    }
+    &.error {
+      color: var(--danger);
+    }
+  }
+
+  .close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-right: 40px;
+    :global(svg) {
+      width: 24px;
     }
   }
 </style>

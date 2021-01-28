@@ -1,21 +1,19 @@
 <script>
   import api from 'data/api'
-  import user, { users } from 'data/user'
+  import { users } from 'data/user'
   import _ from 'data/language'
-  import { Modal } from 'components'
+  import { Modal, Select } from 'components'
   import { loggingIn } from 'data/user/actions'
 
-  let userId
+  let username
+  let password = ''
 
   const login = async e => {
     e.preventDefault()
-    if(await api.login(userId, password)) {
+    if(await api.login(username, password)) {
       loggingIn.set(false)
     }
   }
-
-  let password = ''
-
 </script>
 
 <Modal onClose={() => loggingIn.set(false)}>
@@ -24,12 +22,13 @@
   </div>
   <form on:submit={login}>
     <label>{$_('Username')}</label>
-    <select bind:value={userId}>
-      <option value=''>{$_('Select...')}</option>
-      {#each $users as user (user.id)}
-        <option>{user.username}</option>
-      {/each}
-    </select>
+    <Select 
+      bind:value={username}
+      options={$users}
+      placeholder={$_('Select...')}
+      id='username'
+      getLabel={u => u.username}
+    />
 
     <label>{$_('Password')}</label>
     <input bind:value={password} type='password' />
@@ -70,12 +69,5 @@
 
   button {
     margin-top: 48px;
-  }
-
-  .close {
-    position: absolute;
-    font-size: 2em;
-    top: 32px;
-    right: 32px;
   }
 </style>

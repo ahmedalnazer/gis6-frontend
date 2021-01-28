@@ -1,5 +1,5 @@
 <script>
-  import { Input, CheckBox } from 'components'
+  import { Input, CheckBox, Select } from 'components'
   import _ from 'data/language'
   import { defaultUser } from 'data/user'
   import { isEmail } from 'data/tools'
@@ -64,7 +64,7 @@
     valid = validate(user, validating)
   }
 
-  $: console.log(validating, errors)
+  // $: console.log(validating, errors)
 
 </script>
 
@@ -76,25 +76,36 @@
     <Input bind:value={user.email} label={$_('Email')} errors={errors.email} />
     <div class='input'>
       <label>{$_('Language')}</label>
-      <select bind:value={user.language}>
-        <option value='en-US'>English</option>
-      </select>
+      <Select bind:value={user.language} options={[
+        { id: 'en-US', name: 'English' },
+        { id: 'de-DE', name: 'Deutsche' }
+      ]} />
     </div>
     <Input bind:value={user.username} label={$_('User Login ID')} errors={errors.username} />
-    <Input type='password' bind:value={user.password} label={$_('password')} errors={errors.password} />
+    <Input
+      type='password'
+      bind:value={user.password}
+      label={$_('Password')}
+      errors={errors.password}
+      info={
+        !errors.password || !errors.password.length
+          ? [ $_('Minimum 8 characters, 2 numeric and one special character') ]
+          : []
+      }
+    />
   </div>
 
   <h3 class='permissions-heading'>{$_('Permissions')}</h3>
   <div class='card border permissions' class:locked={permissionsLocked}>
     <div class='input'>
       <label>{$_('Security Level / Role')}</label>
-      <select bind:value={user.role}>
-        <option value={3}>{$_('Process Engineer')}</option>
-        <option value={2}>{$_('Operator')}</option>
-        <option value={4}>{$_('Setup')}</option>
-        <option value={5}>{$_('Plant Manager')}</option>
-        <option value={1}>{$_('Administrator')}</option>
-      </select>
+      <Select bind:value={user.role} options={[
+        { id: 3, name: $_('Process Engineer') },
+        { id: 2, name: $_('Operator') },
+        { id: 4, name: $_('Setup') },
+        { id: 5, name: $_('Plant Manager') },
+        { id: 1, name: $_('Administrator') },
+      ]} />
     </div>
     <h4>{$_('Category')}</h4>
     <div class='checks'>

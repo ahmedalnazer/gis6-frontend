@@ -41,7 +41,6 @@ const create = (label, data) => {
 }
 
 const update = (label, data) => {
-  console.log(label, data)
   setCollection(label, getCollection(label).map(x => x.id == data.id ? { ...x, ...data } : x))
   return data
 }
@@ -75,7 +74,6 @@ if(!offline) {
 }
 
 export default function getStub(method, url, data) {
-  console.log(method, url, data)
   if (stubs && stubs[method]) {
     const routes = Object.keys(stubs[method]).map(x => ({
       route: new Route(x),

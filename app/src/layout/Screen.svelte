@@ -28,6 +28,17 @@
   </main>
 </div>
 
+{#if tasksEmpty}
+  <style>
+    .modal {
+      top: 120px !important;
+    }
+    .notifications {
+      top: 120px !important;
+    }
+  </style>
+{/if}
+
 
 <style lang="scss">
   .screen-header {

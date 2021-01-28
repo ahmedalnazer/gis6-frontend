@@ -2,6 +2,7 @@
   import { Collapsible } from 'components'
   import { slide } from 'svelte/transition'
   export let errors = []
+  export let info = []
   export let value = ''
   export let label = ''
   export let note = ''
@@ -26,9 +27,18 @@
       <p transition:slide|local class='error'>{e}</p>
     {/each}
   </Collapsible>
+  <Collapsible open={info && info.length}>
+    {#each info || [] as i}
+      <p transition:slide|local class='info muted'>{i}</p>
+    {/each}
+  </Collapsible>
+  
 </div>
 
 <style>
+  .info, .error {
+    font-size: 14px;
+  }
   .error {
     color: var(--danger);
   }

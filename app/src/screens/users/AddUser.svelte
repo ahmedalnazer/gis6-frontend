@@ -10,10 +10,7 @@
 
   let validating = false
 
-  $: console.log(valid)
-
   const register = async () => {
-    console.log(valid)
     if(!valid) {
       validating = true
       return
