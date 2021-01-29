@@ -25,7 +25,7 @@ class API {
       console.error(e)
       this.status = { user: {}}
     }
-    user.set(this.status && this.status.user)
+    user.set(this.status && this.status.user.username && this.status.user)
   }
 
   // TODO: finalize and document

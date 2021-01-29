@@ -14,7 +14,7 @@
     },
     {
       id: 2,
-      roles: [ 1 ],
+      roles: [ 1, 4 ],
       component: GroupManagement
     },
     {
