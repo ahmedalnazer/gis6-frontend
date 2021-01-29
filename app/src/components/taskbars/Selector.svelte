@@ -1,7 +1,20 @@
 <script>
-  export let onSubmit
+  import groups from 'data/groups'
+  import _ from 'data/language'
+  import zones, { selectedZones } from 'data/zones'
 
-  let selected = []
+  export let onSubmit
+  export let onDone
+
+  let emptyBody
+
+  const applySelected = () => {
+    onSubmit($selectedZones)
+  }
+
+  const applyGroup = group => {
+    onSubmit($zones.filter(x => x.groups && x.groups.includes(group.id)))
+  }
 </script>
 
 <div class='zone-select-wrapper'>
@@ -12,23 +25,49 @@
   </div>
   
   <div class='body'>
-    <slot />
+    <slot>
+      <div bind:this={emptyBody} />
+    </slot>
   </div>
 
   <div class='groups'>
     <h2>Apply</h2>
-    Groups
+    <div class='buttons'>
+      <div class='button ignore-task-styles' on:click={applySelected}>
+        {$_('Selected Zones')}
+      </div>
+      {#each $groups as group (group.id)}
+        <div class='button ignore-task-styles' on:click={() => applyGroup(group)}>
+          {group.name}
+        </div>
+      {/each}
+    </div>
   </div>
   
   <div class='done'>
-    <button class='button active' on:click={e => onSubmit(selected)}>Done</button>
+    <button class='button ignore-task-styles active' on:click={e => onDone()}>
+      {$_('Done')}
+    </button>
   </div>
-  
+
 </div>
+
+
+{#if emptyBody}
+  <style>
+    .body {
+      display: none;
+    }
+  </style>
+{/if}
+
 
 <style>
   .zone-select-wrapper :global(h2) {
+    margin-top: 0;
+    padding-top: 0;
     font-size: 22px;
+    margin-bottom: 32px;
   }
   .zone-dropdown, .body, .groups {
     padding: 32px 0;
@@ -42,5 +81,15 @@
   }
   .done {
     text-align: center;
+  }
+  .buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 24px;
+    grid-row-gap: 32px;
+    margin-bottom: 32px;
+  }
+  .button {
+    padding: 12px;
   }
 </style>
