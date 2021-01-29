@@ -2,7 +2,7 @@
   import { tick } from "svelte"
   import Screen from "layout/Screen"
   import groups, { activeGroup, group_order, setGroupOrder } from "data/groups"
-  import zones from "data/zones"
+  import zones, { selectedZones as _selected } from "data/zones"
   import _ from "data/language"
   import ZoneGroup from "./ZoneGroup"
   import { Modal } from "components"
@@ -96,6 +96,10 @@
     } else {
       selectedZoneIds = selectedZoneIds.concat(id)
     }
+  }
+
+  $: {
+    _selected.set(selectedZoneIds)
   }
 
   const boxSelect = (nodes) => {

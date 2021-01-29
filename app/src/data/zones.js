@@ -5,6 +5,8 @@ import { id } from './tools'
 
 const rawZones = writable([])
 
+export const selectedZones = writable([])
+
 const zones = derived([ rawZones ], ([ $raw ]) => {
   let sorted = [ ...$raw ]
   var collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' })

@@ -1,5 +1,8 @@
 <script>
   import _ from "data/language"
+  import { toggleSetpoint } from 'data/setpoint'
+
+  let on, off, standby, boost
 </script>
 
 
@@ -21,11 +24,13 @@
     {$_('Boost')}
   </div>
 
-  <div class='button setpoint'>
+  <div class='button setpoint' on:click={toggleSetpoint}>
     <div class='icon setpoint' />
     {$_('Setpoint')}
   </div>
 </div>
+
+
 
 
 <style lang='scss'>

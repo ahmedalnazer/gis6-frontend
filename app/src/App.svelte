@@ -7,6 +7,7 @@
   import Footer from 'layout/Footer'
   import Login from 'screens/Login'
   import { loggingIn } from 'data/user/actions'
+  import SetpointEditor from 'components/SetpointEditor'
 
 
   let showSplashScreen = true
@@ -27,5 +28,7 @@
 {#if $loggingIn}
   <Login />
 {/if}
+
+<SetpointEditor />
 <Notifications />
 <Confirm />
