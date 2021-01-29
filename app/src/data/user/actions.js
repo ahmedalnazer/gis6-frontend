@@ -47,7 +47,7 @@ loadUsers()
  */
 export const createUser = async user => {
   // post new user
-  const u = await api.post('auth/user/create/', user)
+  const u = await api.post('auth/user', user)
   if(u.error) {
     // notify user if there's an error
     notify.error(u.error)
@@ -64,15 +64,11 @@ export const createUser = async user => {
  */
 export const deleteUser = async user => {
   // post new user
-  const u = await api.post('/delete-user', { id: user.id || user })
-  if(u.error) {
-    // notify user if there's an error
-    notify.error(u.error)
-  } else {
-    notify('User successfully deleted')
-    // refresh state
-    await loadUsers()
-  }
+  const data = await api.delete(`/auth/user/${user.id}`)
+
+  notify('User successfully deleted')
+  // refresh state
+  await loadUsers()
 }
 
 
@@ -83,13 +79,8 @@ export const deleteUser = async user => {
  */
 export const updateUser = async user => {
   // post new user
-  const u = await api.post('/update-user', user)
-  if(u.error) {
-    // notify user if there's an error
-    notify.error(u.error)
-  } else {
-    notify.success('User profile updated')
-    // refresh state
-    await loadUsers()
-  }
+  const data = await api.put(`/auth/user/${user.id}`, user)
+  notify.success('User profile updated')
+  // refresh state
+  await loadUsers()
 }
