@@ -73,6 +73,17 @@
 </svg>
 {/if}
 
+{#if icon == 'check'}
+  <svg width="24px" height="19px" viewBox="0 0 24 19" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>B6C90154-104D-4FC4-8901-43B83E4DAD37</title>
+    <g id="Components" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Style-Guide" transform="translate(-1028.000000, -414.000000)" style='fill:{color}'>
+            <path d="M1052,417.840968 L1040.78234,429.36 L1037.75957,432.464244 C1037.37427,432.859927 1036.74116,432.868345 1036.34548,432.483047 C1036.33913,432.476863 1036.33286,432.470595 1036.32667,432.464244 L1033.3039,429.36 L1033.3039,429.36 L1028,423.811505 L1031.74021,419.971505 L1037.06388,425.499672 L1048.26078,414 L1052,417.840968 Z" id="icon-checkmark"></path>
+        </g>
+    </g>
+</svg>
+{/if}
+
 <style>
   svg {
     min-width: 8px;

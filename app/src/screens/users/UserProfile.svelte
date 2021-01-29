@@ -29,13 +29,6 @@
     }
     await updateUser(user)
   }
-
-  const next = async () => {
-    // ???
-  }
-
-  $: console.log(user)
-
 </script>
 
 <Screen title='{$_('User Profile')}'>

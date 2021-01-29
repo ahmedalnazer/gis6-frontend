@@ -1,6 +1,8 @@
 import { writable } from 'svelte/store'
 import { getId } from './tools'
 
+const test = false
+
 // store containing current notifications
 export const notifications = writable([])
 
@@ -16,9 +18,11 @@ let notify = (msg, type = 'info') => {
   })
 
   // remove notification after a delay
-  setTimeout(() => {
-    notifications.update(n => n.filter(x => x.id != id))
-  }, Math.min(8000, msg.length * 200))
+  if(!test) {
+    setTimeout(() => {
+      notifications.update(n => n.filter(x => x.id != id))
+    }, Math.min(8000, msg.length * 200))
+  }
 }
 
 /**
@@ -40,3 +44,10 @@ notify.warning = msg => notify(msg, 'warning')
 notify.success = msg => notify(msg, 'success')
 
 export default notify
+
+if(test) {
+  notify.success('Success message')
+  notify('Info message')
+  notify.error('Error message')
+  notify.warning('Warning message')
+}

@@ -33,7 +33,7 @@
     left: 0;
     bottom: 120px;
     width: 100%;
-    background: rgba(0, 0, 0, .3);
+    background: rgba(0, 0, 0, .5);
     display: flex;
     align-items: flex-start;
     justify-content: center;
