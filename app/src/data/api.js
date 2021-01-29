@@ -1,6 +1,7 @@
 import user from './user'
 import notify from './notifications'
 import getStub from './api-stubs'
+import history from 'router/history'
 
 const apiTarget = import.meta.env.SNOWPACK_PUBLIC_API_URL || ''
 if(apiTarget) {
@@ -48,6 +49,7 @@ class API {
     await this.post('auth/logout', { refresh_token: this.refresh })
     this.status.user = {}
     user.set(null)
+    history.push('/')
     notify('You have succesfully logged out')
   }
 
