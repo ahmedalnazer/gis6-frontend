@@ -84,6 +84,50 @@
 </svg>
 {/if}
 
+{#if icon == 'boost'}
+  <svg width="26px" height="24px" viewBox="0 0 26 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>482AC650-3D0E-441A-8F29-026196BB94CE</title>
+    <g id="Standards" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Style-Guide" transform="translate(-1161.000000, -662.000000)" style='fill:{color}'>
+            <polygon id="icon-boost" points="1173.57143 662 1186.14286 686 1161 686"></polygon>
+        </g>
+    </g>
+</svg>
+{/if}
+
+{#if icon == 'standby'}
+  <svg width="26px" height="24px" viewBox="0 0 26 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>2FB12FFE-EA19-4D5F-9985-90491D1EC971</title>
+    <g id="Standards" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Style-Guide" transform="translate(-1161.000000, -599.000000)" style='fill:{color}'>
+            <polygon id="icon-standby" transform="translate(1173.571429, 611.000000) scale(1, -1) translate(-1173.571429, -611.000000) " points="1173.57143 599 1186.14286 623 1161 623"></polygon>
+        </g>
+    </g>
+</svg>
+{/if}
+
+{#if icon == 'edit'}
+  <svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>DBF91685-77AD-4B41-BD3B-3CCF94E44DD9</title>
+    <g id="Standards" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Style-Guide" transform="translate(-1162.000000, -725.000000)" style='fill:{color}'>
+            <path d="M1169.13435,748.198691 C1168.52719,748.713818 1167.75506,749 1166.95375,749 L1162.56114,749 C1162.25139,749 1162,748.748609 1162,748.438859 L1162,744.046247 C1162,743.243816 1162.28618,742.471686 1162.80131,741.865653 L1169.13435,748.198691 Z M1170.03217,747.316577 L1170.72911,746.61964 L1164.38036,740.270891 L1178.66589,725.986486 C1179.98008,724.671171 1182.11129,724.671171 1183.42661,725.986486 L1185.01351,727.573393 C1186.32883,728.887585 1186.32883,731.019921 1185.01351,732.335235 L1170.03217,747.316577 Z" id="icon-edit"></path>
+        </g>
+    </g>
+</svg>
+{/if}
+
+{#if icon == 'home'}
+  <svg width="28px" height="24px" viewBox="0 0 28 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>E78D9A9D-D203-4885-B36B-4515DC44B5A8</title>
+    <g id="Standards" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Style-Guide" transform="translate(-1160.000000, -791.000000)" style='fill:{color}' fill-rule="nonzero">
+            <path d="M1173.89474,791 C1173.55732,791 1173.23395,791.135077 1172.99671,791.375 L1160.25658,802.491776 C1160.09522,802.610844 1160,802.799465 1160,803 C1160,803.348811 1160.28277,803.631579 1160.63158,803.631579 L1163.78947,803.631579 L1163.78947,813.736842 C1163.78947,814.434105 1164.35537,815 1165.05263,815 L1170.10526,815 C1170.80253,815 1171.36842,814.434105 1171.36842,813.736842 L1171.36842,806.157895 L1176.42105,806.157895 L1176.42105,813.736842 C1176.42105,814.434105 1176.98695,815 1177.68421,815 L1182.73684,815 C1183.43411,815 1184,814.434105 1184,813.736842 L1184,803.631579 L1187.15789,803.631579 C1187.50671,803.631579 1187.78947,803.348811 1187.78947,803 C1187.78947,802.799465 1187.69425,802.610844 1187.53289,802.491776 L1174.80016,791.382401 C1174.79771,791.379924 1174.79524,791.377457 1174.79276,791.375 C1174.55552,791.135077 1174.23215,791 1173.89474,791 Z" id="icon-home"></path>
+        </g>
+    </g>
+</svg>
+{/if}
+
 <style>
   svg {
     min-width: 8px;

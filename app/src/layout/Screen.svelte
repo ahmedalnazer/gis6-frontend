@@ -77,7 +77,7 @@
       width: 100%;
     }
 
-    :global(.button) {
+    :global(.button:not(.ignore-task-styles)) {
       background: linear-gradient(0deg, #3c4f69, #4f6483);
       color: #eeeff4;
       padding: 40px;
