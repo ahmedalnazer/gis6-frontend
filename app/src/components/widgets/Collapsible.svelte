@@ -11,8 +11,6 @@
   let animating = false
   let max = 0
 
-  let transitioning = false
-
   const transition = async () => {
     if(inner) {
       if(animatorTimeout) clearTimeout(animatorTimeout)
@@ -65,7 +63,7 @@
     /* border: .1px solid transparent; */
   }
   .outer-collapsible {
-    transition: max-height .5s, max-width .5s;
+    transition: max-height .3s linear, max-width .3s linear;
   }
   .outer-collapsible.closed {
     max-height: 0px;

@@ -27,7 +27,7 @@
 body {
   font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
   font-weight: 300;
-  color: --textMain;
+  color: var(--textMain);
 }
 
 *:focus {
@@ -97,6 +97,10 @@ input, select {
   outline: 0;
   display: block;
   padding: 16px;
+}
+
+input {
+  -webkit-appearance: textfield;
 }
 
 .form-submit {

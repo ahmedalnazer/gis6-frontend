@@ -1,16 +1,18 @@
 <script>
   import _ from "data/language"
-  import { showSetpoint, toggleSetpoint } from 'data/setpoint'
+  import { activeSetpointEditor } from 'data/setpoint'
   import { Icon } from 'components'
   import On from './commands/On'
   import Off from './commands/Off'
   import Boost from './commands/Boost'
   import Standby from './commands/Standby' 
 
-  let active = ''
   let toggle = key => {
-    showSetpoint.set(false)
-    active = active == key ? '' : key
+    if($activeSetpointEditor == key) {
+      activeSetpointEditor.set('')
+    } else {
+      activeSetpointEditor.set(key)
+    }
   }
 </script>
 
@@ -37,7 +39,7 @@
     {$_('Boost')}
   </div>
 
-  <div class='button setpoint' on:click={toggleSetpoint}>
+  <div class='button setpoint' on:click={() => toggle('setpoint')}>
     <div class='icon setpoint'>
       <Icon icon='edit' color='#F5F6F9' />
     </div>
@@ -45,20 +47,20 @@
   </div>
 </div>
 
-{#if active == 'off'}
-  <Off onClose={() => active = ''} />
+{#if $activeSetpointEditor == 'off'}
+  <Off onClose={() => activeSetpointEditor.set('')} />
 {/if}
 
-{#if active == 'on'}
-  <On onClose={() => active = ''} />
+{#if $activeSetpointEditor == 'on'}
+  <On onClose={() => activeSetpointEditor.set('')} />
 {/if}
 
-{#if active == 'standby'}
-  <Standby onClose={() => active = ''} />
+{#if $activeSetpointEditor == 'standby'}
+  <Standby onClose={() => activeSetpointEditor.set('')} />
 {/if}
 
-{#if active == 'boost'}
-  <Boost onClose={() => active = ''} />
+{#if $activeSetpointEditor == 'boost'}
+  <Boost onClose={() => activeSetpointEditor.set('')} />
 {/if}
 
 

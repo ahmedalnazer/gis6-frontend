@@ -11,6 +11,7 @@
   export let onDelete = () => {}
 
   const toggle = id => {
+    console.log(id)
     if(selection.includes(id)) {
       selection = selection.filter(x => x != id)
     } else {

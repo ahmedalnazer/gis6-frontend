@@ -1,147 +1,157 @@
 <script>
-    import { Modal } from "components";
-    import Selector from "components/taskbars/Selector.svelte";
-    import _ from "data/language";
-    import notify from "data/notifications";
-    import { showSetpoint } from "data/setpoint";
-    import { Input, CheckBox } from "components";
-    import Switch from "svelte-switch";
-
+    import { Modal } from "components"
+    import Selector from "components/taskbars/Selector.svelte"
+    import _ from "data/language"
+    import notify from "data/notifications"
+    import { Input, CheckBox } from "components"
+    import Switch from "svelte-switch"
+    import { activeSetpointEditor } from 'data/setpoint'
+    import Collapsible from "./widgets/Collapsible.svelte"
     const commitChanges = (zones) => {
-        notify.success($_("Changes applied"));
-    };
+      notify.success($_("Changes applied"))
+    }
+  
 
-    let checkedValue = true;
-    let setpointTemperatureValue = 0;
-    let showAdvanced = false;
-    let showHideLabel = "Show Advanced Settings";
+    let checkedValue = true
+    let setpointTemperatureValue = 0
+    let showAdvanced = false
+    let showHideLabel = "Show Advanced Settings"
 
     let initialFormData = {
-        zoneId: 0,
-        temperatureSetpoint: 0,
-        autoManual: false,
-        unlockLock: false,
-        onOff: false,
-        low: 0,
-        high: 0,
-        unsealSeal: false,
-        manual: 0,
-        trim: 0,
-        autoStandby: 0,
-        tcShortDetectTime: 0,
-        tuningOverride: 0,
-        powerPriority: 0,
-        wattAlarm: 0,
-        criticalOverTemperature: 0,
-    };
+      zoneId: 0,
+      temperatureSetpoint: 0,
+      autoManual: false,
+      unlockLock: false,
+      onOff: false,
+      low: 0,
+      high: 0,
+      unsealSeal: false,
+      manual: 0,
+      trim: 0,
+      autoStandby: 0,
+      tcShortDetectTime: 0,
+      tuningOverride: 0,
+      powerPriority: 0,
+      wattAlarm: 0,
+      criticalOverTemperature: 0,
+    }
 
     let formData = {
-        zoneId: 0,
-        temperatureSetpoint: 0,
-        autoManual: false,
-        unlockLock: false,
-        onOff: false,
-        low: 0,
-        high: 0,
-        unsealSeal: false,
-        manual: 0,
-        trim: 0,
-        autoStandby: 0,
-        tcShortDetectTime: 0,
-        tuningOverride: 0,
-        powerPriority: 0,
-        wattAlarm: 0,
-        criticalOverTemperature: 0,
-    };
+      zoneId: 0,
+      temperatureSetpoint: 0,
+      autoManual: false,
+      unlockLock: false,
+      onOff: false,
+      low: 0,
+      high: 0,
+      unsealSeal: false,
+      manual: 0,
+      trim: 0,
+      autoStandby: 0,
+      tcShortDetectTime: 0,
+      tuningOverride: 0,
+      powerPriority: 0,
+      wattAlarm: 0,
+      criticalOverTemperature: 0,
+    }
 
-    let changedTemperatureSetpointData = false;
-    let changedautoManualData = false;
-    let changedUnlockLockData = false;
-    let changedOnOffData = false;
-    let changedLowData = false;
-    let changedHighData = false;
-    let changedUnsealSealData = false;
-    let changedManualData = false;
-    let changedTrimData = false;
-    let changedAutoStandbyData = false;
-    let changedTCShortDetectTimeData = false;
-    let changedTuningOverrideData = false;
-    let changedPowerPriorityData = false;
-    let changedWattAlarmData = false;
-    let changedCriticalOverTemperatureData = false;
+    let changedTemperatureSetpointData = false
+    let changedautoManualData = false
+    let changedUnlockLockData = false
+    let changedOnOffData = false
+    let changedLowData = false
+    let changedHighData = false
+    let changedUnsealSealData = false
+    let changedManualData = false
+    let changedTrimData = false
+    let changedAutoStandbyData = false
+    let changedTCShortDetectTimeData = false
+    let changedTuningOverrideData = false
+    let changedPowerPriorityData = false
+    let changedWattAlarmData = false
+    let changedCriticalOverTemperatureData = false
 
     $: changedTemperatureSetpointData =
-        initialFormData.temperatureSetpoint !== formData.temperatureSetpoint;
+        initialFormData.temperatureSetpoint !== formData.temperatureSetpoint
     $: changedAutoManualData =
-        initialFormData.autoManual !== formData.autoManual;
+        initialFormData.autoManual !== formData.autoManual
     $: changedUnlockLockData =
-        initialFormData.unlockLock !== formData.unlockLock;
-    $: changedOnOffData = initialFormData.onOff !== formData.onOff;
-    $: changedLowData = initialFormData.low !== formData.low;
-    $: changedHighData = initialFormData.high !== formData.high;
+        initialFormData.unlockLock !== formData.unlockLock
+    $: changedOnOffData = initialFormData.onOff !== formData.onOff
+    $: changedLowData = initialFormData.low !== formData.low
+    $: changedHighData = initialFormData.high !== formData.high
     $: changedUnsealSealData =
-        initialFormData.unsealSeal !== formData.unsealSeal;
-    $: changedManualData = initialFormData.manual !== formData.manual;
-    $: changedTrimData = initialFormData.trim !== formData.trim;
+        initialFormData.unsealSeal !== formData.unsealSeal
+    $: changedManualData = initialFormData.manual !== formData.manual
+    $: changedTrimData = initialFormData.trim !== formData.trim
     $: changedAutoStandbyData =
-        initialFormData.autoStandby !== formData.autoStandby;
+        initialFormData.autoStandby !== formData.autoStandby
     $: changedTCShortDetectTimeData =
-        initialFormData.tcShortDetectTime !== formData.tcShortDetectTime;
+        initialFormData.tcShortDetectTime !== formData.tcShortDetectTime
     $: changedTuningOverrideData =
-        initialFormData.tuningOverride !== formData.tuningOverride;
+        initialFormData.tuningOverride !== formData.tuningOverride
     $: changedPowerPriorityData =
-        initialFormData.powerPriority !== formData.powerPriority;
-    $: changedWattAlarmData = initialFormData.wattAlarm !== formData.wattAlarm;
+        initialFormData.powerPriority !== formData.powerPriority
+    $: changedWattAlarmData = initialFormData.wattAlarm !== formData.wattAlarm
     $: changedCriticalOverTemperatureData =
         initialFormData.criticalOverTemperature !==
-        formData.criticalOverTemperature;
+        formData.criticalOverTemperature
 
     const handleChangeAutoManual = (e) => {
-        const { checked } = e.detail;
-        formData.autoManual = checked;
-    };
+      const { checked } = e.detail
+      formData.autoManual = checked
+    }
 
     const handleUnlockLock = (e) => {
-        const { checked } = e.detail;
-        formData.unlockLock = checked;
-    };
+      const { checked } = e.detail
+      formData.unlockLock = checked
+    }
 
     const handleOnOff = (e) => {
-        const { checked } = e.detail;
-        formData.onOff = checked;
-    };
+      const { checked } = e.detail
+      formData.onOff = checked
+    }
 
     const handleUnsealSeal = (e) => {
-        const { checked } = e.detail;
-        formData.unsealSeal = checked;
-    };
+      const { checked } = e.detail
+      formData.unsealSeal = checked
+    }
 
     const showHideAdvanced = (showAdv) => {
-        if (showAdv) {
-            showHideLabel = "Show Advanced Settings";
-            showAdvanced = false;
-        } else {
-            showHideLabel = "Hide Advanced Settings";
-            showAdvanced = true;
-        }
+      if (showAdv) {
+        showHideLabel = "Show Advanced Settings"
+        showAdvanced = false
+      } else {
+        showHideLabel = "Hide Advanced Settings"
+        showAdvanced = true
+      }
 
-        return showAdvanced;
-    };
+      return showAdvanced
+    }
 
-    const showDeltaControls = () => {};
+    const showDeltaControls = () => {}
 </script>
 
-{#if $showSetpoint}
+{#if $activeSetpointEditor == 'setpoint'}
     <Modal
         title={$_("Setpoint Editor")}
-        onClose={() => showSetpoint.set(false)}
+        onClose={() => activeSetpointEditor.set('')}
     >
-        <Selector onSubmit={commitChanges}>
+        <Selector onSubmit={commitChanges} onDone={() => activeSetpointEditor.set('')}>
             <div class="sp-editor-container">
                 <h2>{$_("Edit")}</h2>
 
-                <div>
-                    <div class="temperature-setpoint-controls">
+                <div class='grid'>
+                    <Input
+                      label='{$_("Temperature Setpoint")} (&#176;C)'
+                      type="number" 
+                      bind:value={formData.temperatureSetpoint}
+                      changed={changedTemperatureSetpointData}
+                    />
+                    
+                    <!-- <div 
+                      class="temperature-setpoint-controls">
+                        
                         <div class="child-label-item">
                             {$_("Temperature Setpoint")} (&#176;C)
                         </div>
@@ -154,7 +164,7 @@
                                 bind:value={formData.temperatureSetpoint}
                             />
                         </div>
-                    </div>
+                    </div> -->
                     <div class="temperature-setpoint-controls">
                         <div class="child-label-item">&nbsp;</div>
                         <div class="child-label-comp">
@@ -213,15 +223,21 @@
                 <div
                     class="advanced-setting-text link"
                     on:click={() => {
-                        showAdvanced = showHideAdvanced(showAdvanced);
+                        showAdvanced = showHideAdvanced(showAdvanced)
                     }}
                 >
                     <div>{$_(showHideLabel)}</div>
                 </div>
 
-                {#if showAdvanced}
-                    <div class="flexy">
-                        <div class="child">
+                <Collapsible open={showAdvanced}>
+                    <div class="grid advanced">
+                        <Input
+                          label='{$_("Low")} (&#176;C)'
+                          type="number" 
+                          bind:value={formData.low}
+                          changed={changedLowData}
+                        />
+                        <!-- <div class="child">
                             <div class="child-item">
                                 <div class="child-label-item">
                                     {$_("Low")} (&#176;C)
@@ -236,7 +252,7 @@
                                     />
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                         <div class="child">
                             <div class="child-item">
                                 <div class="child-label-item">
@@ -253,7 +269,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="child">
+                        <div class="child span2">
                             <div class="child-item">
                                 <div class="child-label-item">&nbsp;</div>
                                 <div class="child-label-comp">
@@ -415,21 +431,32 @@
                             </div>
                         </div>
                     </div>
-                {/if}
+                </Collapsible>
             </div>
         </Selector>
     </Modal>
 {/if}
 
 <style>
-    .sp-editor-container {
-        padding: 30px;
-    }
 
-    .temperature-setpoint-controls {
-        float: left;
-        padding: 10px;
-    }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    align-items: center;
+  }
+
+  .grid :global(input) {
+    width: 100%;
+  }
+
+  .grid {
+    box-sizing: border-box;
+  }
+
+  .span2 {
+    grid-column: span 2;
+  }
 
     .advanced-setting-text {
         display: block;
@@ -438,18 +465,12 @@
         padding-top: 20px;
     }
 
-    .flexy {
-        display: flex;
-        flex-wrap: wrap;
-    }
-
-    .child {
-        flex: 1 0 21%;
-        margin: 5px;
+    .advanced {
+      padding-top: 36px;
     }
 
     .child-item {
-        padding: 10px;
+        /* padding: 10px; */
         background-color: #ffffff;
     }
 
@@ -463,13 +484,8 @@
     }
 
     .changed-data {
-        padding: 16px;
-        background-color: rgba(53, 138, 188, 0.5);
-        border: 1px solid #358cca;
-    }
-
-    .not-changed-data {
-        padding: 16px;
+      background-color: rgba(53, 138, 188, 0.5);
+      border: 1px solid #358cca;
     }
 
     .changed-chk-data {

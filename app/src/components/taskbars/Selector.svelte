@@ -1,47 +1,28 @@
 <script>
-  import { onMount, onDestroy } from "svelte";
-  import groups from "data/groups";
-  import _ from "data/language";
-  import zones, { selectedZones } from "data/zones";
+  import groups from 'data/groups'
+  import _ from 'data/language'
+  import zones, { selectedZones } from 'data/zones'
+  import ZoneDropdown from 'components/ZoneDropdown'
 
-  export let onSubmit;
-  export let onDone;
+  export let onSubmit
+  export let onDone
 
-  let zoneList = [];
-  let emptyBody;
+  let zoneList = []
+  let emptyBody
 
   const applySelected = () => {
-    onSubmit($selectedZones);
-  };
+    onSubmit($selectedZones)
+  }
 
   const applyGroup = (group) => {
-    onSubmit($zones.filter((x) => x.groups && x.groups.includes(group.id)));
-  };
-
-  onMount(() => {
-    zoneList = $zones;
-
-    // Filter if necessary
-    // zoneList = $zones.filter((x) => {
-    // let grpContains = groupList.filter((g) => g.name == x);
-    //   return !grpContains.length;
-    // });
-  });
-
-  // onDestroy(() => { })
+    onSubmit($zones.filter((x) => x.groups && x.groups.includes(group.id)))
+  }
 </script>
 
 <div class="zone-select-wrapper">
   <div class="zone-dropdown">
     <h2>Select</h2>
-    <div>
-      <select class="zone-selector">
-        <option value="">--Select One--</option>
-        {#each zoneList || [] as zoneListShow}
-          <option value={zoneListShow.name}>{zoneListShow.name}</option>
-        {/each}
-      </select>
-    </div>
+    <ZoneDropdown />
   </div>
 
   <div class="body">
