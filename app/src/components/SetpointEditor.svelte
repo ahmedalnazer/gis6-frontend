@@ -13,7 +13,7 @@
 
     let checkedValue = true;
     let setpointTemperatureValue = 0;
-    let showAdvanced = true;
+    let showAdvanced = false;
     let showHideLabel = "Show Advanced Settings";
 
     let initialFormData = {
