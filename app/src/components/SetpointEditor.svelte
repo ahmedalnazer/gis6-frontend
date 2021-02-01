@@ -1,22 +1,344 @@
 <script>
-  import { Modal } from 'components'
-  import Selector from 'components/taskbars/Selector.svelte'
-  import _ from 'data/language'
-  import notify from 'data/notifications'
+    import { Modal } from "components";
+    import Selector from "components/taskbars/Selector.svelte";
+    import _ from "data/language";
+    import notify from "data/notifications";
+    import { showSetpoint } from "data/setpoint";
 
-  import { showSetpoint } from 'data/setpoint'
+    const commitChanges = (zones) => {
+        notify.success($_("Changes applied"));
+    };
 
-  const commitChanges = zones => {
-    notify.success($_('Changes applied'))
-  }
+    import { Input, CheckBox } from "components";
+    import Switch from "svelte-switch";
+
+    let checkedValue = true;
+    let setpointTemperatureValue = 0;
+    let showAdvanced = false;
+    let showHideLabel = "Show Advanced Settings";
+
+    let formData = {
+        zoneId: 0,
+        temperatureSetpoint: 0,
+        autoManual: false,
+        unlockLock: false,
+        onOff: false,
+        low: 0,
+        high: 0,
+        unsealSeal: false,
+        manual: 0,
+        trim: 0,
+        autoStandby: 0,
+        tcShortDetectTime: 0,
+        tuningOverride: 0,
+        powerPriority: 0,
+        wattAlarm: 0,
+        criticalOverTemperature: 0,
+    };
+
+    const handleChangeAutoManual = (e) => {
+        const { checked } = e.detail;
+        formData.autoManual = checked;
+    };
+
+    const handleUnlockLock = (e) => {
+        const { checked } = e.detail;
+        formData.unlockLock = checked;
+    };
+
+    const handleOnOff = (e) => {
+        const { checked } = e.detail;
+        formData.onOff = checked;
+    };
+
+    const handleUnsealSeal = (e) => {
+        const { checked } = e.detail;
+        formData.unsealSeal = checked;
+    };
+
+    const showHideAdvanced = (showAdv) => {
+        if (showAdv) {
+            showHideLabel = "Show Advanced Settings";
+            showAdvanced = false;
+        } else {
+            showHideLabel = "Hide Advanced Settings";
+            showAdvanced = true;
+        }
+
+        return showAdvanced;
+    };
+
 </script>
 
 {#if $showSetpoint}
-  <Modal title={$_('Setpoint Editor')} onClose={() => showSetpoint.set(false)}>
-    <Selector onSubmit={commitChanges}>
+    <Modal
+        title={$_("Setpoint Editor")}
+        onClose={() => showSetpoint.set(false)}
+    >
+        <Selector onSubmit={commitChanges}>
+            <div class="sp-editor-container">
+                <h2>{$_("Edit")}</h2>
 
-      SETPOINT EDITOR HERE
+                <div>
+                    <div class="temperature-setpoint-controls">
+                        <div class="child-label-item">
+                            {$_("Temperature Setpoint")} (&#176;C)
+                        </div>
+                        <div class="child-label-comp">
+                            <Input
+                                type="number"
+                                bind:value={formData.temperatureSetpoint}
+                            />
+                        </div>
+                    </div>
+                    <div class="temperature-setpoint-controls">
+                        <div class="child-label-item">&nbsp;</div>
+                        <div class="child-label-comp">
+                            <span>{$_("Auto")}</span>
+                            <Switch
+                                on:change={handleChangeAutoManual}
+                                checked={formData.autoManual}
+                            />
+                            <span>{$_("Manual")}</span>
+                        </div>
+                    </div>
 
-    </Selector>
-  </Modal>
+                    <div class="temperature-setpoint-controls">
+                        <div class="child-label-item">&nbsp;</div>
+                        <div class="child-label-comp">
+                            <span>{$_("Unlock")}</span>
+                            <Switch
+                                on:change={handleUnlockLock}
+                                checked={formData.unlockLock}
+                            />
+                            <span>{$_("Lock")}</span>
+                        </div>
+                    </div>
+
+                    <div class="temperature-setpoint-controls">
+                        <div class="child-label-item">&nbsp;</div>
+                        <div class="child-label-comp">
+                            <span>{$_("On")}</span>
+                            <Switch
+                                on:change={handleOnOff}
+                                checked={formData.onOff}
+                            />
+                            <span>{$_("Off")}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    class="advanced-setting-text link"
+                    on:click={() => {
+                        showAdvanced = showHideAdvanced(showAdvanced);
+                    }}
+                >
+                    <div>{$_(showHideLabel)}</div>
+                </div>
+
+                {#if showAdvanced}
+                    <div class="flexy">
+                        <div class="child">
+                            <div class="child-item">
+                                <div class="child-label-item">
+                                    {$_("Low")} (&#176;C)
+                                </div>
+                                <div class="child-label-comp">
+                                    <Input
+                                        type="number"
+                                        bind:value={formData.low}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="child">
+                            <div class="child-item">
+                                <div class="child-label-item">
+                                    {$_("High")} (&#176;C)
+                                </div>
+                                <div class="child-label-comp">
+                                    <Input
+                                        type="number"
+                                        bind:value={formData.high}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="child">
+                            <div class="child-item">
+                                <div class="child-label-item">&nbsp;</div>
+                                <div class="child-label-comp">
+                                    <span>{$_("Unseal")}</span>
+                                    <Switch
+                                        on:change={handleUnsealSeal}
+                                        checked={formData.unsealSeal}
+                                    />
+                                    <span>{$_("Seal")}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- <div class="child">
+                            <div class="child-item">
+                                <div class="child-label-item">&nbsp;</div>
+                                <div class="child-label-comp">&nbsp;</div>
+                            </div>
+                        </div> -->
+                        <div class="child">
+                            <div class="child-item">
+                                <div class="child-label-item">
+                                    {$_("Manual %")}
+                                </div>
+                                <div class="child-label-comp">
+                                    <Input
+                                        type="number"
+                                        bind:value={formData.manual}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="child">
+                            <div class="child-item">
+                                <div class="child-label-item">
+                                    {$_("Trim")} (&#176;C)
+                                </div>
+                                <div class="child-label-comp">
+                                    <Input
+                                        type="number"
+                                        bind:value={formData.trim}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="child">
+                            <div class="child-item">
+                                <div class="child-label-item">
+                                    {$_("Auto Standby")} (&#176;C)
+                                </div>
+                                <div class="child-label-comp">
+                                    <Input
+                                        type="number"
+                                        bind:value={formData.autoStandby}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="child">
+                            <div class="child-item">
+                                <div class="child-label-item">
+                                    {$_("T/C Short Detect Time (min)")}
+                                </div>
+                                <div class="child-label-comp">
+                                    <Input
+                                        type="number"
+                                        bind:value={formData.tcShortDetectTime}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="child">
+                            <div class="child-item">
+                                <div class="child-label-item">
+                                    {$_("Tuning Override")}
+                                </div>
+                                <div class="child-label-comp">
+                                    <Input
+                                        type="number"
+                                        bind:value={formData.tuningOverride}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="child">
+                            <div class="child-item">
+                                <div class="child-label-item">
+                                    {$_("Power Priority")}
+                                </div>
+                                <div class="child-label-comp">
+                                    <Input
+                                        type="number"
+                                        bind:value={formData.powerPriority}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="child">
+                            <div class="child-item">
+                                <div class="child-label-item">
+                                    {$_("Watt Alarm (W)")}
+                                </div>
+                                <div class="child-label-comp">
+                                    <Input
+                                        type="number"
+                                        bind:value={formData.wattAlarm}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="child">
+                            <div class="child-item">
+                                <div class="child-label-item">
+                                    {$_("Critical Over Temperature")} (&#176;C)
+                                </div>
+                                <div class="child-label-comp">
+                                    <Input
+                                        type="number"
+                                        bind:value={formData.criticalOverTemperature}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="child">
+                            <div class="child-item">
+                                <div class="child-label-item">&nbsp;</div>
+                                <div class="child-label-comp">&nbsp;</div>
+                            </div>
+                        </div>
+                    </div>
+                {/if}
+            </div>
+        </Selector>
+    </Modal>
 {/if}
+
+<style>
+    .sp-editor-container {
+        padding: 30px;
+    }
+
+    .temperature-setpoint-controls {
+        float: left;
+        padding: 10px;
+    }
+
+    .advanced-setting-text {
+        display: block;
+        clear: both;
+        cursor: pointer;
+        padding-top: 20px;
+    }
+
+    .flexy {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .child {
+        flex: 1 0 21%;
+        margin: 5px;
+    }
+
+    .child-item {
+        padding: 10px;
+        background-color: #ffffff;
+    }
+
+    .child-label-item {
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    .child-label-comp {
+        padding-top: 15px;
+    }
+</style>
