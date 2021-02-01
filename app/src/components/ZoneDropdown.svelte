@@ -2,6 +2,7 @@
   import zones, { selectedZones, activeZones, toggleZones } from 'data/zones'
   import { Collapsible, CheckBox } from 'components'
   import { onDestroy } from 'svelte'
+import _ from 'data/language'
 
   $: label = $activeZones.map(x => x.name).join(', ')
   let open = false
@@ -29,10 +30,11 @@
 </script>
 
 <div class='zone-dropdown'>
+  <h3>{$_('Zone')}</h3>
   <div class='current' on:click={openDropdown}>
     <div class='label'>
       {#if $activeZones.length}
-        {label}
+        <span class='selected'>{label}</span>
       {:else}
         <span class='muted'>No zones selected</span>
       {/if}
@@ -68,6 +70,9 @@
 </div>
 
 <style>
+  h3 {
+    margin-bottom: 10px;
+  }
   .zone-dropdown {
     position: relative;
   }
