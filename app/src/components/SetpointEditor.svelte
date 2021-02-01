@@ -4,13 +4,12 @@
     import _ from "data/language";
     import notify from "data/notifications";
     import { showSetpoint } from "data/setpoint";
+    import { Input, CheckBox } from "components";
+    import Switch from "svelte-switch";
 
     const commitChanges = (zones) => {
         notify.success($_("Changes applied"));
     };
-
-    import { Input, CheckBox } from "components";
-    import Switch from "svelte-switch";
 
     let checkedValue = true;
     let setpointTemperatureValue = 0;
