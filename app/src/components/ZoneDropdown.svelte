@@ -18,14 +18,23 @@
 
   const openDropdown = () => {
     const { top, left, right, bottom } = anchor.getBoundingClientRect()
-    console.log('opening', top, left)
-    dropdown.style.top = `${bottom}px`
+    console.log(top, left, right, bottom)
+    dropdown.style.top = `${top - 48}px`
     dropdown.style.left = `${left}px`
     dropdown.style.width = `${Math.max(right - left, 400)}px`
     setTimeout(() => {
       dropdown.focus()
     }, 0)
   }
+
+  const toggleAll = () => {
+    if($selectedZones.length == 0) {
+      selectedZones.set($zones.map(x => x.id))
+    } else {
+      selectedZones.set([])
+    }
+  }
+
 </script>
 
 <div class='zone-dropdown'>
@@ -53,6 +62,9 @@
     >
       <Collapsible {open}>
         <div class='menu'>
+          <div class='zone' on:click={toggleAll}>
+            <CheckBox checked={$selectedZones.length == $zones.length} minus={$selectedZones.length > 0} /> {$_('All Zones')}
+          </div>
           {#each $zones as zone (zone.id)}
             <div
               class='zone'
@@ -100,11 +112,13 @@
     z-index: 9999;
     max-height: 50vh;
     overflow: auto;
-    background: var(--pale)
+    background: var(--pale);
+    padding-top: 16px;
   }
   .zone {
     font-size: 16px;
     padding: 10px 20px;
+    display: flex;
   }
 
   .arrow {
