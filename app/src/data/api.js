@@ -3,6 +3,7 @@ import notify from './notifications'
 import getStub from './api-stubs'
 import history from 'router/history'
 
+const offline = import.meta.env.SNOWPACK_PUBLIC_OFFLINE == 'true'
 const apiTarget = import.meta.env.SNOWPACK_PUBLIC_API_URL || ''
 if(apiTarget) {
   console.warn(`Overriding default API integration, targeting "${apiTarget}"`)
@@ -97,7 +98,7 @@ class API {
         opts.body = JSON.stringify(data)
       }
       const fail = (msg) => {
-        if(!disconnectLock) {
+        if(!disconnectLock && !offline) {
           disconnectLock = setTimeout(() => disconnectLock = null, 3000)
           notify.error(msg || 'Sorry, we seem to be having trouble connecting to the server')
         }

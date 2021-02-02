@@ -2,7 +2,7 @@
   import zones, { selectedZones, activeZones, toggleZones } from 'data/zones'
   import { Collapsible, CheckBox } from 'components'
   import { onDestroy } from 'svelte'
-import _ from 'data/language'
+  import _ from 'data/language'
 
   $: label = $activeZones.map(x => x.name).join(', ')
   let open = false
@@ -26,7 +26,6 @@ import _ from 'data/language'
       dropdown.focus()
     }, 0)
   }
-
 </script>
 
 <div class='zone-dropdown'>
