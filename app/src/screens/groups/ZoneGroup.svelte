@@ -26,34 +26,36 @@
 
 </script>
 
-<div class='zone-group'>
-  <DragHeading><div class='heading' class:open on:click={() => open = !open}>
-    <span>{group.name}</span>
+{#if group.id != 'unassigned' || zones.length}
+  <div class='zone-group'>
+    <DragHeading><div class='heading' class:open on:click={() => open = !open}>
+      <span>{group.name}</span>
 
-    <Icon icon='chevron' />
-    {#if group.id != 'unassigned'}
-      <Icon icon='close' on:click={e => {
-        e.stopPropagation()
-        onDelete()
-      }} />
+      <Icon icon='chevron' />
+      {#if group.id != 'unassigned'}
+        <Icon icon='close' on:click={e => {
+          e.stopPropagation()
+          onDelete()
+        }} />
+      {/if}
+    </div></DragHeading>
+    {#if zones.length == 0}
+        <p class='muted'>{$_('No zones have been assigned to this group')}</p>
     {/if}
-  </div></DragHeading>
-  {#if zones.length == 0}
-      <p class='muted'>{$_('No zones have been assigned to this group')}</p>
-  {/if}
-  
-  <Collapsible {open} >
-    <div class='zones'>
-      {#each zones as zone (zone.id)}
-        <ZoneButton
-          zone={zone} 
-          active={selection.includes(zone.id)} 
-          on:click={() => toggle(zone.id)}
-        />
-      {/each}
-    </div>
-  </Collapsible>
-</div>
+    
+    <Collapsible {open} >
+      <div class='zones'>
+        {#each zones as zone}
+          <ZoneButton
+            zone={zone} 
+            active={selection.includes(zone.id)} 
+            on:click={() => toggle(zone.id)}
+          />
+        {/each}
+      </div>
+    </Collapsible>
+  </div>
+{/if}
 
 <style lang="scss">
   .zone-group {

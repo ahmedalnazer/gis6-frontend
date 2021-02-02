@@ -7,7 +7,7 @@ export function getId(length = 12) {
   var charset = "0123456789abcdefghijklmnopqrstuvwxyz".match(/./g)
   var text = ""
   for (var i = 0; i < length; i++) text += charset[Math.floor(Math.random() * charset.length)]
-  return text
+  return 'id_' + text
 }
 
 

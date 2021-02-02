@@ -3,10 +3,12 @@
   import { slide } from 'svelte/transition'
   export let errors = []
   export let info = []
-  export let value = ''
+  export let value
   export let label = ''
   export let note = ''
   export let type = ''
+  export let inputClass = ''
+  export let changed = false
 
   const handleInput = e => {
     value = e.target.value
@@ -14,11 +16,19 @@
 
 </script>
 
-<div class='input text'>
+<div class='input text {$$restProps.class || ''}'>
   {#if label}
     <label>{label}</label>
   {/if}
-  <input {type} on:change on:input={handleInput} {value} {...$$restProps} autocomplete='new-password' />
+  <input {type} 
+    on:change 
+    on:input={handleInput} 
+    class:changed
+    {value} 
+    {...$$restProps} 
+    class={inputClass} 
+    autocomplete='new-password' 
+  />
   {#if note}
     <p class='muted input-note'>{note}</p>
   {/if}
@@ -36,10 +46,17 @@
 </div>
 
 <style>
+  input {
+    border: 1px solid var(--pale)
+  }
   .info, .error {
     font-size: 14px;
   }
   .error {
     color: var(--danger);
+  }
+  .changed {
+    background-color: rgba(53, 138, 188, 0.5);
+    border: 1px solid #358cca;
   }
 </style>

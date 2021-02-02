@@ -77,7 +77,7 @@
       width: 100%;
     }
 
-    :global(.button) {
+    :global(.button:not(.ignore-task-styles)) {
       background: linear-gradient(0deg, #3c4f69, #4f6483);
       color: #eeeff4;
       padding: 40px;
@@ -89,6 +89,9 @@
       -webkit-appearance: none;
       cursor: pointer;
       box-shadow: 4px 4px 8px rgba(0, 0, 0, .3);
+    }
+    :global(.button:not(.ignore-task-styles):active) {
+      background: linear-gradient(180deg, #161E29 0%, #1D2734 7.81%, #212F41 100%); 
     }
   }
   .viewport.hide-tasks {

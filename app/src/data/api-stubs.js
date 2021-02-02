@@ -82,8 +82,10 @@ export default function getStub(method, url, data) {
 
     for (let r of routes) {
       const m = r.route.match(url.toLowerCase())
-      console.warn(`RETURNING STUB DATA FOR '${url}'`)
-      if (m) return r.fn(data || {}, m)
+      if (m) {
+        console.warn(`RETURNING STUB DATA FOR '${url}'`)
+        return r.fn(data || {}, m)
+      }
     }
   }
   return null

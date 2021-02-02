@@ -1,71 +1,71 @@
 <script>
-  import groups from "data/groups";
-  import _ from "data/language";
-  import zones from "data/zones";
-  import { Icon } from "components";
+  import groups from "data/groups"
+  import _ from "data/language"
+  import zones from "data/zones"
+  import { Icon } from "components"
 
-  let _zones;
-  export { _zones as zones };
-  export let adding = false;
-  export let onCommit;
+  let _zones
+  export { _zones as zones }
+  export let adding = false
+  export let onCommit
 
-  let selectedGroups = [];
+  let selectedGroups = []
   const toggle = (id) => {
     if (selectedGroups.includes(id)) {
-      selectedGroups = selectedGroups.filter((x) => x != id);
+      selectedGroups = selectedGroups.filter((x) => x != id)
     } else {
-      selectedGroups = selectedGroups.concat(id);
+      selectedGroups = selectedGroups.concat(id)
     }
-  };
+  }
 
-  let undo = [];
+  let undo = []
 
   const commit = async () => {
-    console.log(_zones);
-    undo = [];
+    // console.log(_zones);
+    undo = []
     for (let z of _zones) {
-      const curGroups = z.groups || [];
+      const curGroups = z.groups || []
       undo.push(() =>
         zones.update({ ...z, groups: curGroups }, { skipReload: true })
-      );
+      )
       if (adding) {
-        z.groups = curGroups.concat(selectedGroups);
+        z.groups = curGroups.concat(selectedGroups)
       } else {
-        z.groups = curGroups.filter((x) => !selectedGroups.includes(x));
+        z.groups = curGroups.filter((x) => !selectedGroups.includes(x))
       }
-      z.groups = [...new Set(z.groups)];
-      await zones.update(z, { skipReload: true });
+      z.groups = [ ...new Set(z.groups) ]
+      await zones.update(z, { skipReload: true })
     }
-    selectedGroups = [];
-    await zones.reload();
+    selectedGroups = []
+    await zones.reload()
     // onCommit()
-  };
+  }
 
   const commitUndo = async () => {
     for (let fn of undo) {
-      await fn();
+      await fn()
     }
-    undo = [];
-    await zones.reload();
-  };
+    undo = []
+    await zones.reload()
+  }
 
-  $: groupIds = $groups.map((x) => x.id);
+  $: groupIds = $groups.map((x) => x.id)
 
   $: maxGroups = adding
     ? _zones
-        .map(
-          (z) =>
-            [
-              ...new Set(
-                (z.groups || [])
-                  .filter((x) => groupIds.includes(x))
-                  .concat(selectedGroups)
-              ),
-            ].length
-        )
-        .reduce((max, cur) => (cur > max ? cur : max), 0)
-    : 0;
-  $: console.log(maxGroups);
+      .map(
+        (z) =>
+          [
+            ...new Set(
+              (z.groups || [])
+                .filter((x) => groupIds.includes(x))
+                .concat(selectedGroups)
+            ),
+          ].length
+      )
+      .reduce((max, cur) => cur > max ? cur : max, 0)
+    : 0
+  // $: console.log(maxGroups)
 </script>
 
 <div class="modify-zones">

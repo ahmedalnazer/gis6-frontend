@@ -5,6 +5,25 @@ import { id } from './tools'
 
 const rawZones = writable([])
 
+export const selectedZones = writable([])
+export const toggleZones = (zones) => {
+  if(!Array.isArray(zones)) {
+    zones = [ zones ]
+  }
+  zones = zones.map(x => id(x && x.id || x))
+  let list
+  selectedZones.subscribe(z => list = z)()
+  for(let z of zones) {
+    if(list.includes(z)) {
+      list = list.filter(x => x != z)
+    } else {
+      list.push(z)
+    }
+  }
+  selectedZones.set([ ... new Set(list) ])
+}
+
+
 const zones = derived([ rawZones ], ([ $raw ]) => {
   let sorted = [ ...$raw ]
   var collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' })
@@ -12,12 +31,16 @@ const zones = derived([ rawZones ], ([ $raw ]) => {
   return sorted
 })
 
+export const activeZones = derived([ selectedZones, zones ], ([ $selectedZones, $zones ]) => {
+  return $zones.filter(x => $selectedZones.includes(x.id))
+})
+
 const decodeZone = z => {
   const d = {
     ...z,
     name: z.ZoneName,
     number: z.ZoneNumber,
-    id: z.id,
+    id: id(z.id),
     groups: (z.ZoneGroups || '').split(',').map(x => id(x))
   }
 
@@ -66,12 +89,18 @@ zones.update = async (zone, options = {}) => {
   if (!options.skipReload) await zones.reload()
 }
 
-zones.delete = async zone => {
+zones.delete = async (zone, options = {}) => {
   await api.delete(`zone/${zone.id}`)
-  await zones.reload()
+  if(!options.skipReload) await zones.reload()
 }
 
 zones.reload()
 
+window.DANGEROUS_reset_zones = async () => {
+  let z 
+  zones.subscribe(x => z = x)()
+  await Promise.all(z.map(zone => ( async () => await zones.delete(zone, { skipReload: true }))()))
+  zones.reload()
+}
 
 export default zones

@@ -20,7 +20,8 @@
     "svelte": "^3.31.2",
     "svelte-preprocess": "^4.6.1",
     "svelte-select": "^3.16.1",
-    "svelte-sortable-list": "^1.1.0"
+    "svelte-sortable-list": "^1.1.0",
+    "svelte-switch": "0.0.4"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",

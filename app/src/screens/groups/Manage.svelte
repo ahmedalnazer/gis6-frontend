@@ -2,15 +2,14 @@
   import { tick } from "svelte"
   import Screen from "layout/Screen"
   import groups, { activeGroup, group_order, setGroupOrder } from "data/groups"
-  import zones from "data/zones"
+  import zones, { selectedZones as _selected, toggleZones } from "data/zones"
   import _ from "data/language"
   import ZoneGroup from "./ZoneGroup"
-  import { Modal } from "components"
+  import { Modal, CheckBox } from "components"
   import GroupForm from "./GroupForm"
   import ZoneTasks from "components/taskbars/ZoneTasks"
   import { startSelection } from "./selectZones"
   import ZoneButton from "./ZoneButton"
-  import { CheckBox } from "components/"
   import ModifyZones from "./ModifyZones"
   import GroupSelector from "components/GroupSelector.svelte"
   import Sortable from "sortablejs"
@@ -39,10 +38,8 @@
     await groups.create(newGrp, { skipReload: true })
     await groups.reload()
 
-    let selGrp = displayedGroups.filter((x) => x.name == newName)
-    let _zones = $zones.filter((x) => {
-      return activeSelection.includes(x.id)
-    })
+    let selGrp = displayedGroups.filter(x => x.name == newName)
+    let _zones = $zones.filter(x => $_selected.includes(x.id))
 
     for (let z of _zones) {
       if (selGrp.length && selGrp[0].id) {
@@ -77,26 +74,23 @@
   // selection when sorted by groups
   let selection = {}
 
-  // selection when single group or unsorted
-  let selectedZoneIds = []
-
   const clearSelection = () => {
     for (let key of Object.keys(selection)) {
       selection[key] = []
     }
+    _selected.set([])
   }
 
-  $: selectedZones = Object.keys(selection)
+  $: selectionZones = Object.keys(selection)
     .map((x) => selection[x].map((zone) => ({ zone, group: x })))
     .reduce((all, arr) => all.concat(arr), [])
 
-  const toggle = (id) => {
-    if (selectedZoneIds.includes(id)) {
-      selectedZoneIds = selectedZoneIds.filter((x) => x != id)
-    } else {
-      selectedZoneIds = selectedZoneIds.concat(id)
+  $: {
+    if(sortGroups) {
+      _selected.set(selectionZones.map(x => x.zone))
     }
   }
+  
 
   const boxSelect = (nodes) => {
     console.log(nodes)
@@ -106,14 +100,7 @@
     ? $zones.filter((x) => x.groups && x.groups.includes(selectedGroup))
     : $zones
 
-  $: activeSelection =
-    selectedGroup || !sortGroups
-      ? selectedZoneIds
-      : selectedZones.map((x) => x.zone)
-
-  $: zonesToModify = $zones.filter((z) => {
-    return activeSelection.includes(z.id)
-  })
+  $: zonesToModify = $zones.filter(z => $_selected.includes(z.id))
 
   const commitModify = () => {
     adding = false
@@ -159,7 +146,7 @@
         <CheckBox label={$_("Show Groups")} bind:checked={sortGroups} />
       {/if}
 
-      {#if selectedZones.length}
+      {#if $_selected.length}
         <span class="link" on:click={clearSelection}
           >{$_("Clear Selection")}</span
         >
@@ -212,8 +199,8 @@
           {#each displayedZones as zone (zone.id)}
             <ZoneButton
               {zone}
-              active={selectedZoneIds.includes(zone.id)}
-              on:click={() => toggle(zone.id)}
+              active={$_selected.includes(zone.id)}
+              on:click={() => toggleZones(zone.id)}
             />
           {/each}
         </div>
