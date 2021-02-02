@@ -1,27 +1,70 @@
 <script>
   import groups from 'data/groups'
   import _ from 'data/language'
-  import zones, { selectedZones } from 'data/zones'
+  import zones, { selectedZones, activeZones } from 'data/zones'
   import ZoneDropdown from 'components/ZoneDropdown'
+  import { notify } from 'data'
+  import Icon from 'components/Icon.svelte'
 
   export let onSubmit
   export let onDone
+  export let trackHistory = false
+  export let getUndoAction = zones => {
+    return () => {
+      // reset zones to current state
+    }
+  }
 
-  let zoneList = []
   let emptyBody
+  let applied = {}
+
+  let history = []
+
+  const registerAction = zones => {
+    if(trackHistory) {
+      const curState = { ...applied }
+      const undoAction = getUndoAction(zones)
+
+      const undoFn = () => {
+        applied = curState
+        undoAction()
+      }
+
+      history = history.concat(undoFn)
+    }
+    onSubmit(zones)
+  }
+
+  const undo = () => {
+    const fn = history.pop()
+    fn()
+    notify.success($_('Action undone'))
+    history = history
+  }
 
   const applySelected = () => {
-    onSubmit($selectedZones)
+    registerAction($activeZones)
+    applied.selected = true
   }
 
   const applyGroup = (group) => {
-    onSubmit($zones.filter((x) => x.groups && x.groups.includes(group.id)))
+    registerAction($zones.filter((x) => x.groups && x.groups.includes(group.id)))
+    applied[group.id] = true
+  }
+
+  const applyAll = () => {
+    registerAction($zones)
+    applied.selected = true
+    applied.all = true
+    for(let g of $groups) {
+      applied[g.id] = true
+    }
   }
 </script>
 
 <div class="zone-select-wrapper">
   <div class="zone-dropdown">
-    <h2>Select</h2>
+    <h2>{$_('Select')}</h2>
     <ZoneDropdown />
   </div>
 
@@ -32,36 +75,58 @@
   </div>
 
   <div class="groups">
-    <h2>Apply</h2>
+    <h2 class='apply'>
+      {$_('Apply')} 
+      {#if history.length}
+        <div class='undo' on:click={undo}>
+          <Icon icon='undo' color='var(--primary)' /> {$_('Undo')}
+        </div>
+      {/if}
+    </h2>
     <div class="buttons">
-      <div class="button ignore-task-styles" on:click={applySelected}>
-        {$_("Selected Zones")}
+      <div 
+        class="button ignore-task-styles" 
+        class:applied={applied.selected && $activeZones.length} 
+        class:disabled={!$activeZones.length}
+        on:click={applySelected}
+      >
+        <Icon icon='check' color='var(--primary)' /> {$_("Selected Zones")}
+      </div>
+      <div 
+        class="button ignore-task-styles" 
+        class:applied={applied.all}
+        on:click={applyAll}
+      >
+        <Icon icon='check' color='var(--primary)' /> {$_("All Zones")}
       </div>
       {#each $groups as group (group.id)}
         <div
           class="button ignore-task-styles"
+          class:applied={applied[group.id]}
           on:click={() => applyGroup(group)}
         >
-          {group.name}
+          <Icon icon='check' color='var(--primary)' /> {group.name}
         </div>
       {/each}
     </div>
   </div>
 
   <div class="done">
-    <button class="button ignore-task-styles active" on:click={(e) => onDone()}>
+    <button class="button ignore-task-styles active" on:click={e => onDone()}>
       {$_("Done")}
     </button>
   </div>
 </div>
 
-{#if emptyBody}<style>
+{#if emptyBody}
+  <style>
     .body {
       display: none;
     }
-  </style>{/if}
+  </style>
+{/if}
 
-<style>
+<style lang="scss">
   .zone-select-wrapper :global(h2) {
     margin-top: 0;
     padding-top: 0;
@@ -93,8 +158,38 @@
   }
   .button {
     padding: 12px;
+    :global(svg) {
+      opacity: 0;
+      margin-left: -24px;
+      transition: opacity .3s, margin .3s;
+    }
+  }
+  .button.applied {
+    :global(svg) {
+      opacity: 1;
+      margin-left: -16px;
+    }
   }
   .zone-selector {
     width: 40%;
   }
+  .apply {
+    display: flex;
+    vertical-align: center;
+  }
+
+  .apply :global(svg) {
+    width: 16px;
+    margin-right: 8px;
+  }
+
+  .undo {
+    color: var(--primary);
+    font-weight: normal;
+    font-size: 18px;
+    margin-left: 40px;
+    display:flex;
+    align-items: center;
+  }
+
 </style>

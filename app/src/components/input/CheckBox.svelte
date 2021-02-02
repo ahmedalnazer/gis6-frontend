@@ -1,7 +1,7 @@
 <script>
   export let checked = false
   export let minus = false
-  export let label
+  export let label = ''
 </script>
 
 <div class='input checkbox'>

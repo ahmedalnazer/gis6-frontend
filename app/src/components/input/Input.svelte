@@ -46,6 +46,9 @@
 </div>
 
 <style>
+  input {
+    border: 1px solid var(--pale)
+  }
   .info, .error {
     font-size: 14px;
   }

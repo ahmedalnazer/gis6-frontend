@@ -137,7 +137,7 @@
         title={$_("Setpoint Editor")}
         onClose={() => activeSetpointEditor.set('')}
     >
-        <Selector onSubmit={commitChanges} onDone={() => activeSetpointEditor.set('')}>
+        <Selector trackHistory onSubmit={commitChanges} onDone={() => activeSetpointEditor.set('')}>
             <div class="sp-editor-container">
                 <h2>{$_("Edit")}</h2>
 
