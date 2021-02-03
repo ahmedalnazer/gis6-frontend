@@ -97,6 +97,7 @@
                 bind:open={openGroups[group.id]}
                 {group}
                 bind:selection={selection[group.id]}
+                onClearSelection={() => {clearSelection();}}
               />
             </div>
           {/each}
@@ -106,6 +107,7 @@
               bind:open={openGroups[group.id]}
               {group}
               bind:selection={selection[group.id]}
+              onClearSelection={() => {clearSelection();}}
             />
         {/each}
       {:else}
