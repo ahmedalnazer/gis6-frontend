@@ -127,7 +127,7 @@
 <style lang="scss">
   footer {
     max-height: 120px;
-    padding: 16px;
+    padding: 16px 40px;
     background: var(--blue);
     position: relative;
     .container {
@@ -136,7 +136,7 @@
 
       color: white;
       > div {
-        padding: 16px;
+        padding: 16px 0px;
       }
     }
   }
