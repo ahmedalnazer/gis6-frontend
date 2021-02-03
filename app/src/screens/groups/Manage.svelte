@@ -213,7 +213,7 @@
               {zone}
               active={$_selected.includes(zone.id)}
               on:click={() => toggleZones(zone.id)}
-              on:dblclick={() => {toggleZones(zone.id, true); toggleSetPoint('setpoint');}}
+              on:dblclick={() => {toggleZones(zone.id); toggleSetPoint('setpoint');}}
           />
           {/each}
         </div>
