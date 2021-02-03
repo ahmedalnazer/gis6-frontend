@@ -10,7 +10,6 @@
     const commitChanges = (zones) => {
       notify.success($_("Changes applied"))
     }
-  
 
     let checkedValue = true
     let setpointTemperatureValue = 0
@@ -36,24 +35,7 @@
       criticalOverTemperature: 0,
     }
 
-    let formData = {
-      zoneId: 0,
-      temperatureSetpoint: 0,
-      autoManual: false,
-      unlockLock: false,
-      onOff: false,
-      low: 0,
-      high: 0,
-      unsealSeal: false,
-      manual: 0,
-      trim: 0,
-      autoStandby: 0,
-      tcShortDetectTime: 0,
-      tuningOverride: 0,
-      powerPriority: 0,
-      wattAlarm: 0,
-      criticalOverTemperature: 0,
-    }
+    let formData = { ...initialFormData }
 
     let changedTemperatureSetpointData = false
     let changedautoManualData = false
@@ -177,6 +159,7 @@
                                 <Switch
                                     on:change={handleChangeAutoManual}
                                     checked={formData.autoManual}
+                                    onColor="#358cca"
                                 />
                                 <span>{$_("Manual")}</span>
                             </div>
@@ -195,6 +178,7 @@
                                 <Switch
                                     on:change={handleUnlockLock}
                                     checked={formData.unlockLock}
+                                    onColor="#358cca"
                                 />
                                 <span>{$_("Lock")}</span>
                             </div>
@@ -213,6 +197,7 @@
                                 <Switch
                                     on:change={handleOnOff}
                                     checked={formData.onOff}
+                                    onColor="#358cca"
                                 />
                                 <span>{$_("Off")}</span>
                             </div>
@@ -282,6 +267,7 @@
                                         <Switch
                                             on:change={handleUnsealSeal}
                                             checked={formData.unsealSeal}
+                                            onColor="#358cca"
                                         />
                                         <span>{$_("Seal")}</span>
                                     </div>
