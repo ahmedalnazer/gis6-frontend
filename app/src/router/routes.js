@@ -6,6 +6,7 @@ import UserProfile from 'screens/users/UserProfile'
 import GroupManagement from 'screens/groups/Manage'
 import EditGroup from 'screens/groups/EditGroup'
 import MiniController from 'screens/mini-controller/MiniController'
+import HotRunner from 'screens/dashboard/HotRunner'
 
 /**
  *
@@ -24,7 +25,8 @@ const routes = {
   '/user-profile/:userId': UserProfile,
   '/group-management': GroupManagement,
   '/edit-group': EditGroup,
-  '/mini-controller': MiniController
+  '/mini-controller': MiniController,
+  '/hot-runner': HotRunner
 }
 
 export default routes
