@@ -205,7 +205,6 @@
 
   .time-stamp {
     text-align: right;
-    padding-right: 32px;
   }
   p {
     margin: 0;

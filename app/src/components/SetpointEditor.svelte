@@ -136,29 +136,7 @@
                       bind:value={formData.temperatureSetpoint}
                       changed={changedTemperatureSetpointData}
                     />
-                    <!-- <KeypadInput
-                        label='{$_("Temperature Setpoint")} (&#176;C)'
-                        type="number"
-                        changed={changedTemperatureSetpointData}
-                        bind:value={formData.temperatureSetpoint}
-                    /> -->
-
-                    <!-- <div 
-                      class="temperature-setpoint-controls">
-                        
-                        <div class="child-label-item">
-                            {$_("Temperature Setpoint")} (&#176;C)
-                        </div>
-                        <div class="child-label-comp">
-                            <input
-                                type="number"
-                                class={changedTemperatureSetpointData == true
-                                    ? "changed-data"
-                                    : "not-changed-data"}
-                                bind:value={formData.temperatureSetpoint}
-                            />
-                        </div>
-                    </div> -->
+                    
                     <div class="temperature-setpoint-controls">
                         <div class="child-label-item">&nbsp;</div>
                         <div class="child-label-comp">
