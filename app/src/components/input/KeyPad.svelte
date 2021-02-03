@@ -1,14 +1,14 @@
 <script>
   import { Icon } from 'components'
   import _ from 'data/language'
+  import { onDestroy, onMount } from 'svelte'
   export let keypadNumber = 0
   export let value = 0
   
   let _keypadNumber = ''
   export let anchor
-  let leftArrow = false, rightArrow = false
-  let arrowAfterStyle = document.createElement("style");
-  let arrowBeforeStyle = document.createElement("style");
+  let leftArrow = false, rightArrow = false, arrowPosition = 0
+  let styleTag = document.createElement("style");
   
   $: {
     keypadNumber = parseFloat(_keypadNumber)
@@ -17,7 +17,7 @@
   let openKeypad = false
 
   export const openKeypadModal = () => {
-    let top, left, arrowPosition
+    let top, left
     openKeypad = true
     const inputDimensions = anchor.getBoundingClientRect()
 
@@ -45,36 +45,13 @@
         if (top) modal.style.top = `${top}px`
         if (left) modal.style.left = `${left}px`
 
-        arrowBeforeStyle.innerHTML =
-        `div.content-wrapper:before {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 0;
-            left: -18px;
+        styleTag.innerHTML =`
+          .keypad-modal-wrapper.content-wrapper:before, 
+          .keypad-modal-wrapper.content-wrapper:after {
             ${arrowPosition}
-            border-top: 20px solid transparent;
-            border-bottom: 20px solid transparent;
-            border-right: 20px solid white;
-            clear: both;
-          }`
-        if (leftArrow) document.head.appendChild(arrowBeforeStyle);
+          }
+        `
         
-        arrowAfterStyle.innerHTML =
-        `div.content-wrapper:after {
-            content: '';
-            position: absolute;
-            right: -18px;
-            ${arrowPosition}
-            width: 0;
-            height: 0;
-            border-top: 20px solid transparent;
-            border-bottom: 20px solid transparent;
-            border-left: 20px solid white;
-            clear: both;
-          }`
-          if (rightArrow) document.head.appendChild(arrowAfterStyle);
-
         modal.style.visibility = 'visible'
       }
     }, 0)
@@ -90,13 +67,6 @@
   }
 
   const setNumber = () => {
-    // _keypadNumber = getInputField('place-number').value
-    // keypadNumber = _keypadNumber
-    // getInputField('place-keypad-number').value = _keypadNumber
-
-    if (leftArrow) document.head.removeChild(arrowBeforeStyle);
-    if (rightArrow) document.head.removeChild(arrowAfterStyle);
-
     openKeypad = false
   }
 
@@ -104,13 +74,21 @@
     getInputField('place-number').value = ''
   }
 
+  onMount(() => document.head.appendChild(styleTag))
+  onDestroy(() => document.head.removeChild(styleTag))
 </script>
 
   
 {#if openKeypad}
   <div class="modal" on:click={() => openKeypad = false}>
     <div class="backdrop" />
-    <div class="content-wrapper" id="content-wrapper" style="visibility:hidden" on:click|stopPropagation>
+    <div class="keypad-modal-wrapper content-wrapper" 
+      id="content-wrapper" 
+      style="visibility:hidden" 
+      on:click|stopPropagation
+      class:leftArrow
+      class:rightArrow
+    >
       <div class="content">
         <input type="text" id='place-number' />
         <div class="number-box">
@@ -162,6 +140,28 @@
     border-radius: 0.3rem;
     background-color: white;
     position: absolute;
+  }
+  .content-wrapper.leftArrow:before {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: -18px;
+    border-top: 20px solid transparent;
+    border-bottom: 20px solid transparent;
+    border-right: 20px solid white;
+    clear: both;
+  }
+  .content-wrapper.rightArrow:after {
+    content: '';
+    position: absolute;
+    right: -18px;
+    width: 0;
+    height: 0;
+    border-top: 20px solid transparent;
+    border-bottom: 20px solid transparent;
+    border-left: 20px solid white;
+    clear: both;
   }
   div.content {
     width: 264px;
