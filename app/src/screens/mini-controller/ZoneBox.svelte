@@ -13,7 +13,7 @@
 </script>
 
 
-<div on:click class:active class='zone-box'>
+<div on:click on:dblclick class:active class='zone-box'>
   <div class='group-colors'>
     {#each tabs as t }
       <div class='color-tab' style='background:{t}' />
