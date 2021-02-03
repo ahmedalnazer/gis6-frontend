@@ -44,6 +44,10 @@
     }
   }
 
+  .status-message {
+    font-weight: 600;
+  }
+
   .logo {
     // padding: 10px 10px 10px 20px;
     padding: 36px 40px;
