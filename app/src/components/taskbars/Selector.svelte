@@ -1,4 +1,5 @@
 <script>
+  import { onMount, onDestroy } from 'svelte'
   import groups from 'data/groups'
   import _ from 'data/language'
   import zones, { selectedZones, activeZones } from 'data/zones'
@@ -60,6 +61,19 @@
       applied[g.id] = true
     }
   }
+
+  let dummySelection = false
+
+  onMount(() => {
+    if($activeZones.length == 0 && $zones.length) {
+      selectedZones.set([$zones[0].id])
+      dummySelection = true
+    }
+  })
+
+  onDestroy(() => {
+    if(dummySelection) selectedZones.set([])
+  })
 </script>
 
 <div class="zone-select-wrapper">
@@ -90,7 +104,11 @@
         class:disabled={!$activeZones.length}
         on:click={applySelected}
       >
-        <Icon icon='check' color='var(--primary)' /> {$_("Selected Zones")}
+        <Icon icon='check' color='var(--primary)' /> {#if $activeZones.length == 1}
+          {$activeZones[0].name}
+        {:else}
+          {$_("Selected Zones")}
+        {/if}
       </div>
       <div 
         class="button ignore-task-styles" 

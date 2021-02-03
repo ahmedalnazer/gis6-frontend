@@ -1,20 +1,23 @@
 <script>
-    import { Modal } from "components";
-    import Selector from "components/taskbars/Selector.svelte";
-    import _ from "data/language";
-    import notify from "data/notifications";
-    import { Input, CheckBox } from "components";
-    import Switch from "svelte-switch";
-    import { activeSetpointEditor } from "data/setpoint";
-    import Collapsible from "./widgets/Collapsible.svelte";
+    import { Modal } from "components"
+    import Selector from "components/taskbars/Selector.svelte"
+    import _ from "data/language"
+    import notify from "data/notifications"
+    import { Input, CheckBox } from "components"
+    import Switch from "svelte-switch"
+    import { activeSetpointEditor } from 'data/setpoint'
+    import Collapsible from "./widgets/Collapsible.svelte"
+    import KeypadInput from 'components/keybodInput/keypadInput.svelte'
+
     const commitChanges = (zones) => {
         notify.success($_("Changes applied"));
     };
 
-    let checkedValue = true;
-    let setpointTemperatureValue = 0;
-    let showAdvanced = false;
-    let showHideLabel = "Show Advanced Settings";
+    let checkedValue = true
+    let setpointTemperatureValue = 0
+    let showAdvanced = false
+    let showHideLabel = "Show Advanced Settings"
+    let keypadNumber = 0
 
     let initialFormData = {
         zoneId: 0,
@@ -127,12 +130,18 @@
             <div class="sp-editor-container">
                 <h2>{$_("Edit")}</h2>
 
-                <div class="grid">
-                    <Input
-                        label="{$_('Temperature Setpoint')} (&#176;C)"
+                <div class='grid'>
+                    <!-- <Input
+                      label='{$_("Temperature Setpoint")} (&#176;C)'
+                      type="number" 
+                      bind:value={formData.temperatureSetpoint}
+                      changed={changedTemperatureSetpointData}
+                    /> -->
+                    <KeypadInput
+                        label='{$_("Temperature Setpoint")} (&#176;C)'
                         type="number"
-                        bind:value={formData.temperatureSetpoint}
                         changed={changedTemperatureSetpointData}
+                        bind:value={keypadNumber}
                     />
 
                     <!-- <div 
