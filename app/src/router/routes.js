@@ -6,6 +6,7 @@ import UserProfile from 'screens/users/UserProfile'
 import GroupManagement from 'screens/groups/Manage'
 import EditGroup from 'screens/groups/EditGroup'
 import MiniController from 'screens/mini-controller/MiniController'
+import OrderFillin from 'screens/dashboard/OrderFillin.svelte'
 import HotRunner from 'screens/dashboard/HotRunner'
 
 /**
@@ -26,6 +27,7 @@ const routes = {
   '/group-management': GroupManagement,
   '/edit-group': EditGroup,
   '/mini-controller': MiniController,
+  '/order-fillin': OrderFillin,
   '/hot-runner': HotRunner
 }
 
