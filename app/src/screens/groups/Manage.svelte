@@ -13,6 +13,7 @@
   import ModifyZones from "./ModifyZones"
   import GroupSelector from "components/GroupSelector.svelte"
   import Sortable from "sortablejs"
+  import { activeSetpointEditor } from 'data/setpoint'
 
   $: selectedGroup = $activeGroup
   let sortGroups = true
@@ -129,6 +130,15 @@
       resetSortable()
     }
   }
+
+  let toggleSetPoint = key => {
+    if($activeSetpointEditor == key) {
+      activeSetpointEditor.set('')
+    } else {
+      activeSetpointEditor.set(key)
+    }
+  }
+
 </script>
 
 <Screen title={$_("Manage Groups")} id="group_management">
@@ -179,6 +189,7 @@
                 {group}
                 onDelete={() => deleting = group}
                 bind:selection={selection[group.id]}
+                onClearSelection={() => {clearSelection();}}
               />
             </div>
           {/each}
@@ -189,7 +200,8 @@
               {group}
               onDelete={() => deleting = group}
               bind:selection={selection[group.id]}
-            />
+              onClearSelection={() => {clearSelection();}}
+              />
         {/each}
       {:else}
         {#if selectedGroup && !displayedZones.length}
@@ -201,7 +213,8 @@
               {zone}
               active={$_selected.includes(zone.id)}
               on:click={() => toggleZones(zone.id)}
-            />
+              on:dblclick={() => {toggleZones(zone.id, true); toggleSetPoint('setpoint');}}
+          />
           {/each}
         </div>
       {/if}

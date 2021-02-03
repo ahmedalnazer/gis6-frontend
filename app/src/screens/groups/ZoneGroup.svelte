@@ -4,21 +4,31 @@
   import _zones from 'data/zones'
   import ZoneButton from './ZoneButton'
   import groups from 'data/groups'
+  import { activeSetpointEditor } from 'data/setpoint'
   import { Collapsible, Icon } from 'components'
 
   export let group
   export let selection = []
   export let onDelete = () => {}
+  export let onClearSelection = () => {}
 
-  const toggle = id => {
-    console.log(id)
+  const toggle = (id, clear) => {
+    if (clear) { selection = []}
     if(selection.includes(id)) {
       selection = selection.filter(x => x != id)
     } else {
       selection = selection.concat(id)
     }
   }
-  
+
+  let toggleSetPoint = key => {
+    if($activeSetpointEditor == key) {
+      activeSetpointEditor.set('')
+    } else {
+      activeSetpointEditor.set(key)
+    }
+  }
+
   $: zones = group.id == 'unassigned' 
     ? $_zones.filter(x => (x.groups || []).map(x => $groups.find(y => y.id == x)).filter(x => !!x).length == 0 )
     : $_zones.filter(x => x.groups && x.groups.includes(group && group.id))
@@ -50,6 +60,7 @@
           zone={zone} 
           active={selection.includes(zone.id)} 
           on:click={() => toggle(zone.id)}
+          on:dblclick={() => {onClearSelection(); toggle(zone.id, true); toggleSetPoint('setpoint');}}
         />
       {/each}
     </div>

@@ -1,9 +1,17 @@
 <script>
   import groups from 'data/groups'
+  // import { activeSetpointEditor } from 'data/setpoint'
   export let zone
   export let active
 
   let tabs = []
+  // let toggle = key => {
+  //   if($activeSetpointEditor == key) {
+  //     activeSetpointEditor.set('')
+  //   } else {
+  //     activeSetpointEditor.set(key)
+  //   }
+  // }
 
   $: zoneGroups = $groups.filter(x => zone.groups && zone.groups.includes(x.id))
 
@@ -12,8 +20,7 @@
     : [ '#00E5FF' ]
 </script>
 
-
-<div on:click class:active class='zone-button'>
+<div on:click on:dblclick class:active class='zone-button'>
   <div class='group-colors'>
     {#each tabs as t }
       <div class='color-tab' style='background:{t}' />
