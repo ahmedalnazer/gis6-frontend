@@ -89,12 +89,18 @@ zones.update = async (zone, options = {}) => {
   if (!options.skipReload) await zones.reload()
 }
 
-zones.delete = async zone => {
+zones.delete = async (zone, options = {}) => {
   await api.delete(`zone/${zone.id}`)
-  await zones.reload()
+  if(!options.skipReload) await zones.reload()
 }
 
 zones.reload()
 
+window.DANGEROUS_reset_zones = async () => {
+  let z 
+  zones.subscribe(x => z = x)()
+  await Promise.all(z.map(zone => ( async () => await zones.delete(zone, { skipReload: true }))()))
+  zones.reload()
+}
 
 export default zones

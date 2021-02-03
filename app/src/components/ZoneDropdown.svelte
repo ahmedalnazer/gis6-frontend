@@ -17,8 +17,7 @@
   })
 
   const openDropdown = () => {
-    const { top, left, right, bottom } = anchor.getBoundingClientRect()
-    console.log(top, left, right, bottom)
+    const { top, left, right } = anchor.getBoundingClientRect()
     dropdown.style.top = `${top - 48}px`
     dropdown.style.left = `${left}px`
     dropdown.style.width = `${Math.max(right - left, 400)}px`
@@ -113,6 +112,8 @@
     max-height: 50vh;
     overflow: auto;
     background: var(--pale);
+  }
+  .menu {
     padding-top: 16px;
   }
   .zone {
