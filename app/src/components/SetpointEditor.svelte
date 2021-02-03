@@ -17,7 +17,6 @@
     let setpointTemperatureValue = 0
     let showAdvanced = false
     let showHideLabel = "Show Advanced Settings"
-    let keypadNumber = 0
 
     let initialFormData = {
         zoneId: 0,
@@ -141,7 +140,7 @@
                         label='{$_("Temperature Setpoint")} (&#176;C)'
                         type="number"
                         changed={changedTemperatureSetpointData}
-                        bind:value={keypadNumber}
+                        bind:value={formData.temperatureSetpoint}
                     />
 
                     <!-- <div 

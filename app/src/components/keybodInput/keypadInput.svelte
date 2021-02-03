@@ -1,5 +1,6 @@
 <script>
-  import { Collapsible } from 'components'
+  import { Collapsible, Icon } from 'components'
+  import _ from 'data/language'
   import { slide } from 'svelte/transition'
 
   export let errors = []
@@ -7,6 +8,7 @@
   export let note = ''
   export let type = ''
   export let keypadNumber = 0
+  export let value = 0
   
   let _keypadNumber = ''
   let anchor
@@ -90,12 +92,13 @@
 
   const getNumber = e => {
     getInputField('place-number').value += e.target.innerText
+    value = parseFloat(getInputField('place-number').value)
   }
 
   const setNumber = () => {
-    _keypadNumber = getInputField('place-number').value
-    keypadNumber = _keypadNumber
-    getInputField('place-keypad-number').value = _keypadNumber
+    // _keypadNumber = getInputField('place-number').value
+    // keypadNumber = _keypadNumber
+    // getInputField('place-keypad-number').value = _keypadNumber
 
     if (leftArrow) document.head.removeChild(arrowBeforeStyle);
     if (rightArrow) document.head.removeChild(arrowAfterStyle);
@@ -113,12 +116,21 @@
   {#if label}
     <label>{label}</label>
   {/if}
-  <input id="place-keypad-number" {type} on:focus={() => openKeypadModal()} {...$$restProps} step="0.01" bind:this={anchor} />
+  <input 
+    id="place-keypad-number" 
+    {type} 
+    on:focus={() => openKeypadModal()} 
+    {...$$restProps} 
+    step="0.01" 
+    bind:this={anchor}
+    {value}
+    on:change={e => value = e.target.value}
+  />
   
   {#if openKeypad}
-  <div class="modal">
+  <div class="modal" on:click={() => openKeypad = false}>
       <div class="backdrop" />
-      <div class="content-wrapper" id="content-wrapper" style="visibility:hidden">
+      <div class="content-wrapper" id="content-wrapper" style="visibility:hidden" on:click|stopPropagation>
         <div class="content">
           <input type="text" id='place-number' />
           <div class="number-box">
@@ -134,9 +146,9 @@
               <div class="number ml-0"><span on:click={e => getNumber(e)}>.</span></div>
               <div class="number"><span on:click={e => getNumber(e)}>0</span></div>
               <div class="number mr-0" on:click={() => clearNumber()}>
-                <label>
-                  <label class="clear-sign">x</label>
-                  <label class="clear">clear</label>
+                <label class='clear-button'>
+                  <Icon icon='close' color='var(--primary)' />
+                  <label class="clear">{$_('Clear')}</label>
                 </label>
               </div>
           </div>
@@ -271,8 +283,9 @@
   }
   .number label.clear {
     font-size: 9px;
+    text-transform: uppercase;
   }
-  .number label.clear-sign {
-    font-size: 20px;
+  .clear-button :global(svg) {
+    width: 20px;
   }
 </style>
