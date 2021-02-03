@@ -1,20 +1,14 @@
 <script>
-  import { Collapsible, Icon } from 'components'
+  import { Icon } from 'components'
   import _ from 'data/language'
-  import { slide } from 'svelte/transition'
-
-  export let errors = []
-  export let label = ''
-  export let note = ''
-  export let type = ''
+  import { onDestroy, onMount } from 'svelte'
   export let keypadNumber = 0
   export let value = 0
   
   let _keypadNumber = ''
-  let anchor
-  let leftArrow = false, rightArrow = false
-  let arrowAfterStyle = document.createElement("style");
-  let arrowBeforeStyle = document.createElement("style");
+  export let anchor
+  let leftArrow = false, rightArrow = false, arrowPosition = 0
+  let styleTag = document.createElement("style");
   
   $: {
     keypadNumber = parseFloat(_keypadNumber)
@@ -22,8 +16,8 @@
 
   let openKeypad = false
 
-  const openKeypadModal = () => {
-    let top, left, arrowPosition
+  export const openKeypadModal = () => {
+    let top, left
     openKeypad = true
     const inputDimensions = anchor.getBoundingClientRect()
 
@@ -51,36 +45,13 @@
         if (top) modal.style.top = `${top}px`
         if (left) modal.style.left = `${left}px`
 
-        arrowBeforeStyle.innerHTML =
-        `div.content-wrapper:before {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 0;
-            left: -18px;
+        styleTag.innerHTML =`
+          .keypad-modal-wrapper.content-wrapper:before, 
+          .keypad-modal-wrapper.content-wrapper:after {
             ${arrowPosition}
-            border-top: 20px solid transparent;
-            border-bottom: 20px solid transparent;
-            border-right: 20px solid white;
-            clear: both;
-          }`
-        if (leftArrow) document.head.appendChild(arrowBeforeStyle);
+          }
+        `
         
-        arrowAfterStyle.innerHTML =
-        `div.content-wrapper:after {
-            content: '';
-            position: absolute;
-            right: -18px;
-            ${arrowPosition}
-            width: 0;
-            height: 0;
-            border-top: 20px solid transparent;
-            border-bottom: 20px solid transparent;
-            border-left: 20px solid white;
-            clear: both;
-          }`
-          if (rightArrow) document.head.appendChild(arrowAfterStyle);
-
         modal.style.visibility = 'visible'
       }
     }, 0)
@@ -96,13 +67,6 @@
   }
 
   const setNumber = () => {
-    // _keypadNumber = getInputField('place-number').value
-    // keypadNumber = _keypadNumber
-    // getInputField('place-keypad-number').value = _keypadNumber
-
-    if (leftArrow) document.head.removeChild(arrowBeforeStyle);
-    if (rightArrow) document.head.removeChild(arrowAfterStyle);
-
     openKeypad = false
   }
 
@@ -110,71 +74,49 @@
     getInputField('place-number').value = ''
   }
 
+  onMount(() => document.head.appendChild(styleTag))
+  onDestroy(() => document.head.removeChild(styleTag))
 </script>
 
-<div class='input keypad-modal'>
-  {#if label}
-    <label>{label}</label>
-  {/if}
-  <input 
-    id="place-keypad-number" 
-    {type} 
-    on:focus={() => openKeypadModal()} 
-    {...$$restProps} 
-    step="0.01" 
-    bind:this={anchor}
-    {value}
-    on:change={e => value = e.target.value}
-  />
   
-  {#if openKeypad}
+{#if openKeypad}
   <div class="modal" on:click={() => openKeypad = false}>
-      <div class="backdrop" />
-      <div class="content-wrapper" id="content-wrapper" style="visibility:hidden" on:click|stopPropagation>
-        <div class="content">
-          <input type="text" id='place-number' />
-          <div class="number-box">
-              <div class="number ml-0"><span on:click={e => getNumber(e)}>7</span></div>
-              <div class="number"><span on:click={e => getNumber(e)}>8</span></div>
-              <div class="number mr-0"><span on:click={e => getNumber(e)}>9</span></div>
-              <div class="number ml-0"><span on:click={e => getNumber(e)}>4</span></div>
-              <div class="number"><span on:click={e => getNumber(e)}>5</span></div>
-              <div class="number mr-0"><span on:click={e => getNumber(e)}>6</span></div>
-              <div class="number ml-0"><span on:click={e => getNumber(e)}>1</span></div>
-              <div class="number"><span on:click={e => getNumber(e)}>2</span></div>
-              <div class="number mr-0"><span on:click={e => getNumber(e)}>3</span></div>
-              <div class="number ml-0"><span on:click={e => getNumber(e)}>.</span></div>
-              <div class="number"><span on:click={e => getNumber(e)}>0</span></div>
-              <div class="number mr-0" on:click={() => clearNumber()}>
-                <label class='clear-button'>
-                  <Icon icon='close' color='var(--primary)' />
-                  <label class="clear">{$_('Clear')}</label>
-                </label>
-              </div>
-          </div>
-          <button on:click={() => setNumber()} class="keypad-ok-btn">OK</button>
+    <div class="backdrop" />
+    <div class="keypad-modal-wrapper content-wrapper" 
+      id="content-wrapper" 
+      style="visibility:hidden" 
+      on:click|stopPropagation
+      class:leftArrow
+      class:rightArrow
+    >
+      <div class="content">
+        <input type="text" id='place-number' />
+        <div class="number-box">
+            <div class="number ml-0"><span on:click={e => getNumber(e)}>7</span></div>
+            <div class="number"><span on:click={e => getNumber(e)}>8</span></div>
+            <div class="number mr-0"><span on:click={e => getNumber(e)}>9</span></div>
+            <div class="number ml-0"><span on:click={e => getNumber(e)}>4</span></div>
+            <div class="number"><span on:click={e => getNumber(e)}>5</span></div>
+            <div class="number mr-0"><span on:click={e => getNumber(e)}>6</span></div>
+            <div class="number ml-0"><span on:click={e => getNumber(e)}>1</span></div>
+            <div class="number"><span on:click={e => getNumber(e)}>2</span></div>
+            <div class="number mr-0"><span on:click={e => getNumber(e)}>3</span></div>
+            <div class="number ml-0"><span on:click={e => getNumber(e)}>.</span></div>
+            <div class="number"><span on:click={e => getNumber(e)}>0</span></div>
+            <div class="number mr-0" on:click={() => clearNumber()}>
+              <label class='clear-button'>
+                <Icon icon='close' color='var(--primary)' />
+                <label class="clear">{$_('Clear')}</label>
+              </label>
+            </div>
         </div>
+        <button on:click={() => setNumber()} class="keypad-ok-btn">OK</button>
       </div>
     </div>
-  {/if}
-
-  {#if note}
-    <p class='muted input-note'>{note}</p>
-  {/if}
-  <Collapsible open={errors && errors.length}>
-    {#each errors || [] as e}
-      <p transition:slide|local class='error'>{e}</p>
-    {/each}
-  </Collapsible>
-</div>
+  </div>
+{/if}
 
 <style>
-  .error {
-    color: var(--danger);
-  }
-  .keypad-modal {
-    position: relative;
-  }
   div.modal {
     position: fixed;
     top: 0;
@@ -198,6 +140,28 @@
     border-radius: 0.3rem;
     background-color: white;
     position: absolute;
+  }
+  .content-wrapper.leftArrow:before {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: -18px;
+    border-top: 20px solid transparent;
+    border-bottom: 20px solid transparent;
+    border-right: 20px solid white;
+    clear: both;
+  }
+  .content-wrapper.rightArrow:after {
+    content: '';
+    position: absolute;
+    right: -18px;
+    width: 0;
+    height: 0;
+    border-top: 20px solid transparent;
+    border-bottom: 20px solid transparent;
+    border-left: 20px solid white;
+    clear: both;
   }
   div.content {
     width: 264px;

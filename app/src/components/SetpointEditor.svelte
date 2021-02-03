@@ -7,7 +7,7 @@
     import Switch from "svelte-switch"
     import { activeSetpointEditor } from 'data/setpoint'
     import Collapsible from "./widgets/Collapsible.svelte"
-    import KeypadInput from 'components/keybodInput/keypadInput.svelte'
+    // import KeypadInput from 'components/input/KeyPad.svelte'
 
     const commitChanges = (zones) => {
         notify.success($_("Changes applied"));
@@ -130,35 +130,13 @@
                 <h2>{$_("Edit")}</h2>
 
                 <div class='grid'>
-                    <!-- <Input
+                    <Input
                       label='{$_("Temperature Setpoint")} (&#176;C)'
                       type="number" 
                       bind:value={formData.temperatureSetpoint}
                       changed={changedTemperatureSetpointData}
-                    /> -->
-                    <KeypadInput
-                        label='{$_("Temperature Setpoint")} (&#176;C)'
-                        type="number"
-                        changed={changedTemperatureSetpointData}
-                        bind:value={formData.temperatureSetpoint}
                     />
-
-                    <!-- <div 
-                      class="temperature-setpoint-controls">
-                        
-                        <div class="child-label-item">
-                            {$_("Temperature Setpoint")} (&#176;C)
-                        </div>
-                        <div class="child-label-comp">
-                            <input
-                                type="number"
-                                class={changedTemperatureSetpointData == true
-                                    ? "changed-data"
-                                    : "not-changed-data"}
-                                bind:value={formData.temperatureSetpoint}
-                            />
-                        </div>
-                    </div> -->
+                    
                     <div class="temperature-setpoint-controls">
                         <div class="child-label-item">&nbsp;</div>
                         <div class="child-label-comp">

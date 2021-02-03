@@ -24,7 +24,6 @@
 
 <style lang="scss">
   header {
-    // height: 10vh;
     color: white;
     display: flex;
     align-items: center;

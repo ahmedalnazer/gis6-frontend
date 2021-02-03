@@ -36,7 +36,7 @@
   onDestroy(() => clearInterval(intvl))
 </script>
 
-<Card>
+<Card link='/hot-runner'>
     <div class="sectionHeader">
         <div class='icon'>
             <CheckCircle size="1.5em" />

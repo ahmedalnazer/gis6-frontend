@@ -1,3 +1,7 @@
+<script context='module'>
+  let selectorMounted = false
+</script>
+
 <script>
   import { onMount, onDestroy } from 'svelte'
   import groups from 'data/groups'
@@ -64,7 +68,9 @@
 
   let dummySelection = false
 
+  const key = {}
   onMount(() => {
+    selectorMounted = key
     if($activeZones.length == 0 && $zones.length) {
       selectedZones.set([$zones[0].id])
       dummySelection = true
@@ -72,7 +78,7 @@
   })
 
   onDestroy(() => {
-    if(dummySelection) selectedZones.set([])
+    if(selectorMounted == key && dummySelection) selectedZones.set([])
   })
 </script>
 
