@@ -7,6 +7,7 @@
     import Switch from "svelte-switch"
     import { activeSetpointEditor } from 'data/setpoint'
     import Collapsible from "./widgets/Collapsible.svelte"
+    import KeypadInput from 'components/keybodInput/keypadInput.svelte'
     const commitChanges = (zones) => {
       notify.success($_("Changes applied"))
     }
@@ -15,6 +16,7 @@
     let setpointTemperatureValue = 0
     let showAdvanced = false
     let showHideLabel = "Show Advanced Settings"
+    let keypadNumber = 0
 
     let initialFormData = {
       zoneId: 0,
@@ -124,11 +126,17 @@
                 <h2>{$_("Edit")}</h2>
 
                 <div class='grid'>
-                    <Input
+                    <!-- <Input
                       label='{$_("Temperature Setpoint")} (&#176;C)'
                       type="number" 
                       bind:value={formData.temperatureSetpoint}
                       changed={changedTemperatureSetpointData}
+                    /> -->
+                    <KeypadInput
+                        label='{$_("Temperature Setpoint")} (&#176;C)'
+                        type="number"
+                        changed={changedTemperatureSetpointData}
+                        bind:value={keypadNumber}
                     />
                     
                     <!-- <div 
