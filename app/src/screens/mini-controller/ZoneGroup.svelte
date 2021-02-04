@@ -2,14 +2,13 @@
   import DragHeading from 'components/DragHeading.svelte'
   import _ from 'data/language'
   import _zones from 'data/zones'
-  import ZoneButton from './ZoneButton'
+  import ZoneBox from './ZoneBox'
   import groups from 'data/groups'
-  import { activeSetpointEditor } from 'data/setpoint'
   import { Collapsible, Icon } from 'components'
+  import { activeSetpointEditor } from 'data/setpoint'
 
   export let group
   export let selection = []
-  export let onDelete = () => {}
   export let onClearSelection = () => {}
 
   const toggle = (id, clear) => {
@@ -20,7 +19,7 @@
       selection = selection.concat(id)
     }
   }
-
+  
   let toggleSetPoint = key => {
     if($activeSetpointEditor == key) {
       activeSetpointEditor.set('')
@@ -41,23 +40,16 @@
   <div class='zone-group'>
     <DragHeading><div class='heading' class:open on:click={() => open = !open}>
       <span>{group.name}</span>
-
       <Icon icon='chevron' />
-      {#if group.id != 'unassigned'}
-        <Icon icon='close' on:click={e => {
-          e.stopPropagation()
-          onDelete()
-        }} />
-      {/if}
     </div></DragHeading>
     {#if zones.length == 0}
         <p class='muted'>{$_('No zones have been assigned to this group')}</p>
     {/if}
-   
+    
     <Collapsible {open} >
       <div class='zones'>
         {#each zones as zone}
-          <ZoneButton
+          <ZoneBox
             zone={zone} 
             active={selection.includes(zone.id)} 
             on:click={() => toggle(zone.id)}

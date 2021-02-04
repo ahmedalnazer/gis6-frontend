@@ -4,6 +4,7 @@
   import Function from "./Function.svelte"
   import Mold from "./Mold.svelte"
   import OrderCard from "./OrderCard.svelte"
+  import OrderFillin from "./OrderFillin.svelte"
   import DragIndicator from "style/images/DragIndicator.svelte"
   import SortableList from "svelte-sortable-list"
   import Management from "./Management.svelte"
@@ -56,6 +57,7 @@
     </div>
   {:else}
     <div class="dashboard-body">
+
       {#if showSetupProductionButton == false}
         <div style="padding:0px 0px 0px 0px;">
           <div class="section-title">
@@ -66,6 +68,9 @@
           </div>
 
           <div class="section-body">
+            <!-- <div class="flexy">
+              <OrderFillin />
+            </div> -->
             <div class="flexy">
               <OrderCard />
             </div>

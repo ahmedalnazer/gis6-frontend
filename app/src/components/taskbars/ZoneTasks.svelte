@@ -50,15 +50,15 @@
 {#if $activeSetpointEditor == 'off'}
   <Off onClose={() => activeSetpointEditor.set('')} />
 {/if}
-
+<span />
 {#if $activeSetpointEditor == 'on'}
   <On onClose={() => activeSetpointEditor.set('')} />
 {/if}
-
+<span />
 {#if $activeSetpointEditor == 'standby'}
   <Standby onClose={() => activeSetpointEditor.set('')} />
 {/if}
-
+<span />
 {#if $activeSetpointEditor == 'boost'}
   <Boost onClose={() => activeSetpointEditor.set('')} />
 {/if}

@@ -3,6 +3,7 @@
   import { Collapsible, CheckBox } from 'components'
   import { onDestroy } from 'svelte'
   import _ from 'data/language'
+import { debug } from 'svelte/internal';
 
   $: label = $activeZones.map(x => x.name).join(', ')
   let open = false
@@ -27,10 +28,19 @@
   }
 
   const toggleAll = () => {
-    if($selectedZones.length == 0) {
+    if($selectedZones.length == 0 || $selectedZones.length == 1) {
       selectedZones.set($zones.map(x => x.id))
     } else {
-      selectedZones.set([])
+      // Select the first zone as default if everything is empty
+      // selectedZones.set([])
+      selectedZones.set([$zones.map(x => x.id)[0]])
+    }
+  }
+
+  const setDefaultIfEmpty = () => {
+    // There should be atleast one zone selected
+    if($selectedZones.length == 0) {
+      selectedZones.set([$zones.map(x => x.id)[0]])
     }
   }
 
@@ -68,7 +78,7 @@
             <div
               class='zone'
               class:selected={$selectedZones.includes(zone.id)}
-              on:click={() => toggleZones(zone)}
+              on:click={() => {toggleZones(zone); setDefaultIfEmpty();}}
             >
               <CheckBox checked={$selectedZones.includes(zone.id)} /> {zone.name}
             </div>

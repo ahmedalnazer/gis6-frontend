@@ -24,7 +24,6 @@
 
 <style lang="scss">
   header {
-    // height: 10vh;
     color: white;
     display: flex;
     align-items: center;
@@ -42,6 +41,10 @@
     &.error {
       background: var(--danger);
     }
+  }
+
+  .status-message {
+    font-weight: 600;
   }
 
   .logo {
