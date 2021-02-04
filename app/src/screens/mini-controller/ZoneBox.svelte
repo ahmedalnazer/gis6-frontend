@@ -16,7 +16,7 @@
   let powerWarning = false
   let powerError = false
 
-  let on = true
+  $: on = zone.IsZoneOn
   let locked = true
 
 </script>
@@ -37,11 +37,11 @@
     </div>
     <div class='temp' class:tempWarning class:tempError>
       <div class='actual'>
-        {100}&deg;<span class='temp-type'>F</span>
+        {zone.ProcessSp}&deg;<span class='temp-type'>F</span>
       </div>
       {#if on}
         <div class='setpoint'>
-          {400}&deg;<span class='temp-type'>F</span>
+          {zone.ProcessSp || '-'}&deg;<span class='temp-type'>F</span>
         </div>
       {/if}
     </div>

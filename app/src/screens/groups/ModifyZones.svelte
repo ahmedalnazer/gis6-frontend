@@ -23,21 +23,30 @@
   const commit = async () => {
     // console.log(_zones);
     undo = []
-    for (let z of _zones) {
-      const curGroups = z.groups || []
-      undo.push(() =>
-        zones.update({ ...z, groups: curGroups }, { skipReload: true })
-      )
-      if (adding) {
-        z.groups = curGroups.concat(selectedGroups)
+    for(let g of $groups.filter(x => selectedGroups.includes(x.id))) {
+      console.log(g)
+      if(adding) {
+        await groups.addZones(g, _zones)
       } else {
-        z.groups = curGroups.filter((x) => !selectedGroups.includes(x))
+        await groups.removeZones(g, _zones)
       }
-      z.groups = [ ...new Set(z.groups) ]
-      await zones.update(z, { skipReload: true })
+      undo.push(() => groups.update({...g}))
     }
+    // for (let z of _zones) {
+    //   const curGroups = z.groups || []
+    //   undo.push(() =>
+    //     zones.update({ ...z, groups: curGroups }, { skipReload: true })
+    //   )
+    //   if (adding) {
+    //     z.groups = curGroups.concat(selectedGroups)
+    //   } else {
+    //     z.groups = curGroups.filter((x) => !selectedGroups.includes(x))
+    //   }
+    //   z.groups = [ ...new Set(z.groups) ]
+    //   await zones.update(z, { skipReload: true })
+    // }
     selectedGroups = []
-    await zones.reload()
+    // await zones.reload()
     // onCommit()
   }
 

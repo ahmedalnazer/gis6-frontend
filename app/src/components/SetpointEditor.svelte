@@ -7,11 +7,8 @@
     import Switch from "svelte-switch"
     import { activeSetpointEditor } from 'data/setpoint'
     import Collapsible from "./widgets/Collapsible.svelte"
+    import zones, { activeZones } from "data/zones"
     // import KeypadInput from 'components/input/KeyPad.svelte'
-
-    const commitChanges = (zones) => {
-        notify.success($_("Changes applied"));
-    };
 
     let checkedValue = true
     let setpointTemperatureValue = 0
@@ -19,41 +16,25 @@
     let showHideLabel = "Show Advanced Settings"
 
     let initialFormData = {
-        zoneId: 0,
-        temperatureSetpoint: 0,
-        autoManual: false,
-        unlockLock: false,
-        onOff: false,
-        low: 0,
-        high: 0,
-        unsealSeal: false,
-        manual: 0,
-        trim: 0,
-        autoStandby: 0,
-        tcShortDetectTime: 0,
-        tuningOverride: 0,
-        powerPriority: 0,
-        wattAlarm: 0,
-        criticalOverTemperature: 0,
+      zoneId: 0,
+      temperatureSetpoint: 0,
+      autoManual: false,
+      unlockLock: false,
+      onOff: false,
+      low: 0,
+      high: 0,
+      unsealSeal: false,
+      manual: 0,
+      trim: 0,
+      autoStandby: 0,
+      tcShortDetectTime: 0,
+      tuningOverride: 0,
+      powerPriority: 0,
+      wattAlarm: 0,
+      criticalOverTemperature: 0,
     };
 
     let formData = { ...initialFormData };
-
-    let changedTemperatureSetpointData = false;
-    let changedautoManualData = false;
-    let changedUnlockLockData = false;
-    let changedOnOffData = false;
-    let changedLowData = false;
-    let changedHighData = false;
-    let changedUnsealSealData = false;
-    let changedManualData = false;
-    let changedTrimData = false;
-    let changedAutoStandbyData = false;
-    let changedTCShortDetectTimeData = false;
-    let changedTuningOverrideData = false;
-    let changedPowerPriorityData = false;
-    let changedWattAlarmData = false;
-    let changedCriticalOverTemperatureData = false;
 
     $: changedTemperatureSetpointData =
         initialFormData.temperatureSetpoint !== formData.temperatureSetpoint;
@@ -80,6 +61,22 @@
     $: changedCriticalOverTemperatureData =
         initialFormData.criticalOverTemperature !==
         formData.criticalOverTemperature;
+
+
+    const commitChanges = (_zones) => {
+      let update = {}
+      if(changedTemperatureSetpointData) update.ProcessSp = formData.temperatureSetpoint
+      if(changedAutoManualData) update.IsManual = formData.autoManual
+      if(changedUnlockLockData) update.Islocked = formData.unlockLock
+      
+      // ...
+      
+      for(let z of _zones) {
+        zones.update({...z, ...update})
+      }
+      notify.success($_("Changes applied"));
+    };
+
 
     const handleChangeAutoManual = (e) => {
         const { checked } = e.detail;
@@ -136,7 +133,7 @@
                       bind:value={formData.temperatureSetpoint}
                       changed={changedTemperatureSetpointData}
                     />
-                    
+
                     <div class="temperature-setpoint-controls">
                         <div class="child-label-item">&nbsp;</div>
                         <div class="child-label-comp">
@@ -219,41 +216,17 @@
                 <Collapsible open={showAdvanced}>
                     <div class="grid advanced">
                         <Input
-                            label="{$_('Low')} (&#176;C)"
-                            type="number"
-                            bind:value={formData.low}
-                            changed={changedLowData}
+                          label="{$_('Low')} (&#176;C)"
+                          type="number"
+                          bind:value={formData.low}
+                          changed={changedLowData}
                         />
-                        <!-- <div class="child">
-                            <div class="child-item">
-                                <div class="child-label-item">
-                                    {$_("Low")} (&#176;C)
-                                </div>
-                                <div class="child-label-comp">
-                                    <input
-                                        type="number"
-                                        class={changedLowData == true
-                                            ? "changed-data"
-                                            : "not-changed-data"}
-                                        bind:value={formData.low}
-                                    />
-                                </div>
-                            </div>
-                        </div> -->
-                        <div class="child">
-                            <div class="child-item">
-                                <div class="child-label-item">
-                                    {$_("High")} (&#176;C)
-                                </div>
-                                <div class="child-label-comp">
-                                    <Input
-                                        type="number"
-                                        changed={changedHighData}
-                                        bind:value={formData.high}
-                                    />
-                                </div>
-                            </div>
-                        </div>
+                        <Input
+                          label="{$_("High")} (&#176;C)"
+                          type="number"
+                          changed={changedHighData}
+                          bind:value={formData.high}
+                        />
                         <div class="child">
                             <div class="child-item">
                                 <div class="child-label-item">&nbsp;</div>

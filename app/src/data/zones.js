@@ -41,7 +41,7 @@ const decodeZone = z => {
     name: z.ZoneName,
     number: z.ZoneNumber,
     id: id(z.id),
-    groups: (z.ZoneGroups || '').split(',').map(x => id(x))
+    groups: z.ZoneGroups
   }
 
   delete d.ZoneName
@@ -51,11 +51,17 @@ const decodeZone = z => {
 }
 
 const encodeZone = z => {
-  return {
+  let d = {
+    ...z,
     ZoneName: z.name,
     ZoneNumber: z.number || z.id,
-    ZoneGroups: (z.groups || []).filter(x => !!x).join(',')
+    ZoneGroups: z.groups
   }
+  delete d.name
+  delete d.number
+  delete d.groups
+
+  return d
 }
 
 
@@ -85,6 +91,7 @@ zones.create = async zone => {
 }
 
 zones.update = async (zone, options = {}) => {
+  console.log(zone)
   await api.put(`zone/${zone.id}`, encodeZone(zone))
   if (!options.skipReload) await zones.reload()
 }
