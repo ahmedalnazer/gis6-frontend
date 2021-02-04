@@ -1,7 +1,11 @@
 <script>
+  import { createEventDispatcher } from 'svelte';
   import { Icon } from 'components'
   import _ from 'data/language'
   import { onDestroy, onMount } from 'svelte'
+
+  const dispatch = createEventDispatcher();
+
   export let keypadNumber = 0
   export let value = 0
   
@@ -66,8 +70,9 @@
     value = parseFloat(getInputField('place-number').value)
   }
 
-  const setNumber = () => {
+  const closeKeypadModal = () => {
     openKeypad = false
+    dispatch('keypadClosed', { closed: value });
   }
 
   const clearNumber = () => {
@@ -80,7 +85,7 @@
 
   
 {#if openKeypad}
-  <div class="modal" on:click={() => openKeypad = false}>
+  <div class="modal" on:click={() => closeKeypadModal()}>
     <div class="backdrop" />
     <div class="keypad-modal-wrapper content-wrapper" 
       id="content-wrapper" 
@@ -110,7 +115,7 @@
               </label>
             </div>
         </div>
-        <button on:click={() => setNumber()} class="keypad-ok-btn">OK</button>
+        <button on:click={() => closeKeypadModal()} class="keypad-ok-btn">OK</button>
       </div>
     </div>
   </div>
@@ -250,6 +255,7 @@
     text-transform: uppercase;
   }
   .clear-button :global(svg) {
-    width: 20px;
+    width: 16px;
+    margin-bottom: 5px;
   }
 </style>

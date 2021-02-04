@@ -14,6 +14,12 @@
   export let input = null
 
   let openKeypadModal
+  let modalOpned = false
+
+  const onCloseKeypad = (event) => {
+    modalOpned = false
+    changed = value && event.detail.closed
+  }
 
   const handleInput = e => {
     value = e.target.value
@@ -21,7 +27,7 @@
 
 </script>
 
-<div class='input text {$$restProps.class || ''}'>
+<div class='input text {$$restProps.class || ''}' style={modalOpned ? 'z-index: 11;' : ''}>
   {#if label}
     <label>{label}</label>
   {/if}
@@ -37,6 +43,7 @@
     on:focus={() => {
      if(type == 'number') {
        openKeypadModal()
+       modalOpned = true
      } 
     }}
   />
@@ -56,7 +63,7 @@
 </div>
 
 {#if type == 'number'}
-  <KeyPad anchor={input} bind:openKeypadModal bind:value/>
+  <KeyPad anchor={input} bind:openKeypadModal bind:value on:keypadClosed={onCloseKeypad} />
 {/if}
 
 <style>
