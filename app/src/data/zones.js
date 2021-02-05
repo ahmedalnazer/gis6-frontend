@@ -1,9 +1,9 @@
 import { writable, derived } from 'svelte/store'
 import api from 'data/api'
-import ws from 'data/realtime/ws'
 import { id } from './tools'
 
 const rawZones = writable([])
+export const realtime = writable([])
 
 export const selectedZones = writable([])
 export const toggleZones = (zones) => {
@@ -24,8 +24,10 @@ export const toggleZones = (zones) => {
 }
 
 
-const zones = derived([ rawZones ], ([ $raw ]) => {
-  let sorted = [ ...$raw ]
+const zones = derived([ rawZones, realtime ], ([ $raw, $realtime ]) => {
+  let sorted = [ ...$raw ].map((x, i) => {
+    return { ...x, ...$realtime[x.number - 1] || {}}
+  })
   var collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' })
   sorted.sort((a, b) => collator.compare(a.name, b.name))
   return sorted
@@ -60,6 +62,14 @@ const encodeZone = z => {
   delete d.name
   delete d.number
   delete d.groups
+  delete d.actual_current
+  delete d.actual_temp
+  delete d.actual_percent
+  delete d.power_alarm
+  delete d.settings
+  delete d.temp_alarm
+  delete d.temp_sp
+  delete d.manual_sp
 
   return d
 }
@@ -72,10 +82,12 @@ zones.reload = async () => {
 
   // TODO: remove dummy zones
   if (z.length == 0) {
-    for (let i = 0; i < 50; i++) {
+    const proc = await api.post('process', { name: 'Dummy Process' })
+    for (let i = 1; i <= 50; i++) {
       await api.post('zone', encodeZone({
         name: `Zone ${i}`,
-        id: i
+        number: i,
+        ref_process: proc.id
       }))
     }
     z = await getZones()
@@ -89,6 +101,9 @@ zones.create = async zone => {
   await api.post('zone', encodeZone(zone))
   await zones.reload()
 }
+
+zones._update = rawZones.update
+zones.set = rawZones.set
 
 zones.update = async (zone, options = {}) => {
   console.log(zone)

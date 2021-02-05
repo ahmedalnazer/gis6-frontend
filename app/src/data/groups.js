@@ -98,17 +98,17 @@ groups.delete = async group => {
 groups.addZones = async (group, _zones) => {
   const { id } = group
   if(!group.GroupName) group = encodeGroup(group)
-  const ref_zones = [ ...new Set(group.ref_zones.concat(_zones.map(z => z.id || z)))]
-  await api.put(`zonegroup/${id}`, { ...group, ref_zones})
-  await Promise.all([zones.reload(), groups.reload()])
+  const ref_zones = [ ...new Set(group.ref_zones.concat(_zones.map(z => z.id || z))) ]
+  await api.put(`zonegroup/${id}`, { ...group, ref_zones })
+  await Promise.all([ zones.reload(), groups.reload() ])
 }
 
 groups.removeZones = async (group, _zones) => {
   const { id } = group
   const ids = _zones.map(z => z.id || z)
-  const ref_zones = [...new Set(group.ref_zones.filter(x => !ids.includes(x)))]
+  const ref_zones = [ ...new Set(group.ref_zones.filter(x => !ids.includes(x))) ]
   await api.put(`zonegroup/${group.id}`, { ...encodeGroup(group), ref_zones })
-  await Promise.all([zones.reload(), groups.reload()])
+  await Promise.all([ zones.reload(), groups.reload() ])
 }
 
 

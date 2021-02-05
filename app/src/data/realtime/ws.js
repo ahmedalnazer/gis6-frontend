@@ -1,5 +1,6 @@
+import { realtime } from 'data/zones'
 import Pbf from 'pbf'
-import { tcdata, minmax, unknown_msg } from './decode.proto'
+import { tcdata, minmax, unknown_msg, tczone } from './decode.proto'
 
 let connected
 
@@ -19,18 +20,24 @@ const createSocket = () => {
   })
 
   socket.addEventListener('message', async e => {
-    console.log(e)
+    // console.log(e)
     const buffer = await e.data.arrayBuffer()
     const pbf = new Pbf(buffer)
 
     const { mt } = unknown_msg.read(pbf)
     const decoders = {
       2: minmax,
-      4: tcdata
+      4: tcdata,
+      6: tczone
     }
 
     const data = decoders[mt].read(new Pbf(buffer))
-    console.log(mt, JSON.stringify(data, null, 2))
+    if(mt == 6) {
+      console.log('tczone update', data.records)
+      realtime.set(data.records)
+    } else {
+      console.log(mt, JSON.stringify(data, null, 2))
+    }
   })
 
   socket.addEventListener('close', e => {
@@ -42,9 +49,9 @@ const createSocket = () => {
   })
 }
 
-createSocket()
+// createSocket()
 
 
 // console.log('socket created', socket)
 
-export default socket
+export default createSocket

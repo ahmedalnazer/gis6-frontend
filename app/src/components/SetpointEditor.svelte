@@ -32,35 +32,33 @@
       powerPriority: 0,
       wattAlarm: 0,
       criticalOverTemperature: 0,
-    };
+    }
 
-    let formData = { ...initialFormData };
+    let formData = { ...initialFormData }
 
     $: changedTemperatureSetpointData =
-        initialFormData.temperatureSetpoint !== formData.temperatureSetpoint;
-    $: changedAutoManualData =
-        initialFormData.autoManual !== formData.autoManual;
-    $: changedUnlockLockData =
-        initialFormData.unlockLock !== formData.unlockLock;
-    $: changedOnOffData = initialFormData.onOff !== formData.onOff;
-    $: changedLowData = initialFormData.low !== formData.low;
-    $: changedHighData = initialFormData.high !== formData.high;
+        initialFormData.temperatureSetpoint !== formData.temperatureSetpoint
+    let changedAutoManualData = false
+    let changedUnlockLockData = false
+    let changedOnOffData = false
+    $: changedLowData = initialFormData.low !== formData.low
+    $: changedHighData = initialFormData.high !== formData.high
     $: changedUnsealSealData =
-        initialFormData.unsealSeal !== formData.unsealSeal;
-    $: changedManualData = initialFormData.manual !== formData.manual;
-    $: changedTrimData = initialFormData.trim !== formData.trim;
+        initialFormData.unsealSeal !== formData.unsealSeal
+    $: changedManualData = initialFormData.manual !== formData.manual
+    $: changedTrimData = initialFormData.trim !== formData.trim
     $: changedAutoStandbyData =
-        initialFormData.autoStandby !== formData.autoStandby;
+        initialFormData.autoStandby !== formData.autoStandby
     $: changedTCShortDetectTimeData =
-        initialFormData.tcShortDetectTime !== formData.tcShortDetectTime;
+        initialFormData.tcShortDetectTime !== formData.tcShortDetectTime
     $: changedTuningOverrideData =
-        initialFormData.tuningOverride !== formData.tuningOverride;
+        initialFormData.tuningOverride !== formData.tuningOverride
     $: changedPowerPriorityData =
-        initialFormData.powerPriority !== formData.powerPriority;
-    $: changedWattAlarmData = initialFormData.wattAlarm !== formData.wattAlarm;
+        initialFormData.powerPriority !== formData.powerPriority
+    $: changedWattAlarmData = initialFormData.wattAlarm !== formData.wattAlarm
     $: changedCriticalOverTemperatureData =
         initialFormData.criticalOverTemperature !==
-        formData.criticalOverTemperature;
+        formData.criticalOverTemperature
 
 
     const commitChanges = (_zones) => {
@@ -68,49 +66,64 @@
       if(changedTemperatureSetpointData) update.ProcessSp = formData.temperatureSetpoint
       if(changedAutoManualData) update.IsManual = formData.autoManual
       if(changedUnlockLockData) update.Islocked = formData.unlockLock
-      
-      // ...
+      if(changedOnOffData) update.IsZoneOn = formData.onOff
+      if(changedLowData) update.TemperatureLimitSPLow = formData.low
+      if(changedHighData) update.TemperatureLimitSPHigh = formData.high
+      if(changedUnsealSealData) update.IsSealed = formData.unsealSeal
+      if(changedManualData) update.ManualSp = formData.manual
+      if(changedTrimData) update.TrimSP = formData.trim
+      if(changedAutoStandbyData) update.StandbySp = formData.autoStandby
+      if(changedTCShortDetectTimeData) update.ShortDetectTime = formData.tcShortDetectTime
+      if(changedTuningOverrideData) update.TuningRangeOverride = formData.tuningOverride
+      if(changedPowerPriorityData) update.PowerPrioritySP = formData.powerPriority
+      // TODO: There is WattAlarmHigh and WattAlarmLow in the backend. Used high. Needs confirmation.
+      if(changedWattAlarmData) update.WattAlarmHigh = formData.wattAlarm
+      if(changedCriticalOverTemperatureData) update.CriticalOvertempSp = formData.criticalOverTemperature
+
       
       for(let z of _zones) {
-        zones.update({...z, ...update})
+        zones.update({ ...z, ...update })
       }
-      notify.success($_("Changes applied"));
-    };
+      notify.success($_("Changes applied"))
+    }
 
 
     const handleChangeAutoManual = (e) => {
-        const { checked } = e.detail;
-        formData.autoManual = checked;
-    };
+      const { checked } = e.detail
+      formData.autoManual = checked
+      changedAutoManualData = true
+    }
 
     const handleUnlockLock = (e) => {
-        const { checked } = e.detail;
-        formData.unlockLock = checked;
-    };
+      const { checked } = e.detail
+      formData.unlockLock = checked
+      changedUnlockLockData = true
+    }
 
     const handleOnOff = (e) => {
-        const { checked } = e.detail;
-        formData.onOff = checked;
-    };
+      const { checked } = e.detail
+      formData.onOff = checked
+      changedOnOffData = true
+    }
 
     const handleUnsealSeal = (e) => {
-        const { checked } = e.detail;
-        formData.unsealSeal = checked;
-    };
+      const { checked } = e.detail
+      formData.unsealSeal = checked
+    }
 
     const showHideAdvanced = (showAdv) => {
-        if (showAdv) {
-            showHideLabel = "Show Advanced Settings";
-            showAdvanced = false;
-        } else {
-            showHideLabel = "Hide Advanced Settings";
-            showAdvanced = true;
-        }
+      if (showAdv) {
+        showHideLabel = "Show Advanced Settings"
+        showAdvanced = false
+      } else {
+        showHideLabel = "Hide Advanced Settings"
+        showAdvanced = true
+      }
 
-        return showAdvanced;
-    };
+      return showAdvanced
+    }
 
-    const showDeltaControls = () => {};
+    const showDeltaControls = () => {}
 </script>
 
 {#if $activeSetpointEditor == "setpoint"}
@@ -207,7 +220,7 @@
                 <div
                     class="advanced-setting-text link"
                     on:click={() => {
-                        showAdvanced = showHideAdvanced(showAdvanced);
+                        showAdvanced = showHideAdvanced(showAdvanced)
                     }}
                 >
                     <div>{$_(showHideLabel)}</div>
