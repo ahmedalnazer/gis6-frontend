@@ -45,11 +45,29 @@
     };
 
     const getOrderCardData = async (isInit) => {
-        const data = await api.get(`system`);
+        const data = await api.get(`order/?limit=1&status=n`);
 
+        let newOrders = data.filter(x => x.status == "n")
+        if (newOrders.length) {
+            orderId = newOrders[0].id;
+        }
+
+        let completedOrders = data.filter(x => x.status == "c")
+        if (completedOrders.length) {
+            console.log("Completed");
+            goodpartfrom = completedOrders[0].goodParts;
+                goodparttotal = completedOrders[0].targetParts;
+                badpartcount = 0;
+        }
+    }
+
+    const getOrderCardData_ = async (isInit) => {
+        const data = await api.get(`system`);
+        
         if (isInit && orderId == 0) {
             // TODO: Done for testing
             orderId = data.order_id + 1;
+            orderId = 24
         }
 
         if (data.order_id == orderId) {
