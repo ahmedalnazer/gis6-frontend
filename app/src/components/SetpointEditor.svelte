@@ -68,21 +68,19 @@
       if(changedTemperatureSetpointData) update.ProcessSp = formData.temperatureSetpoint
       if(changedAutoManualData) update.IsManual = formData.autoManual
       if(changedUnlockLockData) update.Islocked = formData.unlockLock
-      
-      // ... MC Changes Begin
-
-    //   if(changedOnOffData) update.Islocked = formData.unlockLock
-    //   if(changedLowData) update.Islocked = formData.unlockLock
-    //   if(changedHighData) update.Islocked = formData.unlockLock
-    //   if(changedUnsealSealData) update.Islocked = formData.unlockLock
-    //   if(changedManualData) update.Islocked = formData.unlockLock
-    //   if(changedTrimData) update.Islocked = formData.unlockLock
-    //   if(changedAutoStandbyData) update.Islocked = formData.unlockLock
-    //   if(changedTCShortDetectTimeData) update.Islocked = formData.unlockLock
-    //   if(changedTuningOverrideData) update.Islocked = formData.unlockLock
-    //   if(changedPowerPriorityData) update.Islocked = formData.unlockLock
-    //   if(changedWattAlarmData) update.Islocked = formData.unlockLock
-    //   if(changedCriticalOverTemperatureData) update.Islocked = formData.unlockLock
+      if(changedOnOffData) update.IsZoneOn = formData.onOff
+      if(changedLowData) update.TemperatureLimitSPLow = formData.low
+      if(changedHighData) update.TemperatureLimitSPHigh = formData.high
+      if(changedUnsealSealData) update.IsSealed = formData.unsealSeal
+      if(changedManualData) update.ManualSp = formData.manual
+      if(changedTrimData) update.TrimSP = formData.trim
+      if(changedAutoStandbyData) update.StandbySp = formData.autoStandby
+      if(changedTCShortDetectTimeData) update.ShortDetectTime = formData.tcShortDetectTime
+      if(changedTuningOverrideData) update.TuningRangeOverride = formData.tuningOverride
+      if(changedPowerPriorityData) update.PowerPrioritySP = formData.powerPriority
+      // TODO: There is WattAlarmHigh and WattAlarmLow in the backend. Used high. Needs confirmation.
+      if(changedWattAlarmData) update.WattAlarmHigh = formData.wattAlarm
+      if(changedCriticalOverTemperatureData) update.CriticalOvertempSp = formData.criticalOverTemperature
 
     // ProcessSp = models.IntegerField('temp setpoint', blank=True, null=True)
     // ManualSp = models.IntegerField('manual setpoint (%)', blank=True, null=True)
@@ -117,10 +115,6 @@
     // TemperatureLimitSPLow = models.IntegerField(default=100, null=True)
     // ManualPercentLimitSP = models.IntegerField(default=0, null=True)
     // TrimSP = models.IntegerField(default=0, null=True)
-
-
-      // ... MC Changes End
-
       
       for(let z of _zones) {
         zones.update({...z, ...update})
