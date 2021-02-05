@@ -69,7 +69,58 @@
       if(changedAutoManualData) update.IsManual = formData.autoManual
       if(changedUnlockLockData) update.Islocked = formData.unlockLock
       
-      // ...
+      // ... MC Changes Begin
+
+    //   if(changedOnOffData) update.Islocked = formData.unlockLock
+    //   if(changedLowData) update.Islocked = formData.unlockLock
+    //   if(changedHighData) update.Islocked = formData.unlockLock
+    //   if(changedUnsealSealData) update.Islocked = formData.unlockLock
+    //   if(changedManualData) update.Islocked = formData.unlockLock
+    //   if(changedTrimData) update.Islocked = formData.unlockLock
+    //   if(changedAutoStandbyData) update.Islocked = formData.unlockLock
+    //   if(changedTCShortDetectTimeData) update.Islocked = formData.unlockLock
+    //   if(changedTuningOverrideData) update.Islocked = formData.unlockLock
+    //   if(changedPowerPriorityData) update.Islocked = formData.unlockLock
+    //   if(changedWattAlarmData) update.Islocked = formData.unlockLock
+    //   if(changedCriticalOverTemperatureData) update.Islocked = formData.unlockLock
+
+    // ProcessSp = models.IntegerField('temp setpoint', blank=True, null=True)
+    // ManualSp = models.IntegerField('manual setpoint (%)', blank=True, null=True)
+    // IsZoneOn = models.BooleanField('is it on?', default=True, null=True)
+    // IsManual = models.BooleanField('is it manual?', default=False, null=True)
+    // Islocked = models.BooleanField('is it locked?', default=False, null=True)
+    // IsSealed = models.BooleanField('is it sealed?', default=False, null=True)
+    // DeviationSp = models.IntegerField(default=0, null=True)
+    // DeviationLowAlarmSp = models.IntegerField(default=2000, null=True)
+    // StandbySp = models.IntegerField(default=0, null=True)
+    // ShortDetectTime = models.IntegerField(default=500, null=True)
+    // TuningRangeOverride = models.IntegerField(default=0, null=True)
+    // ResistanceBaseline = models.IntegerField(default=0, null=True)
+    // WattAlarmHigh = models.IntegerField(default=0, null=True)
+    // WattAlarmLow = models.IntegerField(default=0, null=True)
+    // PowerPrioritySP = models.IntegerField(default=0, null=True)
+    // SpcUpperSpecLimit = models.IntegerField(default=0, null=True)
+    // SpcLowerSpecLimit = models.IntegerField(default=0, null=True)
+    // AlarmMaskTemperature = models.IntegerField(default=0, null=True)
+    // AlarmMaskPower = models.IntegerField(default=0, null=True)
+    // AmpsMaximumSP = models.IntegerField(default=0, null=True)
+    // OutputAttenuationSP = models.IntegerField(default=0, null=True)
+    // TuningType = models.IntegerField(default=0, null=True)
+    // TimeProportional = models.BooleanField(default=False, null=True)
+    // MonitorEnable = models.BooleanField(default=False, null=True)
+    // MonitorTestHighAlarm = models.BooleanField(default=False, null=True)
+    // MonitorTestLowAlarm = models.BooleanField(default=False, null=True)
+    // MonitorHighAlarmSP = models.IntegerField(default=0, null=True)
+    // MonitorLowAlarmSP = models.IntegerField(default=100, null=True)
+    // CriticalOvertempSp = models.IntegerField(default=2000, null=True)
+    // TemperatureLimitSPHigh = models.IntegerField(default=2000, null=True)
+    // TemperatureLimitSPLow = models.IntegerField(default=100, null=True)
+    // ManualPercentLimitSP = models.IntegerField(default=0, null=True)
+    // TrimSP = models.IntegerField(default=0, null=True)
+
+
+      // ... MC Changes End
+
       
       for(let z of _zones) {
         zones.update({...z, ...update})
