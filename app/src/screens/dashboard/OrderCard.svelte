@@ -48,8 +48,10 @@
         const data = await api.get(`system`);
 
         if (isInit && orderId == 0) {
-            // TODO: Done for testing
-            orderId = data.order_id + 1;
+            let lastcompletedorder = await api.get(`/order/2000/lastcompleted/`);
+            if (lastcompletedorder) {
+                orderId = lastcompletedorder.id + 1
+            }
         }
 
         if (data.order_id == orderId) {
@@ -236,6 +238,9 @@
                     on:click={() => manageOrderClick()}> Manage Order </button>
             </div>
         </div>
+        <div class="section-footer">
+            Processing Order Id: {orderId} 
+        </div>
     </div>
 </Card>
 
@@ -347,5 +352,14 @@
     .zone-label-text {
         font-size: 2em;
         min-height: 60px;
+    }
+
+    .section-footer {
+        clear: both;
+        float: right;
+        padding: 12px 10px 0px 10px;
+        font-size: 14px;
+        color: #c2c2c2;
+        font-style: italic;
     }
 </style>
