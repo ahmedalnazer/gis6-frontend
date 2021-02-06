@@ -7,13 +7,40 @@
     import api from "data/api";
     let processValue;
 
-    const handleOrderFill = async () => {
-        const data = await api.get(`order/?limit=1&status=n`);
-        // http://cm:8000/api/order/?limit=1&status=n
-        console.log("=====>data<======");
-        console.log(data);
-    }
+    const getOrderObject = () => {
+        // return {
+        //     id: 0,
+        //     name: "",
+        //     cycles: 0,
+        //     targetParts: 0,
+        //     status: "n",
+        //     goodParts: 0,
+        //     badParts: 0,
+        //     goodCycles: 0,
+        //     badCycles: 0,
+        //     startTime: null,
+        //     endTime: null,
+        // };
 
+        return {
+            name: "parts",
+            targetParts: 10,
+            process_id: 1,
+        };
+    };
+
+    const handleOrderFill = async (order) => {
+        let orderdata = getOrderObject();
+        const data = await api.post(`order`, orderdata);
+
+        if (data) {
+            //TODO: Change this logic after new backend is developed
+            let lastcompletedorder = await api.get(`/order/2000/lastcompleted/`);
+            if (lastcompletedorder) {
+                localStorage.setItem("lastcompletedorder",  lastcompletedorder.id)
+            }
+        }
+    };
 </script>
 
 <Card>

@@ -45,29 +45,13 @@
     };
 
     const getOrderCardData = async (isInit) => {
-        const data = await api.get(`order/?limit=1&status=n`);
-
-        let newOrders = data.filter(x => x.status == "n")
-        if (newOrders.length) {
-            orderId = newOrders[0].id;
-        }
-
-        let completedOrders = data.filter(x => x.status == "c")
-        if (completedOrders.length) {
-            console.log("Completed");
-            goodpartfrom = completedOrders[0].goodParts;
-                goodparttotal = completedOrders[0].targetParts;
-                badpartcount = 0;
-        }
-    }
-
-    const getOrderCardData_ = async (isInit) => {
         const data = await api.get(`system`);
-        
+
         if (isInit && orderId == 0) {
-            // TODO: Done for testing
-            orderId = data.order_id + 1;
-            orderId = 24
+            let lastcompletedorder = await api.get(`/order/2000/lastcompleted/`);
+            if (lastcompletedorder) {
+                orderId = lastcompletedorder.id + 1
+            }
         }
 
         if (data.order_id == orderId) {
@@ -254,6 +238,9 @@
                     on:click={() => manageOrderClick()}> Manage Order </button>
             </div>
         </div>
+        <div class="section-footer">
+            Processing Order Id: {orderId} 
+        </div>
     </div>
 </Card>
 
@@ -365,5 +352,14 @@
     .zone-label-text {
         font-size: 2em;
         min-height: 60px;
+    }
+
+    .section-footer {
+        clear: both;
+        float: right;
+        padding: 12px 10px 0px 10px;
+        font-size: 14px;
+        color: #c2c2c2;
+        font-style: italic;
     }
 </style>
