@@ -4,12 +4,14 @@ import { tcdata, minmax, unknown_msg, tczone } from './decode.proto'
 
 let connected
 
+const socketTarget = import.meta.env.SNOWPACK_PUBLIC_WS_URL || `ws://localhost:8080`
+
 // let socket = new WebSocket(`${window.location.origin}/ws`.replace(/http.*:\/\//g, 'ws://'))
 let socket
 
 
 const createSocket = () => {
-  socket = new WebSocket(`ws://localhost:8080`)
+  socket = new WebSocket(socketTarget)
 
   socket.addEventListener('open', e => {
     console.log('connecting', e)
@@ -33,7 +35,6 @@ const createSocket = () => {
 
     const data = decoders[mt].read(new Pbf(buffer))
     if(mt == 6) {
-      console.log('tczone update', data.records)
       realtime.set(data.records)
     } else {
       console.log(mt, JSON.stringify(data, null, 2))

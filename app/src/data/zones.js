@@ -2,6 +2,17 @@ import { writable, derived } from 'svelte/store'
 import api from 'data/api'
 import { id } from './tools'
 
+const toBinary = function (n) {
+  // return new Uint32Array(n).join('')
+  // return n >>> 0
+  var sign = n < 0 ? "-" : ""
+  var result = Math.abs(n).toString(2)
+  while (result.length < 32) {
+    result = "0" + result
+  }
+  return sign + result
+}
+
 const rawZones = writable([])
 export const realtime = writable([])
 
@@ -26,7 +37,14 @@ export const toggleZones = (zones) => {
 
 const zones = derived([ rawZones, realtime ], ([ $raw, $realtime ]) => {
   let sorted = [ ...$raw ].map((x, i) => {
-    return { ...x, ...$realtime[x.number - 1] || {}}
+    let merged = { ...x, ...$realtime[x.number - 1] || {}}
+    if(merged.power_alarm !== undefined) {
+      merged.power_alarm = toBinary(merged.power_alarm)
+    }
+    if (merged.temp_alarm !== undefined) {
+      merged.temp_alarm = toBinary(merged.temp_alarm)
+    }
+    return merged
   })
   var collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' })
   sorted.sort((a, b) => collator.compare(a.name, b.name))
@@ -82,12 +100,25 @@ zones.reload = async () => {
 
   // TODO: remove dummy zones
   if (z.length == 0) {
-    const proc = await api.post('process', { name: 'Dummy Process' })
+    try {
+      const processes = await api.get('process')
+      if (!processes.length) {
+        const proc = await api.post('process', { name: 'Dummy Process' })
+        const order = await api.post('order', {
+          name: "Dummy Order",
+          process_id: 1,
+          targetParts: 1
+        })
+        await api.put(`order/1/start`, {})
+      }
+    } catch(e) {
+      // do nothing, hopefully removing dummy process anyway
+    }
     for (let i = 1; i <= 50; i++) {
       await api.post('zone', encodeZone({
         name: `Zone ${i}`,
         number: i,
-        ref_process: proc.id
+        ref_process: 1
       }))
     }
     z = await getZones()
@@ -106,7 +137,6 @@ zones._update = rawZones.update
 zones.set = rawZones.set
 
 zones.update = async (zone, options = {}) => {
-  console.log(zone)
   await api.put(`zone/${zone.id}`, encodeZone(zone))
   if (!options.skipReload) await zones.reload()
 }

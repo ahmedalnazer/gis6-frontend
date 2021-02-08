@@ -9,7 +9,7 @@ import zones from 'data/zones';
   const off = async _zones => {
     console.log(zones)
     await Promise.all(_zones.map(z => {
-      return zones.update({...z, IsZoneOn: false}, {skipRefresh: true})
+      return zones.update({...z, IsZoneOn: false}, {skipReload: true})
     }))
     await zones.reload()
     notify.success(`${$_('Zones turned off')}`)

@@ -5,7 +5,6 @@
 
 {#if icon == 'lock'}
   <svg viewBox="0 0 21 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <title>4ED57D41-EB48-4578-8022-A7F5738A74F6</title>
     <g id="Standards" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
         <g id="Style-Guide" transform="translate(-1163.000000, -351.000000)" style='fill:{color}' fill-rule="nonzero">
             <g id="icon-locked" transform="translate(1163.000000, 351.000000)">
@@ -18,7 +17,6 @@
 
 {#if icon == 'close'}
   <svg on:click class='icon' viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-      <title>D725E3D3-EF85-404C-9E3D-0DE8D4AB290A</title>
       <g id="Components" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
           <g id="Style-Guide" transform="translate(-1218.000000, -473.000000)" style='fill:{color}'>
               <polygon id="icon-close-x" points="1242 475.417143 1239.58286 473 1230 482.582857 1220.41714 473 1218 475.417143 1227.58286 485 1218 494.582857 1220.41714 497 1230 487.417143 1239.58286 497 1242 494.582857 1232.41714 485"></polygon>
@@ -29,7 +27,6 @@
 
 {#if icon == 'grabby'}
   <svg on:click class='icon' viewBox="0 0 16 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <title>7EECDAA0-F59B-4423-96E3-7311323C3D97</title>
     <g id="Components" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
         <g id="Style-Guide" transform="translate(-1222.000000, -347.000000)" style='fill:{color}' fill-rule="nonzero">
             <path d="M1226.28735,347 L1223.42912,347 C1222.63998,347 1222,347.639976 1222,348.429116 L1222,351.287348 C1222,352.076488 1222.63998,352.716463 1223.42912,352.716463 L1226.28735,352.716463 C1227.07649,352.716463 1227.71646,352.076488 1227.71646,351.287348 L1227.71646,348.429116 C1227.71646,347.639976 1227.07649,347 1226.28735,347 Z M1226.28735,356.141768 L1223.42912,356.141768 C1222.63998,356.141768 1222,356.781744 1222,357.570884 L1222,360.429116 C1222,361.218256 1222.63998,361.858232 1223.42912,361.858232 L1226.28735,361.858232 C1227.07649,361.858232 1227.71646,361.218256 1227.71646,360.429116 L1227.71646,357.570884 C1227.71646,356.781744 1227.07649,356.141768 1226.28735,356.141768 Z M1226.28735,365.283537 L1223.42912,365.283537 C1222.63998,365.283537 1222,365.923512 1222,366.712652 L1222,369.570884 C1222,370.360024 1222.63998,371 1223.42912,371 L1226.28735,371 C1227.07649,371 1227.71646,370.360024 1227.71646,369.570884 L1227.71646,366.712652 C1227.71646,365.923512 1227.07649,365.283537 1226.28735,365.283537 Z M1235.66921,347 L1232.81098,347 C1232.02184,347 1231.38186,347.639976 1231.38186,348.429116 L1231.38186,351.287348 C1231.38186,352.076488 1232.02184,352.716463 1232.81098,352.716463 L1235.66921,352.716463 C1236.45835,352.716463 1237.09832,352.076488 1237.09832,351.287348 L1237.09832,348.429116 C1237.09832,347.639976 1236.45835,347 1235.66921,347 Z M1235.66921,356.141768 L1232.81098,356.141768 C1232.02184,356.141768 1231.38186,356.781744 1231.38186,357.570884 L1231.38186,360.429116 C1231.38186,361.218256 1232.02184,361.858232 1232.81098,361.858232 L1235.66921,361.858232 C1236.45835,361.858232 1237.09832,361.218256 1237.09832,360.429116 L1237.09832,357.570884 C1237.09832,356.781744 1236.45835,356.141768 1235.66921,356.141768 Z M1235.66921,365.283537 L1232.81098,365.283537 C1232.02184,365.283537 1231.38186,365.923512 1231.38186,366.712652 L1231.38186,369.570884 C1231.38186,370.360024 1232.02184,371 1232.81098,371 L1235.66921,371 C1236.45835,371 1237.09832,370.360024 1237.09832,369.570884 L1237.09832,366.712652 C1237.09832,365.923512 1236.45835,365.283537 1235.66921,365.283537 Z" id="icon-grabby"></path>
@@ -40,7 +37,6 @@
 
 {#if icon == 'undo'}
   <svg on:click viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <title>382468A9-4D6A-43A1-BD46-A7B4EB625DB8</title>
     <g id="Standards" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
         <g id="Style-Guide" class='icon-fill' transform="translate(-1352.000000, -599.000000)" style='fill:{color}'>
             <path d="M1375.99998,610.97733 C1376.01221,617.588956 1370.62029,622.995353 1364.00869,623 C1361.15313,623.002031 1358.53017,622.006609 1356.46893,620.343009 C1355.93295,619.910428 1355.89288,619.107152 1356.37994,618.620087 L1356.92512,618.074908 C1357.34169,617.658343 1358.00672,617.612762 1358.46823,617.978908 C1359.98686,619.183991 1361.90874,619.903267 1363.99998,619.903267 C1368.92118,619.903267 1372.90319,615.920469 1372.90319,611.000023 C1372.90319,606.078804 1368.92041,602.09678 1363.99998,602.09678 C1361.63802,602.09678 1359.49278,603.014637 1357.89993,604.512849 L1360.35576,606.968693 C1360.8435,607.456436 1360.49807,608.290341 1359.80836,608.290341 L1352.77419,608.290341 C1352.3466,608.290341 1352,607.943743 1352,607.516146 L1352,600.481955 C1352,599.792243 1352.8339,599.446807 1353.32164,599.934502 L1355.71061,602.323474 C1357.86494,600.264648 1360.78476,599 1363.99998,599 C1370.61981,599 1375.98772,604.360333 1375.99998,610.97733 Z" id="icon-undo"></path>
@@ -51,7 +47,6 @@
 
 {#if icon =='chevron'}
   <svg on:click viewBox="0 0 16 26" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <title>538E2E21-54D2-4486-8764-31EBA22064FF</title>
     <g id="Standards" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
         <g id="Style-Guide" class='icon-fill icon-stroke' transform="translate(-1357.000000, -408.000000)" style='fill:{color};stroke:{color}'>
             <polygon id="icon-chevron" transform="translate(1365.000000, 420.580645) scale(1, -1) rotate(-90.000000) translate(-1365.000000, -420.580645) " points="1375.84134 414 1365.08235 424.87237 1354.15783 414.245241 1353 415.471449 1365.16594 427.16129 1377 415.14446"></polygon>
@@ -62,7 +57,6 @@
 
 {#if icon == 'expand'}
   <svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-      <title>6ECCC41B-7B41-44FF-A73B-48F0A94DF25E</title>
       <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
           <g id="03-Dashboard---Good---Operator" transform="translate(-253.000000, -1696.000000)" style='fill:{color}' fill-rule="nonzero">
               <g id="Card-XSmall" transform="translate(40.000000, 1561.000000)">
@@ -75,7 +69,6 @@
 
 {#if icon == 'trash'}
   <svg width="21px" height="24px" viewBox="0 0 21 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <title>89E804EB-C607-4194-B699-43346BFCE182</title>
     <g id="Standards" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
         <g id="Style-Guide" transform="translate(-1353.000000, -662.000000)" style='fill:{color}' fill-rule="nonzero">
             <g id="icon-trash" transform="translate(1353.000000, 662.000000)">
@@ -88,7 +81,6 @@
 
 {#if icon == 'check'}
   <svg width="24px" height="19px" viewBox="0 0 24 19" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <title>B6C90154-104D-4FC4-8901-43B83E4DAD37</title>
     <g id="Components" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
         <g id="Style-Guide" transform="translate(-1028.000000, -414.000000)" style='fill:{color}'>
             <path d="M1052,417.840968 L1040.78234,429.36 L1037.75957,432.464244 C1037.37427,432.859927 1036.74116,432.868345 1036.34548,432.483047 C1036.33913,432.476863 1036.33286,432.470595 1036.32667,432.464244 L1033.3039,429.36 L1033.3039,429.36 L1028,423.811505 L1031.74021,419.971505 L1037.06388,425.499672 L1048.26078,414 L1052,417.840968 Z" id="icon-checkmark"></path>
@@ -99,7 +91,6 @@
 
 {#if icon == 'boost'}
   <svg width="26px" height="24px" viewBox="0 0 26 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <title>482AC650-3D0E-441A-8F29-026196BB94CE</title>
     <g id="Standards" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
         <g id="Style-Guide" transform="translate(-1161.000000, -662.000000)" style='fill:{color}'>
             <polygon id="icon-boost" points="1173.57143 662 1186.14286 686 1161 686"></polygon>
@@ -110,7 +101,6 @@
 
 {#if icon == 'standby'}
   <svg width="26px" height="24px" viewBox="0 0 26 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <title>2FB12FFE-EA19-4D5F-9985-90491D1EC971</title>
     <g id="Standards" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
         <g id="Style-Guide" transform="translate(-1161.000000, -599.000000)" style='fill:{color}'>
             <polygon id="icon-standby" transform="translate(1173.571429, 611.000000) scale(1, -1) translate(-1173.571429, -611.000000) " points="1173.57143 599 1186.14286 623 1161 623"></polygon>
@@ -121,7 +111,6 @@
 
 {#if icon == 'edit'}
   <svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <title>DBF91685-77AD-4B41-BD3B-3CCF94E44DD9</title>
     <g id="Standards" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
         <g id="Style-Guide" transform="translate(-1162.000000, -725.000000)" style='fill:{color}'>
             <path d="M1169.13435,748.198691 C1168.52719,748.713818 1167.75506,749 1166.95375,749 L1162.56114,749 C1162.25139,749 1162,748.748609 1162,748.438859 L1162,744.046247 C1162,743.243816 1162.28618,742.471686 1162.80131,741.865653 L1169.13435,748.198691 Z M1170.03217,747.316577 L1170.72911,746.61964 L1164.38036,740.270891 L1178.66589,725.986486 C1179.98008,724.671171 1182.11129,724.671171 1183.42661,725.986486 L1185.01351,727.573393 C1186.32883,728.887585 1186.32883,731.019921 1185.01351,732.335235 L1170.03217,747.316577 Z" id="icon-edit"></path>
@@ -132,10 +121,29 @@
 
 {#if icon == 'home'}
   <svg width="28px" height="24px" viewBox="0 0 28 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <title>E78D9A9D-D203-4885-B36B-4515DC44B5A8</title>
     <g id="Standards" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
         <g id="Style-Guide" transform="translate(-1160.000000, -791.000000)" style='fill:{color}' fill-rule="nonzero">
             <path d="M1173.89474,791 C1173.55732,791 1173.23395,791.135077 1172.99671,791.375 L1160.25658,802.491776 C1160.09522,802.610844 1160,802.799465 1160,803 C1160,803.348811 1160.28277,803.631579 1160.63158,803.631579 L1163.78947,803.631579 L1163.78947,813.736842 C1163.78947,814.434105 1164.35537,815 1165.05263,815 L1170.10526,815 C1170.80253,815 1171.36842,814.434105 1171.36842,813.736842 L1171.36842,806.157895 L1176.42105,806.157895 L1176.42105,813.736842 C1176.42105,814.434105 1176.98695,815 1177.68421,815 L1182.73684,815 C1183.43411,815 1184,814.434105 1184,813.736842 L1184,803.631579 L1187.15789,803.631579 C1187.50671,803.631579 1187.78947,803.348811 1187.78947,803 C1187.78947,802.799465 1187.69425,802.610844 1187.53289,802.491776 L1174.80016,791.382401 C1174.79771,791.379924 1174.79524,791.377457 1174.79276,791.375 C1174.55552,791.135077 1174.23215,791 1173.89474,791 Z" id="icon-home"></path>
+        </g>
+    </g>
+</svg>
+{/if}
+
+{#if icon == 'up'}
+<svg viewBox="0 0 26 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <g id="Standards" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Style-Guide" transform="translate(-1161.000000, -662.000000)" style='fill:{color}'>
+            <polygon id="icon-boost" points="1173.57143 662 1186.14286 686 1161 686"></polygon>
+        </g>
+    </g>
+</svg>
+{/if}
+
+{#if icon == 'down'}
+<svg viewBox="0 0 26 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <g id="Standards" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Style-Guide" transform="translate(-1161.000000, -599.000000)" style='fill:{color}'>
+            <polygon id="icon-standby" transform="translate(1173.571429, 611.000000) scale(1, -1) translate(-1173.571429, -611.000000) " points="1173.57143 599 1186.14286 623 1161 623"></polygon>
         </g>
     </g>
 </svg>

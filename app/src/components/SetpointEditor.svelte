@@ -43,8 +43,7 @@
     let changedOnOffData = false
     $: changedLowData = initialFormData.low !== formData.low
     $: changedHighData = initialFormData.high !== formData.high
-    $: changedUnsealSealData =
-        initialFormData.unsealSeal !== formData.unsealSeal
+    let changedUnsealSealData = false
     $: changedManualData = initialFormData.manual !== formData.manual
     $: changedTrimData = initialFormData.trim !== formData.trim
     $: changedAutoStandbyData =
@@ -63,7 +62,7 @@
 
     const commitChanges = (_zones) => {
       let update = {}
-      if(changedTemperatureSetpointData) update.ProcessSp = formData.temperatureSetpoint
+      if(changedTemperatureSetpointData) update.ProcessSp = formData.temperatureSetpoint * 10
       if(changedAutoManualData) update.IsManual = formData.autoManual
       if(changedUnlockLockData) update.Islocked = formData.unlockLock
       if(changedOnOffData) update.IsZoneOn = formData.onOff
@@ -82,8 +81,9 @@
 
       
       for(let z of _zones) {
-        zones.update({ ...z, ...update })
+        zones.update({ ...z, ...update }, { skipReload: true })
       }
+      zones.reload()
       notify.success($_("Changes applied"))
     }
 
@@ -109,6 +109,7 @@
     const handleUnsealSeal = (e) => {
       const { checked } = e.detail
       formData.unsealSeal = checked
+      changedUnsealSealData = true
     }
 
     const showHideAdvanced = (showAdv) => {
