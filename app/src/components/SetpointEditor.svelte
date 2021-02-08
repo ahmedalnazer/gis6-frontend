@@ -282,124 +282,54 @@
                                 <div class="child-label-comp">&nbsp;</div>
                             </div>
                         </div>
-                        <div class="child">
-                            <div class="child-item">
-                                <div class="child-label-item">
-                                    {$_("Manual %")}
-                                </div>
-                                <div class="child-label-comp">
-                                    <Input
-                                        type="number"
-                                        changed={changedManualData}
-                                        bind:value={formData.manual}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                        <div class="child">
-                            <div class="child-item">
-                                <div class="child-label-item">
-                                    {$_("Trim")} (&#176;C)
-                                </div>
-                                <div class="child-label-comp">
-                                    <Input
-                                        type="number"
-                                        changed={changedTrimData}
-                                        bind:value={formData.trim}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                        <div class="child">
-                            <div class="child-item">
-                                <div class="child-label-item">
-                                    {$_("Auto Standby")} (&#176;C)
-                                </div>
-                                <div class="child-label-comp">
-                                    <Input
-                                        type="number"
-                                        changed={changedAutoStandbyData}
-                                        bind:value={formData.autoStandby}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                        <div class="child">
-                            <div class="child-item">
-                                <div class="child-label-item">
-                                    {$_("T/C Short Detect Time (min)")}
-                                </div>
-                                <div class="child-label-comp">
-                                    <Input
-                                        type="number"
-                                        changed={changedTCShortDetectTimeData}
-                                        bind:value={formData.tcShortDetectTime}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                        <div class="child">
-                            <div class="child-item">
-                                <div class="child-label-item">
-                                    {$_("Tuning Override")}
-                                </div>
-                                <div class="child-label-comp">
-                                    <Input
-                                        type="number"
-                                        changed={changedTuningOverrideData}
-                                        bind:value={formData.tuningOverride}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                        <div class="child">
-                            <div class="child-item">
-                                <div class="child-label-item">
-                                    {$_("Power Priority")}
-                                </div>
-                                <div class="child-label-comp">
-                                    <Input
-                                        type="number"
-                                        changed={changedPowerPriorityData}
-                                        bind:value={formData.powerPriority}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                        <div class="child">
-                            <div class="child-item">
-                                <div class="child-label-item">
-                                    {$_("Watt Alarm (W)")}
-                                </div>
-                                <div class="child-label-comp">
-                                    <Input
-                                        type="number"
-                                        changed={changedWattAlarmData}
-                                        bind:value={formData.wattAlarm}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                        <div class="child">
-                            <div class="child-item">
-                                <div class="child-label-item">
-                                    {$_("Critical Over Temperature")} (&#176;C)
-                                </div>
-                                <div class="child-label-comp">
-                                    <Input
-                                        type="number"
-                                        changed={changedCriticalOverTemperatureData}
-                                        bind:value={formData.criticalOverTemperature}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                        <div class="child">
-                            <div class="child-item">
-                                <div class="child-label-item">&nbsp;</div>
-                                <div class="child-label-comp">&nbsp;</div>
-                            </div>
-                        </div>
+                        <Input
+                          label={$_("Manual %")}
+                          type="number"
+                          changed={changedManualData}
+                          bind:value={formData.manual}
+                        />
+                        <Input
+                          label='{$_("Trim")} (&#176;C)'
+                          type="number"
+                          changed={changedTrimData}
+                          bind:value={formData.trim}
+                        />
+                        <Input
+                          label='{$_("Auto Standby")} (&#176;C)'
+                          type="number"
+                          changed={changedAutoStandbyData}
+                          bind:value={formData.autoStandby}
+                        />
+                        <Input
+                          label={$_("T/C Short Detect Time (min)")}
+                          type="number"
+                          changed={changedTCShortDetectTimeData}
+                          bind:value={formData.tcShortDetectTime}
+                        />
+                        <Input
+                          label={$_("Tuning Override")}
+                          type="number"
+                          changed={changedTuningOverrideData}
+                          bind:value={formData.tuningOverride}
+                        />
+                        <Input
+                          label={$_("Power Priority")}
+                          type="number"
+                          changed={changedPowerPriorityData}
+                          bind:value={formData.powerPriority}
+                        />
+                        <Input
+                          label={$_("Watt Alarm (W)")}
+                          type="number"
+                          changed={changedWattAlarmData}
+                          bind:value={formData.wattAlarm}
+                        />
+                        <Input
+                          label='{$_("Critical Over Temperature")}(&#176;C)'
+                          type="number"
+                          changed={changedCriticalOverTemperatureData}
+                          bind:value={formData.criticalOverTemperature}
+                        />
                     </div>
                 </Collapsible>
             </div>
