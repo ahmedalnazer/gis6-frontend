@@ -15,12 +15,12 @@
   const isTempBit = i => zone.temp_alarm && zone.temp_alarm[i] == '1'
   const isPowerBit = i => zone.power_alarm && zone.power_alarm[i] == '1'
 
-  $: deviation = Math.max(20, zone.DeviationSp)
+  $: deviation = Math.max(20, zone.DeviationSp || 0)
 
   // $: deviationHigh = isTempBit(3)
   // $: deviationLow = isTempBit(4)
 
-  $: live = zone.IsZoneOn && zone.actual_temp !== undefined
+  $: live = zone.IsZoneOn && zone.actual_temp !== undefined && zone.ProcessSp
 
   $: deviationHigh = live && zone.actual_temp > zone.ProcessSp + deviation
   $: deviationLow = live && zone.actual_temp < zone.ProcessSp - deviation
@@ -35,7 +35,7 @@
   $: on = zone.IsZoneOn
   let locked = true
 
-  // $: console.log(zone.actual_temp, zone.processSp, zone.deviationSp, zone.processSp - zone.deviationSp, deviationHigh, deviationLow)
+  // $: console.log(zone.actual_temp, zone.ProcessSp, live, deviationHigh, zone.DeviationSp)
 
 </script>
 
