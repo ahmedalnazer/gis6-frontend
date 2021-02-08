@@ -1,4 +1,5 @@
 <script>
+  import { Icon } from 'components'
   import groups from 'data/groups'
   export let zone
   export let active
@@ -16,8 +17,10 @@
   let powerWarning = false
   let powerError = false
 
-  let on = true
+  $: on = zone.IsZoneOn
   let locked = true
+
+  // $: console.log(zone.actual_temp)
 
 </script>
 
@@ -33,24 +36,35 @@
       <div class='overlay' />
     {/if}
     <div class='name'>
-      {zone.name}
+      {zone.name} ({zone.number})
     </div>
     <div class='temp' class:tempWarning class:tempError>
       <div class='actual'>
-        {100}&deg;<span class='temp-type'>F</span>
+        {zone.actual_temp || 0 / 100}&deg;<span class='temp-type'>F</span>
       </div>
-      {#if on}
+      {#if on && zone.IsSealed}
+          S
+          <div class='icon-container sealed'>
+            <div class='sealed-circle'>
+              <div class='sealed-line' />
+            </div>
+          </div>
+      {:else if on}
         <div class='setpoint'>
-          {400}&deg;<span class='temp-type'>F</span>
+          {zone.ProcessSp && zone.ProcessSp / 100 || '-'}&deg;<span class='temp-type'>F</span>
         </div>
       {/if}
     </div>
     <div class='power' class:powerWarning class:powerError>
-      {#if on}
-        <div class='percent'>{(37.0).toFixed(1)}%</div>
-        <div class='amps'>{(.4).toFixed(2).padStart(5, '0')} A</div>
+      {#if on && zone.Islocked}
+        <div class='icon-container'>
+          <Icon icon='lock' color='white' />
+        </div>
+      {:else if on}
+        <div class='percent'>{37.0.toFixed(1)}%</div>
+        <div class='amps'>{.4.toFixed(2).padStart(5, '0')} A</div>
       {:else}
-        <div class='off-circle'>
+        <div class='icon-container off-circle'>
           <div class='circle' />
         </div>
       {/if}
@@ -135,19 +149,39 @@
     align-items: center;
   }
 
-  .off-circle {
+  .icon-container {
     flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    .circle {
-      background: white;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      position: relative;
-      bottom: 8px;
+    :global(svg) {
+      width: 14px;
     }
+  }
+
+  .circle {
+    background: white;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    position: relative;
+    bottom: 8px;
+  }
+
+  .sealed-circle {
+    border: 4px solid white;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+  }
+
+  .sealed-line {
+    height: 23px;
+    width: 4px;
+    background: white;
   }
 
 </style>

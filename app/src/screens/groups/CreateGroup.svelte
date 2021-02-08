@@ -39,7 +39,7 @@
         .reduce((max, cur) => (cur > max ? cur : max), 0)
     : 0;
 
-    onMount(() => {
+  onMount(() => {
     defaultUnselectedGroupList = defaultNames.filter((x) => {
       let grpContains = groupList.filter((g) => g.name == x);
       return !grpContains.length;

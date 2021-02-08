@@ -7,7 +7,7 @@ WebSocket messages are received by the front end in Protocol Buffer (protobuf) f
 
 ```bash
 npm install -g pbf
-pbf [backend repo root]/ws2ldc/ldcmessage.proto > 
+pbf [backend repo root]/ws2ldc/ldcmsg.proto > 
 \ [front end root]/app/src/data/realtime/decode.proto.js
 ```
 

@@ -1,6 +1,7 @@
 import { writable, derived } from 'svelte/store'
 import api from 'data/api'
 import { id } from 'data/tools'
+import zones from './zones'
 
 const _groups = writable([])
 const _groupOrder = writable(JSON.parse(localStorage.getItem('group_order') || '[]'))
@@ -52,7 +53,8 @@ const decodeGroup = g => {
   const d = {
     ...g,
     name: g.GroupName,
-    color: groupColors[g.GroupColor]
+    color: groupColors[g.GroupColor],
+    ref_zones: g.ref_zones || []
   }
   delete d.GroupName
   delete d.GroupColor
@@ -62,7 +64,8 @@ const decodeGroup = g => {
 const encodeGroup = g => {
   return {
     GroupName: g.name,
-    GroupColor: groupColorIndex[g.color]
+    GroupColor: groupColorIndex[g.color],
+    ref_zones: g.ref_zones || []
   }
 }
 
@@ -72,21 +75,43 @@ groups.reload = async () => {
 }
 
 groups.create = async group => {
-  await api.post('zonegroup', encodeGroup(group))
+  const g = await api.post('zonegroup', encodeGroup(group))
   await groups.reload()
+  return g
 }
 
 groups.update = async group => {
+  console.log(group)
   const { id } = group
   delete group.id
   await api.put(`zonegroup/${id}`, encodeGroup(group))
   await groups.reload()
+  await zones.reload()
 }
 
 groups.delete = async group => {
   await api.delete(`zonegroup/${group.id}`)
   await groups.reload()
+  await zones.reload()
 }
+
+groups.addZones = async (group, _zones) => {
+  const { id } = group
+  if(!group.GroupName) group = encodeGroup(group)
+  const ref_zones = [ ...new Set(group.ref_zones.concat(_zones.map(z => z.id || z))) ]
+  await api.put(`zonegroup/${id}`, { ...group, ref_zones })
+  await Promise.all([ zones.reload(), groups.reload() ])
+}
+
+groups.removeZones = async (group, _zones) => {
+  const { id } = group
+  const ids = _zones.map(z => z.id || z)
+  const ref_zones = [ ...new Set(group.ref_zones.filter(x => !ids.includes(x))) ]
+  await api.put(`zonegroup/${group.id}`, { ...encodeGroup(group), ref_zones })
+  await Promise.all([ zones.reload(), groups.reload() ])
+}
+
+
 
 groups.reload()
 
