@@ -1,4 +1,5 @@
 <script>
+    import { onMount } from 'svelte'
     import { Modal } from "components"
     import Selector from "components/taskbars/Selector.svelte"
     import _ from "data/language"
@@ -125,6 +126,13 @@
     }
 
     const showDeltaControls = () => {}
+
+    onMount(() => {
+      setTimeout(() => {
+        initialFormData.temperatureSetpoint = (($activeZones[0] || $zones[0]).ProcessSp || 0) / 10
+        formData = { ...initialFormData }
+      }, 100)
+    })
 </script>
 
 {#if $activeSetpointEditor == "setpoint"}
@@ -437,7 +445,7 @@
 
     .child-label-item {
         font-size: 16px;
-        font-weight: 700;
+        font-weight: 600;
     }
 
     .child-label-comp {

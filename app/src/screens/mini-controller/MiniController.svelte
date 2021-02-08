@@ -1,4 +1,5 @@
 <script>
+  import { Icon } from 'components'
   import { tick } from "svelte"
   import Screen from "layout/Screen"
   import groups, { activeGroup, group_order, setGroupOrder } from "data/groups"
@@ -71,6 +72,8 @@
       resetSortable()
     }
   }
+
+  let showLegend = false
 </script>
 
 <Screen title={$_("Minicontroller")} id="minicontroller">
@@ -86,6 +89,8 @@
       {#if !selectedGroup}
         <CheckBox label={$_("Show Groups")} bind:checked={sortGroups} />
       {/if}
+
+      <a on:click={() => showLegend = !showLegend}>{$_('Icon Legend')}</a>
     </div>
 
     <div class="zone-container">
@@ -131,6 +136,25 @@
   </div>
 </Screen>
 
+{#if showLegend}
+  <Modal onClose={() => showLegend = false}>
+    <div class='icon-legend'>
+      <div><div class='circle' /> {$_('Off')}</div>
+      <div><div class='stacked'><Icon icon='up' /><Icon icon='up' /></div> {$_('Boost')}</div>
+      <div><Icon icon='down' /> {$_('Temperature below setpoint')}</div>
+      <div><Icon icon='lock' /> {$_('Locked')}</div>
+      <div>
+        <div class='sealed-circle'>
+          <div class='sealed-line' />
+        </div>
+        {$_('Sealed')}
+      </div>
+      <div><div class='stacked'><Icon icon='down' /><Icon icon='down' /></div> {$_('Standby')}</div>
+      <div><Icon icon='down' /> {$_('Temperature above setpoint')}</div>
+    </div>
+  </Modal>
+{/if}
+
 
 <style lang="scss">
   :global(#minicontroller) .screen-body {
@@ -139,6 +163,8 @@
   }
   .tools {
     margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
     > :global(*) {
       margin-right: 16px;
     }
@@ -167,6 +193,56 @@
     margin-bottom: -40px;
     margin-left: -40px;
     margin-right: -40px;
+  }
+
+  .icon-legend {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1.3fr .7fr;
+    > div {
+      display: flex;
+      align-items: center;
+      padding: 20px 0;
+      padding-left: 12px;
+      font-size: 16px;
+      > :first-child {
+        margin-right: 12px;
+        margin-left: 12px;
+      }
+    }
+    :global(svg) {
+      width: 20px;
+      margin-right: 12px;
+    }
+  }
+
+  .circle {
+    width: 20px;
+    height: 20px;
+    background: var(--blue);
+    border-radius: 50%;
+  }
+
+  .sealed-circle {
+    border: 3.2px solid var(--blue);
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    // margin-left: auto;
+    position: relative;
+  }
+
+  .sealed-line {
+    height: 18px;
+    width: 3.2px;
+    background: var(--blue);
+  }
+
+  .stacked {
+    display: flex;
+    flex-direction: column;
   }
 
   // .divHeaderSortableList{ }

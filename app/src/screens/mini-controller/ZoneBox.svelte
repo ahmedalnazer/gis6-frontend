@@ -17,13 +17,17 @@
 
   $: deviation = Math.max(20, zone.DeviationSp || 0)
 
+  $: setpoint = zone.temp_sp ? Math.round(zone.temp_sp / 10) * 10 : zone.ProcessSp
+
+  // $: console.log(zone)
+
   // $: deviationHigh = isTempBit(3)
   // $: deviationLow = isTempBit(4)
 
   $: live = zone.IsZoneOn && zone.actual_temp !== undefined && zone.ProcessSp
 
-  $: deviationHigh = live && zone.actual_temp > zone.ProcessSp + deviation
-  $: deviationLow = live && zone.actual_temp < zone.ProcessSp - deviation
+  $: deviationHigh = live && zone.actual_temp > setpoint + deviation
+  $: deviationLow = live && zone.actual_temp < setpoint - deviation
 
   $: tempWarning = deviationHigh || deviationLow
   $: tempError = [ 0, 1, 2, 3, 4, 5, 6, 7, 12, 14, 15 ].reduce((err, bit) => isTempBit(bit) || err, false)
@@ -73,7 +77,7 @@
           </div>
       {:else if on}
         <div class='setpoint'>
-          {zone.ProcessSp && zone.ProcessSp / 10 || '-'}&deg;<span class='temp-type'>F</span>
+          {setpoint / 10 || '-'}&deg;<span class='temp-type'>F</span>
         </div>
       {/if}
     </div>
@@ -119,14 +123,14 @@
     background: var(--blue);
     box-shadow: var(--shadow);
     border-radius: 0px 0px 3px 3px;
-    margin: 2px;
+    margin: 4px;
     margin-bottom: 8px;
     color: white;
   }
   .active {
-    border: 2px solid var(--selected);
+    border: 4px solid var(--selected);
     margin: 0px;
-    margin-bottom: 6px
+    margin-bottom: 4px
   }
   .name, .temp, .power {
     padding: 8px;
