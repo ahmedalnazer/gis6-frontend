@@ -129,7 +129,7 @@
 
     onMount(() => {
       setTimeout(() => {
-        initialFormData.temperatureSetpoint = (($activeZones[0] || $zones[0]).ProcessSp || 0) / 10
+        initialFormData.temperatureSetpoint = (($activeZones[0] || $zones[0] || {}).ProcessSp || 0) / 10
         formData = { ...initialFormData }
       }, 100)
     })
