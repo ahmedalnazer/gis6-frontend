@@ -10,6 +10,7 @@
   export let value = 0
   
   let _keypadNumber = ''
+  export let onModalOpen = false
   export let anchor
   let leftArrow = false, rightArrow = false, arrowPosition = 0
   let styleTag = document.createElement("style");
@@ -29,21 +30,21 @@
       const modal = getInputField('content-wrapper')
       if (modal) {
         const modalDimensions = modal.getBoundingClientRect()
-
-        if ((inputDimensions.left + 20) > modalDimensions.width) {
-          left = inputDimensions.left - modalDimensions.width - 20
-          rightArrow = true
-        } else {
+        
+        if ((window.innerWidth - inputDimensions.right - 20) > modalDimensions.width) {
           left = inputDimensions.right + 20
           leftArrow = true
-        }
-        
-        if ((inputDimensions.top + 20 ) > modalDimensions.height) {
-          top = inputDimensions.bottom - modalDimensions.height + 20
-          arrowPosition = 'bottom: 20px;'
         } else {
+          left = inputDimensions.left - modalDimensions.width - 20
+          rightArrow = true
+        }       
+
+        if ((window.innerHeight - inputDimensions.top - 20) > modalDimensions.height) {
           top = inputDimensions.top - 20
-          arrowPosition = 'top: 20px;'
+          arrowPosition = 'top: 26px; bottom: unset;'
+        } else {
+          top = inputDimensions.bottom - modalDimensions.height + 20
+          arrowPosition = 'bottom: 26px; top: unset;'
         }
 
         if (top) modal.style.top = `${top}px`
@@ -79,8 +80,13 @@
     getInputField('place-number').value = ''
   }
 
-  onMount(() => document.head.appendChild(styleTag))
-  onDestroy(() => document.head.removeChild(styleTag))
+  onMount(() => {
+    if (onModalOpen) openKeypadModal()
+    document.head.appendChild(styleTag)
+  })
+  onDestroy(() => {
+    document.head.removeChild(styleTag)
+  })
 </script>
 
   
