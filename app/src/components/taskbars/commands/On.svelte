@@ -9,7 +9,7 @@
 
   const on = async _zones => {
     await Promise.all(_zones.map(z => {
-      return zones.update({...z, IsZoneOn: true}, {skipRefresh: true})
+      return zones.update({...z, IsZoneOn: true}, {skipReload: true})
     }))
     await zones.reload()
     notify.success($_('Zones turned on'))
