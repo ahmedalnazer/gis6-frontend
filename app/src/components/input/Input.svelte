@@ -13,7 +13,6 @@
   export let changed = false
   export let input = null
 
-  let openKeypadModal
   let modalOpned = false
 
   const onCloseKeypad = (event) => {
@@ -42,7 +41,6 @@
     bind:this={input}
     on:focus={() => {
      if(type == 'number') {
-       openKeypadModal()
        modalOpned = true
      } 
     }}
@@ -62,8 +60,8 @@
   </Collapsible>
 </div>
 
-{#if type == 'number'}
-  <KeyPad anchor={input} bind:openKeypadModal bind:value on:keypadClosed={onCloseKeypad} />
+{#if type == 'number' && modalOpned}
+  <KeyPad anchor={input} bind:onModalOpen={modalOpned} bind:value on:keypadClosed={onCloseKeypad} />
 {/if}
 
 <style>
