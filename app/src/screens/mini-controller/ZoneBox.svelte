@@ -1,4 +1,5 @@
 <script>
+  import { Icon } from 'components'
   import groups from 'data/groups'
   export let zone
   export let active
@@ -11,13 +12,30 @@
     ? zoneGroups.map(x => x.color)
     : [ '#00E5FF' ]
 
-  let tempWarning = false
-  let tempError = false
-  let powerWarning = false
-  let powerError = false
+  const isTempBit = i => zone.temp_alarm && zone.temp_alarm[i] == '1'
+  const isPowerBit = i => zone.power_alarm && zone.power_alarm[i] == '1'
 
-  let on = true
+  $: deviation = Math.max(20, zone.DeviationSp || 0)
+
+  // $: deviationHigh = isTempBit(3)
+  // $: deviationLow = isTempBit(4)
+
+  $: live = zone.IsZoneOn && zone.actual_temp !== undefined && zone.ProcessSp
+
+  $: deviationHigh = live && zone.actual_temp > zone.ProcessSp + deviation
+  $: deviationLow = live && zone.actual_temp < zone.ProcessSp - deviation
+
+  $: tempWarning = deviationHigh || deviationLow
+  $: tempError = [ 0, 1, 2, 3, 4, 5, 6, 7, 12, 14, 15 ].reduce((err, bit) => isTempBit(bit) || err, false)
+ 
+  let powerWarning = false
+  // $: powerError = zone.power_alarm > 0
+  $: powerError = false
+
+  $: on = zone.IsZoneOn
   let locked = true
+
+  // $: console.log(zone.actual_temp, zone.ProcessSp, live, deviationHigh, zone.DeviationSp)
 
 </script>
 
@@ -37,20 +55,38 @@
     </div>
     <div class='temp' class:tempWarning class:tempError>
       <div class='actual'>
-        {100}&deg;<span class='temp-type'>F</span>
+        {Math.round((zone.actual_temp || 0) / 10)}&deg;<span class='temp-type'>F</span>
       </div>
-      {#if on}
+      <div class='deviation-icon'>
+        {#if deviationHigh}
+          <Icon icon='up' color='white' />
+        {/if}
+        {#if deviationLow}
+          <Icon icon='down' color='white' />
+        {/if}
+      </div>
+      {#if on && zone.IsSealed}
+          <div class='icon-container sealed'>
+            <div class='sealed-circle'>
+              <div class='sealed-line' />
+            </div>
+          </div>
+      {:else if on}
         <div class='setpoint'>
-          {400}&deg;<span class='temp-type'>F</span>
+          {zone.ProcessSp && zone.ProcessSp / 10 || '-'}&deg;<span class='temp-type'>F</span>
         </div>
       {/if}
     </div>
     <div class='power' class:powerWarning class:powerError>
-      {#if on}
-        <div class='percent'>{(37.0).toFixed(1)}%</div>
-        <div class='amps'>{(.4).toFixed(2).padStart(5, '0')} A</div>
+      {#if on && zone.Islocked}
+        <div class='icon-container'>
+          <Icon icon='lock' color='white' />
+        </div>
+      {:else if on}
+        <div class='percent'>{((zone.actual_percent || 0) / 10).toFixed(1)}%</div>
+        <div class='amps'>{((zone.actual_current || 0) / 10).toFixed(2).padStart(5, '0')} A</div>
       {:else}
-        <div class='off-circle'>
+        <div class='icon-container off-circle'>
           <div class='circle' />
         </div>
       {/if}
@@ -105,6 +141,7 @@
     align-items: flex-end;
     min-height: 36px;
     font-weight: 300;
+    transition: background-color .2s;
   }
 
   .tempWarning, .powerWarning {
@@ -135,19 +172,48 @@
     align-items: center;
   }
 
-  .off-circle {
+  .icon-container {
     flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    .circle {
-      background: white;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      position: relative;
-      bottom: 8px;
+    :global(svg) {
+      width: 14px;
     }
+  }
+
+  .circle {
+    background: white;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    position: relative;
+    bottom: 8px;
+  }
+
+  .sealed-circle {
+    border: 3.2px solid white;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    margin-left: auto;
+  }
+
+  .sealed-line {
+    height: 18px;
+    width: 3.2px;
+    background: white;
+  }
+
+  .deviation-icon {
+    align-self: flex-end;
+  }
+
+  .deviation-icon :global(svg) {
+    width: 8px;
   }
 
 </style>

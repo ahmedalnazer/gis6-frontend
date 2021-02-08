@@ -1,0 +1,39 @@
+{
+    "systemSummary": {
+        "totalParts": 10,
+        "goodParts": 2,
+        "badParts": 1,
+        "percentComplete": 90,
+        "currentDateTime": "2021-01-28T18:02:52.029376Z",
+        "remainingTimePercent": 90,
+        "remainingTime": "10:00:00"
+    },
+    "orders": [
+        {
+            "id": 24,
+            "name": "parts",
+            "cycles": 0,
+            "targetParts": 10,
+            "status": "n",
+            "goodParts": 0,
+            "badParts": 0,
+            "goodCycles": 0,
+            "badCycles": 0,
+            "startTime": null,
+            "endTime": null
+        },
+        {
+            "id": 23,
+            "name": "parts",
+            "cycles": 0,
+            "targetParts": 10,
+            "status": "n",
+            "goodParts": 0,
+            "badParts": 0,
+            "goodCycles": 0,
+            "badCycles": 0,
+            "startTime": null,
+            "endTime": null
+        }
+    ]
+}

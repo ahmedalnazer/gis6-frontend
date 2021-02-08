@@ -1,9 +1,20 @@
 import { writable, derived } from 'svelte/store'
 import api from 'data/api'
-import ws from 'data/realtime/ws'
 import { id } from './tools'
 
+const toBinary = function (n) {
+  // return new Uint32Array(n).join('')
+  // return n >>> 0
+  var sign = n < 0 ? "-" : ""
+  var result = Math.abs(n).toString(2)
+  while (result.length < 32) {
+    result = "0" + result
+  }
+  return sign + result
+}
+
 const rawZones = writable([])
+export const realtime = writable([])
 
 export const selectedZones = writable([])
 export const toggleZones = (zones) => {
@@ -24,8 +35,17 @@ export const toggleZones = (zones) => {
 }
 
 
-const zones = derived([ rawZones ], ([ $raw ]) => {
-  let sorted = [ ...$raw ]
+const zones = derived([ rawZones, realtime ], ([ $raw, $realtime ]) => {
+  let sorted = [ ...$raw ].map((x, i) => {
+    let merged = { ...x, ...$realtime[x.number - 1] || {}}
+    if(merged.power_alarm !== undefined) {
+      merged.power_alarm = toBinary(merged.power_alarm)
+    }
+    if (merged.temp_alarm !== undefined) {
+      merged.temp_alarm = toBinary(merged.temp_alarm)
+    }
+    return merged
+  })
   var collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' })
   sorted.sort((a, b) => collator.compare(a.name, b.name))
   return sorted
@@ -41,7 +61,7 @@ const decodeZone = z => {
     name: z.ZoneName,
     number: z.ZoneNumber,
     id: id(z.id),
-    groups: (z.ZoneGroups || '').split(',').map(x => id(x))
+    groups: z.ZoneGroups
   }
 
   delete d.ZoneName
@@ -51,11 +71,25 @@ const decodeZone = z => {
 }
 
 const encodeZone = z => {
-  return {
+  let d = {
+    ...z,
     ZoneName: z.name,
     ZoneNumber: z.number || z.id,
-    ZoneGroups: (z.groups || []).filter(x => !!x).join(',')
+    ZoneGroups: z.groups
   }
+  delete d.name
+  delete d.number
+  delete d.groups
+  delete d.actual_current
+  delete d.actual_temp
+  delete d.actual_percent
+  delete d.power_alarm
+  delete d.settings
+  delete d.temp_alarm
+  delete d.temp_sp
+  delete d.manual_sp
+
+  return d
 }
 
 
@@ -66,10 +100,25 @@ zones.reload = async () => {
 
   // TODO: remove dummy zones
   if (z.length == 0) {
-    for (let i = 0; i < 50; i++) {
+    try {
+      const processes = await api.get('process')
+      if (!processes.length) {
+        const proc = await api.post('process', { name: 'Dummy Process' })
+        const order = await api.post('order', {
+          name: "Dummy Order",
+          process_id: 1,
+          targetParts: 1
+        })
+        await api.put(`order/1/start`, {})
+      }
+    } catch(e) {
+      // do nothing, hopefully removing dummy process anyway
+    }
+    for (let i = 1; i <= 50; i++) {
       await api.post('zone', encodeZone({
         name: `Zone ${i}`,
-        id: i
+        number: i,
+        ref_process: 1
       }))
     }
     z = await getZones()
@@ -83,6 +132,9 @@ zones.create = async zone => {
   await api.post('zone', encodeZone(zone))
   await zones.reload()
 }
+
+zones._update = rawZones.update
+zones.set = rawZones.set
 
 zones.update = async (zone, options = {}) => {
   await api.put(`zone/${zone.id}`, encodeZone(zone))

@@ -3,11 +3,15 @@
   import { Modal } from 'components'
   import _ from 'data/language'
   import { notify } from 'data/'
+import zones from 'data/zones';
   export let onClose
 
-  const off = zones => {
+  const off = async _zones => {
     console.log(zones)
-    // set zones off
+    await Promise.all(_zones.map(z => {
+      return zones.update({...z, IsZoneOn: false}, {skipReload: true})
+    }))
+    await zones.reload()
     notify.success(`${$_('Zones turned off')}`)
   }
 </script>

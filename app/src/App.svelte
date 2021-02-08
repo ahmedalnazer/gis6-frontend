@@ -1,4 +1,5 @@
 <script>
+  import { onMount } from 'svelte'
   import Router from './router/Router'
   import Notifications from 'components/utilities/Notifications'
   import Confirm from 'components/utilities/Confirm'
@@ -8,12 +9,16 @@
   import Login from 'screens/Login'
   import { loggingIn } from 'data/user/actions'
   import SetpointEditor from 'components/SetpointEditor'
+  import createSocket from 'data/realtime/ws'
 
 
   let showSplashScreen = true
   
 
   import './style/main.scss'
+  onMount(() => {
+    createSocket()
+  })
 </script>
 
 <Header />
