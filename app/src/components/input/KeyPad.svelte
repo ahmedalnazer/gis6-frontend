@@ -69,6 +69,7 @@
   const getNumber = e => {
     getInputField('place-number').value += e.target.innerText
     value = parseFloat(getInputField('place-number').value)
+    anchor.dispatchEvent(new Event('change'))
   }
 
   const closeKeypadModal = () => {

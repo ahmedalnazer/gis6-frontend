@@ -62,10 +62,7 @@
         update[fieldMapping[field]] = data
       }
     }
-
-    console.log(formData, update.ManualSp)
     
-    // console.log(_zones, update)
     await Promise.all(_zones.map(async z => {
       await zones.update({ ...z, ...update }, { skipReload: true })
     }))
@@ -92,7 +89,6 @@
       open = true
       changed = {}
       let target = $activeZones[0] || $zones[0] || {}
-      console.log(target)
       formData = { ...initialFormData }
       for(let field of Object.keys(fieldMapping)) {
         let data = target[fieldMapping[field]]

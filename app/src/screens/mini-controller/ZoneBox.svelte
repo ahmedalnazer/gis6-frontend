@@ -1,6 +1,7 @@
 <script>
   import { Icon } from 'components'
   import groups from 'data/groups'
+import { onDestroy, onMount } from 'svelte'
   export let zone
   export let active
 
@@ -32,17 +33,34 @@
   $: deviationLow = !manual && live && zone.actual_temp < setpoint - deviation
 
   $: tempWarning = deviationHigh || deviationLow
-  $: tempError = [ 0, 1, 2, 3, 4, 5, 6, 7, 12, 14, 15 ].reduce((err, bit) => isTempBit(bit) || err, false)
+  // $: tempError = [ 0, 1, 2, 3, 4, 5, 6, 7, 12, 14, 15 ].reduce((err, bit) => isTempBit(bit) || err, false)
+  let tempError = false
  
   let powerWarning = false
   // $: powerError = zone.power_alarm > 0
-  $: powerError = false
+  let powerError = false
 
   $: on = zone.IsZoneOn
   let locked = true
 
   // $: console.log(zone.actual_temp, zone.ProcessSp, live, deviationHigh, zone.DeviationSp)
 
+  if(!window.zones) {
+    window.zoneOverrides = {}
+  }
+  onMount(() => {
+    window.zoneOverrides[zone.id] = {
+      togglePowerError: () => {
+        powerError = !powerError
+      },
+      togglePowerWarning: () => {
+        powerWarning = !powerWarning
+      },
+      toggleTempError: () => {
+        tempError = !tempError
+      }
+    }
+  })
 </script>
 
 
