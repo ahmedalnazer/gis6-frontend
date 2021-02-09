@@ -105,16 +105,15 @@
           selection[group].push(node)
         }
       } else {
-        if(selectedZoneIds.includes(node)) {
-          selectedZoneIds = selectedZoneIds.filter(x => x != node)
+        
+        if($_selected.includes(node)) {
+          _selected.update(z => z.filter(x => x != node))
         } else {
-          selectedZoneIds.push(node)
+          _selcected.update(z => z.concat(node))
         }
       }
     }
     selection = selection
-    selectedZoneIds = [ ... new Set(selectedZoneIds) ]
-    // console.log('nodes', nodes)
   }
 
   $: displayedZones = selectedGroup
