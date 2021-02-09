@@ -15,6 +15,7 @@
 
   $: selectedGroup = $activeGroup
   let sortGroups = true
+  let openSetPointEditor = false
 
   $: displayedGroups = selectedGroup
     ? [ selectedGroup ]
@@ -74,16 +75,29 @@
   }
 
   let showLegend = false
+
+  let tapedTwice = false;
+
+  const tapHandler = (event) => {
+    if(!tapedTwice) {
+        tapedTwice = true;
+        setTimeout( function() { tapedTwice = false; }, 300 );
+        return false;
+    }
+    event.preventDefault();
+    openSetPointEditor = true
+ }
 </script>
 
 <Screen title={$_("Minicontroller")} id="minicontroller">
   <div slot="tasks">
-    <ZoneTasks />
+    <ZoneTasks bind:onOpenSetPointEditor={openSetPointEditor} />
   </div>
 
   <div
     class="selection-area"
     on:mousedown={(e) => startSelection(e, boxSelect)}
+    on:touchstart={(e) => tapHandler(e)}
   >
     <div class="tools">
       {#if !selectedGroup}
