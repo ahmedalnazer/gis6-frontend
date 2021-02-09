@@ -17,6 +17,8 @@
 
   $: deviation = Math.max(20, zone.DeviationSp || 0)
 
+  $: manual = zone.IsManual
+
   $: setpoint = zone.temp_sp ? Math.round(zone.temp_sp / 10) * 10 : zone.ProcessSp
 
   // $: console.log(zone)
@@ -26,8 +28,8 @@
 
   $: live = zone.IsZoneOn && zone.actual_temp !== undefined && zone.ProcessSp
 
-  $: deviationHigh = live && zone.actual_temp > setpoint + deviation
-  $: deviationLow = live && zone.actual_temp < setpoint - deviation
+  $: deviationHigh = !manual && live && zone.actual_temp > setpoint + deviation
+  $: deviationLow = !manual && live && zone.actual_temp < setpoint - deviation
 
   $: tempWarning = deviationHigh || deviationLow
   $: tempError = [ 0, 1, 2, 3, 4, 5, 6, 7, 12, 14, 15 ].reduce((err, bit) => isTempBit(bit) || err, false)
@@ -77,7 +79,11 @@
           </div>
       {:else if on}
         <div class='setpoint'>
-          {setpoint / 10 || '-'}&deg;<span class='temp-type'>F</span>
+          {#if manual}
+            <span class='manual'>M</span>
+          {:else}
+            {setpoint / 10 || '-'}&deg;<span class='temp-type'>F</span>
+          {/if}
         </div>
       {/if}
     </div>

@@ -1,7 +1,10 @@
 <script>
+  import { createEventDispatcher } from 'svelte'
   import { Collapsible } from 'components'
   import { slide } from 'svelte/transition'
   import KeyPad from './KeyPad'
+
+  const dispatch = createEventDispatcher()
 
   export let errors = []
   export let info = []
@@ -39,7 +42,8 @@
     class={inputClass} 
     autocomplete='new-password'
     bind:this={input}
-    on:focus={() => {
+    on:focus={e => {
+      dispatch('focus', e)
      if(type == 'number') {
        modalOpned = true
      } 
@@ -75,7 +79,7 @@
     color: var(--danger);
   }
   .changed {
-    background-color: rgba(53, 138, 188, 0.5);
-    border: 1px solid #358cca;
+    background-color: rgba(53, 138, 188, 0.2);
+    border: 1px solid var(--primary);
   }
 </style>

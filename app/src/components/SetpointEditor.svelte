@@ -1,340 +1,261 @@
 <script>
-    import { onMount } from 'svelte'
-    import { Modal } from "components"
-    import Selector from "components/taskbars/Selector.svelte"
-    import _ from "data/language"
-    import notify from "data/notifications"
-    import { Input, CheckBox } from "components"
-    import Switch from "svelte-switch"
-    import { activeSetpointEditor } from 'data/setpoint'
-    import Collapsible from "./widgets/Collapsible.svelte"
-    import zones, { activeZones } from "data/zones"
-    // import KeypadInput from 'components/input/KeyPad.svelte'
+  import { Modal } from "components"
+  import Selector from "components/taskbars/Selector.svelte"
+  import _ from "data/language"
+  import notify from "data/notifications"
+  import { Input, Switch } from "components"
+  import { activeSetpointEditor } from 'data/setpoint'
+  import Collapsible from "./widgets/Collapsible.svelte"
+  import zones, { activeZones } from "data/zones"
 
-    let checkedValue = true
-    let setpointTemperatureValue = 0
-    let showAdvanced = false
-    let showHideLabel = "Show Advanced Settings"
+  let showAdvanced = false
+  let showHideLabel = "Show Advanced Settings"
 
-    let initialFormData = {
-      zoneId: 0,
-      temperatureSetpoint: 0,
-      autoManual: false,
-      unlockLock: false,
-      onOff: false,
-      low: 0,
-      high: 0,
-      unsealSeal: false,
-      manual: 0,
-      trim: 0,
-      autoStandby: 0,
-      tcShortDetectTime: 0,
-      tuningOverride: 0,
-      powerPriority: 0,
-      wattAlarm: 0,
-      criticalOverTemperature: 0,
-    }
+  let initialFormData = {
+    temperature: 0,
+    manual: false,
+    locked: false,
+    on: true,
+    low: 0,
+    high: 0,
+    sealed: false,
+    manualSp: 0,
+    trim: 0,
+    autoStandby: 0,
+    tcShortDetectTime: 0,
+    tuningOverride: 0,
+    powerPriority: 0,
+    wattAlarm: 0,
+    criticalOverTemperature: 0,
+  }
 
-    let formData = { ...initialFormData }
+  let formData = { ...initialFormData }
 
-    $: changedTemperatureSetpointData =
-        initialFormData.temperatureSetpoint !== formData.temperatureSetpoint
-    let changedAutoManualData = false
-    let changedUnlockLockData = false
-    let changedOnOffData = false
-    $: changedLowData = initialFormData.low !== formData.low
-    $: changedHighData = initialFormData.high !== formData.high
-    let changedUnsealSealData = false
-    $: changedManualData = initialFormData.manual !== formData.manual
-    $: changedTrimData = initialFormData.trim !== formData.trim
-    $: changedAutoStandbyData =
-        initialFormData.autoStandby !== formData.autoStandby
-    $: changedTCShortDetectTimeData =
-        initialFormData.tcShortDetectTime !== formData.tcShortDetectTime
-    $: changedTuningOverrideData =
-        initialFormData.tuningOverride !== formData.tuningOverride
-    $: changedPowerPriorityData =
-        initialFormData.powerPriority !== formData.powerPriority
-    $: changedWattAlarmData = initialFormData.wattAlarm !== formData.wattAlarm
-    $: changedCriticalOverTemperatureData =
-        initialFormData.criticalOverTemperature !==
-        formData.criticalOverTemperature
+  let changed = {}
 
+  const fieldMapping = {
+    temperature: 'ProcessSp',
+    manual: 'IsManual',
+    on: 'IsZoneOn',
+    locked: 'Islocked',
+    low: 'TemperatureLimitSPLow',
+    high: 'TemperatureLimitSPHigh',
+    sealed: 'IsSealed',
+    manualSp: 'ManualSp',
+    trim: 'TrimSP',
+    autoStandby: 'StandbySp',
+    tcShortDetectTime: 'ShortDetectTime',
+    tuningOverride: 'TuningRangeOverride',
+    powerPriority: 'PowerPrioritySP',
+    wattAlarm: 'WattAlarmHigh',
+    criticalOverTemperature: 'CriticalOvertempSp'
+  }
 
-    const commitChanges = (_zones) => {
-      let update = {}
-      if(changedTemperatureSetpointData) update.ProcessSp = formData.temperatureSetpoint * 10
-      if(changedAutoManualData) update.IsManual = formData.autoManual
-      if(changedUnlockLockData) update.Islocked = formData.unlockLock
-      if(changedOnOffData) update.IsZoneOn = formData.onOff
-      if(changedLowData) update.TemperatureLimitSPLow = formData.low
-      if(changedHighData) update.TemperatureLimitSPHigh = formData.high
-      if(changedUnsealSealData) update.IsSealed = formData.unsealSeal
-      if(changedManualData) update.ManualSp = formData.manual
-      if(changedTrimData) update.TrimSP = formData.trim
-      if(changedAutoStandbyData) update.StandbySp = formData.autoStandby
-      if(changedTCShortDetectTimeData) update.ShortDetectTime = formData.tcShortDetectTime
-      if(changedTuningOverrideData) update.TuningRangeOverride = formData.tuningOverride
-      if(changedPowerPriorityData) update.PowerPrioritySP = formData.powerPriority
-      // TODO: There is WattAlarmHigh and WattAlarmLow in the backend. Used high. Needs confirmation.
-      if(changedWattAlarmData) update.WattAlarmHigh = formData.wattAlarm
-      if(changedCriticalOverTemperatureData) update.CriticalOvertempSp = formData.criticalOverTemperature
+  let tenXfields = [ 'temperature', 'low', 'high', 'manualSp', 'trim', 'wattAlarm', 'criticalOverTemperature' ]
 
-      
-      for(let z of _zones) {
-        zones.update({ ...z, ...update }, { skipReload: true })
+  const commitChanges = async (_zones) => {
+    let update = {}
+    for(let field of Object.keys(fieldMapping)) {
+      if(changed[field]) {
+        let data = formData[field]
+        if(tenXfields.includes(field)) data = data * 10 
+        update[fieldMapping[field]] = data
       }
-      zones.reload()
-      notify.success($_("Changes applied"))
     }
 
+    console.log(formData, update.ManualSp)
+    
+    // console.log(_zones, update)
+    await Promise.all(_zones.map(async z => {
+      await zones.update({ ...z, ...update }, { skipReload: true })
+    }))
 
-    const handleChangeAutoManual = (e) => {
-      const { checked } = e.detail
-      formData.autoManual = checked
-      changedAutoManualData = true
+    await zones.reload()
+    notify.success($_("Changes applied"))
+    
+  }
+
+  const showHideAdvanced = () => {
+    if (showAdvanced) {
+      showHideLabel = "Show Advanced Settings"
+      showAdvanced = false
+    } else {
+      showHideLabel = "Hide Advanced Settings"
+      showAdvanced = true
     }
+  }
 
-    const handleUnlockLock = (e) => {
-      const { checked } = e.detail
-      formData.unlockLock = checked
-      changedUnlockLockData = true
-    }
+  let open = false
 
-    const handleOnOff = (e) => {
-      const { checked } = e.detail
-      formData.onOff = checked
-      changedOnOffData = true
-    }
-
-    const handleUnsealSeal = (e) => {
-      const { checked } = e.detail
-      formData.unsealSeal = checked
-      changedUnsealSealData = true
-    }
-
-    const showHideAdvanced = (showAdv) => {
-      if (showAdv) {
-        showHideLabel = "Show Advanced Settings"
-        showAdvanced = false
-      } else {
-        showHideLabel = "Hide Advanced Settings"
-        showAdvanced = true
+  $: {
+    if($activeSetpointEditor == "setpoint" && !open) {
+      open = true
+      changed = {}
+      let target = $activeZones[0] || $zones[0] || {}
+      console.log(target)
+      formData = { ...initialFormData }
+      for(let field of Object.keys(fieldMapping)) {
+        let data = target[fieldMapping[field]]
+        if(tenXfields.includes(field)) data = data / 10
+        formData[field] = data
       }
-
-      return showAdvanced
     }
-
-    const showDeltaControls = () => {}
-
-    onMount(() => {
-      setTimeout(() => {
-        initialFormData.temperatureSetpoint = (($activeZones[0] || $zones[0] || {}).ProcessSp || 0) / 10
-        formData = { ...initialFormData }
-      }, 100)
-    })
+  }
+  
+  const close = () => {
+    activeSetpointEditor.set('')
+    open = false
+  }
 </script>
 
 {#if $activeSetpointEditor == "setpoint"}
-    <Modal
-        title={$_("Setpoint Editor")}
-        onClose={() => activeSetpointEditor.set("")}
+  <Modal
+    title={$_("Setpoint Editor")}
+    onClose={close}
+  >
+    <Selector
+      trackHistory
+      onSubmit={commitChanges}
+      onDone={close}
     >
-        <Selector
-            trackHistory
-            onSubmit={commitChanges}
-            onDone={() => activeSetpointEditor.set("")}
+      <div class="sp-editor-container">
+        <h2>{$_("Edit")}</h2>
+
+        <div class='grid'>
+          <Input
+            label='{$_("Temperature Setpoint")} (&#176;C)'
+            type="number" 
+            bind:value={formData.temperature}
+            on:change={() => changed.temperature = true}
+            changed={changed.temperature}
+          />
+
+          <Switch
+            changed={changed.manual}
+            bind:checked={formData.manual}
+            on:change={() => changed.manual = true}
+            offLabel={$_("Auto")}
+            onLabel={$_("Manual")}
+          />
+
+          <Switch
+            changed={changed.locked}
+            bind:checked={formData.locked}
+            on:change={() => changed.locked = true}
+            offLabel={$_("Unlock")}
+            onLabel={$_("Lock")}
+          />
+
+          <Switch
+            changed={changed.on}
+            bind:checked={formData.on}
+            on:change={() => changed.on = true}
+          />
+        </div>
+
+        <div
+            class="advanced-setting-text link"
+            on:click={showHideAdvanced}
         >
-            <div class="sp-editor-container">
-                <h2>{$_("Edit")}</h2>
+            <div>{$_(showHideLabel)}</div>
+        </div>
 
-                <div class='grid'>
-                    <Input
-                      label='{$_("Temperature Setpoint")} (&#176;C)'
-                      type="number" 
-                      bind:value={formData.temperatureSetpoint}
-                      changed={changedTemperatureSetpointData}
-                    />
+        <Collapsible open={showAdvanced}>
+          <div class="grid advanced">
+            <Input
+              label="{$_('Low')} (&#176;C)"
+              type="number"
+              bind:value={formData.low}
+              on:change={() => changed.low= true}
+              changed={changed.low}
+            />
 
-                    <div class="temperature-setpoint-controls">
-                        <div class="child-label-item">&nbsp;</div>
-                        <div class="child-label-comp">
-                            <div
-                                class={changedAutoManualData == true
-                                    ? "changed-chk-data switch-container"
-                                    : "not-changed-chk-data switch-container"}
-                            >
-                                <div class="switch-left-text">{$_("Auto")}</div>
-                                <div class="switch-control">
-                                    <Switch
-                                        on:change={handleChangeAutoManual}
-                                        checked={formData.autoManual}
-                                        onColor="#358cca"
-                                    />
-                                </div>
-                                <div class="switch-right-text">
-                                    {$_("Manual")}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            <Input
+              label="{$_("High")} (&#176;C)"
+              type="number"
+              bind:value={formData.high}
+              on:change={() => changed.high = true}
+              changed={changed.high}
+            />
 
-                    <div class="temperature-setpoint-controls">
-                        <div class="child-label-item">&nbsp;</div>
-                        <div class="child-label-comp">
-                            <div
-                                class={changedUnlockLockData == true
-                                    ? "changed-chk-data switch-container"
-                                    : "not-changed-chk-data switch-container"}
-                            >
-                                <div class="switch-left-text">
-                                    {$_("Unlock")}
-                                </div>
-                                <div class="switch-control">
-                                    <Switch
-                                        on:change={handleUnlockLock}
-                                        checked={formData.unlockLock}
-                                        onColor="#358cca"
-                                    />
-                                </div>
-                                <div class="switch-right-text">
-                                    {$_("Lock")}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            <Switch
+              changed={changed.sealed}
+              bind:checked={formData.sealed}
+              on:change={() => changed.sealed = true}
+              offLabel={$_("Unseal")}
+              onLabel={$_("Seal")}
+            />
 
-                    <div class="temperature-setpoint-controls">
-                        <div class="child-label-item">&nbsp;</div>
-                        <div class="child-label-comp">
-                            <div
-                                class={changedOnOffData == true
-                                    ? "changed-chk-data switch-container"
-                                    : "not-changed-chk-data switch-container"}
-                            >
-                                <div class="switch-left-text">{$_("On")}</div>
-                                <div class="switch-control">
-                                    <Switch
-                                        on:change={handleOnOff}
-                                        checked={formData.onOff}
-                                        onColor="#358cca"
-                                    />
-                                </div>
-                                <div class="switch-right-text">{$_("Off")}</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="dummy" />
 
-                <div
-                    class="advanced-setting-text link"
-                    on:click={() => {
-                        showAdvanced = showHideAdvanced(showAdvanced)
-                    }}
-                >
-                    <div>{$_(showHideLabel)}</div>
-                </div>
+            <Input
+              label={$_("Manual %")}
+              type="number"
+              changed={changed.manualSp}
+              on:change={() => changed.manualSp = true}
+              bind:value={formData.manualSp}
+            />
 
-                <Collapsible open={showAdvanced}>
-                    <div class="grid advanced">
-                        <Input
-                          label="{$_('Low')} (&#176;C)"
-                          type="number"
-                          bind:value={formData.low}
-                          changed={changedLowData}
-                        />
-                        <Input
-                          label="{$_("High")} (&#176;C)"
-                          type="number"
-                          changed={changedHighData}
-                          bind:value={formData.high}
-                        />
-                        <div class="child">
-                            <div class="child-item">
-                                <div class="child-label-item">&nbsp;</div>
-                                <div class="child-label-comp">
-                                    <div
-                                        class={changedUnsealSealData == true
-                                            ? "changed-chk-data switch-container"
-                                            : "not-changed-chk-data switch-container"}
-                                    >
-                                        <div class="switch-left-text">
-                                            {$_("Unseal")}
-                                        </div>
-                                        <div class="switch-control">
-                                            <Switch
-                                                on:change={handleUnsealSeal}
-                                                checked={formData.unsealSeal}
-                                                onColor="#358cca"
-                                            />
-                                        </div>
+            <Input
+              label='{$_("Trim")} (&#176;C)'
+              type="number"
+              bind:value={formData.trim}
+              on:change={() => changed.trim = true}
+              changed={changed.trim}
+            />
 
-                                        <div class="switch-right-text">
-                                            {$_("Seal")}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="child">
-                            <div class="child-item">
-                                <div class="child-label-item">&nbsp;</div>
-                                <div class="child-label-comp">&nbsp;</div>
-                            </div>
-                        </div>
-                        <Input
-                          label={$_("Manual %")}
-                          type="number"
-                          changed={changedManualData}
-                          bind:value={formData.manual}
-                        />
-                        <Input
-                          label='{$_("Trim")} (&#176;C)'
-                          type="number"
-                          changed={changedTrimData}
-                          bind:value={formData.trim}
-                        />
-                        <Input
-                          label='{$_("Auto Standby")} (&#176;C)'
-                          type="number"
-                          changed={changedAutoStandbyData}
-                          bind:value={formData.autoStandby}
-                        />
-                        <Input
-                          label={$_("T/C Short Detect Time (min)")}
-                          type="number"
-                          changed={changedTCShortDetectTimeData}
-                          bind:value={formData.tcShortDetectTime}
-                        />
-                        <Input
-                          label={$_("Tuning Override")}
-                          type="number"
-                          changed={changedTuningOverrideData}
-                          bind:value={formData.tuningOverride}
-                        />
-                        <Input
-                          label={$_("Power Priority")}
-                          type="number"
-                          changed={changedPowerPriorityData}
-                          bind:value={formData.powerPriority}
-                        />
-                        <Input
-                          label={$_("Watt Alarm (W)")}
-                          type="number"
-                          changed={changedWattAlarmData}
-                          bind:value={formData.wattAlarm}
-                        />
-                        <Input
-                          label='{$_("Critical Over Temperature")}(&#176;C)'
-                          type="number"
-                          changed={changedCriticalOverTemperatureData}
-                          bind:value={formData.criticalOverTemperature}
-                        />
-                    </div>
-                </Collapsible>
-            </div>
-        </Selector>
-    </Modal>
+            <Input
+              label='{$_("Auto Standby")} (&#176;C)'
+              type="number"
+              bind:value={formData.autoStandby}
+              on:change={() => changed.autoStandby = true}
+              changed={changed.autoStandby}
+            />
+
+            <Input
+              label={$_("T/C Short Detect Time (min)")}
+              type="number"
+              bind:value={formData.tcShortDetectTime}
+              on:change={() => changed.tcShortDetectTime = true}
+              changed={changed.tcShortDetectTime}
+            />
+
+            <Input
+              label={$_("Tuning Override")}
+              type="number"
+              bind:value={formData.tuningOverride}
+              on:change={() => changed.tuningOverride = true}
+              changed={changed.tuningOverride}
+            />
+
+            <Input
+              label={$_("Power Priority")}
+              type="number"
+              bind:value={formData.powerPriority}
+              on:change={() => changed.powerPriority = true}
+              changed={changed.powerPriority}
+            />
+
+            <Input
+              label={$_("Watt Alarm (W)")}
+              type="number"
+              bind:value={formData.wattAlarm}
+              on:change={() => changed.wattAlarm = true}
+              changed={changed.wattAlarm}
+            />
+
+            <Input
+              label='{$_("Critical Over Temperature")}(&#176;C)'
+              type="number"
+              bind:value={formData.criticalOverTemperature}
+              on:change={() => changed.criticalOverTemperature = true}
+              changed={changed.criticalOverTemperature}
+            />
+          </div>
+        </Collapsible>
+      </div>
+    </Selector>
+  </Modal>
 {/if}
 
 <style>
@@ -353,10 +274,6 @@
         box-sizing: border-box;
     }
 
-    .span2 {
-        grid-column: span 2;
-    }
-
     .advanced-setting-text {
         display: block;
         clear: both;
@@ -368,56 +285,8 @@
         padding-top: 36px;
     }
 
-    .child-item {
-        /* padding: 10px; */
-        background-color: #ffffff;
-    }
-
-    .child-label-item {
-        font-size: 16px;
-        font-weight: 600;
-    }
-
-    .child-label-comp {
-        padding-top: 15px;
-    }
-
-    .changed-data {
-        background-color: rgba(53, 138, 188, 0.5);
-        border: 1px solid #358cca;
-    }
-
-    .changed-chk-data {
-        padding: 9px;
-        background-color: rgba(53, 138, 188, 0.5);
-        border: 1px solid #358cca;
-    }
-
-    .not-changed-chk-data {
-        padding: 9px;
-    }
-
-    .switch-container {
-        align-items: center;
-        display: flex;
-        justify-content: center;
-    }
-
-    .switch-left-text {
-        align-items: center;
-        float: left;
-        text-align: right;
-        min-width: 50px;
-    }
-    .switch-control {
-        align-items: center;
-        float: left;
-        padding: 5px;
-        text-align: center;
-    }
-    .switch-right-text {
-        align-items: center;
-        float: left;
-        min-width: 50px;
+    .grid :global(.switch-container) {
+      margin-top: auto;
+      justify-content: auto;
     }
 </style>
