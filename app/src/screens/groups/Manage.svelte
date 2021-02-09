@@ -96,7 +96,25 @@
   
 
   const boxSelect = (nodes) => {
-    console.log(nodes)
+    for(let [ nodeString, group ] of nodes) {
+      const node = parseInt(nodeString)
+      if(group) {
+        if(selection[group].includes(node)) {
+          selection[group] = selection[group].filter(x => x != node)
+        } else {
+          selection[group].push(node)
+        }
+      } else {
+        if(selectedZoneIds.includes(node)) {
+          selectedZoneIds = selectedZoneIds.filter(x => x != node)
+        } else {
+          selectedZoneIds.push(node)
+        }
+      }
+    }
+    selection = selection
+    selectedZoneIds = [ ... new Set(selectedZoneIds) ]
+    // console.log('nodes', nodes)
   }
 
   $: displayedZones = selectedGroup
@@ -150,8 +168,7 @@
 
   <div
     class="selection-area"
-    on:mousedown={(e) => startSelection(e, boxSelect)}
-  >
+    on:touchstart={(e) => startSelection(e, boxSelect)}>
     <GroupSelector />
     <div class="tools">
       {#if !selectedGroup}

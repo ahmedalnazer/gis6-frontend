@@ -58,6 +58,7 @@
       <div class='zones'>
         {#each zones as zone}
           <ZoneButton
+            group={group}
             zone={zone} 
             active={selection.includes(zone.id)} 
             on:click={() => toggle(zone.id)}

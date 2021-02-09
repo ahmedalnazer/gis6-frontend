@@ -3,6 +3,7 @@
   // import { activeSetpointEditor } from 'data/setpoint'
   export let zone
   export let active
+  export let group
 
   let tabs = []
   // let toggle = key => {
@@ -20,7 +21,7 @@
     : [ '#00E5FF' ]
 </script>
 
-<div on:click on:dblclick class:active class='zone-button'>
+<div on:click on:dblclick class:active class='zone-button' data-id={zone.id} data-group={group && group.id}>
   <div class='group-colors'>
     {#each tabs as t }
       <div class='color-tab' style='background:{t}' />
