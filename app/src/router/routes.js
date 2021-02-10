@@ -8,6 +8,8 @@ import EditGroup from 'screens/groups/EditGroup'
 import MiniController from 'screens/mini-controller/MiniController'
 import OrderFillin from 'screens/dashboard/OrderFillin.svelte'
 import HotRunner from 'screens/dashboard/HotRunner'
+import FaultAnalysis from 'screens/analysis/FaultAnalysis'
+import WiringAnalysis from 'screens/analysis/WiringAnalysis'
 
 /**
  *
@@ -28,7 +30,9 @@ const routes = {
   '/edit-group': EditGroup,
   '/mini-controller': MiniController,
   '/order-fillin': OrderFillin,
-  '/hot-runner': HotRunner
+  '/hot-runner': HotRunner,
+  '/analysis/fault': FaultAnalysis,
+  '/analysis/wiring': WiringAnalysis
 }
 
 export default routes

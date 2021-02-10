@@ -3,6 +3,7 @@
   import { Modal, Input } from 'components'
   import _ from 'data/language'
   import { notify } from 'data/'
+  import activeBoost from 'data/zones/boost';
   export let onClose
 
   let auto = 104
@@ -14,6 +15,7 @@
   const boost = zones => {
     console.log(zones)
     // set zones off
+    activeBoost.set(true)
     notify.success($_('Boost applied'))
   }
 </script>
