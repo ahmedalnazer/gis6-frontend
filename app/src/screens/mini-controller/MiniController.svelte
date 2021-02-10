@@ -90,7 +90,13 @@
         <CheckBox label={$_("Show Groups")} bind:checked={sortGroups} />
       {/if}
 
-      <a on:click={() => showLegend = !showLegend}>{$_('Icon Legend')}</a>
+      <div class='links'>
+        {#if $_selected.length}
+           <a on:click={clearSelection} class='clear'>{$_('Clear Selection')}</a>
+        {/if}
+        <a on:click={() => showLegend = !showLegend}>{$_('Icon Legend')}</a>
+      </div>
+
     </div>
 
     <div class="zone-container">
@@ -164,9 +170,14 @@
   .tools {
     margin-bottom: 24px;
     display: flex;
-    justify-content: space-between;
     > :global(*) {
       margin-right: 16px;
+    }
+    .links {
+      margin-left: auto;
+      .clear {
+        margin-right: 16px;
+      }
     }
   }
 
