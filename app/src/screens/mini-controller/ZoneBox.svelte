@@ -82,10 +82,10 @@ import { onDestroy, onMount } from 'svelte'
         {Math.round((zone.actual_temp || 0) / 10)}&deg;<span class='temp-type'>F</span>
       </div>
       <div class='deviation-icon'>
-        {#if deviationHigh}
+        {#if deviationLow}
           <Icon icon='up' color='white' />
         {/if}
-        {#if deviationLow}
+        {#if deviationHigh}
           <Icon icon='down' color='white' />
         {/if}
       </div>
@@ -98,7 +98,7 @@ import { onDestroy, onMount } from 'svelte'
       {:else if on}
         <div class='setpoint'>
           {#if manual}
-            <span class='manual'>M</span>
+            <span class='manual'></span>
           {:else}
             {setpoint / 10 || '-'}&deg;<span class='temp-type'>F</span>
           {/if}
