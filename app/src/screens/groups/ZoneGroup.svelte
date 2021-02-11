@@ -10,7 +10,6 @@
   export let group
   export let selection = []
   export let onDelete = () => {}
-  export let onClearSelection = () => {}
 
   const toggle = (id, clear) => {
     if (clear) { selection = []}
@@ -58,10 +57,10 @@
       <div class='zones'>
         {#each zones as zone}
           <ZoneButton
+            group={group}
             zone={zone} 
             active={selection.includes(zone.id)} 
             on:click={() => toggle(zone.id)}
-            on:dblclick={() => {onClearSelection(); toggle(zone.id, true); toggleSetPoint('setpoint');}}
           />
         {/each}
       </div>
