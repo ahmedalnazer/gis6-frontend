@@ -1,9 +1,15 @@
 <script>
+
   import groups from 'data/groups'
+  import { activeSetpointEditor } from 'data/setpoint'
+  import { selectedZones } from 'data/zones'
+  import { createEventDispatcher } from 'svelte'
   // import { activeSetpointEditor } from 'data/setpoint'
   export let zone
   export let active
   export let group
+
+  const dispatch = createEventDispatcher()
 
   let tabs = []
 
