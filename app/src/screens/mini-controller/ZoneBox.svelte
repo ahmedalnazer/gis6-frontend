@@ -3,6 +3,7 @@
   import groups from 'data/groups'
 import { onDestroy, onMount } from 'svelte'
   export let zone
+  export let group
   export let active
 
   let tabs = []
@@ -64,7 +65,7 @@ import { onDestroy, onMount } from 'svelte'
 </script>
 
 
-<div on:click on:dblclick class:active class='zone-box'>
+<div on:click on:dblclick class:active class='rb-box zone-box' data-id={zone.id} data-group={group && group.id}>
   <div class='group-colors'>
     {#each tabs as t }
       <div class='color-tab' style='background:{t}' />

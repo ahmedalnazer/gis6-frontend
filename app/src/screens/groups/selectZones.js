@@ -14,7 +14,7 @@ export const startSelection = (touchStartEl, callback) => {
   const createRubberBandingElement = () => {
     let box = document.createElement('div')
     box.id = 'rubber-banding'
-    box.zIndex = '11'
+    box.style.zIndex = '11'
     box.style.position = "fixed"
     box.style.left = `${touchStartX}px`
     box.style.top = `${touchStartY}px`
@@ -30,7 +30,7 @@ export const startSelection = (touchStartEl, callback) => {
   createRubberBandingElement()
 
   const getZones = () => {
-    return [ ...document.body.querySelectorAll(".zone-button") ]
+    return [ ...document.body.querySelectorAll(".rb-box") ]
   }
 
   const filterZones = rb => {
@@ -75,8 +75,6 @@ export const startSelection = (touchStartEl, callback) => {
 
     if (rubberBox) {
       filterZones(rubberBox)
-      // callback(selectedZoneElements);
-      console.log('selectedZoneElements: ', selectedZoneElements)
       callback(selectedZoneElements)
       selectedZoneElements.splice(0, selectedZoneElements.length)
       rubberBox.remove()

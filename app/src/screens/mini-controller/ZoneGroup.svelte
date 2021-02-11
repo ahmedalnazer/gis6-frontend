@@ -51,6 +51,7 @@
         {#each zones as zone}
           <ZoneBox
             zone={zone} 
+            group={group}
             active={selection.includes(zone.id)} 
             on:click={() => toggle(zone.id)}
             on:dblclick={() => {onClearSelection(); toggle(zone.id, true); toggleSetPoint('setpoint');}}

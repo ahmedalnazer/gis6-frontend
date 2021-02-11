@@ -8,16 +8,6 @@
   import Standby from './commands/Standby'
   import activeBoost from 'data/zones/boost'
   import activeStandby from 'data/zones/standby'
-  import { afterUpdate } from 'svelte'
-
-  export let onOpenSetPointEditor
-
-  afterUpdate(() => {
-    if (onOpenSetPointEditor) {
-      toggle('setpoint')
-      onOpenSetPointEditor = false
-    }
-  });
 
   let toggle = key => {
     if($activeSetpointEditor == key) {

@@ -45,7 +45,24 @@
   
 
   const boxSelect = (nodes) => {
-    console.log(nodes)
+    for(let [ nodeString, group ] of nodes) {
+      const node = parseInt(nodeString)
+      if(group) {
+        if(selection[group].includes(node)) {
+          selection[group] = selection[group].filter(x => x != node)
+        } else {
+          selection[group].push(node)
+        }
+      } else {
+        
+        if($_selected.includes(node)) {
+          _selected.update(z => z.filter(x => x != node))
+        } else {
+          _selected.update(z => z.concat(node))
+        }
+      }
+    }
+    selection = selection
   }
 
   $: displayedZones = selectedGroup
@@ -75,29 +92,16 @@
   }
 
   let showLegend = false
-
-  let tapedTwice = false;
-
-  const tapHandler = (event) => {
-    if(!tapedTwice) {
-        tapedTwice = true;
-        setTimeout( function() { tapedTwice = false; }, 300 );
-        return false;
-    }
-    event.preventDefault();
-    openSetPointEditor = true
- }
 </script>
 
 <Screen title={$_("Minicontroller")} id="minicontroller">
   <div slot="tasks">
-    <ZoneTasks bind:onOpenSetPointEditor={openSetPointEditor} />
+    <ZoneTasks />
   </div>
 
   <div
     class="selection-area"
-    on:mousedown={(e) => startSelection(e, boxSelect)}
-    on:touchstart={(e) => tapHandler(e)}
+    on:touchstart={(e) => startSelection(e, boxSelect)}
   >
     <div class="tools">
       {#if !selectedGroup}

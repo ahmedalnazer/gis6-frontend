@@ -109,7 +109,7 @@
         if($_selected.includes(node)) {
           _selected.update(z => z.filter(x => x != node))
         } else {
-          _selcected.update(z => z.concat(node))
+          _selected.update(z => z.concat(node))
         }
       }
     }
