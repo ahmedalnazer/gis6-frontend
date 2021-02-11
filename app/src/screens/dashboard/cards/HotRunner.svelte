@@ -2,8 +2,8 @@
   import { onMount, onDestroy } from 'svelte'
   import Card from './Card'
   import CheckCircle from "style/images/CheckCircle.svelte"
-
   import api from "data/api"
+  import zones from 'data/zones';
 
   let hrValue = {}
   let hrHigherZoneTemp = 0
@@ -13,27 +13,19 @@
   let orderId = 175
   let longPollingInterval = 5000
 
-  const getData = async () => {
-    const data = await api.get(`system/${orderId}/getminmax`)
-    if (data) {
-      hrLowerZoneTemp = data.min / 100
-      hrHigherZoneTemp = data.max / 100
-      hrLowerZone = data.min_zone
-      hrHigherZone = data.max_zone
-      hrValue = data
+
+  let min = {}
+  let max = {}
+  $: {
+    for(let z of $zones) {
+      if(!min.actual_temp || z.actual_temp < min.actual_temp) {
+        min = z
+      }
+      if(!max.actual_temp || z.actual_temp > max.actual_temp) {
+        max = z
+      }
     }
   }
-
-  let intvl
-
-  onMount(() => {
-    intvl = setInterval(function () {
-      // Use long polling
-      getData()
-    }, longPollingInterval)
-  })
-
-  onDestroy(() => clearInterval(intvl))
 </script>
 
 <Card link='/hot-runner'>
@@ -46,12 +38,12 @@
     <div class="zoneContainer">
         <div class="center">
             <div>
-                <div class="zoneTemp">{hrHigherZoneTemp} C</div>
-                <div class="zoneInfo">Highest {hrHigherZone}</div>
+                <div class="zoneTemp">{(max.actual_temp || 0) / 10} C</div>
+                <div class="zoneInfo">Highest {max.name || '-'}</div>
             </div>
             <div>
-                <div class="zoneTemp">{hrLowerZoneTemp} C</div>
-                <div class="zoneInfo">Lowest {hrLowerZone}</div>
+                <div class="zoneTemp">{(min.actual_temp || 0) / 10} C</div>
+                <div class="zoneInfo">Lowest {min.name || '-'}</div>
             </div>
         </div>
 

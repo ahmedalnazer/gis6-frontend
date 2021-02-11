@@ -48,9 +48,11 @@
         const data = await api.get(`system`);
 
         if (isInit && orderId == 0) {
-            let lastcompletedorder = await api.get(`/order/2000/lastcompleted/`);
-            if (lastcompletedorder) {
-                orderId = lastcompletedorder.id + 1
+            // const orderEndpoint = "/order/2000/lastcompleted/";
+            const orderEndpoint = "/order";
+            let lastcompletedorder = await api.get(orderEndpoint, {limit:1, status: 'n'});
+            if (lastcompletedorder.length) {
+                orderId = lastcompletedorder[0].id
             }
         }
 
@@ -155,7 +157,7 @@
                             <span>{goodpartfrom}</span>
                             <span class="item-label">of
                                 {goodparttotal}</span>
-                            
+
                         </div>
 
                         <div class="item-label-sub">Good parts</div>
@@ -239,7 +241,7 @@
             </div>
         </div>
         <div class="section-footer">
-            Processing Order Id: {orderId} 
+            Processing Order Id: {orderId}
         </div>
     </div>
 </Card>

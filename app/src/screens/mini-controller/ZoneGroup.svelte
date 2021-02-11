@@ -9,7 +9,6 @@
 
   export let group
   export let selection = []
-  export let onClearSelection = () => {}
 
   const toggle = (id, clear) => {
     if (clear) { selection = []}
@@ -17,14 +16,6 @@
       selection = selection.filter(x => x != id)
     } else {
       selection = selection.concat(id)
-    }
-  }
-  
-  let toggleSetPoint = key => {
-    if($activeSetpointEditor == key) {
-      activeSetpointEditor.set('')
-    } else {
-      activeSetpointEditor.set(key)
     }
   }
 
@@ -51,9 +42,9 @@
         {#each zones as zone}
           <ZoneBox
             zone={zone} 
+            group={group}
             active={selection.includes(zone.id)} 
             on:click={() => toggle(zone.id)}
-            on:dblclick={() => {onClearSelection(); toggle(zone.id, true); toggleSetPoint('setpoint');}}
           />
         {/each}
       </div>

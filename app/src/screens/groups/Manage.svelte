@@ -96,7 +96,24 @@
   
 
   const boxSelect = (nodes) => {
-    console.log(nodes)
+    for(let [ nodeString, group ] of nodes) {
+      const node = parseInt(nodeString)
+      if(group) {
+        if(selection[group].includes(node)) {
+          selection[group] = selection[group].filter(x => x != node)
+        } else {
+          selection[group].push(node)
+        }
+      } else {
+        
+        if($_selected.includes(node)) {
+          _selected.update(z => z.filter(x => x != node))
+        } else {
+          _selected.update(z => z.concat(node))
+        }
+      }
+    }
+    selection = selection
   }
 
   $: displayedZones = selectedGroup
@@ -150,8 +167,7 @@
 
   <div
     class="selection-area"
-    on:mousedown={(e) => startSelection(e, boxSelect)}
-  >
+    on:touchstart={(e) => startSelection(e, boxSelect)}>
     <GroupSelector />
     <div class="tools">
       {#if !selectedGroup}
@@ -191,7 +207,6 @@
                 {group}
                 onDelete={() => deleting = group}
                 bind:selection={selection[group.id]}
-                onClearSelection={() => {clearSelection();}}
               />
             </div>
           {/each}
@@ -202,7 +217,6 @@
               {group}
               onDelete={() => deleting = group}
               bind:selection={selection[group.id]}
-              onClearSelection={() => {clearSelection();}}
               />
         {/each}
       {:else}

@@ -126,12 +126,6 @@
     opacity: 0.8;
   }
 
-  :global(.dashboard-body .card-grid) {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-gap: 16px;
-  }
-
   .dashboard-body :global(h2) {
     font-size: 20px;
     font-weight: 600;

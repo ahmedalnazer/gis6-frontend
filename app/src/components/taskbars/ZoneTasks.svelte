@@ -5,7 +5,9 @@
   import On from './commands/On'
   import Off from './commands/Off'
   import Boost from './commands/Boost'
-  import Standby from './commands/Standby' 
+  import Standby from './commands/Standby'
+  import activeBoost from 'data/zones/boost'
+  import activeStandby from 'data/zones/standby'
 
   let toggle = key => {
     if($activeSetpointEditor == key) {
@@ -26,15 +28,39 @@
     <div class='icon on' />
     {$_('On')}
   </div>
-  <div class='button' on:click={() => toggle('standby')}>
+  <div 
+    class='button' 
+    class:pressed={$activeStandby} 
+    on:click={() => $activeStandby ? activeStandby.cancel() : toggle('standby')}
+  >
     <div class='icon standby'>
-      <Icon icon='standby' color='#F5F6F9' />
+      {#if $activeStandby}
+        <div class='animated standby'>
+          <Icon icon='boost' color='var(--warning)' />
+          <Icon icon='boost' color='var(--warning)' />
+          <div class='gradient-overlay' />
+        </div>
+      {:else}
+        <Icon icon='standby' color='#F5F6F9' />
+      {/if}
     </div>
     {$_('Standby')}
   </div>
-  <div class='button' on:click={() => toggle('boost')}>
+  <div 
+    class='button' 
+    class:pressed={$activeBoost} 
+    on:click={() => $activeBoost ? activeBoost.cancel() : toggle('boost')}
+  >
     <div class='icon boost'>
-      <Icon icon='boost' color='#F5F6F9' />
+      {#if $activeBoost}
+        <div class='animated boost'>
+          <Icon icon='boost' color='var(--warning)' />
+          <Icon icon='boost' color='var(--warning)' />
+          <div class='gradient-overlay' />
+        </div>
+      {:else}
+        <Icon icon='boost' color='#F5F6F9' />
+      {/if}
     </div>
     {$_('Boost')}
   </div>
@@ -106,4 +132,37 @@
     width: 12px;
   }
 
+  @keyframes boostAnimation {
+    0% {bottom: -100%}
+    100% {bottom: 0%}
+  }
+
+  .animated {
+    display:flex;
+    flex-direction: column;
+    margin: -7px;
+    position: relative;
+    overflow: hidden;
+    :global(svg) {
+      width: 20px;
+      height: 20px;
+    }
+    .gradient-overlay  {
+      --dark: #202e3f;
+      animation: boostAnimation 1s infinite linear;
+      background: linear-gradient(var(--dark), transparent, transparent, var(--dark)) repeat;
+      background-size: 100% 50%;
+      background-repeat: repeat;
+      background-position: 0, 0;
+      position:absolute;
+      height: 200%;
+      width: 100%;
+      left: 0;
+      bottom: 0%
+    }
+  }
+
+  .standby .animated {
+    transform: rotate(180deg)
+  }
 </style>
