@@ -1,5 +1,6 @@
 export { default as Modal } from './utilities/Modal'
 export { default as Collapsible } from './widgets/Collapsible'
+export { default as Progress } from './Progress'
 
 export { default as Input } from './input/Input'
 export { default as Select } from './input/Select'
