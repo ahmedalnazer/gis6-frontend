@@ -77,7 +77,8 @@ class API {
         return resolve(stub)
       }
 
-      if(!url.endsWith('/')) url = url + '/'
+      // if(!url.endsWith('/')) url = url + '/'
+      if(!url.endsWith('/') && !url.includes("?")) url = url + '/'
 
       // prefix all routes with api
       if(url.startsWith('api/')) url = url.replace('api/', '')

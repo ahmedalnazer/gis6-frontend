@@ -1,24 +1,33 @@
 <script>
-  import status from 'data/status';
+  import status from "data/status";
   import UpdateIcon from "./../style/images/UpdateIcon.svelte";
+  import Icon from "components/Icon.svelte";
+  import _ from "data/language";
 </script>
 
 <header class={$status.level}>
-  <a href='/' class='logo'>
-    <img class='logo-image' src="/images/barnes logo-white ball.png" alt="barnes_logo" />
-  </a>
-
-  <div class='status'>
-    <div class='status-icon'>
-
+  <div class="logo">
+    <div class="homelogo" on:click={() => { window.location.href = '/'}}>
+      <Icon icon="homelogo" color="#FFFFFF" />
+      <div class="homelogo-text">{$_("Barnes GIS6")}</div>
     </div>
-    <div class='status-message'>
+  </div>
+
+  <!-- <a href="/" class="logo">
+    <div class="homelogo" on:click={() => console.log("test")}>
+      <Icon icon="homelogo" color="#FFFFFF" /> <div class="homelogo-text">{$_('Barnes GIS6')}</div>
+    </div>
+  </a> -->
+
+  <div class="status">
+    <div class="status-icon" />
+    <div class="status-message">
       {$status.message}
     </div>
   </div>
 
-  <div class='icon'>
-    <img src='/images/icons/icon-history.svg' />
+  <div class="icon">
+    <img src="/images/icons/icon-history.svg" alt="History" />
   </div>
 </header>
 
@@ -30,7 +39,7 @@
     font-size: 1.8em;
     z-index: 2;
 
-    box-shadow: 0 2px 4px rgba(0, 0, 0, .3);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 
     &.info {
       background: var(--green);
@@ -56,6 +65,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
   }
 
   .logo-image {
@@ -68,5 +78,16 @@
 
   .icon {
     padding: 32px;
+  }
+
+  .homelogo-text {
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 600;
+    padding-top: 3px;
+  }
+
+  .homelogo {
+    text-align: center;
   }
 </style>
