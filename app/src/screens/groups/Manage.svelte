@@ -207,7 +207,6 @@
                 {group}
                 onDelete={() => deleting = group}
                 bind:selection={selection[group.id]}
-                onClearSelection={() => {clearSelection();}}
               />
             </div>
           {/each}
@@ -218,7 +217,6 @@
               {group}
               onDelete={() => deleting = group}
               bind:selection={selection[group.id]}
-              onClearSelection={() => {clearSelection();}}
               />
         {/each}
       {:else}

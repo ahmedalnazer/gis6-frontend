@@ -1,10 +1,14 @@
 <script>
   import { Icon } from 'components'
   import groups from 'data/groups'
-import { onDestroy, onMount } from 'svelte'
+import { activeSetpointEditor } from 'data/setpoint'
+import { selectedZones } from 'data/zones'
+import { createEventDispatcher, onDestroy, onMount } from 'svelte'
   export let zone
   export let group
   export let active
+
+  const dispatch = createEventDispatcher()
 
   let tabs = []
 
@@ -62,10 +66,23 @@ import { onDestroy, onMount } from 'svelte'
       }
     }
   })
+
+  let dbl = false
+  const click = e => {
+    if(!dbl) {
+      dbl = true
+      dispatch('click', e)
+      setTimeout(() => dbl = false, 500)
+      return
+    }
+    selectedZones.set([ zone.id ])
+    activeSetpointEditor.set('setpoint')
+  }
+
 </script>
 
 
-<div on:click on:dblclick class:active class='rb-box zone-box' data-id={zone.id} data-group={group && group.id}>
+<div on:click={click} class:active class='rb-box zone-box' data-id={zone.id} data-group={group && group.id}>
   <div class='group-colors'>
     {#each tabs as t }
       <div class='color-tab' style='background:{t}' />

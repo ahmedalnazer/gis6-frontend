@@ -6,22 +6,28 @@
   export let group
 
   let tabs = []
-  // let toggle = key => {
-  //   if($activeSetpointEditor == key) {
-  //     activeSetpointEditor.set('')
-  //   } else {
-  //     activeSetpointEditor.set(key)
-  //   }
-  // }
 
   $: zoneGroups = $groups.filter(x => zone.groups && zone.groups.includes(x.id))
 
   $: tabs = zoneGroups.length
     ? zoneGroups.map(x => x.color)
     : [ '#00E5FF' ]
+
+  let dbl = false
+  const click = e => {
+    if(!dbl) {
+      dbl = true
+      dispatch('click', e)
+      setTimeout(() => dbl = false, 500)
+      return
+    }
+    selectedZones.set([ zone.id ])
+    activeSetpointEditor.set('setpoint')
+  }
+
 </script>
 
-<div on:click on:dblclick class:active class='rb-box zone-button' data-id={zone.id} data-group={group && group.id}>
+<div on:click={click} class:active class='rb-box zone-button' data-id={zone.id} data-group={group && group.id}>
   <div class='group-colors'>
     {#each tabs as t }
       <div class='color-tab' style='background:{t}' />
