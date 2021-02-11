@@ -3,6 +3,9 @@
   import { Modal, Input } from 'components'
   import _ from 'data/language'
   import { notify } from 'data/'
+  import activeStandby from 'data/zones/standby'
+  import activeBoost from 'data/zones/boost'
+
   export let onClose
 
   let auto = 104
@@ -11,6 +14,11 @@
   const standby = zones => {
     console.log(zones)
     // set zones off
+    activeStandby.set(true)
+    if($activeBoost) {
+      notify('Boost cancelled')
+      activeBoost.set(false)
+    }
     notify.success($_('Standby applied'))
   }
 </script>

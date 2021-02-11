@@ -36,8 +36,8 @@
     <div class='icon standby'>
       {#if $activeStandby}
         <div class='animated standby'>
-          <Icon icon='standby' color='var(--danger)' />
-          <Icon icon='standby' color='var(--danger)' />
+          <Icon icon='boost' color='var(--warning)' />
+          <Icon icon='boost' color='var(--warning)' />
           <div class='gradient-overlay' />
         </div>
       {:else}
@@ -160,5 +160,9 @@
       left: 0;
       bottom: 0%
     }
+  }
+
+  .standby .animated {
+    transform: rotate(180deg)
   }
 </style>
