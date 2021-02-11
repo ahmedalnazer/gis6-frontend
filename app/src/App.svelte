@@ -17,6 +17,10 @@
 
   import './style/main.scss'
   onMount(() => {
+    let showSplashScreenStore = localStorage.getItem("showSplashScreen")
+    if (showSplashScreenStore === null) { showSplashScreen = true }
+    else { showSplashScreen = showSplashScreenStore !== "false" }
+
     createSocket()
   })
 </script>
@@ -24,7 +28,7 @@
 <Header />
 <!-- skip splash on internal screens -->
 {#if showSplashScreen && window.location.pathname == '/'}
-  <SplashScreen on:splashScreen={(e) => { showSplashScreen = e.detail.showSplashScreen }}/>
+  <SplashScreen on:splashScreen={(e) => { showSplashScreen = e.detail.showSplashScreen }} />
 {:else}
   <Router />
 {/if}

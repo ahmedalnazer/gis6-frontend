@@ -6,6 +6,7 @@
 
     setTimeout(function () {
       showSplashScreen = false
+      localStorage.setItem("showSplashScreen", showSplashScreen)
       dispatchSetupProduction("splashScreen", { showSplashScreen })
     }, 3000)
 </script>

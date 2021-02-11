@@ -15,6 +15,7 @@
 
   $: selectedGroup = $activeGroup
   let sortGroups = true
+  let openSetPointEditor = false
 
   $: displayedGroups = selectedGroup
     ? [ selectedGroup ]
@@ -44,7 +45,24 @@
   
 
   const boxSelect = (nodes) => {
-    console.log(nodes)
+    for(let [ nodeString, group ] of nodes) {
+      const node = parseInt(nodeString)
+      if(group) {
+        if(selection[group].includes(node)) {
+          selection[group] = selection[group].filter(x => x != node)
+        } else {
+          selection[group].push(node)
+        }
+      } else {
+        
+        if($_selected.includes(node)) {
+          _selected.update(z => z.filter(x => x != node))
+        } else {
+          _selected.update(z => z.concat(node))
+        }
+      }
+    }
+    selection = selection
   }
 
   $: displayedZones = selectedGroup
@@ -83,14 +101,20 @@
 
   <div
     class="selection-area"
-    on:mousedown={(e) => startSelection(e, boxSelect)}
+    on:touchstart={(e) => startSelection(e, boxSelect)}
   >
     <div class="tools">
       {#if !selectedGroup}
         <CheckBox label={$_("Show Groups")} bind:checked={sortGroups} />
       {/if}
 
-      <a on:click={() => showLegend = !showLegend}>{$_('Icon Legend')}</a>
+      <div class='links'>
+        {#if $_selected.length}
+           <a on:click={clearSelection} class='clear'>{$_('Clear Selection')}</a>
+        {/if}
+        <a on:click={() => showLegend = !showLegend}>{$_('Icon Legend')}</a>
+      </div>
+
     </div>
 
     <div class="zone-container">
@@ -102,7 +126,6 @@
                 bind:open={openGroups[group.id]}
                 {group}
                 bind:selection={selection[group.id]}
-                onClearSelection={() => {clearSelection();}}
               />
             </div>
           {/each}
@@ -112,7 +135,6 @@
               bind:open={openGroups[group.id]}
               {group}
               bind:selection={selection[group.id]}
-              onClearSelection={() => {clearSelection();}}
             />
         {/each}
       {:else}
@@ -164,9 +186,14 @@
   .tools {
     margin-bottom: 24px;
     display: flex;
-    justify-content: space-between;
     > :global(*) {
       margin-right: 16px;
+    }
+    .links {
+      margin-left: auto;
+      .clear {
+        margin-right: 16px;
+      }
     }
   }
 

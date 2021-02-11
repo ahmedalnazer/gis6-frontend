@@ -4,6 +4,7 @@
   export let getLabel = l => l.name
   export let id = 'id'
   export let value
+  export let label = ''
 
   let selectedValue
 
@@ -17,29 +18,35 @@
   }
 </script>
 
-<div class='select'>
-  <Select 
-    items={options}
-    {...$$restProps}
-    {selectedValue}
-    on:select={select}
-    optionIdentifier={id}
-    getOptionLabel={$$restProps.getOptionLabel || getLabel}
-    getSelectionLabel={$$restProps.getSelectionLabel || getLabel}
-    isClearable={false}
-  />
-  <div class='arrow'>
-    <div class='down' />
+<div class='select-container'>
+  {#if label}
+    <label>{label}</label>
+  {/if}
+  <div class='select'>
+    <Select 
+      items={options}
+      {...$$restProps}
+      {selectedValue}
+      on:select={select}
+      optionIdentifier={id}
+      getOptionLabel={$$restProps.getOptionLabel || getLabel}
+      getSelectionLabel={$$restProps.getSelectionLabel || getLabel}
+      isClearable={false}
+    />
+    <div class='arrow'>
+      <div class='down' />
+    </div>
   </div>
 </div>
 
 <style>
   .select {
+    min-width: 200px;
     position: relative;
     --border: 0;
     --background: var(--pale);
     --padding: 16px 8px;
-    --height: 48px;
+    --height: 52px;
   }
   .arrow {
     position: absolute;

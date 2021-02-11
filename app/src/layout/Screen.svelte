@@ -92,8 +92,8 @@
       cursor: pointer;
       box-shadow: 4px 4px 8px rgba(0, 0, 0, .3);
     }
-    :global(.button:not(.ignore-task-styles):active) {
-      background: linear-gradient(180deg, #161E29 0%, #1D2734 7.81%, #212F41 100%); 
+    :global(.button:not(.ignore-task-styles):active, .button.pressed:not(.ignore-task-styles)) {
+      background: linear-gradient(180deg, #161E29 0%, #1D2734 7.81%, #212F41 100%) !important; 
     }
   }
   .viewport.hide-tasks {

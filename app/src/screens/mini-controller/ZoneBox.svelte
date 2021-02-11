@@ -1,8 +1,14 @@
 <script>
   import { Icon } from 'components'
   import groups from 'data/groups'
+import { activeSetpointEditor } from 'data/setpoint'
+import { selectedZones } from 'data/zones'
+import { createEventDispatcher, onDestroy, onMount } from 'svelte'
   export let zone
+  export let group
   export let active
+
+  const dispatch = createEventDispatcher()
 
   let tabs = []
 
@@ -17,6 +23,8 @@
 
   $: deviation = Math.max(20, zone.DeviationSp || 0)
 
+  $: manual = zone.IsManual
+
   $: setpoint = zone.temp_sp ? Math.round(zone.temp_sp / 10) * 10 : zone.ProcessSp
 
   // $: console.log(zone)
@@ -26,25 +34,55 @@
 
   $: live = zone.IsZoneOn && zone.actual_temp !== undefined && zone.ProcessSp
 
-  $: deviationHigh = live && zone.actual_temp > setpoint + deviation
-  $: deviationLow = live && zone.actual_temp < setpoint - deviation
+  $: deviationHigh = !manual && live && zone.actual_temp > setpoint + deviation
+  $: deviationLow = !manual && live && zone.actual_temp < setpoint - deviation
 
   $: tempWarning = deviationHigh || deviationLow
-  $: tempError = [ 0, 1, 2, 3, 4, 5, 6, 7, 12, 14, 15 ].reduce((err, bit) => isTempBit(bit) || err, false)
+  // $: tempError = [ 0, 1, 2, 3, 4, 5, 6, 7, 12, 14, 15 ].reduce((err, bit) => isTempBit(bit) || err, false)
+  let tempError = false
  
   let powerWarning = false
   // $: powerError = zone.power_alarm > 0
-  $: powerError = false
+  let powerError = false
 
   $: on = zone.IsZoneOn
   let locked = true
 
   // $: console.log(zone.actual_temp, zone.ProcessSp, live, deviationHigh, zone.DeviationSp)
 
+  if(!window.zones) {
+    window.zoneOverrides = {}
+  }
+  onMount(() => {
+    window.zoneOverrides[zone.id] = {
+      togglePowerError: () => {
+        powerError = !powerError
+      },
+      togglePowerWarning: () => {
+        powerWarning = !powerWarning
+      },
+      toggleTempError: () => {
+        tempError = !tempError
+      }
+    }
+  })
+
+  let dbl = false
+  const click = e => {
+    if(!dbl) {
+      dbl = true
+      dispatch('click', e)
+      setTimeout(() => dbl = false, 500)
+      return
+    }
+    selectedZones.set([ zone.id ])
+    activeSetpointEditor.set('setpoint')
+  }
+
 </script>
 
 
-<div on:click on:dblclick class:active class='zone-box'>
+<div on:click={click} class:active class='rb-box zone-box' data-id={zone.id} data-group={group && group.id}>
   <div class='group-colors'>
     {#each tabs as t }
       <div class='color-tab' style='background:{t}' />
@@ -62,10 +100,10 @@
         {Math.round((zone.actual_temp || 0) / 10)}&deg;<span class='temp-type'>F</span>
       </div>
       <div class='deviation-icon'>
-        {#if deviationHigh}
+        {#if deviationLow}
           <Icon icon='up' color='white' />
         {/if}
-        {#if deviationLow}
+        {#if deviationHigh}
           <Icon icon='down' color='white' />
         {/if}
       </div>
@@ -77,7 +115,11 @@
           </div>
       {:else if on}
         <div class='setpoint'>
-          {setpoint / 10 || '-'}&deg;<span class='temp-type'>F</span>
+          {#if manual}
+            <span class='manual'></span>
+          {:else}
+            {setpoint / 10 || '-'}&deg;<span class='temp-type'>F</span>
+          {/if}
         </div>
       {/if}
     </div>
