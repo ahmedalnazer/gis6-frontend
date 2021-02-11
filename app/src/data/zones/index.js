@@ -93,32 +93,48 @@ const encodeZone = z => {
 }
 
 
-const getZones = async () => (await api.get('zone')).map(x => decodeZone(x))
+const getZones = async () => {
+  await init()
+  return (await api.get('zone')).map(x => decodeZone(x))
+}
+
+// TODO remove temporary workaround to specify 
+let processes = []
+let proc
+let initted = false
+const init = async () => {
+  if(initted) return
+  initted = true
+  processes = await api.get('process')
+  if (!processes.length) {
+    proc = await api.post('process', { name: 'Dummy Process' })
+    const order = await api.post('order', {
+      name: "Dummy Order",
+      process_id: 1,
+      targetParts: 1
+    })
+    await api.put(`order/${order.id}/start`, {})
+  } else {
+    proc = processes[0]
+  }
+  const order = await api.post('order', {
+    name: "Dummy Order",
+    process_id: proc.id,
+    targetParts: 1
+  })
+  await api.put(`order/${order.id}/start`, {})
+}
 
 zones.reload = async () => {
   let z = await getZones()
 
   // TODO: remove dummy zones
   if (z.length == 0) {
-    try {
-      const processes = await api.get('process')
-      if (!processes.length) {
-        const proc = await api.post('process', { name: 'Dummy Process' })
-        const order = await api.post('order', {
-          name: "Dummy Order",
-          process_id: 1,
-          targetParts: 1
-        })
-        await api.put(`order/1/start`, {})
-      }
-    } catch (e) {
-      // do nothing, hopefully removing dummy process anyway
-    }
     for (let i = 1; i <= 50; i++) {
       await api.post('zone', encodeZone({
         name: `Zone ${i}`,
         number: i,
-        ref_process: 1
+        ref_process: proc.id
       }))
     }
     z = await getZones()
