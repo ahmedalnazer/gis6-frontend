@@ -12,7 +12,7 @@
 
   $: status = $analysis && $analysis.status || 'inactive'
 
-  $: toTest = $zones.filter(x => selectedGroup == 'all' || x.groups.includes(selectedGroup))
+  $: toTest = $zones.filter(x => selectedGroup == 'all' || ((x.groups) ? x.groups.includes(selectedGroup): []))
 
   const start = () => {
     analysis.start(toTest)
