@@ -26,7 +26,7 @@
       </div>
       <div class='progress'>
         <p>{$analysis.progress_message}</p>
-        <Progress current={$analysis.progress} />
+        <Progress current={$analysis.progress} background='white'/>
       </div>
     </div>
   </div>

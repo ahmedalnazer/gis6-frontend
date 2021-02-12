@@ -5,7 +5,17 @@
   import groups from 'data/groups'
   import zones from 'data/zones'
   import history from 'router/history';
-  export let analysis, description
+  import faultAnalysis from 'data/analysis/fault'
+  import wiringAnalysis from 'data/analysis/wiring'
+
+  export let type, description
+
+  let analyses = {
+    fault: faultAnalysis,
+    wiring: wiringAnalysis
+  }
+
+  $: analysis = analyses[type]
 
   $: groupOptions = [{id: 'all', name: `${$_('All Zones')} (${$zones.length})`}].concat($groups)
   let selectedGroup = 'all'
@@ -39,7 +49,7 @@
     {/if}
   </div>
   {#if status != 'inactive'}
-    <ActiveAnalysis type='fault' />
+    <ActiveAnalysis {type} />
   {/if}
 
   <!-- <pre>{JSON.stringify($analysis, null, 2)}</pre> -->
