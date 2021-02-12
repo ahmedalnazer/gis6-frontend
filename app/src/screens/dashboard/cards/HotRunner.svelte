@@ -4,6 +4,7 @@
   import CheckCircle from "style/images/CheckCircle.svelte"
   import api from "data/api"
   import zones from 'data/zones';
+  import _ from 'data/language'
 
   let hrValue = {}
   let hrHigherZoneTemp = 0
@@ -33,7 +34,7 @@
         <div class='icon'>
             <CheckCircle size="1.5em" />
         </div>
-        <div>Hot Runner</div>
+        <div>{$_('Hot Runner')}</div>
     </div>
     <div class="zoneContainer">
         <div class="center">
@@ -81,6 +82,7 @@
         margin: -16px;
         margin-bottom: 0;
         padding: 16px;
+        font-size: 24px;
     }
 
     .icon {
