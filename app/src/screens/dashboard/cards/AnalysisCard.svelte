@@ -7,6 +7,7 @@
   export let analysis
   export let link
   export let title
+
 </script>
 
 <Card {link}>
