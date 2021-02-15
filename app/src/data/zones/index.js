@@ -108,21 +108,9 @@ const init = async () => {
   processes = await api.get('process')
   if (!processes.length) {
     proc = await api.post('process', { name: 'Dummy Process' })
-    const order = await api.post('order', {
-      name: "Dummy Order",
-      process_id: 1,
-      targetParts: 1
-    })
-    await api.put(`order/${order.id}/start`, {})
   } else {
     proc = processes[0]
   }
-  const order = await api.post('order', {
-    name: "Dummy Order",
-    process_id: proc.id,
-    targetParts: 1
-  })
-  await api.put(`order/${order.id}/start`, {})
 }
 
 zones.reload = async () => {

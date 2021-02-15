@@ -1,10 +1,8 @@
 <script>
-  import Card from './Card'
   import _ from 'data/language'
-  import process from 'data/process'
+  import wiringAnalysis from 'data/analysis/wiring'
+  import AnalysisCard from './AnalysisCard'
   
 </script>
 
-<Card link='/analysis/wiring'>
-  <h2>{$_('Wiring Analysis')}</h2>
-</Card>
+<AnalysisCard link='/analysis/wiring' title={$_('Wiring Analysis')} analysis={wiringAnalysis} />

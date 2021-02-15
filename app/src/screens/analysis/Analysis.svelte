@@ -1,16 +1,27 @@
 <script>
-  import ActiveAnalysis from "./ActiveAnalysis";
-  import { Modal, CheckBox, Input, Select } from "components";
-  import _ from "data/language";
-  import groups from "data/groups";
-  import zones from "data/zones";
-  import history from "router/history";
-  export let analysis, description;
-  export let selectedGroup = "all";
+  import { onMount, onDestroy } from 'svelte'
+  import ActiveAnalysis from './ActiveAnalysis'
+  import { Modal, CheckBox, Input, Select } from 'components'
+  import _ from 'data/language'
+  import groups from 'data/groups'
+  import zones from 'data/zones'
+  import history from 'router/history';
+  import faultAnalysis from 'data/analysis/fault'
+  import wiringAnalysis from 'data/analysis/wiring'
 
-  let startAnalysisConfirmed = null;
-  let maxStartingTemperature = 0;
-  let selectedGroupName = "";
+  export let type, analysis, description
+  let selectedGroup = "all";
+
+  let analyses = {
+    fault: faultAnalysis,
+    wiring: wiringAnalysis
+  }
+
+  $: analysis = analyses[type]
+
+  let startAnalysisConfirmed = null
+  let maxStartingTemperature = 0
+  let selectedGroupName = ''
 
   $: groupOptions = [
     { id: "all", name: `${$_("All Zones")} (${$zones.length})` },
@@ -33,6 +44,16 @@
     analysis.reset();
     history.push("/");
   };
+
+  onMount(() => {
+    if ($faultAnalysis.lastselectedgroup !== '') {
+      selectedGroup = $faultAnalysis.lastselectedgroup
+    }
+  })
+
+  onDestroy(() => {
+    $faultAnalysis.lastselectedgroup = selectedGroup
+  })
 </script>
 
 <div class="analysis">
@@ -57,8 +78,12 @@
       <a class="button active" on:click={exit}>{$_("Exit Test")}</a>
     {/if}
   </div>
-  {#if status != "inactive"}
-    <ActiveAnalysis type="fault" />
+
+  <!-- {#if status != "inactive"}
+    <ActiveAnalysis type="fault" /> -->
+
+  {#if status != 'inactive'}
+    <ActiveAnalysis {type} />
   {/if}
 </div>
 
@@ -135,7 +160,4 @@
     grid-column-gap: 10px;
   }
 
-  .modal-col-1,
-  .modal-col-2 {
-  }
 </style>

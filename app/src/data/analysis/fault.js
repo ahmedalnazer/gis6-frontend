@@ -6,7 +6,8 @@ const def = {
   errors: [],
   zones: [],
   progress: 0,
-  status: 'inactive'
+  status: 'inactive',
+  lastselectedgroup: ''
 }
 const faultAnalysis = writable(def)
 

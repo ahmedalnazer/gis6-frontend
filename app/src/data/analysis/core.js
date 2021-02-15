@@ -30,6 +30,7 @@ export default class Analysis {
   }
 
   start(zones) {
+    this.startTime = new Date()
     this.zones = zones
     this.status = 'Initializing...'
     this.update(0)

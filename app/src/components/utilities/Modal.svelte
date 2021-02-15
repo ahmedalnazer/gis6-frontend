@@ -3,6 +3,13 @@
   import { Icon } from 'components'
   export let onClose
   export let title
+  import history from 'router/history'
+
+  let route = $history
+
+  $: {
+    if($history != route) onClose()
+  }
 </script>
 
 
