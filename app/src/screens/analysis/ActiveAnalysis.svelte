@@ -67,6 +67,7 @@
   .table-header {
     display: grid;
     grid-template-columns: 100px 1fr;
-    position: sticky
+    position: sticky;
+    font-weight: 700;
   }
 </style>

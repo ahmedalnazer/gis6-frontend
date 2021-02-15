@@ -52,6 +52,7 @@
       justify-content: center;
       :global(.button) {
         margin: 32px;
+        cursor: pointer;
       }
     }
   }

@@ -55,35 +55,43 @@ export default class Analysis {
 export const error_types = {
   tc_open: {
     name: 'Thermocouple Open',
-    description: 'The T/C connection is broken'
+    description: 'The T/C connection is broken',
+    icon: '/images/icons/analysis/thermocouple_open.jfif'
   },
   tc_reversed: {
     name: 'Thermocouple Reversed',
-    description: 'The T/C connection is wired + to - at some point.'
+    description: 'The T/C connection is wired + to - at some point.',
+    icon: '/images/icons/analysis/thermocouple_reversed.jfif'
   },
   tc_short: {
     name: 'Thermocouple Short',
     description: `The T/C is pinched or the controller thinks it is pinched. 
-    (>98% output must see 20F(11C) rise in 5 minutes.`
+    (>98% output must see 20F(11C) rise in 5 minutes.`,
+    icon: '/images/icons/analysis/thermocouple_short.jfif'
   },
   open_fuse: {
     name: 'Open Fuse',
-    description: 'Fuse on ZPM module is bad.'
+    description: 'Fuse on ZPM module is bad.',
+    icon: '/images/icons/analysis/open_fuse.jfif'
   },
   heater_short: {
     name: 'Heater Short',
-    description: 'The heater is shorted or exceeds the maximum rating of the module.'
+    description: 'The heater is shorted or exceeds the maximum rating of the module.',
+    icon: '/images/icons/analysis/heater_short.jfif'
   },
   open_heater: {
     name: 'Open Heater',
-    description: 'The heater connection is broken or disconnected.'
+    description: 'The heater connection is broken or disconnected.',
+    icon: '/images/icons/analysis/open_heater.jfif'
   },
   uncontrolled_input: {
     name: 'Uncontrolled Output',
-    description: 'The output to the heater is unregulated.'
+    description: 'The output to the heater is unregulated.',
+    icon: '/images/icons/analysis/uncontrolled_output.jfif'
   },
   ground_fault: {
     name: 'Ground Fault',
-    description: ''
+    description: '',
+    icon: '/images/icons/analysis/ground_fault.jfif'
   },
 }

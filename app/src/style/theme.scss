@@ -51,6 +51,7 @@ a, .link {
   display: inline-block;
   box-shadow: var(--shadow);
   border: 2px solid var(--primary);
+  cursor: pointer;
 
   &.active {
     background: var(--primary);
