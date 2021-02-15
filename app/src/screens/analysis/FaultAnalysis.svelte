@@ -7,8 +7,9 @@
   import faultAnalysis from 'data/analysis/fault'
   import Analysis from './Analysis'
 
-  $: active = $faultAnalysis && $faultAnalysis.status == 'active'
+  let selectedGroupAnalysis = "alldd";
 
+  $: active = $faultAnalysis && $faultAnalysis.status == 'active'
 </script>
 
 <Screen title={$_("Fault Analysis")}>
@@ -18,6 +19,7 @@
 
   <Analysis 
     analysis={faultAnalysis} 
+    bind:selectedGroup={selectedGroupAnalysis}
     description={$_(`This test generally takes 5 minutes. All of the zones will be turned on 
     at the same time. Each zone will be heated to roughly 30°F (16°C) higher than the actual 
     value of the zone when the test was started. After a zone reaches the test temperature it 
