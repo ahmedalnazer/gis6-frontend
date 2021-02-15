@@ -12,7 +12,7 @@
     {error.zone.name}
   </div>
   <div class='thumb'>
-    img
+    <img src="{details.icon}" alt="{details.name}" />
   </div>
   <div class='desciption'>
     <div class='icon'>
@@ -33,5 +33,7 @@
   .error {
     display: grid;
     grid-template-columns: 100px 100px 1fr;
+    border-bottom: 1px solid #333333;
+    padding: 10px;
   }
 </style>

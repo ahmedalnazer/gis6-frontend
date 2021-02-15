@@ -1,33 +1,38 @@
 <script>
-  import { onMount, onDestroy } from 'svelte'
-  import ActiveAnalysis from './ActiveAnalysis'
-  import { Modal, CheckBox, Input, Select } from 'components'
-  import _ from 'data/language'
-  import groups from 'data/groups'
-  import zones from 'data/zones'
-  import history from 'router/history';
-  import faultAnalysis from 'data/analysis/fault'
-  import wiringAnalysis from 'data/analysis/wiring'
+  import { onMount, onDestroy } from "svelte";
+  import ActiveAnalysis from "./ActiveAnalysis";
+  import { Modal, CheckBox, Input, Select } from "components";
+  import _ from "data/language";
+  import groups from "data/groups";
+  import zones from "data/zones";
+  import history from "router/history";
+  import faultAnalysis from "data/analysis/fault";
+  import wiringAnalysis from "data/analysis/wiring";
 
-  export let type, analysis, description
+  export let type, analysis, description;
   let selectedGroup = "all";
 
   let analyses = {
     fault: faultAnalysis,
-    wiring: wiringAnalysis
-  }
+    wiring: wiringAnalysis,
+  };
 
-  $: analysis = analyses[type]
+  $: analysis = analyses[type];
 
-  let startAnalysisConfirmed = null
-  let maxStartingTemperature = 0
-  let selectedGroupName = ''
+  let startAnalysisConfirmed = null;
+  let stopAnalysisConfirmed = null;
+  let maxStartingTemperature = 0;
+  let selectedGroupName = "";
 
   $: groupOptions = [
     { id: "all", name: `${$_("All Zones")} (${$zones.length})` },
   ].concat($groups);
-  $: selectedGroupName = ((groupOptions.filter((x) => x.id == selectedGroup) || []).length == 0 ? "": (groupOptions.filter((x) => x.id == selectedGroup) || [])[0].name);
+  $: selectedGroupName =
+    (groupOptions.filter((x) => x.id == selectedGroup) || []).length == 0
+      ? ""
+      : (groupOptions.filter((x) => x.id == selectedGroup) || [])[0].name;
   $: status = ($analysis && $analysis.status) || "inactive";
+  $: console.log("status: " + status)
 
   $: toTest = $zones.filter(
     (x) =>
@@ -40,20 +45,25 @@
     // analysis.start(toTest)
   };
 
+  const stop = () => {
+    analysis.stop;
+    stopAnalysisConfirmed = true;
+  };
+
   const exit = () => {
     analysis.reset();
     history.push("/");
   };
 
   onMount(() => {
-    if ($faultAnalysis.lastselectedgroup !== '') {
-      selectedGroup = $faultAnalysis.lastselectedgroup
+    if ($faultAnalysis.lastselectedgroup !== "") {
+      selectedGroup = $faultAnalysis.lastselectedgroup;
     }
-  })
+  });
 
   onDestroy(() => {
-    $faultAnalysis.lastselectedgroup = selectedGroup
-  })
+    $faultAnalysis.lastselectedgroup = selectedGroup;
+  });
 </script>
 
 <div class="analysis">
@@ -72,7 +82,7 @@
     {#if status == "inactive"}
       <a class="button active" on:click={start}>{$_("Start Analysis")}</a>
     {:else if status != "complete"}
-      <a class="button" on:click={analysis.stop}>{$_("Cancel Test")}</a>
+      <a class="button" on:click={stop}>{$_("Cancel Test")}</a>
     {:else}
       <a on:click={start}>(restart)</a>
       <a class="button active" on:click={exit}>{$_("Exit Test")}</a>
@@ -82,14 +92,14 @@
   <!-- {#if status != "inactive"}
     <ActiveAnalysis type="fault" /> -->
 
-  {#if status != 'inactive'}
+  {#if status != "inactive"}
     <ActiveAnalysis {type} />
   {/if}
 </div>
 
 {#if startAnalysisConfirmed}
   <Modal
-    title={$_("Do you want to proceed")}
+    title={$_("Do you want to proceed?")}
     onClose={() => (startAnalysisConfirmed = null)}
   >
     <div class="modal">
@@ -100,18 +110,18 @@
           to turn off the zones and proceed with the test?
         </p>
         <div class="modal-grid">
-          <div class="modal-col-1">Groups</div>
-          <div class="modal-col-2">Max Starting Temperature</div>
+          <div class="modal-header">Groups</div>
+          <div class="modal-header">Max Starting Temperature</div>
           <div />
-          <div class="modal-col-1">
+          <div class="modal-body">
             {selectedGroupName}
           </div>
-          <div class="modal-col-2">{maxStartingTemperature} (&deg;F)</div>
+          <div class="modal-body">{maxStartingTemperature} (&deg;F)</div>
           <div />
         </div>
         <div class="modal-buttons">
           <div class="button" on:click={() => (startAnalysisConfirmed = null)}>
-            Cancel
+            {$_("No, cancel test")}
           </div>
           <div
             class="button active"
@@ -120,7 +130,36 @@
               analysis.start(toTest);
             }}
           >
-            Yes, start analysis
+            {$_("Yes, start analysis")}
+          </div>
+        </div>
+      </div>
+    </div></Modal
+  >
+{/if}
+
+{#if stopAnalysisConfirmed}
+  <Modal
+    title={$_("Cancel Test")}
+    onClose={() => (stopAnalysisConfirmed = null)}
+  >
+    <div class="modal">
+      <div class="modal-text">
+        <p>Are you sure you want to cancel the test?</p>
+        <div class="modal-buttons">
+          <div class="button" on:click={() => (stopAnalysisConfirmed = null)}>
+            {$_("No, take me back")}
+          </div>
+          <div
+            class="button active"
+            on:click={() => {
+              stopAnalysisConfirmed = null;
+              analysis.stop;
+              $analysis.status = "inactive";
+              status = "inactive";
+            }}
+          >
+            {$_("Yes, cancel test")}
           </div>
         </div>
       </div>
@@ -150,7 +189,7 @@
 
   .modal-text {
     text-align: left;
-    line-height: 1.4;
+    line-height: 1.6;
     font-weight: 600;
   }
 
@@ -158,6 +197,10 @@
     display: grid;
     grid-template-columns: auto auto auto;
     grid-column-gap: 10px;
+    padding-top: 10px;
   }
 
+  .modal-header {
+    font-weight: 700;
+  }
 </style>
