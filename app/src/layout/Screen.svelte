@@ -94,6 +94,7 @@
     }
     :global(.button:not(.ignore-task-styles):active, .button.pressed:not(.ignore-task-styles)) {
       background: linear-gradient(180deg, #161E29 0%, #1D2734 7.81%, #212F41 100%) !important; 
+      box-shadow: none !important;
     }
   }
   .viewport.hide-tasks {

@@ -5,6 +5,7 @@
   --primary: #358cca;
   // alias
   --lightBlue: #358cca;
+  --midBlue: #30577E;
   --darkBlue: #011F3E;
   --selected: #FFE503;
   --green: #017D02;
@@ -50,6 +51,7 @@ a, .link {
   display: inline-block;
   box-shadow: var(--shadow);
   border: 2px solid var(--primary);
+  cursor: pointer;
 
   &.active {
     background: var(--primary);
@@ -95,6 +97,7 @@ label {
   display: block;
   font-weight: 600;
 }
+
 input, select {
   background: var(--pale);
   border: 0;

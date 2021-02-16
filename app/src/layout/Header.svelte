@@ -3,11 +3,12 @@
   import UpdateIcon from "./../style/images/UpdateIcon.svelte";
   import Icon from "components/Icon.svelte";
   import _ from "data/language";
+  import history from 'router/history';
 </script>
 
 <header class={$status.level}>
-  <div class="logo">
-    <div class="homelogo" on:click={() => { window.location.href = '/'}}>
+  <div class="logo">    
+    <div class="homelogo" on:click={() => { history.push('/'); /*window.location.href = '/'*/ }} title="Home">
       <Icon icon="homelogo" color="#FFFFFF" />
       <div class="homelogo-text">{$_("Barnes GIS6")}</div>
     </div>
@@ -27,7 +28,7 @@
   </div>
 
   <div class="icon">
-    <img src="/images/icons/icon-history.svg" alt="History" />
+    <img src="/images/icons/icon-history.svg" alt="History" title="History" />
   </div>
 </header>
 
@@ -78,6 +79,7 @@
 
   .icon {
     padding: 32px;
+    cursor: pointer;
   }
 
   .homelogo-text {

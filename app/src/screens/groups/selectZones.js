@@ -5,8 +5,8 @@ export const startSelection = (touchStartEl, callback) => {
 
   const getAxis = e => {
     const axis = {
-      x: e.touches[0].pageX,
-      y: e.touches[0].pageY
+      x: e.pageX || e.touches[0].pageX,
+      y: e.pageY || e.touches[0].pageY
     }
     return axis
   }
@@ -78,11 +78,15 @@ export const startSelection = (touchStartEl, callback) => {
       callback(selectedZoneElements)
       selectedZoneElements.splice(0, selectedZoneElements.length)
       rubberBox.remove()
+      document.removeEventListener('mousemove', touchMoveHandler)
       document.removeEventListener('touchmove', touchMoveHandler)
       document.removeEventListener('touchend', touchEndHandler)
+      document.removeEventListener('mouseup', touchEndHandler)
     }
   }
 
+  document.addEventListener('mousemove', touchMoveHandler)
   document.addEventListener('touchmove', touchMoveHandler)
   document.addEventListener('touchend', touchEndHandler)
+  document.addEventListener('mouseup', touchEndHandler)
 }
