@@ -28,9 +28,9 @@ wiringAnalysis.start = (zones) => {
       return
     }
     const { errors, zones } = activeAnalysis
-    if (errors.length < 10) {
-      activeAnalysis.update(errors.length * 10)
-      activeAnalysis.logError({ zone: zones[0], type: types[errors.length] || 'tc_short' })
+    if (errors.length < 20) {
+      activeAnalysis.update(errors.length * 5, `Test in progress`, `Simulated error ${errors.length} of 20`)
+      activeAnalysis.logError({ zone: zones[errors.length] || zones[0], type: types[errors.length] || 'tc_short' })
     } else {
       activeAnalysis.complete()
     }

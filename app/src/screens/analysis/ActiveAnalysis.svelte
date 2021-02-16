@@ -1,19 +1,19 @@
 <script>
-  import { Progress } from "components";
-  import faultAnalysis from "data/analysis/fault";
-  import wiringAnalysis from "data/analysis/wiring";
-  import _ from "data/language";
-  import Error from "./Error.svelte";
-  import TestResults from "./TestResults.svelte";
+  import { Progress } from "components"
+  import faultAnalysis from "data/analysis/fault"
+  import wiringAnalysis from "data/analysis/wiring"
+  import _ from "data/language"
+  import Error from "./Error.svelte"
+  import TestResults from "./TestResults.svelte"
 
-  export let type = "fault";
+  export let type = "fault"
 
   let analyses = {
     fault: faultAnalysis,
     wiring: wiringAnalysis,
-  };
+  }
 
-  $: analysis = analyses[type];
+  $: analysis = analyses[type]
 </script>
 
 <div class="analysis">
@@ -25,7 +25,7 @@
       <div class="status-wrapper">
         <div class="text">
           <p>{$_("All zones off.")}</p>
-          <p>{$analysis.status_message}</p>
+          <p>{$analysis.status}</p>
         </div>
         <div class="progress">
           <p>{$analysis.progress_message}</p>

@@ -21,8 +21,6 @@
   $: displayedGroups = selectedGroup
     ? [ selectedGroup ]
     : $groups.concat([ { id: "unassigned", name: "Unassigned" } ])
-  // $: console.log(`disp grps: ${displayedGroups}`);
-  // $: selectedGroup,     console.log(selectedGroup)
 
   let creating = false
   let adding = false
@@ -38,19 +36,6 @@
     let newGrp = { name: newName, color: newColor }
     const g = await groups.create(newGrp, { skipReload: true })
     await groups.reload()
-
-    let selGrp = displayedGroups.filter(x => x.name == newName)
-    let _zones = $zones.filter(x => $_selected.includes(x.id))
-
-    // for (let z of _zones) {
-    //   if (selGrp.length && selGrp[0].id) {
-    //     z.groups = (z.groups || []).concat(selGrp[0].id)
-    //     z.groups = [ ...new Set(z.groups) ]
-    //     await zones.update(z, { skipReload: true })
-    //   }
-    // }
-
-    // await zones.reload()
 
     await groups.addZones(g, $_selected)
 

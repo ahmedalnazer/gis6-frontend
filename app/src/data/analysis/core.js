@@ -24,17 +24,19 @@ export default class Analysis {
     }
   }
 
-  update(progress, message, status) {
+  update(progress, status, message) {
     if(progress) this.progress = progress
     if(message) this.progress_message = message
-    if(status) this.progress_status = status
+    if(status) this.status = status
     this.store.set(this.current_status)
   }
 
-  start(zones) {
+  start(zones, completion_message = '', cancellation_message = '') {
     this.startTime = new Date()
     this.zones = zones
     this.status = 'Initializing...'
+    this.completion_message = completion_message
+    this.cancellation_message = cancellation_message
     this.update(0)
   }
 

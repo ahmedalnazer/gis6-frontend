@@ -1,12 +1,13 @@
 <script>
   import ActiveAnalysis from './ActiveAnalysis'
-  import { Modal, CheckBox, Input, Select } from 'components'
+  import { Modal, Icon, Input, Select } from 'components'
   import _ from 'data/language'
   import groups from 'data/groups'
   import zones from 'data/zones'
   import history from 'router/history'
   import faultAnalysis from 'data/analysis/fault'
   import wiringAnalysis from 'data/analysis/wiring'
+  import notify from 'data/notifications'
 
   export let type, analysis, description
 
@@ -21,6 +22,19 @@
   let analyses = {
     fault: faultAnalysis,
     wiring: wiringAnalysis,
+  }
+
+  $: messages = {
+    fault: {
+      start: $_('Fault analysis started'),
+      cancel: $_('Fault analysis cancelled'),
+      complete: $_('Fault analysis complete')
+    },
+    wiring: {
+      start: $_('Wiring analysis started'),
+      cancel: $_('Wiring analysis cancelled'),
+      complete: $_('Wiring analysis complete')
+    }
   }
 
   $: analysis = analyses[type]
@@ -41,12 +55,14 @@
 
   const start = () => {
     confirmStart = false
-    analysis.start(toTest)
+    notify.success(messages[type].start)
+    analysis.start(toTest, messages[type].complete)
   }
 
   const stop = () => {
     confirmStop = false
     analysis.cancel()
+    notify(messages[type].cancel)
   }
 
   const exit = () => {
@@ -70,13 +86,20 @@
       display={running}
       label="{$_('Max Starting Temperature')} (&deg;F)"
     />
+
+    
     {#if status == "inactive"}
       <a class="button active" on:click={() => confirmStart = true}>{$_("Start Analysis")}</a>
     {:else if status != "complete"}
       <a class="button" on:click={() => confirmStop = true}>{$_("Cancel Test")}</a>
     {:else}
-      <a on:click={start}>(restart)</a>
-      <a class="button active" on:click={exit}>{$_("Exit Test")}</a>
+      <!-- <a on:click={start}>(restart)</a> -->
+      <div class='complete'>
+        <div class='report-button'>
+          <Icon icon='report' color='var(--primary)' /> {$_('View Report')}
+        </div>
+        <a class="button active" on:click={exit}>{$_("Exit Test")}</a>
+      </div>
     {/if}
   </div>
 
@@ -133,7 +156,7 @@
   >
     <div class="modal">
       <div class="modal-text">
-        <p>Are you sure you want to cancel the test?</p>
+        <p>{$_('Are you sure you want to cancel the test?')}</p>
         <div class="modal-buttons">
           <div class="button" on:click={() => confirmStop = false}>
             {$_("No, take me back")}
@@ -163,8 +186,25 @@
     :global(.select-container) {
       margin-right: 16px;
     }
-    .button {
+    .button, .complete {
       margin-left: auto;
+    }
+  }
+
+  .complete {
+    display: flex;
+    align-items: center;
+    .button {
+      margin-left: 20px;
+    }
+  }
+
+  .report-button {
+    display: flex;
+    align-items: center;
+    color: var(--primary);
+    :global(svg) {
+      margin-right: 8px;
     }
   }
 
@@ -188,5 +228,9 @@
 
   .modal-header {
     font-weight: 700;
+  }
+
+  .report-button :global(svg) {
+    width: 24px;
   }
 </style>
