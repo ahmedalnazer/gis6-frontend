@@ -1,3 +1,5 @@
+import notify from 'data/notifications'
+
 export default class Analysis {
   constructor(type = '', zones = [], def = {}, store = {}, destroy = function(){}) {
     this.type = type
@@ -31,12 +33,11 @@ export default class Analysis {
     this.store.set(this.current_status)
   }
 
-  start(zones, completion_message = '', cancellation_message = '') {
+  start(zones, completion_message = '') {
     this.startTime = new Date()
     this.zones = zones
     this.status = 'Initializing...'
     this.completion_message = completion_message
-    this.cancellation_message = cancellation_message
     this.update(0)
   }
 
@@ -48,6 +49,7 @@ export default class Analysis {
   complete() {
     this.status = 'complete'
     this.endTime = new Date()
+    notify.success(this.completion_message)
     this.update(100)
   }
 

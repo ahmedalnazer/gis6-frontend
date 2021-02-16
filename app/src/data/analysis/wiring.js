@@ -13,11 +13,11 @@ const wiringAnalysis = writable(def)
 let activeAnalysis = null
 let dummyTimer
 
-wiringAnalysis.start = (zones) => {
+wiringAnalysis.start = (zones, message) => {
   activeAnalysis = new Analysis('wiring', zones, def, wiringAnalysis, () => {
     wiringAnalysis.set(def)
   })
-  activeAnalysis.start(zones)
+  activeAnalysis.start(zones, message)
 
   // test with dummy data
   clearInterval(dummyTimer)
@@ -32,6 +32,7 @@ wiringAnalysis.start = (zones) => {
       activeAnalysis.update(errors.length * 5, `Test in progress`, `Simulated error ${errors.length} of 20`)
       activeAnalysis.logError({ zone: zones[errors.length] || zones[0], type: types[errors.length] || 'tc_short' })
     } else {
+      clearInterval(dummyTimer)
       activeAnalysis.complete()
     }
   }, 300)

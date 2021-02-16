@@ -14,12 +14,12 @@ const faultAnalysis = writable(def)
 let activeAnalysis = null
 let dummyTimer
 
-faultAnalysis.start = (zones) => {
+faultAnalysis.start = (zones, message) => {
   activeAnalysis = new Analysis('fault', zones, def, faultAnalysis, () => {
     activeAnalysis = null
     faultAnalysis.set(def)
   })
-  activeAnalysis.start(zones)
+  activeAnalysis.start(zones, message)
 
   // test with dummy data
   clearInterval(dummyTimer)
@@ -35,6 +35,7 @@ faultAnalysis.start = (zones) => {
       activeAnalysis.logError({ zone: zones[errors.length] || zones[0], type: types[errors.length] || 'tc_short' })
     } else {
       activeAnalysis.complete()
+      clearInterval(dummyTimer)
     }
   }, 300)
   return activeAnalysis
