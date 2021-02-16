@@ -32,7 +32,7 @@
 <style>
   .error {
     display: grid;
-    grid-template-columns: 100px 100px 1fr;
+    grid-template-columns: 150px 100px 1fr;
     border-bottom: 1px solid #333333;
     padding: 10px;
   }
@@ -44,5 +44,6 @@
   .icon {
     float: left;
     padding: 8px;
+    height: 100%;
   }
 </style>
