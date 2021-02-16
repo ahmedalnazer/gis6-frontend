@@ -13,10 +13,10 @@ const wiringAnalysis = writable(def)
 let activeAnalysis = null
 let dummyTimer
 
-wiringAnalysis.start = (zones, message) => {
+wiringAnalysis.start = (zones, message, groupName, maxStart) => {
   activeAnalysis = new Analysis('wiring', zones, def, wiringAnalysis, () => {
     wiringAnalysis.set(def)
-  })
+  }, groupName, maxStart)
   activeAnalysis.start(zones, message)
 
   // test with dummy data

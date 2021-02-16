@@ -14,11 +14,11 @@ const faultAnalysis = writable(def)
 let activeAnalysis = null
 let dummyTimer
 
-faultAnalysis.start = (zones, message) => {
+faultAnalysis.start = (zones, message, groupName, maxStart) => {
   activeAnalysis = new Analysis('fault', zones, def, faultAnalysis, () => {
     activeAnalysis = null
     faultAnalysis.set(def)
-  })
+  }, groupName, maxStart)
   activeAnalysis.start(zones, message)
 
   // test with dummy data

@@ -1,12 +1,15 @@
 import notify from 'data/notifications'
 
 export default class Analysis {
-  constructor(type = '', zones = [], def = {}, store = {}, destroy = function(){}) {
+  constructor(type, zones, def, store, destroy = function(){}, groupName, maxTemp) {
     this.type = type
     this.default = def
     this.store = store
     this.destroy = destroy
     this.zones = zones
+    this.groupName = groupName
+    this.maxTemp = maxTemp
+
     this.errors = []
     this.status = 'inactive'
     this.update(0)
@@ -22,7 +25,9 @@ export default class Analysis {
       progress_message: this.progress_message,
       status: this.status,
       startTime: this.startTime,
-      endTime:this.endTime
+      endTime:this.endTime,
+      groupName: this.groupName,
+      maxTemp: this.maxTemp
     }
   }
 

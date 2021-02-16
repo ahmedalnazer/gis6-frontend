@@ -56,7 +56,7 @@
   const start = () => {
     confirmStart = false
     notify.success(messages[type].start)
-    analysis.start(toTest, messages[type].complete)
+    analysis.start(toTest, messages[type].complete, selectedGroupName, maxStartingTemperature)
   }
 
   const stop = () => {
@@ -69,6 +69,8 @@
     analysis.reset()
     history.push("/")
   }
+
+  $: console.log($analysis)
 </script>
 
 <div class="analysis">
