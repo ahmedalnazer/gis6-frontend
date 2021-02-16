@@ -102,6 +102,7 @@
   <div
     class="selection-area"
     on:touchstart={(e) => startSelection(e, boxSelect)}
+    on:mousedown={(e) => startSelection(e, boxSelect)}
   >
     <div class="tools">
       {#if !selectedGroup}

@@ -167,7 +167,9 @@
 
   <div
     class="selection-area"
-    on:touchstart={(e) => startSelection(e, boxSelect)}>
+    on:touchstart={(e) => startSelection(e, boxSelect)}
+    on:mousedown={(e) => startSelection(e, boxSelect)}
+  >
     <GroupSelector />
     <div class="tools">
       {#if !selectedGroup}
@@ -229,7 +231,7 @@
               {zone}
               active={$_selected.includes(zone.id)}
               on:click={() => toggleZones(zone.id)}
-              on:dblclick={() => {toggleZones(zone.id); toggleSetPoint('setpoint');}}
+              on:dblclick={() => {toggleZones(zone.id); toggleSetPoint('setpoint')}}
           />
           {/each}
         </div>
