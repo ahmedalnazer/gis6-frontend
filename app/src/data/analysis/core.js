@@ -1,29 +1,33 @@
 import notify from 'data/notifications'
+import { writable } from 'svelte/store'
 
-export default class Analysis {
-  constructor(type = '', zones = [], def = {}, store = {}, destroy = function(){}) {
+export class Analysis {
+  constructor(type, zones, def, store, destroy = function(){}, groupName, maxTemp, user, mold) {
     this.type = type
     this.default = def
     this.store = store
     this.destroy = destroy
     this.zones = zones
+    this.groupName = groupName
+    this.maxTemp = maxTemp
+    this.user = user
+    this.mold = mold
+
     this.errors = []
     this.status = 'inactive'
     this.update(0)
   }
 
   get current_status() {
-    return {
-      ...this.default,
-      zones: this.zones,
-      errors: this.errors,
-      status: this.status,
-      progress: this.progress,
-      progress_message: this.progress_message,
-      status: this.status,
-      startTime: this.startTime,
-      endTime:this.endTime
+    const published = [ 
+      'zones', 'errors', 'status', 'progress', 'progress_message', 'startTime', 'endTime',
+      'groupName', 'maxTemp', 'user', 'mold'
+    ]
+    let ret = { ...this.default }
+    for(let key of published) {
+      ret[key] = this[key]
     }
+    return ret
   }
 
   update(progress, status, message) {
@@ -59,6 +63,64 @@ export default class Analysis {
 }
 
 
+let active = {}
+
+
+// temp
+let dummyTimer = {}
+
+export default function getAnalysis(type) {
+
+  const def = {
+    type,
+    errors: [],
+    zones: [],
+    progress: 0,
+    status: 'inactive'
+  }
+  let store = writable(def)
+
+  store.start = (zones, message, groupName, maxStart, user, mold) => {
+    active[type] = new Analysis('fault', zones, def, store, () => {
+      active[type] = null
+      store.set(def)
+    }, groupName, maxStart, user, mold)
+    active[type].start(zones, message)
+
+    // test with dummy data
+    clearInterval(dummyTimer[type])
+    const types = Object.keys(error_types)
+    dummyTimer[type] = setInterval(() => {
+      if (!active[type]) {
+        clearInterval(dummyTimer[type])
+        return
+      }
+      const { errors, zones } = active[type]
+      if (errors.length < 20) {
+        active[type].update(errors.length * 5, `Test in progress`, `Simulated error ${errors.length} of 20`)
+        active[type].logError({ zone: zones[errors.length] || zones[0], type: types[errors.length] || 'tc_short' })
+      } else {
+        active[type].complete()
+        clearInterval(dummyTimer[type])
+      }
+    }, 300)
+    return active[type]
+  }
+
+  store.cancel = () => {
+    if (active[type]) active[type].cancel()
+  }
+
+  store.reset = () => {
+    if (active[type]) active[type].destroy()
+    active[type] = null
+  }
+
+  return store
+}
+
+
+// TODO: need to internationalize these, should be a dervied store from selected language
 export const error_types = {
   tc_open: {
     name: 'Thermocouple Open',

@@ -8,6 +8,8 @@
   import faultAnalysis from 'data/analysis/fault'
   import wiringAnalysis from 'data/analysis/wiring'
   import notify from 'data/notifications'
+  import user from 'data/user'
+  import mold from 'data/mold'
 
   export let type, analysis, description
 
@@ -56,7 +58,14 @@
   const start = () => {
     confirmStart = false
     notify.success(messages[type].start)
-    analysis.start(toTest, messages[type].complete)
+    analysis.start(
+      toTest, 
+      messages[type].complete, 
+      selectedGroupName, 
+      maxStartingTemperature,
+      $user && $user.username || $_('Operator'),
+      $mold.name || $_('Unknown')
+    )
   }
 
   const stop = () => {

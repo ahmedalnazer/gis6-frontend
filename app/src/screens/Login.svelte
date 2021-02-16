@@ -14,6 +14,8 @@
       loggingIn.set(false)
     }
   }
+
+  $: console.log($users)
 </script>
 
 <Modal onClose={() => loggingIn.set(false)}>
@@ -27,7 +29,7 @@
       options={$users}
       placeholder={$_('Select...')}
       id='username'
-      getLabel={u => u.username}
+      getLabel={u => u && u.username}
     />
 
     <label>{$_('Password')}</label>
