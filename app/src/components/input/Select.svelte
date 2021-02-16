@@ -5,12 +5,15 @@
   export let id = 'id'
   export let value
   export let label = ''
+  export let display = false
 
   let selectedValue
 
   $: {
     selectedValue = options.find(x => x[id] == value)
   }
+
+  $: selectedLabel = getLabel(selectedValue)
 
   const select = e => {
     value = e.detail[id]
@@ -22,21 +25,27 @@
   {#if label}
     <label>{label}</label>
   {/if}
-  <div class='select'>
-    <Select 
-      items={options}
-      {...$$restProps}
-      {selectedValue}
-      on:select={select}
-      optionIdentifier={id}
-      getOptionLabel={$$restProps.getOptionLabel || getLabel}
-      getSelectionLabel={$$restProps.getSelectionLabel || getLabel}
-      isClearable={false}
-    />
-    <div class='arrow'>
-      <div class='down' />
+  {#if display}
+    <div class='display'>
+      {selectedLabel}
     </div>
-  </div>
+  {:else}
+    <div class='select'>
+      <Select 
+        items={options}
+        {...$$restProps}
+        {selectedValue}
+        on:select={select}
+        optionIdentifier={id}
+        getOptionLabel={$$restProps.getOptionLabel || getLabel}
+        getSelectionLabel={$$restProps.getSelectionLabel || getLabel}
+        isClearable={false}
+      />
+      <div class='arrow'>
+        <div class='down' />
+      </div>
+    </div>
+  {/if}
 </div>
 
 <style>
@@ -47,6 +56,11 @@
     --background: var(--pale);
     --padding: 16px 8px;
     --height: 52px;
+  }
+  .display {
+    min-width: 200px;
+    padding: 16px;
+    padding-left: 0;
   }
   .arrow {
     position: absolute;

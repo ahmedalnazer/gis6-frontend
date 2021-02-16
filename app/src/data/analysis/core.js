@@ -18,7 +18,9 @@ export default class Analysis {
       status: this.status,
       progress: this.progress,
       progress_message: this.progress_message,
-      status: this.status
+      status: this.status,
+      startTime: this.startTime,
+      endTime:this.endTime
     }
   }
 
@@ -43,6 +45,7 @@ export default class Analysis {
 
   complete() {
     this.status = 'complete'
+    this.endTime = new Date()
     this.update(100)
   }
 

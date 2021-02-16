@@ -3,11 +3,8 @@
   import _ from "data/language"
   import ZoneTasks from "components/taskbars/ZoneTasks"
   import Analysis from './Analysis'
-  import faultAnalysis from 'data/analysis/fault'
 
   let selectedGroupAnalysis = "all";
-
-  $: active = $faultAnalysis && $faultAnalysis.status == 'active'
 </script>
 
 <Screen title={$_("Fault Analysis")}>
@@ -15,8 +12,7 @@
     <ZoneTasks />
   </div>
 
-  <Analysis 
-    analysis={faultAnalysis} 
+  <Analysis
     bind:selectedGroup={selectedGroupAnalysis}
     type='fault'
     description={$_(`This test generally takes 5 minutes. All of the zones will be turned on 

@@ -16,6 +16,7 @@ let dummyTimer
 
 faultAnalysis.start = (zones) => {
   activeAnalysis = new Analysis('fault', zones, def, faultAnalysis, () => {
+    activeAnalysis = null
     faultAnalysis.set(def)
   })
   activeAnalysis.start(zones)

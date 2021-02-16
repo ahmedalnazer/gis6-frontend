@@ -4,6 +4,7 @@
   import wiringAnalysis from 'data/analysis/wiring'
   import _ from 'data/language';
   import Error from './Error.svelte'
+import TestResults from './TestResults.svelte';
 
   export let type = 'fault'
 
@@ -17,19 +18,23 @@
 </script>
 
 <div class='analysis'>
-  <div class='status'>
-    <h2>{$_('Test Status')}</h2>
-    <div class='status-wrapper'>
-      <div class='text'>
-        <p>{$_('All zones off.')}</p>
-        <p>{$analysis.status_message}</p>
-      </div>
-      <div class='progress'>
-        <p>{$analysis.progress_message}</p>
-        <Progress current={$analysis.progress} background='white'/>
+  {#if $analysis.status == 'complete'}
+    <TestResults analysis={$analysis} />
+  {:else}
+    <div class='status'>
+      <h2>{$_('Test Status')}</h2>
+      <div class='status-wrapper'>
+        <div class='text'>
+          <p>{$_('All zones off.')}</p>
+          <p>{$analysis.status_message}</p>
+        </div>
+        <div class='progress'>
+          <p>{$analysis.progress_message}</p>
+          <Progress current={$analysis.progress} background='white'/>
+        </div>
       </div>
     </div>
-  </div>
+  {/if}
 
   <div class='errors'>
     {#if $analysis.errors.length}

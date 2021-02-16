@@ -15,6 +15,7 @@
   export let inputClass = ''
   export let changed = false
   export let input = null
+  export let display = false
 
   let modalOpned = false
 
@@ -33,22 +34,28 @@
   {#if label}
     <label>{label}</label>
   {/if}
-  <input {type} 
-    on:change 
-    on:input={handleInput} 
-    class:changed
-    {value} 
-    {...$$restProps} 
-    class={inputClass} 
-    autocomplete='new-password'
-    bind:this={input}
-    on:focus={e => {
-      dispatch('focus', e)
-     if(type == 'number') {
-       modalOpned = true
-     } 
-    }}
-  />
+  {#if display}
+    <div class='display'>
+      {value}
+    </div>
+  {:else}
+    <input {type} 
+      on:change 
+      on:input={handleInput} 
+      class:changed
+      {value} 
+      {...$$restProps} 
+      class={inputClass} 
+      autocomplete='new-password'
+      bind:this={input}
+      on:focus={e => {
+        dispatch('focus', e)
+      if(type == 'number') {
+        modalOpned = true
+      } 
+      }}
+    />
+  {/if}
   {#if note}
     <p class='muted input-note'>{note}</p>
   {/if}
@@ -71,6 +78,10 @@
 <style>
   input {
     border: 1px solid var(--pale)
+  }
+  .display {
+    padding: 16px;
+    padding-left: 0;
   }
   .info, .error {
     font-size: 14px;

@@ -3,7 +3,6 @@
   import _ from "data/language"
   import ZoneTasks from "components/taskbars/ZoneTasks"
   import Analysis from './Analysis.svelte'
-
 </script>
 
 <Screen title={$_('Wiring Analysis')}>
@@ -22,8 +21,3 @@
     />  
   </div>
 </Screen>
-
-
-<style lang="scss">
-
-</style>
