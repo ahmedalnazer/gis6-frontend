@@ -74,5 +74,6 @@ import TestResults from './TestResults.svelte';
     grid-template-columns: 100px 1fr;
     position: sticky;
     font-weight: 700;
+    border-bottom: 1px solid #333333;
   }
 </style>

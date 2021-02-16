@@ -36,4 +36,13 @@
     border-bottom: 1px solid #333333;
     padding: 10px;
   }
+
+  .details {
+    color: #B32024;
+  }
+
+  .icon {
+    float: left;
+    padding: 8px;
+  }
 </style>
