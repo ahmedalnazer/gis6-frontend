@@ -1,23 +1,28 @@
 <script>
-  import ActiveAnalysis from "./ActiveAnalysis";
-  import { Modal, Icon, Input, Select } from "components";
-  import _ from "data/language";
-  import groups from "data/groups";
-  import zones from "data/zones";
-  import history from "router/history";
-  import faultAnalysis from "data/analysis/fault";
-  import wiringAnalysis from "data/analysis/wiring";
-  import notify from "data/notifications";
-  import user from "data/user";
-  import mold from "data/mold";
+  import ActiveAnalysis from './ActiveAnalysis'
+  import { Modal, Icon, Input, Select } from 'components'
+  import _ from 'data/language'
+  import groups, { activeGroup } from 'data/groups'
+  import zones from 'data/zones'
+  import history from 'router/history'
+  import faultAnalysis from 'data/analysis/fault'
+  import wiringAnalysis from 'data/analysis/wiring'
+  import notify from 'data/notifications'
+  import user from 'data/user'
+  import mold from 'data/mold'
 
-  export let type, analysis, description;
+  export let type, analysis, description
+
+  const totalZones = id => $zones.filter(x => (x.groups||[]).includes(id)).length
 
   $: groupOptions = [
-    { id: "all", name: `${$_("All Zones")} (${$zones.length})` },
-  ].concat($groups);
+    { id: "all", name: `${$_("All Zones")} (${$zones.length} ${$_('zones')})` },
+  ].concat($groups.map(g => ({
+    ...g,
+    name: `${g.name} (${totalZones(g.id)} ${$_('zones')})`
+  })))
 
-  let selectedGroup = "all";
+  let selectedGroup =  $activeGroup || "all"
 
   $: selectedGroupName = groupOptions.find((x) => x.id == selectedGroup).name;
 
