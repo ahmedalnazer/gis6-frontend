@@ -25,6 +25,7 @@
   let selectedGroup =  $activeGroup || "all"
 
   $: selectedGroupName = groupOptions.find((x) => x.id == selectedGroup).name;
+  $: $activeGroup = selectedGroup
 
   let analyses = {
     fault: faultAnalysis,
