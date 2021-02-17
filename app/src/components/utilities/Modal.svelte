@@ -66,7 +66,11 @@
     margin-top: 0;
 
     .modal-body, .modal-header {
-      padding: 32px;
+      padding: 40px;
+    }
+
+    .modal-body {
+      padding-top: 20px;
     }
 
     .modal-header {

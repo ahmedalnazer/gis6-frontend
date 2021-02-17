@@ -24,13 +24,13 @@
 
   let selectedGroup =  $activeGroup || "all"
 
-  $: selectedGroupName = groupOptions.find((x) => x.id == selectedGroup).name;
+  $: selectedGroupName = groupOptions.find((x) => x.id == selectedGroup).name
   $: $activeGroup = selectedGroup
 
   let analyses = {
     fault: faultAnalysis,
     wiring: wiringAnalysis,
-  };
+  }
 
   $: messages = {
     fault: {
@@ -43,47 +43,47 @@
       cancel: $_("Wiring analysis cancelled"),
       complete: $_("Wiring analysis complete"),
     },
-  };
+  }
 
-  $: analysis = analyses[type];
+  $: analysis = analyses[type]
 
-  let confirmStart = false;
-  let confirmStop = false;
+  let confirmStart = false
+  let confirmStop = false
 
-  let maxStartingTemperature = 0;
+  let maxStartingTemperature = 0
 
-  $: status = ($analysis && $analysis.status) || "inactive";
-  $: running = status != "inactive";
+  $: status = $analysis && $analysis.status || "inactive"
+  $: running = status != "inactive"
 
   $: toTest = $zones.filter(
     (x) =>
       selectedGroup == "all" ||
       (x.groups ? x.groups.includes(selectedGroup) : [])
-  );
+  )
 
   const start = () => {
-    confirmStart = false;
-    notify.success(messages[type].start);
+    confirmStart = false
+    notify.success(messages[type].start)
     analysis.start(
       toTest,
       messages[type].complete,
       selectedGroupName,
       maxStartingTemperature,
-      ($user && $user.username) || $_("Operator"),
+      $user && $user.username || $_("Operator"),
       $mold.name || $_("Unknown")
-    );
-  };
+    )
+  }
 
   const stop = () => {
-    confirmStop = false;
-    analysis.cancel();
-    notify(messages[type].cancel);
-  };
+    confirmStop = false
+    analysis.cancel()
+    notify(messages[type].cancel)
+  }
 
   const exit = () => {
-    analysis.reset();
-    history.push("/");
-  };
+    analysis.reset()
+    history.push("/")
+  }
 </script>
 
 <div class="analysis">
@@ -103,9 +103,9 @@
     />
 
     {#if status == "inactive"}
-      <a class="button active" on:click={() => (confirmStart = true)}>{$_("Start Analysis")}</a>
+      <a class="button active" on:click={() => confirmStart = true}>{$_("Start Analysis")}</a>
     {:else if status != "complete"}
-      <a class="button" on:click={() => (confirmStop = true)}>{$_("Cancel Test")}</a>
+      <a class="button" on:click={() => confirmStop = true}>{$_("Cancel Test")}</a>
     {:else}
       <!-- <a on:click={start}>(restart)</a> -->
       <div class="complete">
@@ -129,53 +129,53 @@
 {#if confirmStart}
   <Modal
     title={$_("Do you want to proceed?")}
-    onClose={() => (confirmStart = false)}
+    onClose={() => confirmStart = false}
   >
-    <div class="modal">
-      <div class="modal-text">
-        <p>
-          All zones are currently ON and the system is running. The zones will
-          need to be turned OFF before the fault analysis can begin. Do you want
-          to turn off the zones and proceed with the test?
-        </p>
-        <div class="modal-grid">
-          <div class="modal-header">Groups</div>
-          <div class="modal-header">Max Starting Temperature</div>
-          <div />
-          <div class="modal-body">
-            {selectedGroupName}
-          </div>
-          <div class="modal-body">{maxStartingTemperature} (&deg;F)</div>
-          <div />
+    <div class="modal-text">
+      <p>
+        All zones are currently ON and the system is running. The zones will
+        need to be turned OFF before the fault analysis can begin. Do you want
+        to turn off the zones and proceed with the test?
+      </p>
+      <div class="modal-grid">
+        <Select
+          bind:value={selectedGroup}
+          label={$_("Groups")}
+          options={groupOptions}
+          display
+        />
+        <Input
+          type="number"
+          bind:value={maxStartingTemperature}
+          display
+          label="{$_('Max Starting Temperature')} (&deg;F)"
+        />
+      </div>
+      <div class="modal-buttons">
+        <div
+          class="button cancel-button"
+          on:click={() => confirmStart = false}
+        >
+          {$_("No, cancel test")}
         </div>
-        <div class="modal-buttons">
-          <div
-            class="button cancel-button"
-            on:click={() => (confirmStart = false)}
-          >
-            {$_("No, cancel test")}
-          </div>
-          <div class="button confirm-button active" on:click={start}>
-            {$_("Yes, start analysis")}
-          </div>
+        <div class="button confirm-button active" on:click={start}>
+          {$_("Yes, start analysis")}
         </div>
       </div>
-    </div></Modal
-  >
+    </div>
+  </Modal>
 {/if}
 
 {#if confirmStop}
-  <Modal title={$_("Cancel Test")} onClose={() => (confirmStop = false)}>
-    <div class="modal">
-      <div class="modal-text">
-        <p>{$_("Are you sure you want to cancel the test?")}</p>
-        <div class="modal-buttons">
-          <div class="button" on:click={() => (confirmStop = false)}>
-            {$_("No, take me back")}
-          </div>
-          <div class="button active" on:click={stop}>
-            {$_("Yes, cancel test")}
-          </div>
+  <Modal title={$_("Cancel Test")} onClose={() => confirmStop = false}>
+    <div class="modal-text">
+      <p class='cancel-message'>{$_("Are you sure you want to cancel the test?")}</p>
+      <div class="modal-buttons">
+        <div class="button" on:click={() => confirmStop = false}>
+          {$_("No, take me back")}
+        </div>
+        <div class="button active" on:click={stop}>
+          {$_("Yes, cancel test")}
         </div>
       </div>
     </div>
@@ -220,14 +220,12 @@
 
   .modal-buttons {
     justify-content: space-between;
+    .button {
+      margin: 0;
+    }
   }
 
-  .modal {
-    text-align: center;
-    padding: 10px;
-  }
-
-  .modal-text {
+  .modal-text p {
     text-align: left;
     line-height: 27px;
     font-weight: 600;
@@ -247,5 +245,8 @@
 
   .report-button :global(svg) {
     width: 24px;
+  }
+  .cancel-message {
+    margin-bottom: 100px;
   }
 </style>
