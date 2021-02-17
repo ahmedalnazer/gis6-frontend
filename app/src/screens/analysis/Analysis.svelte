@@ -22,7 +22,7 @@
     name: `${g.name} (${totalZones(g.id)} ${$_('zones')})`
   })))
 
-  let selectedGroup =  $activeGroup ? $activeGroup.id : "all"
+  let selectedGroup =  $activeGroup || "all"
 
   $: selectedGroupName = groupOptions.find(x => x.id == selectedGroup).name
 
