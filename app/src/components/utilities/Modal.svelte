@@ -18,7 +18,7 @@
     <div class='modal-header'>
       <div class='header-wrapper'>
         {#if title}
-          <h2>{title}</h2>
+          <h2 class="modal-title">{title}</h2>
         {/if}
         <slot name='header' />
       </div>
@@ -84,6 +84,12 @@
         margin: 0;
       }
     }
+  }
+
+  .modal-title {
+    font-size: 26px;
+    font-weight: bold;
+    line-height: 36px;
   }
 </style>
 

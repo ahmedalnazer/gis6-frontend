@@ -13,7 +13,7 @@
 
   export let type, analysis, description
 
-  const totalZones = id => $zones.filter(x => x.groups.includes(id)).length
+  const totalZones = id => $zones.filter(x => (x.groups||[]).includes(id)).length
 
   $: groupOptions = [
     { id: "all", name: `${$_("All Zones")} (${$zones.length} ${$_('zones')})` },
@@ -24,69 +24,69 @@
 
   let selectedGroup =  $activeGroup || "all"
 
-  $: selectedGroupName = groupOptions.find(x => x.id == selectedGroup).name
+  $: selectedGroupName = groupOptions.find((x) => x.id == selectedGroup).name;
 
   let analyses = {
     fault: faultAnalysis,
     wiring: wiringAnalysis,
-  }
+  };
 
   $: messages = {
     fault: {
-      start: $_('Fault analysis started'),
-      cancel: $_('Fault analysis cancelled'),
-      complete: $_('Fault analysis complete')
+      start: $_("Fault analysis started"),
+      cancel: $_("Fault analysis cancelled"),
+      complete: $_("Fault analysis complete"),
     },
     wiring: {
-      start: $_('Wiring analysis started'),
-      cancel: $_('Wiring analysis cancelled'),
-      complete: $_('Wiring analysis complete')
-    }
-  }
+      start: $_("Wiring analysis started"),
+      cancel: $_("Wiring analysis cancelled"),
+      complete: $_("Wiring analysis complete"),
+    },
+  };
 
-  $: analysis = analyses[type]
+  $: analysis = analyses[type];
 
-  let confirmStart = false
-  let confirmStop = false
+  let confirmStart = false;
+  let confirmStop = false;
 
-  let maxStartingTemperature = 0
+  let maxStartingTemperature = 0;
 
-  $: status = $analysis && $analysis.status || "inactive"
-  $: running = status != 'inactive'
+  $: status = ($analysis && $analysis.status) || "inactive";
+  $: running = status != "inactive";
 
   $: toTest = $zones.filter(
     (x) =>
       selectedGroup == "all" ||
       (x.groups ? x.groups.includes(selectedGroup) : [])
-  )
+  );
 
   const start = () => {
-    confirmStart = false
-    notify.success(messages[type].start)
+    confirmStart = false;
+    notify.success(messages[type].start);
     analysis.start(
-      toTest, 
-      messages[type].complete, 
-      selectedGroupName, 
+      toTest,
+      messages[type].complete,
+      selectedGroupName,
       maxStartingTemperature,
-      $user && $user.username || $_('Operator'),
-      $mold.name || $_('Unknown')
-    )
-  }
+      ($user && $user.username) || $_("Operator"),
+      $mold.name || $_("Unknown")
+    );
+  };
 
   const stop = () => {
-    confirmStop = false
-    analysis.cancel()
-    notify(messages[type].cancel)
-  }
+    confirmStop = false;
+    analysis.cancel();
+    notify(messages[type].cancel);
+  };
 
   const exit = () => {
-    analysis.reset()
-    history.push("/")
-  }
+    analysis.reset();
+    history.push("/");
+  };
 </script>
 
 <div class="analysis">
-  <p class='description'>{description}</p>
+  <p class="description">{description}</p>
   <div class="inputs">
     <Select
       bind:value={selectedGroup}
@@ -101,16 +101,16 @@
       label="{$_('Max Starting Temperature')} (&deg;F)"
     />
 
-    
     {#if status == "inactive"}
-      <a class="button active" on:click={() => confirmStart = true}>{$_("Start Analysis")}</a>
+      <a class="button active" on:click={() => (confirmStart = true)}>{$_("Start Analysis")}</a>
     {:else if status != "complete"}
-      <a class="button" on:click={() => confirmStop = true}>{$_("Cancel Test")}</a>
+      <a class="button" on:click={() => (confirmStop = true)}>{$_("Cancel Test")}</a>
     {:else}
       <!-- <a on:click={start}>(restart)</a> -->
-      <div class='complete'>
-        <div class='report-button'>
-          <Icon icon='report' color='var(--primary)' /> {$_('View Report')}
+      <div class="complete">
+        <div class="report-button">
+          <Icon icon="report" color="var(--primary)" />
+          {$_("View Report")}
         </div>
         <a class="button active" on:click={exit}>{$_("Exit Test")}</a>
       </div>
@@ -127,8 +127,8 @@
 
 {#if confirmStart}
   <Modal
-    title={$_("Do you want to proceed")}
-    onClose={() => confirmStart = false}
+    title={$_("Do you want to proceed?")}
+    onClose={() => (confirmStart = false)}
   >
     <div class="modal">
       <div class="modal-text">
@@ -148,13 +148,13 @@
           <div />
         </div>
         <div class="modal-buttons">
-          <div class="button" on:click={() => confirmStart = false}>
+          <div
+            class="button cancel-button"
+            on:click={() => (confirmStart = false)}
+          >
             {$_("No, cancel test")}
           </div>
-          <div
-            class="button active"
-            on:click={start}
-          >
+          <div class="button confirm-button active" on:click={start}>
             {$_("Yes, start analysis")}
           </div>
         </div>
@@ -164,21 +164,15 @@
 {/if}
 
 {#if confirmStop}
-  <Modal
-    title={$_("Cancel Test")}
-    onClose={() => confirmStop = false}
-  >
+  <Modal title={$_("Cancel Test")} onClose={() => (confirmStop = false)}>
     <div class="modal">
       <div class="modal-text">
-        <p>{$_('Are you sure you want to cancel the test?')}</p>
+        <p>{$_("Are you sure you want to cancel the test?")}</p>
         <div class="modal-buttons">
-          <div class="button" on:click={() => confirmStop = false}>
+          <div class="button" on:click={() => (confirmStop = false)}>
             {$_("No, take me back")}
           </div>
-          <div
-            class="button active"
-            on:click={stop}
-          >
+          <div class="button active" on:click={stop}>
             {$_("Yes, cancel test")}
           </div>
         </div>
@@ -200,7 +194,8 @@
     :global(.select-container) {
       margin-right: 16px;
     }
-    .button, .complete {
+    .button,
+    .complete {
       margin-left: auto;
     }
   }
@@ -222,6 +217,10 @@
     }
   }
 
+  .modal-buttons {
+    justify-content: space-between;
+  }
+
   .modal {
     text-align: center;
     padding: 10px;
@@ -229,15 +228,16 @@
 
   .modal-text {
     text-align: left;
-    line-height: 1.6;
+    line-height: 27px;
     font-weight: 600;
+    font-size: 20px;    
   }
 
   .modal-grid {
     display: grid;
     grid-template-columns: auto auto auto;
     grid-column-gap: 10px;
-    padding-top: 10px;
+    padding-top: 20px;
   }
 
   .modal-header {
