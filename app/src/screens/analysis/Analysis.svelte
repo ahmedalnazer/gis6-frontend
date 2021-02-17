@@ -1,36 +1,39 @@
 <script>
-  import ActiveAnalysis from './ActiveAnalysis'
-  import { Modal, Icon, Input, Select } from 'components'
-  import _ from 'data/language'
-  import groups, { activeGroup } from 'data/groups'
-  import zones from 'data/zones'
-  import history from 'router/history'
-  import faultAnalysis from 'data/analysis/fault'
-  import wiringAnalysis from 'data/analysis/wiring'
-  import notify from 'data/notifications'
-  import user from 'data/user'
-  import mold from 'data/mold'
+  import ActiveAnalysis from "./ActiveAnalysis";
+  import { Modal, Icon, Input, Select } from "components";
+  import _ from "data/language";
+  import groups, { activeGroup } from "data/groups";
+  import zones from "data/zones";
+  import history from "router/history";
+  import faultAnalysis from "data/analysis/fault";
+  import wiringAnalysis from "data/analysis/wiring";
+  import notify from "data/notifications";
+  import user from "data/user";
+  import mold from "data/mold";
 
-  export let type, analysis, description
+  export let type, analysis, description;
 
-  const totalZones = id => $zones.filter(x => (x.groups||[]).includes(id)).length
+  const totalZones = (id) =>
+    $zones.filter((x) => (x.groups || []).includes(id)).length;
 
   $: groupOptions = [
-    { id: "all", name: `${$_("All Zones")} (${$zones.length} ${$_('zones')})` },
-  ].concat($groups.map(g => ({
-    ...g,
-    name: `${g.name} (${totalZones(g.id)} ${$_('zones')})`
-  })))
+    { id: "all", name: `${$_("All Zones")} (${$zones.length} ${$_("zones")})` },
+  ].concat(
+    $groups.map((g) => ({
+      ...g,
+      name: `${g.name} (${totalZones(g.id)} ${$_("zones")})`,
+    }))
+  );
 
-  let selectedGroup =  $activeGroup || "all"
+  let selectedGroup = $activeGroup || "all";
 
-  $: selectedGroupName = groupOptions.find((x) => x.id == selectedGroup).name
-  $: $activeGroup = selectedGroup
+  $: selectedGroupName = groupOptions.find((x) => x.id == selectedGroup).name;
+  $: $activeGroup = selectedGroup;
 
   let analyses = {
     fault: faultAnalysis,
     wiring: wiringAnalysis,
-  }
+  };
 
   $: messages = {
     fault: {
@@ -43,47 +46,47 @@
       cancel: $_("Wiring analysis cancelled"),
       complete: $_("Wiring analysis complete"),
     },
-  }
+  };
 
-  $: analysis = analyses[type]
+  $: analysis = analyses[type];
 
-  let confirmStart = false
-  let confirmStop = false
+  let confirmStart = false;
+  let confirmStop = false;
 
-  let maxStartingTemperature = 0
+  let maxStartingTemperature = 0;
 
-  $: status = $analysis && $analysis.status || "inactive"
-  $: running = status != "inactive"
+  $: status = ($analysis && $analysis.status) || "inactive";
+  $: running = status != "inactive";
 
   $: toTest = $zones.filter(
     (x) =>
       selectedGroup == "all" ||
       (x.groups ? x.groups.includes(selectedGroup) : [])
-  )
+  );
 
   const start = () => {
-    confirmStart = false
-    notify.success(messages[type].start)
+    confirmStart = false;
+    notify.success(messages[type].start);
     analysis.start(
       toTest,
       messages[type].complete,
       selectedGroupName,
       maxStartingTemperature,
-      $user && $user.username || $_("Operator"),
+      ($user && $user.username) || $_("Operator"),
       $mold.name || $_("Unknown")
-    )
-  }
+    );
+  };
 
   const stop = () => {
-    confirmStop = false
-    analysis.cancel()
-    notify(messages[type].cancel)
-  }
+    confirmStop = false;
+    analysis.cancel();
+    notify(messages[type].cancel);
+  };
 
   const exit = () => {
-    analysis.reset()
-    history.push("/")
-  }
+    analysis.reset();
+    history.push("/");
+  };
 </script>
 
 <div class="analysis">
@@ -103,9 +106,13 @@
     />
 
     {#if status == "inactive"}
-      <a class="button active" on:click={() => confirmStart = true}>{$_("Start Analysis")}</a>
+      <a class="button active" on:click={() => (confirmStart = true)}
+        >{$_("Start Analysis")}</a
+      >
     {:else if status != "complete"}
-      <a class="button" on:click={() => confirmStop = true}>{$_("Cancel Test")}</a>
+      <a class="button" on:click={() => (confirmStop = true)}
+        >{$_("Cancel Test")}</a
+      >
     {:else}
       <!-- <a on:click={start}>(restart)</a> -->
       <div class="complete">
@@ -129,7 +136,7 @@
 {#if confirmStart}
   <Modal
     title={$_("Do you want to proceed?")}
-    onClose={() => confirmStart = false}
+    onClose={() => (confirmStart = false)}
   >
     <div class="modal-text">
       <p>
@@ -154,7 +161,7 @@
       <div class="modal-buttons">
         <div
           class="button cancel-button"
-          on:click={() => confirmStart = false}
+          on:click={() => (confirmStart = false)}
         >
           {$_("No, cancel test")}
         </div>
@@ -167,11 +174,13 @@
 {/if}
 
 {#if confirmStop}
-  <Modal title={$_("Cancel Test")} onClose={() => confirmStop = false}>
+  <Modal title={$_("Cancel Test")} onClose={() => (confirmStop = false)}>
     <div class="modal-text">
-      <p class='cancel-message'>{$_("Are you sure you want to cancel the test?")}</p>
+      <p class="cancel-message">
+        {$_("Are you sure you want to cancel the test?")}
+      </p>
       <div class="modal-buttons">
-        <div class="button" on:click={() => confirmStop = false}>
+        <div class="button" on:click={() => (confirmStop = false)}>
           {$_("No, take me back")}
         </div>
         <div class="button active" on:click={stop}>
@@ -185,6 +194,10 @@
 <style lang="scss">
   .description {
     margin-bottom: 40px;
+    color: #011f3e;
+    font-size: 16px;
+    letter-spacing: 0;
+    line-height: 22px;
   }
   .inputs {
     display: flex;
@@ -229,7 +242,7 @@
     text-align: left;
     line-height: 27px;
     font-weight: 600;
-    font-size: 20px;    
+    font-size: 20px;
   }
 
   .modal-grid {

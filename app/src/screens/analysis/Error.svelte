@@ -1,28 +1,27 @@
 <script>
-  import { Icon } from 'components'
-  import { error_types } from 'data/analysis/core'
-  export let error
+  import { Icon } from "components";
+  import { error_types } from "data/analysis/core";
+  export let error;
 
-  $: details = error_types[error.type]
-
+  $: details = error_types[error.type];
 </script>
 
-<div class='error'>
-  <div class='name'>
+<div class="error">
+  <div class="name">
     {error.zone.name}
   </div>
-  <div class='thumb'>
-    <img src="{details.icon}" alt="{details.name}" />
+  <div class="thumb">
+    <img src={details.icon} alt={details.name} />
   </div>
-  <div class='desciption'>
-    <div class='icon'>
-      <Icon icon='warning' color='var(--danger)' />
+  <div class="desciption">
+    <div class="icon">
+      <Icon icon="warning" color="var(--danger)" />
     </div>
-    <div class='details'>
-      <div class='error-name'>
+    <div class="details">
+      <div class="error-name">
         {details.name}
       </div>
-      <div class='description'>
+      <div class="description">
         {details.description}
       </div>
     </div>
@@ -37,13 +36,33 @@
     padding: 10px;
   }
 
+  .name {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 22px;
+  }
   .details {
-    color: #B32024;
+    color: #b32024;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 22px;
+    letter-spacing: 0;
+    padding-bottom: 5px;
+  }
+
+  .description {
+    color: #b32024;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 22px;
+    letter-spacing: 0;
+    padding-top: 5px;
   }
 
   .icon {
     float: left;
     padding: 8px;
     height: 100%;
+    margin-top: -4px;
   }
 </style>

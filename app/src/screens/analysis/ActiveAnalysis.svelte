@@ -58,13 +58,16 @@
     background: var(--pale);
     padding: 16px;
   }
+
   h2 {
     margin-top: 0;
   }
+
   .status-wrapper {
     display: grid;
     grid-template-columns: 1fr 1fr;
   }
+  
   .progress p {
     text-align: right;
   }
@@ -79,7 +82,7 @@
     position: sticky;
     font-weight: 700;
     border-bottom: 1px solid #333333;
-    padding: 10px;
+    padding: 0px 10px 10px 10px;
   }
   
 </style>
