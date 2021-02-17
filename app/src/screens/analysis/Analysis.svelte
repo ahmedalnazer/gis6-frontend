@@ -2,7 +2,7 @@
   import ActiveAnalysis from './ActiveAnalysis'
   import { Modal, Icon, Input, Select } from 'components'
   import _ from 'data/language'
-  import groups from 'data/groups'
+  import groups, { activeGroup } from 'data/groups'
   import zones from 'data/zones'
   import history from 'router/history'
   import faultAnalysis from 'data/analysis/fault'
@@ -13,11 +13,16 @@
 
   export let type, analysis, description
 
-  $: groupOptions = [
-    { id: "all", name: `${$_("All Zones")} (${$zones.length})` },
-  ].concat($groups)
+  const totalZones = id => $zones.filter(x => x.groups.includes(id)).length
 
-  let selectedGroup = "all"
+  $: groupOptions = [
+    { id: "all", name: `${$_("All Zones")} (${$zones.length} ${$_('zones')})` },
+  ].concat($groups.map(g => ({
+    ...g,
+    name: `${g.name} (${totalZones(g.id)} ${$_('zones')})`
+  })))
+
+  let selectedGroup =  $activeGroup ? $activeGroup.id : "all"
 
   $: selectedGroupName = groupOptions.find(x => x.id == selectedGroup).name
 
