@@ -30,7 +30,7 @@
 
 <style>
   .test-results {
-    margin-bottom: 20px;
+    margin-bottom: 0px;
     padding-bottom: 40px;
     border-bottom: 2px solid var(--gray);
   }
