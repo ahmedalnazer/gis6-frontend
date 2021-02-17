@@ -14,8 +14,6 @@
       loggingIn.set(false)
     }
   }
-
-  $: console.log($users)
 </script>
 
 <Modal onClose={() => loggingIn.set(false)}>
