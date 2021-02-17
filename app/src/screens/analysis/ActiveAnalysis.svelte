@@ -81,8 +81,8 @@
     grid-template-columns: 150px 100px 1fr;
     position: sticky;
     font-weight: 700;
-    border-bottom: 1px solid #333333;
-    padding: 0px 10px 10px 10px;
+    border-bottom: 1px solid #A2A4A8;
+    padding: 0px 40px 10px 40px;
   }
   
 </style>

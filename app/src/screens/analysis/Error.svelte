@@ -32,8 +32,11 @@
   .error {
     display: grid;
     grid-template-columns: 150px 100px 1fr;
-    border-bottom: 1px solid #333333;
-    padding: 10px;
+    /* border-bottom: 1px solid #333333; */
+    border-bottom: 1px solid #A2A4A8;
+    border-left: 1px solid #A2A4A8;
+    border-right: 1px solid #A2A4A8;
+    padding: 24px 40px 24px 40px;
   }
 
   .name {
