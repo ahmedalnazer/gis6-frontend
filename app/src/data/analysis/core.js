@@ -1,3 +1,4 @@
+import api from 'data/api'
 import notify from 'data/notifications'
 import { writable } from 'svelte/store'
 
@@ -37,12 +38,13 @@ export class Analysis {
     this.store.set(this.current_status)
   }
 
-  start(zones, completion_message = '') {
+  async start(zones, completion_message = '') {
     this.startTime = new Date()
     this.zones = zones
     this.status = 'Initializing...'
     this.completion_message = completion_message
     this.update(0)
+    await api.post(`/analysis/${this.type}`, { temp: this.maxTemp, zones: this.zones.map(x => x.number) })
   }
 
   logError(e) {
@@ -57,7 +59,10 @@ export class Analysis {
     this.update(100)
   }
 
-  cancel() {
+  async cancel() {
+    await api.post(`/analysis/cancel`, {})
+
+    // possibly removing this once WS support is available
     this.destroy()
   }
 }
@@ -70,7 +75,6 @@ let active = {}
 let dummyTimer = {}
 
 export default function getAnalysis(type) {
-
   const def = {
     type,
     errors: [],
@@ -81,7 +85,7 @@ export default function getAnalysis(type) {
   let store = writable(def)
 
   store.start = (zones, message, groupName, maxStart, user, mold) => {
-    active[type] = new Analysis('fault', zones, def, store, () => {
+    active[type] = new Analysis(type, zones, def, store, () => {
       active[type] = null
       store.set(def)
     }, groupName, maxStart, user, mold)
