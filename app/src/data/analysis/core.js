@@ -24,7 +24,7 @@ export class Analysis {
   get current_status() {
     const published = [ 
       'zones', 'errors', 'status', 'progress', 'progress_message', 'startTime', 'endTime',
-      'groupName', 'maxTemp', 'user', 'mold'
+      'groupName', 'groupId', 'maxTemp', 'user', 'mold'
     ]
     let ret = { ...this.default }
     for(let key of published) {

@@ -1,4 +1,5 @@
 <script>
+  import { onMount } from 'svelte'
   import ActiveAnalysis from "./ActiveAnalysis"
   import { Modal, Icon, Input, Select } from "components"
   import _ from "data/language"
@@ -11,7 +12,7 @@
   import user from "data/user"
   import mold from "data/mold"
 
-  export let type, analysis, description
+  export let type, description
 
   const totalZones = (id) =>
     $zones.filter((x) => (x.groups || []).includes(id)).length
@@ -24,10 +25,6 @@
       name: `${g.name} (${totalZones(g.id)} ${$_("zones")})`,
     }))
   )
-
-  let selectedGroup = $activeGroup || "all"
-
-  $: selectedGroupName = groupOptions.find((x) => x.id == selectedGroup).name
 
   let analyses = {
     fault: faultAnalysis,
@@ -48,6 +45,10 @@
   }
 
   $: analysis = analyses[type]
+
+  let selectedGroup = $activeGroup || "all"
+
+  $: selectedGroupName = groupOptions.find((x) => x.id == selectedGroup).name
 
   let confirmStart = false
   let confirmStop = false
@@ -91,6 +92,11 @@
         need to be turned OFF before the fault analysis can begin. Do you want
         to turn off the zones and proceed with the test?`)
     : $_(`All zones are off and the analysis can start.`)
+
+  onMount(() => {
+    if($analysis.groupId) selectedGroup = $analysis.groupId
+  })
+  
 </script>
 
 <div class="analysis">
