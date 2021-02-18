@@ -19,7 +19,7 @@ export const realtime = writable([])
 export const selectedZones = writable([])
 export const toggleZones = (zones) => {
   if (!Array.isArray(zones)) {
-    zones = [zones]
+    zones = [ zones ]
   }
   zones = zones.map(x => id(x && x.id || x))
   let list
@@ -31,13 +31,13 @@ export const toggleZones = (zones) => {
       list.push(z)
     }
   }
-  selectedZones.set([... new Set(list)])
+  selectedZones.set([ ... new Set(list) ])
 }
 
 
-const zones = derived([rawZones, realtime], ([$raw, $realtime]) => {
-  let sorted = [...$raw].map((x, i) => {
-    let merged = { ...x, ...$realtime[x.number - 1] || {} }
+const zones = derived([ rawZones, realtime ], ([ $raw, $realtime ]) => {
+  let sorted = [ ...$raw ].map((x, i) => {
+    let merged = { ...x, ...$realtime[x.number - 1] || {}}
     if (merged.power_alarm !== undefined) {
       merged.power_alarm = toBinary(merged.power_alarm)
     }
@@ -51,7 +51,7 @@ const zones = derived([rawZones, realtime], ([$raw, $realtime]) => {
   return sorted
 })
 
-export const activeZones = derived([selectedZones, zones], ([$selectedZones, $zones]) => {
+export const activeZones = derived([ selectedZones, zones ], ([ $selectedZones, $zones ]) => {
   return $zones.filter(x => $selectedZones.includes(x.id))
 })
 
