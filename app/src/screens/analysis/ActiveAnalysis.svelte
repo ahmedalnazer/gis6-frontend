@@ -56,11 +56,21 @@
 <style>
   .status {
     background: var(--pale);
-    padding: 16px;
+    padding: 20px;
+    padding-bottom: 40px;
+  }
+
+  .text {
+    margin-top: 20px;
+  }
+  .text p {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
   }
 
   h2 {
-    margin-top: 0;
+    margin: 0;
   }
 
   .status-wrapper {
