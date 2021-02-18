@@ -96,7 +96,7 @@
   onMount(() => {
     if($analysis.groupId) selectedGroup = $analysis.groupId
   })
-  
+
 </script>
 
 <div class="analysis">
@@ -116,7 +116,12 @@
     />
 
     {#if status == "inactive"}
-      <a class="button active" on:click={() => confirmStart = true}
+      <a class="button active" on:click={() => {
+        if(!toTest.length) {
+          notify('Please select a group containing at least one zone')
+        } else {
+          confirmStart = true
+      }}}
         >{$_("Start Analysis")}</a
       >
     {:else if status != "complete"}
