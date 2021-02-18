@@ -1,15 +1,17 @@
 import api from 'data/api'
 import notify from 'data/notifications'
 import { writable } from 'svelte/store'
+import { activeGroup } from 'data/groups'
 
 export class Analysis {
-  constructor(type, zones, def, store, destroy = function(){}, groupName, maxTemp, user, mold) {
+  constructor(type, zones, def, store, destroy = function(){}, groupName, groupId, maxTemp, user, mold) {
     this.type = type
     this.default = def
     this.store = store
     this.destroy = destroy
     this.zones = zones
     this.groupName = groupName
+    this.groupId = groupId
     this.maxTemp = maxTemp
     this.user = user
     this.mold = mold
@@ -44,6 +46,7 @@ export class Analysis {
     this.status = 'Initializing...'
     this.completion_message = completion_message
     this.update(0)
+    activeGroup.set(this.groupId)
     await api.post(`/analysis/${this.type}`, { temp: this.maxTemp, zones: this.zones.map(x => x.number) })
   }
 
@@ -84,11 +87,11 @@ export default function getAnalysis(type) {
   }
   let store = writable(def)
 
-  store.start = (zones, message, groupName, maxStart, user, mold) => {
+  store.start = (zones, message, groupName, groupId, maxStart, user, mold) => {
     active[type] = new Analysis(type, zones, def, store, () => {
       active[type] = null
       store.set(def)
-    }, groupName, maxStart, user, mold)
+    }, groupName, groupId, maxStart, user, mold)
     active[type].start(zones, message)
 
     // test with dummy data

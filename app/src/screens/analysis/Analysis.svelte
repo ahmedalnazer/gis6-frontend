@@ -66,6 +66,7 @@
       toTest,
       messages[type].complete,
       selectedGroupName,
+      selectedGroup == 'all' ? null : selectedGroup,
       maxStartingTemperature,
       $user && $user.username || $_("Operator"),
       $mold.name || $_("Unknown")
