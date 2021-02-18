@@ -1,31 +1,30 @@
 <script>
-  import ActiveAnalysis from './ActiveAnalysis'
-  import { Modal, Icon, Input, Select } from 'components'
-  import _ from 'data/language'
-  import groups, { activeGroup } from 'data/groups'
-  import zones from 'data/zones'
-  import history from 'router/history'
-  import faultAnalysis from 'data/analysis/fault'
-  import wiringAnalysis from 'data/analysis/wiring'
-  import notify from 'data/notifications'
-  import user from 'data/user'
-  import mold from 'data/mold'
+  import { onMount } from 'svelte'
+  import ActiveAnalysis from "./ActiveAnalysis"
+  import { Modal, Icon, Input, Select } from "components"
+  import _ from "data/language"
+  import groups, { activeGroup } from "data/groups"
+  import zones from "data/zones"
+  import history from "router/history"
+  import faultAnalysis from "data/analysis/fault"
+  import wiringAnalysis from "data/analysis/wiring"
+  import notify from "data/notifications"
+  import user from "data/user"
+  import mold from "data/mold"
 
-  export let type, analysis, description
+  export let type, description
 
-  const totalZones = id => $zones.filter(x => (x.groups||[]).includes(id)).length
+  const totalZones = (id) =>
+    $zones.filter((x) => (x.groups || []).includes(id)).length
 
   $: groupOptions = [
-    { id: "all", name: `${$_("All Zones")} (${$zones.length} ${$_('zones')})` },
-  ].concat($groups.map(g => ({
-    ...g,
-    name: `${g.name} (${totalZones(g.id)} ${$_('zones')})`
-  })))
-
-  let selectedGroup =  $activeGroup || "all"
-
-  $: selectedGroupName = groupOptions.find((x) => x.id == selectedGroup).name
-  $: $activeGroup = selectedGroup
+    { id: "all", name: `${$_("All Zones")} (${$zones.length} ${$_("zones")})` },
+  ].concat(
+    $groups.map((g) => ({
+      ...g,
+      name: `${g.name} (${totalZones(g.id)} ${$_("zones")})`,
+    }))
+  )
 
   let analyses = {
     fault: faultAnalysis,
@@ -47,6 +46,10 @@
 
   $: analysis = analyses[type]
 
+  let selectedGroup = $activeGroup || "all"
+
+  $: selectedGroupName = groupOptions.find((x) => x.id == selectedGroup).name
+
   let confirmStart = false
   let confirmStop = false
 
@@ -55,11 +58,7 @@
   $: status = $analysis && $analysis.status || "inactive"
   $: running = status != "inactive"
 
-  $: toTest = $zones.filter(
-    (x) =>
-      selectedGroup == "all" ||
-      (x.groups ? x.groups.includes(selectedGroup) : [])
-  )
+  $: toTest = $zones.filter(x => selectedGroup == "all" || x.groups && x.groups.includes(selectedGroup))
 
   const start = () => {
     confirmStart = false
@@ -68,6 +67,7 @@
       toTest,
       messages[type].complete,
       selectedGroupName,
+      selectedGroup == 'all' ? null : selectedGroup,
       maxStartingTemperature,
       $user && $user.username || $_("Operator"),
       $mold.name || $_("Unknown")
@@ -82,8 +82,21 @@
 
   const exit = () => {
     analysis.reset()
-    history.push("/")
+    history.push("/hot-runner")
   }
+
+  $: zonesOn = $zones.filter(x => x.IsZoneOn).length
+
+  $: startMessage = zonesOn 
+    ? $_(`All zones are currently ON and the system is running. The zones will
+        need to be turned OFF before the fault analysis can begin. Do you want
+        to turn off the zones and proceed with the test?`)
+    : $_(`All zones are off and the analysis can start.`)
+
+  onMount(() => {
+    if($analysis.groupId) selectedGroup = $analysis.groupId
+  })
+  
 </script>
 
 <div class="analysis">
@@ -103,9 +116,13 @@
     />
 
     {#if status == "inactive"}
-      <a class="button active" on:click={() => confirmStart = true}>{$_("Start Analysis")}</a>
+      <a class="button active" on:click={() => confirmStart = true}
+        >{$_("Start Analysis")}</a
+      >
     {:else if status != "complete"}
-      <a class="button" on:click={() => confirmStop = true}>{$_("Cancel Test")}</a>
+      <a class="button" on:click={() => confirmStop = true}
+        >{$_("Cancel Test")}</a
+      >
     {:else}
       <!-- <a on:click={start}>(restart)</a> -->
       <div class="complete">
@@ -133,9 +150,7 @@
   >
     <div class="modal-text">
       <p>
-        All zones are currently ON and the system is running. The zones will
-        need to be turned OFF before the fault analysis can begin. Do you want
-        to turn off the zones and proceed with the test?
+        {startMessage}
       </p>
       <div class="modal-grid">
         <Select
@@ -169,7 +184,9 @@
 {#if confirmStop}
   <Modal title={$_("Cancel Test")} onClose={() => confirmStop = false}>
     <div class="modal-text">
-      <p class='cancel-message'>{$_("Are you sure you want to cancel the test?")}</p>
+      <p class="cancel-message">
+        {$_("Are you sure you want to cancel the test?")}
+      </p>
       <div class="modal-buttons">
         <div class="button" on:click={() => confirmStop = false}>
           {$_("No, take me back")}
@@ -184,7 +201,12 @@
 
 <style lang="scss">
   .description {
+    margin-top: -20px;
     margin-bottom: 40px;
+    color: #011f3e;
+    font-size: 16px;
+    letter-spacing: 0;
+    line-height: 22px;
   }
   .inputs {
     display: flex;
@@ -229,7 +251,7 @@
     text-align: left;
     line-height: 27px;
     font-weight: 600;
-    font-size: 20px;    
+    font-size: 20px;
   }
 
   .modal-grid {

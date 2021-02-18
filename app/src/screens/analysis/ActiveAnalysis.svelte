@@ -56,15 +56,28 @@
 <style>
   .status {
     background: var(--pale);
-    padding: 16px;
+    padding: 20px;
+    padding-bottom: 40px;
   }
+
+  .text {
+    margin-top: 20px;
+  }
+  .text p {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+  }
+
   h2 {
-    margin-top: 0;
+    margin: 0;
   }
+
   .status-wrapper {
     display: grid;
     grid-template-columns: 1fr 1fr;
   }
+  
   .progress p {
     text-align: right;
   }
@@ -78,8 +91,8 @@
     grid-template-columns: 150px 100px 1fr;
     position: sticky;
     font-weight: 700;
-    border-bottom: 1px solid #333333;
-    padding: 10px;
+    border-bottom: 1px solid #A2A4A8;
+    padding: 0px 40px 10px 40px;
   }
   
 </style>
