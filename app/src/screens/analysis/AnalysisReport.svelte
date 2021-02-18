@@ -8,6 +8,8 @@
     export let onClose
     export let analysis
 
+    let isDisable = false
+
     const date = new Date()
 
     const formateDate = () => {
@@ -28,6 +30,7 @@
     };
 
     const onSubmit = () => {
+        isDisable = true
         console.log('submit: ', report)
         notify('Changes saved.')
     }
@@ -71,7 +74,7 @@
                     </div>
                 </div>
                 <div class="btn-verticle">
-                    <button class="save-button">{$_('Save')}</button>
+                    <button class="save-button" class:btnDisable={isDisable} disabled={isDisable}>{$_('Save')}</button>
                 </div>
             </div>
         </form>
@@ -140,12 +143,12 @@
         align-items: center;
         .save-button {
             box-sizing: border-box;
-            border: 2px solid #A2A4A8;
+            border: 2px solid #358DCA;
             border-radius: 1px;
             background-color: #FFFFFF;
             box-shadow: 2px 2px 5px 0 rgba(54,72,96,0.5);
             margin-left: auto;
-            color: #A2A4A8;
+            color: #358DCA;
             font-family: "Open Sans";
             font-size: 20px;
             font-weight: 600;
@@ -153,6 +156,10 @@
             line-height: 18px;
             text-align: center;
             padding: 15px 76px;
+        }
+        .btnDisable {
+          color: #A2A4A8 !important;
+          border: 2px solid #A2A4A8 !important;
         }
     }
     .errors {
