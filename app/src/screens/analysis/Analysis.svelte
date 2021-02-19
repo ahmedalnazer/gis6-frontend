@@ -11,6 +11,7 @@
   import notify from "data/notifications"
   import user from "data/user"
   import mold from "data/mold"
+  import AnalysisReport from './AnalysisReport'
 
   export let type, description
 
@@ -97,6 +98,10 @@
     if($analysis.groupId) selectedGroup = $analysis.groupId
   })
 
+  let openReportModal = false
+  const OnOpenReportModal = () => {
+    openReportModal = true
+  }
 </script>
 
 <div class="analysis">
@@ -131,7 +136,7 @@
     {:else}
       <!-- <a on:click={start}>(restart)</a> -->
       <div class="complete">
-        <div class="report-button">
+        <div class="report-button" on:click={OnOpenReportModal}>
           <Icon icon="report" color="var(--primary)" />
           {$_("View Report")}
         </div>
@@ -145,6 +150,10 @@
 
   {#if status != "inactive"}
     <ActiveAnalysis {type} />
+  {/if}
+
+  {#if openReportModal}
+    <AnalysisReport analysis={analysis} onClose={() => openReportModal = false} />
   {/if}
 </div>
 
