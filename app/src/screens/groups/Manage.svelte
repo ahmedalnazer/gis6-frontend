@@ -16,6 +16,7 @@
   import { activeSetpointEditor } from 'data/setpoint'
 
   $: selectedGroup = $activeGroup
+  $: selectedGroupObj = $groups.filter(x => x.id == selectedGroup)[0]
   let sortGroups = true
 
   $: displayedGroups = selectedGroup
@@ -181,6 +182,9 @@
         <span class="link" on:click={() => editing = true}
           >{$_("Edit Group")}</span
         >
+        <span class="link" on:click={() => deleting = selectedGroupObj}
+          >{$_("Delete Group")}</span
+        >
       {/if}
     </div>
 
@@ -274,6 +278,7 @@
           on:click={() => {
             groups.delete(deleting)
             deleting = null
+            activeGroup.set(null)
           }}
         >Yes, delete group</div>
       </div>

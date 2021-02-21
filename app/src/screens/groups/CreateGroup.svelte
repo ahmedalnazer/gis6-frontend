@@ -23,6 +23,7 @@
 
   $: groupIds = $groups.map((x) => x.id)
   $: console.log(`GID: ${groupIds}`)
+  $: hasMaxGroup = $groups.length >= 10
 
   $: maxGroups = adding
     ? _zones
@@ -49,7 +50,7 @@
   const handleEditGroupClick_Create = () => {
     // Validate form errors
     validationError = ""
-
+    
     if (selectedGroup !== "__CUSTOM__") {
       name = selectedGroup
     }
@@ -63,7 +64,9 @@
         validationError = $_("Please enter 'Group Name'")
       } else if (selectedColor == "") {
         validationError += $_("Please select the 'Group Color'")
-      }
+      } 
+    } else if (name.length > 12) {
+      validationError += $_("'Group Name' cannot be longer than 12 characters")
     } else if (
       groupList.filter((x) => (x.name || "").toLowerCase() == (name || "").toLowerCase())
         .length > 0
@@ -96,6 +99,10 @@
         Part of your selection will exceed the maximum (3) number of groups
         and cannot be added to another.
       </p>
+    {:else if hasMaxGroup}
+      <p class="danger">
+        Reached a maximum of 10 groups. Unable to create additional group.
+      </p>    
     {:else}
       <p class="danger">
         {validationError}
@@ -121,7 +128,7 @@
             <span class="required">*</span>
           </div>
           <div>
-            <Input value={name} on:change={(e) => name = e.target.value} />
+              <Input value={name} on:change={(e) => name = e.target.value} />
           </div>
         {/if}
       </div>
@@ -148,7 +155,7 @@
   </div>
 
   <div class="editGroupButton">
-    <div on:click={handleEditGroupClick_Create} class="button active" >
+    <div on:click={handleEditGroupClick_Create} class="button active" class:disabled={hasMaxGroup}>
       {$_("Done")}
     </div>
   </div>

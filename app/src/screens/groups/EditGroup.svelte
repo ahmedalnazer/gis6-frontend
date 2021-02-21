@@ -62,7 +62,7 @@
     const handleEditGroupClick = () => {
       // Validate form errors
       validationError = ""
-
+      
       if (singleItem) {
         selectedColor = selectedColorSingleItem
       }
@@ -78,20 +78,22 @@
         } else if (selectedColor == "") {
           validationError += "Please select the 'Group Color'"
         }
-      // } else if (
-      //       name !== selectedGroup &&
-      //       (groupList.filter((x) => {
-      //           if (x.name && name) {
-      //               return x.name.toLowerCase() == name.toLowerCase();
-      //           } else {
-      //               return false;
-      //           }
-      //       }).length > 0 ||
-      //       $groups.filter((x) => x.name == name && x.id !== selectedGroupId).length > 0)
-      //   ) {
-      //       validationError = `Group Name ${name} already exist. Please select another name.`;
-      //   } 
+        // } else if (
+        //       name !== selectedGroup &&
+        //       (groupList.filter((x) => {
+        //           if (x.name && name) {
+        //               return x.name.toLowerCase() == name.toLowerCase();
+        //           } else {
+        //               return false;
+        //           }
+        //       }).length > 0 ||
+        //       $groups.filter((x) => x.name == name && x.id !== selectedGroupId).length > 0)
+        //   ) {
+        //       validationError = `Group Name ${name} already exist. Please select another name.`;
+        //   } 
 
+      } else if (name.length > 12) {
+        validationError += $_("'Group Name' cannot be longer than 12 characters")
       } else if (
         name !== selectedGroup &&
             (groupList.filter((x) => {
