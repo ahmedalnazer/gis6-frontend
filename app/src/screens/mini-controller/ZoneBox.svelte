@@ -1,71 +1,38 @@
 <script>
   import { Icon } from 'components'
   import groups from 'data/groups'
-import { activeSetpointEditor } from 'data/setpoint'
-import { selectedZones } from 'data/zones'
-import { createEventDispatcher, onDestroy, onMount } from 'svelte'
+  import { activeSetpointEditor } from 'data/setpoint'
+  import { selectedZones } from 'data/zones'
+  import { createEventDispatcher } from 'svelte'
   export let zone
   export let group
   export let active
 
   const dispatch = createEventDispatcher()
 
-  let tabs = []
-
   $: zoneGroups = $groups.filter(x => zone.groups && zone.groups.includes(x.id))
-
   $: tabs = zoneGroups.length
     ? zoneGroups.map(x => x.color)
     : [ '#00E5FF' ]
 
-  const isTempBit = i => zone.temp_alarm && zone.temp_alarm[i] == '1'
-  const isPowerBit = i => zone.power_alarm && zone.power_alarm[i] == '1'
-
   $: deviation = Math.max(20, zone.DeviationSp || 0)
 
-  $: manual = zone.IsManual
-
+  $: manual = !zone.settings.auto
   $: setpoint = zone.temp_sp ? Math.round(zone.temp_sp / 10) * 10 : zone.ProcessSp
 
-  // $: console.log(zone)
+  $: on = zone.settings.on
+  $: locked = zone.settings.locked
+  $: live =  on && !locked &&  zone.actual_temp !== undefined
 
-  // $: deviationHigh = isTempBit(3)
-  // $: deviationLow = isTempBit(4)
+  $: falling = !manual && live && zone.actual_temp > setpoint + deviation
+  $: rising = !manual && live && zone.actual_temp < setpoint - deviation
 
-  $: live = zone.IsZoneOn && zone.actual_temp !== undefined && zone.ProcessSp
+  $: tempWarning = falling || rising
 
-  $: deviationHigh = !manual && live && zone.actual_temp > setpoint + deviation
-  $: deviationLow = !manual && live && zone.actual_temp < setpoint - deviation
-
-  $: tempWarning = deviationHigh || deviationLow
-  // $: tempError = [ 0, 1, 2, 3, 4, 5, 6, 7, 12, 14, 15 ].reduce((err, bit) => isTempBit(bit) || err, false)
-  let tempError = false
- 
+  $: tempError = zone.hasTempError
+  $: powerError = zone.hasPowerError
   let powerWarning = false
-  // $: powerError = zone.power_alarm > 0
-  let powerError = false
-
-  $: on = zone.IsZoneOn
-  let locked = true
-
-  // $: console.log(zone.actual_temp, zone.ProcessSp, live, deviationHigh, zone.DeviationSp)
-
-  if(!window.zones) {
-    window.zoneOverrides = {}
-  }
-  onMount(() => {
-    window.zoneOverrides[zone.id] = {
-      togglePowerError: () => {
-        powerError = !powerError
-      },
-      togglePowerWarning: () => {
-        powerWarning = !powerWarning
-      },
-      toggleTempError: () => {
-        tempError = !tempError
-      }
-    }
-  })
+  // $: tempError = [ 0, 1, 2, 3, 4, 5, 6, 7, 12, 14, 15 ].reduce((err, bit) => isTempBit(bit) || err, false)
 
   let dbl = false
   const click = e => {
@@ -78,7 +45,6 @@ import { createEventDispatcher, onDestroy, onMount } from 'svelte'
     selectedZones.set([ zone.id ])
     activeSetpointEditor.set('setpoint')
   }
-
 </script>
 
 
@@ -89,7 +55,7 @@ import { createEventDispatcher, onDestroy, onMount } from 'svelte'
     {/each}
   </div>
   <div class='details' class:off={!on}>
-    {#if !on}
+    {#if !on && !locked}
       <div class='overlay' />
     {/if}
     <div class='name'>
@@ -100,14 +66,14 @@ import { createEventDispatcher, onDestroy, onMount } from 'svelte'
         {Math.round((zone.actual_temp || 0) / 10)}&deg;<span class='temp-type'>F</span>
       </div>
       <div class='deviation-icon'>
-        {#if deviationLow}
+        {#if rising}
           <Icon icon='up' color='white' />
         {/if}
-        {#if deviationHigh}
+        {#if falling}
           <Icon icon='down' color='white' />
         {/if}
       </div>
-      {#if on && zone.IsSealed}
+      {#if on && zone.settings.sealed}
           <div class='icon-container sealed'>
             <div class='sealed-circle'>
               <div class='sealed-line' />
@@ -124,7 +90,7 @@ import { createEventDispatcher, onDestroy, onMount } from 'svelte'
       {/if}
     </div>
     <div class='power' class:powerWarning class:powerError>
-      {#if on && zone.Islocked}
+      {#if locked}
         <div class='icon-container'>
           <Icon icon='lock' color='white' />
         </div>

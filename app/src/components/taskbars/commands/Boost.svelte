@@ -7,16 +7,21 @@
   import activeStandby from 'data/zones/standby'
   export let onClose
 
-  let auto = 104
+  let boostTemp = 104
   let timeout = 0
   let time = 0
-  let manualBoost
-  let recoveryTime
+  let manualBoost = 0
+  let recoveryTime = 0
 
   const boost = zones => {
-    console.log(zones)
-    // set zones off
-    activeBoost.set(true)
+    activeBoost.start(zones, 0, {
+      BoostTemperatureSP: boostTemp * 10,
+      StandbyTimeoutSP: timeout * 10,
+      BoostTimeSP: time,
+      ManualBoostSP: manualBoost * 10,
+      BoostRecoveryTimeSP: recoveryTime
+    })
+
     if($activeStandby) {
       notify('Standby cancelled')
       activeStandby.set(false)
@@ -29,7 +34,7 @@
   <Selector onSubmit={boost} onDone={onClose}>
     <h2>Edit</h2>
     <div class='grid'>
-      <Input type='number' bind:value={auto} label='{$_('Auto Standby')}  (&#176;C)' />
+      <Input type='number' bind:value={boostTemp} label='{$_('Boost Amount')}  (&#176;C)' />
       <Input type='number' bind:value={timeout} label='{$_('Standby Timeout (min)')}' />
       <Input type='number' bind:value={time} label='{$_('Time (sec)')}' />
     </div>

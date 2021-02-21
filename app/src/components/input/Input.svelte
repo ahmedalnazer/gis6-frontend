@@ -17,20 +17,13 @@
   export let input = null
   export let display = false
 
-  let modalOpned = false
+  let modalOpened = false
 
-  const onCloseKeypad = (event) => {
-    modalOpned = false
-    changed = value && event.detail.closed
-  }
-
-  const handleInput = e => {
-    value = e.target.value
-  }
+  const handleInput = e => value = e.target.value
 
 </script>
 
-<div class='input text {$$restProps.class || ''}' style={modalOpned ? 'z-index: 11;' : ''}>
+<div class='input text {$$restProps.class || ''}' style={modalOpened ? 'z-index: 11;' : ''}>
   {#if label}
     <label>{label}</label>
   {/if}
@@ -51,7 +44,7 @@
       on:focus={e => {
         dispatch('focus', e)
       if(type == 'number') {
-        modalOpned = true
+        modalOpened = true
       } 
       }}
     />
@@ -71,8 +64,8 @@
   </Collapsible>
 </div>
 
-{#if type == 'number' && modalOpned}
-  <KeyPad anchor={input} bind:onModalOpen={modalOpned} bind:value on:keypadClosed={onCloseKeypad} />
+{#if type == 'number' && modalOpened}
+  <KeyPad anchor={input} bind:onModalOpen={modalOpened} bind:value on:keypadClosed={() => modalOpened = false} />
 {/if}
 
 <style>

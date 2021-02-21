@@ -14,9 +14,13 @@
   export let onSubmit
   export let onDone
   export let trackHistory = false
-  export let getUndoAction = zones => {
-    return () => {
-      // reset zones to current state
+  export let getUndoAction = _zones => {
+    const cached = _zones.map(x => ({ ...x }))
+    return async () => {
+      for(let z of cached) {
+        await zones.update(z, z, { skipReload: true })
+      }
+      await zones.reload()
     }
   }
 
@@ -72,7 +76,7 @@
   onMount(() => {
     selectorMounted = key
     if($activeZones.length == 0 && $zones.length) {
-      selectedZones.set([$zones[0].id])
+      selectedZones.set([ $zones[0].id ])
       dummySelection = true
     }
   })

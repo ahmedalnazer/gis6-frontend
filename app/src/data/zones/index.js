@@ -2,16 +2,7 @@ import { writable, derived } from 'svelte/store'
 import api from 'data/api'
 import { id } from '../tools'
 
-const toBinary = function (n) {
-  // return new Uint32Array(n).join('')
-  // return n >>> 0
-  var sign = n < 0 ? "-" : ""
-  var result = Math.abs(n).toString(2)
-  while (result.length < 32) {
-    result = "0" + result
-  }
-  return sign + result
-}
+const getBit = (int, bit) => int & 1 << bit
 
 const rawZones = writable([])
 export const realtime = writable([])
@@ -38,16 +29,39 @@ export const toggleZones = (zones) => {
 const zones = derived([ rawZones, realtime ], ([ $raw, $realtime ]) => {
   let sorted = [ ...$raw ].map((x, i) => {
     let merged = { ...x, ...$realtime[x.number - 1] || {}}
-    if (merged.power_alarm !== undefined) {
-      merged.power_alarm = toBinary(merged.power_alarm)
+    merged._settings = merged.settings
+    merged.settings = {}
+    merged.alarms = {}
+    merged.hasAlarm = false
+    merged.hasTempAlarm = false
+    merged.hasPowerAlarm = false
+    if (merged.temp_alarm) {
+      merged.hasAlarm = true
+      merged.hasTempAlarm = true
+      let map = [ 'tc_open', 'tc_shorted', 'tc_reversed', 'low', 'high', 'tc_high', 'tc_low', 'tc_power' ]
+      for(let i; i < map.length; i++) {
+        merged.alarms[map[i]] = getBit(merged.temp_alarm, i)
+      }
+      merged.alarms.com_loss = getBit(merged.temp_alarm, 15)
     }
-    if (merged.temp_alarm !== undefined) {
-      merged.temp_alarm = toBinary(merged.temp_alarm)
+    if (merged.power_alarm) {
+      merged.hasAlarm = true
+      merged.hasPowerAlarm = true
+      // merged.temp_alarm = toBinary(merged.temp_alarm)
+    }
+    if (merged._settings) {
+      merged.settings = {
+        locked: getBit(merged._settings, 0),
+        sealed: getBit(merged._settings, 1),
+        on: getBit(merged._settings, 2),
+        auto: getBit(merged._settings, 3)
+      }
     }
     return merged
   })
   var collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' })
   sorted.sort((a, b) => collator.compare(a.name, b.name))
+  // console.log(sorted[0] && sorted[0].alarms)
   return sorted
 })
 
@@ -70,6 +84,26 @@ const decodeZone = z => {
   return d
 }
 
+const clean = z => {
+  delete z.name
+  delete z.number
+  delete z.groups
+  delete z.actual_current
+  delete z.actual_temp
+  delete z.actual_percent
+  delete z.power_alarm
+  delete z.settings
+  delete z.temp_alarm
+  delete z.temp_sp
+  delete z.manual_sp
+  delete z._settings
+  delete z.alarms
+  delete z.hasAlarm
+  delete z.hasTempAlarm
+  delete z.hasPowerAlarm
+  return z
+}
+
 const encodeZone = z => {
   let d = {
     ...z,
@@ -77,18 +111,7 @@ const encodeZone = z => {
     ZoneNumber: z.number || z.id,
     ZoneGroups: z.groups
   }
-  delete d.name
-  delete d.number
-  delete d.groups
-  delete d.actual_current
-  delete d.actual_temp
-  delete d.actual_percent
-  delete d.power_alarm
-  delete d.settings
-  delete d.temp_alarm
-  delete d.temp_sp
-  delete d.manual_sp
-
+  d = clean(d)
   return d
 }
 
@@ -140,8 +163,22 @@ zones.create = async zone => {
 zones._update = rawZones.update
 zones.set = rawZones.set
 
-zones.update = async (zone, options = {}) => {
-  await api.put(`zone/${zone.id}`, encodeZone(zone))
+
+/**
+ * 
+ * @param {Object|Array} zones 
+ * @param {*} options 
+ */
+zones.update = async (updatedZones, update, options = {}) => {
+  if(!Array.isArray(updatedZones)) updatedZones = [ updatedZones ]
+  const url = `/zones/${options.actions || ''}`
+  const data = {
+    ref_process_id: updatedZones[0].ref_process,
+    zones: updatedZones.map(x => x.number),
+    data: clean(update)
+  }
+  await api.post(url, data)
+  // await api.put(`zone/${zone.id}`, encodeZone(zone))
   if (!options.skipReload) await zones.reload()
 }
 
