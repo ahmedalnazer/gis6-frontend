@@ -4,6 +4,7 @@
     import { notify } from 'data/'
     import TestResults from './TestResults.svelte';
     import Error from './Error.svelte'
+    import api from 'data/api'
 
     export let onClose
     export let analysis
@@ -17,22 +18,29 @@
         const timeOptions = { hour12: true, hour: 'numeric', minute:'numeric' };
         return `${date.toLocaleDateString('en', dateOptions)} ${date.toLocaleTimeString('en', timeOptions)}`
     }
-    
-    let report = {
-        dateTime: formateDate(),
-        user: $analysis.user,
-        mold: $analysis.mold,
-        groups: $analysis.groupName,
-        maxStartingTemp: $analysis.maxTemp,
-        name: `${$analysis.type === 'fault' ? 'fault' : 'wiring'}-analysis-${date.getFullYear()}y_${date.getMonth() + 1}m_${date.getDate()}d_${date.getHours()}h_${date.getMinutes()}m`,
-        comments: '',
-        type: $analysis.type,
-    };
 
-    const onSubmit = () => {
+    let report = {
+      reportType: $analysis.type,
+      user: $analysis.user,
+      mold: $analysis.mold,
+      group: $analysis.groupName,
+      maxStartingTemp: $analysis.maxTemp,
+      name: `${$analysis.type === 'fault' ? 'fault' : 'wiring'}-analysis-${date.getFullYear()}y_${date.getMonth() + 1}m_${date.getDate()}d_${date.getHours()}h_${date.getMinutes()}m`,
+      comment: '',
+      startTime: $analysis.startTime.toISOString(),
+      endTime: $analysis.endTime.toISOString(),
+      zones: $analysis.zones.length,
+      zonesLocked: $analysis.zones.filter(x => x.Islocked).length,
+      errors: $analysis.errors.map(x => ({name: x.zone.name, code: x.type})),
+      path: ''
+    }
+
+    const onSubmit = async () => {
         isDisable = true
-        console.log('submit: ', report)
-        notify('Changes saved.')
+        const res = await api.post('/api/report', report)
+        if (res.id) {
+          notify('Changes saved.')
+        }
     }
   
   </script>
@@ -43,7 +51,7 @@
         <form on:submit|preventDefault={() => onSubmit()}>
             <div class='grid-two'>
                 <Input type='text' bind:value={report.name} label='{$_('Report name')}' />
-                <Input type='text' bind:value={report.comments} label='{$_('Comments')}' />
+                <Input type='text' bind:value={report.comment} label='{$_('Comments')}' />
             </div>
         
             <div class="grid-parent">
@@ -65,7 +73,7 @@
                         </div>
                         <div>
                             <label>{$_('Groups')}</label>
-                            {report.groups}
+                            {report.group}
                         </div>
                         <div>
                             <label>{$_('Max Starting Temperature')}</label>
