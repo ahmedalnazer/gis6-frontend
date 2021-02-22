@@ -2,16 +2,7 @@ import { writable, derived } from 'svelte/store'
 import api from 'data/api'
 import { id } from '../tools'
 
-const toBinary = function (n) {
-  // return new Uint32Array(n).join('')
-  // return n >>> 0
-  var sign = n < 0 ? "-" : ""
-  var result = Math.abs(n).toString(2)
-  while (result.length < 32) {
-    result = "0" + result
-  }
-  return sign + result
-}
+const getBit = (int, bit) => !!(int & 1 << bit)
 
 const rawZones = writable([])
 export const realtime = writable([])
@@ -38,16 +29,58 @@ export const toggleZones = (zones) => {
 const zones = derived([ rawZones, realtime ], ([ $raw, $realtime ]) => {
   let sorted = [ ...$raw ].map((x, i) => {
     let merged = { ...x, ...$realtime[x.number - 1] || {}}
-    if (merged.power_alarm !== undefined) {
-      merged.power_alarm = toBinary(merged.power_alarm)
+    merged._settings = merged.settings
+    merged.settings = {}
+    merged.alarms = {}
+    merged.hasAlarm = false
+    merged.hasTempAlarm = false
+    merged.hasPowerAlarm = false
+    if (merged.temp_alarm && merged.temp_alarm != 16) {
+      merged.hasAlarm = true
+      merged.hasTempAlarm = true
+      let map = [ 'tc_open', 'tc_short', 'tc_reversed', 'low', 'high', 'tc_high', 'tc_low', 'tc_power' ]
+      for(let i = 0; i < map.length; i++) {
+        merged.alarms[map[i]] = getBit(merged.temp_alarm, i)
+      }
+      merged.alarms.com_loss = getBit(merged.temp_alarm, 15)
     }
-    if (merged.temp_alarm !== undefined) {
-      merged.temp_alarm = toBinary(merged.temp_alarm)
+    if (merged.power_alarm) {
+      // console.log('POWER ALARM', merged.power_alarm)
+      merged.hasAlarm = true
+      merged.hasPowerAlarm = true
+      let map = [
+        'open_heater', 'heater_short', 'open_fuse', 'uncontrolled_input', 'no_voltage', 'ground_fault', 
+        'over_current', '', 'cross_wired', 'do_not_heat', 'tc_reversed'
+      ]
+      for(let i = 0; i < map.length; i++) {
+        if(map[i]) {
+          merged.alarms[map[i]] = getBit(merged.power_alarm, i)
+        }
+      }
     }
+    
+    if (merged.alarms.cross_wired) {
+      merged.alarms.crosswired_with = merged.temp_sp
+    }
+
+    if (merged._settings) {
+      merged.settings = {
+        locked: getBit(merged._settings, 0),
+        sealed: getBit(merged._settings, 1),
+        on: getBit(merged._settings, 2),
+        auto: getBit(merged._settings, 3),
+        standby: getBit(merged._settings, 4),
+        boost: getBit(merged._settings, 5),
+        testing: getBit(merged._settings, 6),
+        test_complete: getBit(merged._settings, 7)
+      }
+    }
+    if(merged.number == 1) console.log(merged)
     return merged
   })
   var collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' })
   sorted.sort((a, b) => collator.compare(a.name, b.name))
+  // console.log(sorted[0] && sorted[0].alarms)
   return sorted
 })
 
@@ -58,16 +91,33 @@ export const activeZones = derived([ selectedZones, zones ], ([ $selectedZones, 
 const decodeZone = z => {
   const d = {
     ...z,
+    // alias certain fields for legacy and convenience
     name: z.ZoneName,
     number: z.ZoneNumber,
     id: id(z.id),
     groups: z.ZoneGroups
   }
-
-  delete d.ZoneName
-  delete d.ZoneNumber
-  delete d.ZoneGroups
   return d
+}
+
+const clean = z => {
+  delete z.name
+  delete z.number
+  delete z.groups
+  delete z.actual_current
+  delete z.actual_temp
+  delete z.actual_percent
+  delete z.power_alarm
+  delete z.settings
+  delete z.temp_alarm
+  delete z.temp_sp
+  delete z.manual_sp
+  delete z._settings
+  delete z.alarms
+  delete z.hasAlarm
+  delete z.hasTempAlarm
+  delete z.hasPowerAlarm
+  return z
 }
 
 const encodeZone = z => {
@@ -77,60 +127,16 @@ const encodeZone = z => {
     ZoneNumber: z.number || z.id,
     ZoneGroups: z.groups
   }
-  delete d.name
-  delete d.number
-  delete d.groups
-  delete d.actual_current
-  delete d.actual_temp
-  delete d.actual_percent
-  delete d.power_alarm
-  delete d.settings
-  delete d.temp_alarm
-  delete d.temp_sp
-  delete d.manual_sp
-
+  d = clean(d)
   return d
 }
 
 
 const getZones = async () => {
-  await init()
   return (await api.get('zone')).map(x => decodeZone(x))
 }
 
-// TODO remove temporary workaround to specify 
-let processes = []
-let proc
-let initted = false
-const init = async () => {
-  if(initted) return
-  initted = true
-  processes = await api.get('process')
-  if (!processes.length) {
-    proc = await api.post('process', { name: 'Dummy Process' })
-  } else {
-    proc = processes[0]
-  }
-}
-
-zones.reload = async () => {
-  let z = await getZones()
-
-  // TODO: remove dummy zones
-  if (z.length == 0) {
-    for (let i = 1; i <= 50; i++) {
-      await api.post('zone', encodeZone({
-        name: `Zone ${i}`,
-        number: i,
-        ref_process: proc.id
-      }))
-    }
-    z = await getZones()
-  }
-
-  // console.log(z)
-  rawZones.set(z)
-}
+zones.reload = async () => rawZones.set(await getZones())
 
 zones.create = async zone => {
   await api.post('zone', encodeZone(zone))
@@ -140,8 +146,22 @@ zones.create = async zone => {
 zones._update = rawZones.update
 zones.set = rawZones.set
 
-zones.update = async (zone, options = {}) => {
-  await api.put(`zone/${zone.id}`, encodeZone(zone))
+
+/**
+ * 
+ * @param {Object|Array} zones 
+ * @param {*} options 
+ */
+zones.update = async (updatedZones, update, options = {}) => {
+  if(!Array.isArray(updatedZones)) updatedZones = [ updatedZones ]
+  const url = `/zones/${options.actions || ''}`
+  const data = {
+    ref_process_id: updatedZones[0].ref_process,
+    zones: updatedZones.map(x => x.number),
+    data: clean(update)
+  }
+  await api.post(url, data)
+  // await api.put(`zone/${zone.id}`, encodeZone(zone))
   if (!options.skipReload) await zones.reload()
 }
 
@@ -149,8 +169,6 @@ zones.delete = async (zone, options = {}) => {
   await api.delete(`zone/${zone.id}`)
   if (!options.skipReload) await zones.reload()
 }
-
-zones.reload()
 
 window.DANGEROUS_reset_zones = async () => {
   let z

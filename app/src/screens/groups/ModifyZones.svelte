@@ -30,7 +30,7 @@
       } else {
         await groups.removeZones(g, _zones)
       }
-      undo.push(() => groups.update({...g}))
+      undo.push(() => groups.update({ ...g }))
     }
     // for (let z of _zones) {
     //   const curGroups = z.groups || []

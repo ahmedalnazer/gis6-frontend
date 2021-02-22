@@ -62,12 +62,13 @@
         update[fieldMapping[field]] = data
       }
     }
+    await zones.update(_zones, update)
     
-    await Promise.all(_zones.map(async z => {
-      await zones.update({ ...z, ...update }, { skipReload: true })
-    }))
+    // await Promise.all(_zones.map(async z => {
+    //   await zones.update({ ...z, ...update }, { skipReload: true })
+    // }))
 
-    await zones.reload()
+    // await zones.reload()
     notify.success($_("Changes applied"))
     
   }

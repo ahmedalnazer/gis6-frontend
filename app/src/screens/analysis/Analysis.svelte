@@ -11,6 +11,7 @@
   import notify from "data/notifications"
   import user from "data/user"
   import mold from "data/mold"
+  import AnalysisReport from './AnalysisReport'
 
   export let type, description
 
@@ -34,12 +35,12 @@
   $: messages = {
     fault: {
       start: $_("Fault analysis started"),
-      cancel: $_("Fault analysis cancelled"),
+      cancel: $_("Fault analysis canceled"),
       complete: $_("Fault analysis complete"),
     },
     wiring: {
       start: $_("Wiring analysis started"),
-      cancel: $_("Wiring analysis cancelled"),
+      cancel: $_("Wiring analysis canceled"),
       complete: $_("Wiring analysis complete"),
     },
   }
@@ -53,7 +54,7 @@
   let confirmStart = false
   let confirmStop = false
 
-  let maxStartingTemperature = 0
+  let maxStartingTemperature = 200
 
   $: status = $analysis && $analysis.status || "inactive"
   $: running = status != "inactive"
@@ -68,7 +69,7 @@
       messages[type].complete,
       selectedGroupName,
       selectedGroup == 'all' ? null : selectedGroup,
-      maxStartingTemperature,
+      maxStartingTemperature * 10,
       $user && $user.username || $_("Operator"),
       $mold.name || $_("Unknown")
     )
@@ -97,6 +98,10 @@
     if($analysis.groupId) selectedGroup = $analysis.groupId
   })
 
+  let openReportModal = false
+  const OnOpenReportModal = () => {
+    openReportModal = true
+  }
 </script>
 
 <div class="analysis">
@@ -125,13 +130,13 @@
         >{$_("Start Analysis")}</a
       >
     {:else if status != "complete"}
-      <a class="button" on:click={() => confirmStop = true}
+      <a class="button" class:disabled={$analysis.canceling} on:click={() => confirmStop = true}
         >{$_("Cancel Test")}</a
       >
     {:else}
       <!-- <a on:click={start}>(restart)</a> -->
       <div class="complete">
-        <div class="report-button">
+        <div class="report-button" on:click={OnOpenReportModal}>
           <Icon icon="report" color="var(--primary)" />
           {$_("View Report")}
         </div>
@@ -145,6 +150,10 @@
 
   {#if status != "inactive"}
     <ActiveAnalysis {type} />
+  {/if}
+
+  {#if openReportModal}
+    <AnalysisReport analysis={analysis} onClose={() => openReportModal = false} />
   {/if}
 </div>
 

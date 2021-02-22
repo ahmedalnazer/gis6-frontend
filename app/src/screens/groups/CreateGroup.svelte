@@ -1,103 +1,110 @@
 <script>
-  import { onMount, beforeUpdate, afterUpdate, onDestroy } from "svelte";
-  import groups from "data/groups";
-  import { defaultNames, groupColors } from "data/groups";
-  import { Input } from "components";
-  import { get_binding_group_value } from "svelte/internal";
-  import _ from "data/language";
-  import zones from "data/zones";
+  import { onMount, beforeUpdate, afterUpdate, onDestroy } from "svelte"
+  import groups from "data/groups"
+  import { defaultNames, groupColors } from "data/groups"
+  import { Input } from "components"
+  import { get_binding_group_value } from "svelte/internal"
+  import _ from "data/language"
+  import zones from "data/zones"
 
-  export let name = "";
-  export let color = "";
-  export let groupList = [];
-  export let onClose;
+  export let name = ""
+  export let color = ""
+  export let groupList = []
+  export let onClose
 
-  let _zones;
-  export { _zones as zones };
-  let validationError = "";
-  let selectedColor = "";
-  let selectedGroup = "";
-  let adding = true;
-  let defaultUnselectedGroupList = [];
-  let selectedGroups = [];
+  let _zones
+  export { _zones as zones }
+  let validationError = ""
+  let selectedColor = ""
+  let selectedGroup = ""
+  let adding = true
+  let defaultUnselectedGroupList = []
+  let selectedGroups = []
 
-  $: groupIds = $groups.map((x) => x.id);
+  $: groupIds = $groups.map((x) => x.id)
   $: console.log(`GID: ${groupIds}`)
+  $: hasMaxGroup = $groups.length >= 10
 
   $: maxGroups = adding
     ? _zones
-        .map(
-          (z) =>
-            [
-              ...new Set(
-                (z.groups || [])
-                  .filter((x) => groupIds.includes(x))
-                  .concat(selectedGroups)
-              ),
-            ].length
-        )
-        .reduce((max, cur) => (cur > max ? cur : max), 0)
-    : 0;
+      .map(
+        (z) =>
+          [
+            ...new Set(
+              (z.groups || [])
+                .filter((x) => groupIds.includes(x))
+                .concat(selectedGroups)
+            ),
+          ].length
+      )
+      .reduce((max, cur) => cur > max ? cur : max, 0)
+    : 0
 
   onMount(() => {
     defaultUnselectedGroupList = defaultNames.filter((x) => {
-      let grpContains = groupList.filter((g) => g.name == x);
-      return !grpContains.length;
-    });
-  });
+      let grpContains = groupList.filter((g) => g.name == x)
+      return !grpContains.length
+    })
+  })
 
   const handleEditGroupClick_Create = () => {
     // Validate form errors
-    validationError = "";
-
+    validationError = ""
+    
     if (selectedGroup !== "__CUSTOM__") {
-      name = selectedGroup;
+      name = selectedGroup
     }
 
     if (selectedColor == "" || name == "") {
       if (name == "" && selectedColor == "") {
         validationError = $_(
           "Please enter/select 'Group Name' and 'Group Color'"
-        );
+        )
       } else if (name == "") {
-        validationError = $_("Please enter 'Group Name'");
+        validationError = $_("Please enter 'Group Name'")
       } else if (selectedColor == "") {
-        validationError += $_("Please select the 'Group Color'");
-      }
+        validationError += $_("Please select the 'Group Color'")
+      } 
+    } else if (name.length > 12) {
+      validationError += $_("'Group Name' cannot be longer than 12 characters")
     } else if (
       groupList.filter((x) => (x.name || "").toLowerCase() == (name || "").toLowerCase())
         .length > 0
     ) {
       validationError = $_(
         `Group Name ${name} already exist. Please select another name.`
-      );
+      )
     } else if (groupList.filter((x) => x.color == selectedColor).length > 0) {
       validationError = $_(
         `Group Color is assigned to another group. Please select another color.`
-      );
+      )
     } else {
       // Close modal
-      color = selectedColor;
-      onClose();
+      color = selectedColor
+      onClose()
     }
-  };
+  }
 
   const handleColorSelectedClick_Create = (e) => {
-    selectedColor = e.target.getAttribute("data-color");
-  };
+    selectedColor = e.target.getAttribute("data-color")
+  }
 
-  onDestroy(() => {});
+  onDestroy(() => {})
 </script>
 
 <div class="editGroupContainer">
   <div class="message">
     {#if maxGroups >= 3}
-      <p class="danger">
+      <p class="danger errorMessage">
         Part of your selection will exceed the maximum (3) number of groups
         and cannot be added to another.
       </p>
+    {:else if hasMaxGroup}
+      <p class="danger errorMessage">
+        Reached a maximum of 10 groups. Unable to create additional group.
+      </p>    
     {:else}
-      <p class="danger">
+      <p class="danger errorMessage">
         {validationError}
       </p>
     {/if}
@@ -121,7 +128,7 @@
             <span class="required">*</span>
           </div>
           <div>
-            <Input value={name} on:change={(e) => (name = e.target.value)} />
+              <Input value={name} on:change={(e) => name = e.target.value} />
           </div>
         {/if}
       </div>
@@ -148,7 +155,7 @@
   </div>
 
   <div class="editGroupButton">
-    <div on:click={handleEditGroupClick_Create} class="button active" >
+    <div on:click={handleEditGroupClick_Create} class="button active" class:disabled={hasMaxGroup}>
       {$_("Done")}
     </div>
   </div>
@@ -166,7 +173,7 @@
   }
 
   .required {
-    color: red;
+    color: #B32024;
     font-size: 22px;
     font-weight: 700;
   }
@@ -176,6 +183,15 @@
     min-width: 300px;
   }
 
+  .errorMessage {
+    padding: 15px;
+    color: #B32024;
+    font-size: 16px;
+    line-height: 22px;
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+  
   .groupSection2 {
     padding: 10px 10px 10px 18px;
   }

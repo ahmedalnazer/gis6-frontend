@@ -12,12 +12,15 @@
   let timeout = 0
 
   const standby = zones => {
-    console.log(zones)
-    // set zones off
-    activeStandby.set(true)
-    if($activeBoost) {
-      notify('Boost cancelled')
-      activeBoost.set(false)
+    if($activeStandby) {
+      activeStandby.cancel()
+    } else {
+      activeStandby.start(zones, auto * 10, {
+        StandbyTimeoutSP: timeout,
+      })
+      if($activeBoost) {
+        notify('Boost canceled')
+      }
     }
     notify.success($_('Standby applied'))
   }

@@ -1,22 +1,34 @@
 import api from 'data/api'
 import notify from 'data/notifications'
-import { writable } from 'svelte/store'
+import { writable, derived } from 'svelte/store'
 import { activeGroup } from 'data/groups'
+import zones from 'data/zones'
+import sysInfo from 'data/globalSettings'
+
+
+export const activeTest = derived([ zones ], ([ $zones ]) => {
+  return $zones.find(x => x.settings.testing)
+})
 
 export class Analysis {
-  constructor(type, zones, def, store, destroy = function(){}, groupName, groupId, maxTemp, user, mold) {
+  constructor(type, _zones, def, store, destroy = function(){}, groupName, groupId, maxTemp, user, mold) {
     this.type = type
     this.default = def
     this.store = store
     this.destroy = destroy
-    this.zones = zones
+    this.zones = _zones
     this.groupName = groupName
     this.groupId = groupId
     this.maxTemp = maxTemp
     this.user = user
     this.mold = mold
+    this.readMode = false
 
+    // for efficient error deduping
+    this.errorMap = {}
     this.errors = []
+
+    this.canceling = false
     this.status = 'inactive'
     this.update(0)
   }
@@ -24,7 +36,7 @@ export class Analysis {
   get current_status() {
     const published = [ 
       'zones', 'errors', 'status', 'progress', 'progress_message', 'startTime', 'endTime',
-      'groupName', 'groupId', 'maxTemp', 'user', 'mold'
+      'groupName', 'groupId', 'maxTemp', 'user', 'mold', 'canceling'
     ]
     let ret = { ...this.default }
     for(let key of published) {
@@ -34,39 +46,117 @@ export class Analysis {
   }
 
   update(progress, status, message) {
-    if(progress) this.progress = progress
+    if(progress || progress === 0) this.progress = progress
     if(message) this.progress_message = message
     if(status) this.status = status
     this.store.set(this.current_status)
   }
 
-  async start(zones, completion_message = '') {
+  async start(_zones, completion_message = '') {
     this.startTime = new Date()
-    this.zones = zones
-    this.status = 'Initializing...'
+    this.zones = _zones
+    this.zoneNumbers = _zones.map(x => x.number)
+    this.status = 'All zones off'
     this.completion_message = completion_message
     this.update(0)
+    this.unsubInfo = sysInfo.subscribe(info => {this.processInfo(info)})
+    this.unsubZones = zones.subscribe(zones => {this.processZones(zones)})
     activeGroup.set(this.groupId)
     await api.post(`/analysis/${this.type}`, { temp: this.maxTemp, zones: this.zones.map(x => x.number) })
   }
 
-  logError(e) {
-    this.errors.push(e)
-    this.update()
+  logError(zone, code) {
+    if(!this.errorMap[zone.number]) {
+      this.errorMap[zone.number] = []
+    }
+    if(!this.errorMap[zone.number].includes(code)) {
+      this.errorMap[zone.number].push(code)
+      this.errors.push({ zone, type: code })
+      this.update()
+    }
+  }
+
+  processInfo(info) {
+    const msg = info && info.sys_message || ''
+    if(msg.startsWith('Captured starting') || msg.startsWith('Set zone')) {
+      this.readMode = true
+    }
+    if(this.unsubInfo) {
+      if(msg.includes('wait for') && !msg.includes('zones to cool') && !this.waitTracker) {
+        this.waitTracker = setInterval(() => {
+          if(this.progress < 75) {
+            this.progress += .3
+            this.update()
+          } else {
+            clearInterval(this.waitTracker)
+          }
+        }, 300)
+      }
+      if(msg.includes('has temperature risen')) {
+        setTimeout(() => {
+          if(this && !this.completed) {
+            this.complete()
+          }
+        }, 5000)
+      }
+      if (this.status != 'Initializing...' && (msg.startsWith('Analysis Completed') || msg.includes('operation canceled'))) {
+        this.complete()
+      } else if (!msg.startsWith('Analysis Completed') && !this.canceling) {
+        this.status = msg
+        this.update()
+      }
+    }
+  }
+
+  processZones(zones) {
+    const relevant = zones.filter(x => this.zoneNumbers.includes(x.number) && ! x.settings.locked)
+    const testing = relevant.filter(x => x.settings.testing)
+    const tested = relevant.filter(x => x.settings.test_complete)
+    if(testing.length > 1) {
+      this.update(null, null, `Testing ${testing.length} zones`)
+    } else if(testing.length == 1) {
+      this.update(tested.length / relevant.length * 100, null, `Testing zone ${tested.length + 1} of ${relevant.length}`)
+    } else {
+      this.update(null, null, `Waiting...`)
+    }
+    if(this.readMode) {
+      const errors = zones.filter(x => x.hasAlarm)
+      for(let z of errors) {
+        for(let key of Object.keys(z.alarms)) {
+          if(availableCodes.includes(key) && z.alarms[key]) {
+            this.logError(z, key)
+          }
+        }
+      }
+    }
+  }
+
+  cleanup() {
+    clearInterval(this.waitTracker)
+    this.unsubInfo()
+    this.unsubZones()
   }
 
   complete() {
-    this.status = 'complete'
     this.endTime = new Date()
-    notify.success(this.completion_message)
-    this.update(100)
+    this.completed = true
+    this.cleanup()
+    if(this.canceling) {
+      this.status = 'canceled'
+      notify('Test successfully canceled, resuming normal operation')
+      this.destroy()
+    } else {
+      this.status = 'complete'
+      notify.success(this.completion_message)
+      this.update(100)
+    }
   }
 
   async cancel() {
-    await api.post(`/analysis/cancel`, {})
-
+    await api.post(`/analysis/cancel`, { zones: this.zones.map(x => x.number) })
+    this.canceling = true
+    this.update(null, 'Canceling...')
     // possibly removing this once WS support is available
-    this.destroy()
   }
 }
 
@@ -94,23 +184,23 @@ export default function getAnalysis(type) {
     }, groupName, groupId, maxStart, user, mold)
     active[type].start(zones, message)
 
-    // test with dummy data
-    clearInterval(dummyTimer[type])
-    const types = Object.keys(error_types)
-    dummyTimer[type] = setInterval(() => {
-      if (!active[type]) {
-        clearInterval(dummyTimer[type])
-        return
-      }
-      const { errors, zones } = active[type]
-      if (errors.length < 20) {
-        active[type].update(errors.length * 5, `Test in progress`, `Simulated error ${errors.length} of 20`)
-        active[type].logError({ zone: zones[errors.length] || zones[0], type: types[errors.length] || 'tc_short' })
-      } else {
-        active[type].complete()
-        clearInterval(dummyTimer[type])
-      }
-    }, 300)
+    // // test with dummy data
+    // clearInterval(dummyTimer[type])
+    // const types = Object.keys(error_types)
+    // dummyTimer[type] = setInterval(() => {
+    //   if (!active[type]) {
+    //     clearInterval(dummyTimer[type])
+    //     return
+    //   }
+    //   const { errors, zones } = active[type]
+    //   if (errors.length < 20) {
+    //     active[type].update(errors.length * 5, `Test in progress`, `Simulated error ${errors.length} of 20`)
+    //     active[type].logError({ zone: zones[errors.length] || zones[0], type: types[errors.length] || 'tc_short' })
+    //   } else {
+    //     active[type].complete()
+    //     clearInterval(dummyTimer[type])
+    //   }
+    // }, 300)
     return active[type]
   }
 
@@ -171,3 +261,5 @@ export const error_types = {
     icon: '/images/icons/analysis/ground_fault.jfif'
   },
 }
+
+const availableCodes = Object.keys(error_types)

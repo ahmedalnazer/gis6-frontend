@@ -10,6 +10,7 @@
   import { loggingIn } from 'data/user/actions'
   import SetpointEditor from 'components/SetpointEditor'
   import createSocket from 'data/realtime/ws'
+  import init from 'data/init'
 
 
   let showSplashScreen = true
@@ -20,7 +21,7 @@
     let showSplashScreenStore = localStorage.getItem("showSplashScreen")
     if (showSplashScreenStore === null) { showSplashScreen = true }
     else { showSplashScreen = showSplashScreenStore !== "false" }
-
+    init()
     createSocket()
   })
 </script>
