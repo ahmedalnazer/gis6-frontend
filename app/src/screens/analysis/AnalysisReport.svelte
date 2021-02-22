@@ -32,12 +32,11 @@
       zones: $analysis.zones.length,
       zonesLocked: $analysis.zones.filter(x => x.Islocked).length,
       errors: $analysis.errors.map(x => ({name: x.zone.name, code: x.type})),
-      path: 'test'
+      path: ''
     }
 
     const onSubmit = async () => {
         isDisable = true
-        console.log('submit: ', report)
         const res = await api.post('/api/report', report)
         if (res.id) {
           notify('Changes saved.')
