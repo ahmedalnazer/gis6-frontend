@@ -16,7 +16,7 @@
       activeStandby.cancel()
     } else {
       activeStandby.start(zones, auto * 10, {
-        StandbyTimeoutSP: timeout,
+        StandbyTimeoutSP: timeout * 10,
       })
       if($activeBoost) {
         notify('Boost canceled')
@@ -31,7 +31,7 @@
     <h2>Edit</h2>
     <div class='grid'>
       <Input type='number' bind:value={auto} label='{$_('Auto Standby')}  (&#176;C)' />
-      <Input type='number' bind:value={timeout} label='{$_('Standby Timeout')}  (&#176;C)' />
+      <Input type='number' bind:value={timeout} label='{$_('Standby Timeout')}  (min)' />
     </div>
   </Selector>
 </Modal>
