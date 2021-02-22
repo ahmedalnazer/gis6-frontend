@@ -75,7 +75,6 @@ const zones = derived([ rawZones, realtime ], ([ $raw, $realtime ]) => {
         test_complete: getBit(merged._settings, 7)
       }
     }
-    if(merged.number == 1) console.log(merged)
     return merged
   })
   var collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' })
