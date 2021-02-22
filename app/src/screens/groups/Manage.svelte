@@ -16,6 +16,7 @@
   import { activeSetpointEditor } from 'data/setpoint'
 
   $: selectedGroup = $activeGroup
+  $: selectedGroupObj = $groups.filter(x => x.id == selectedGroup)[0]
   let sortGroups = true
 
   $: displayedGroups = selectedGroup
@@ -181,6 +182,9 @@
         <span class="link" on:click={() => editing = true}
           >{$_("Edit Group")}</span
         >
+        <span class="link" on:click={() => deleting = selectedGroupObj}
+          >{$_("Delete Group")}</span
+        >
       {/if}
     </div>
 
@@ -261,21 +265,25 @@
 
 {#if deleting}
   <Modal title={$_("Delete Group")} onClose={() => deleting = null}>
-    <div class="modal">
+    <div class="modal-text">
       <p>
+        {$_("Continue and delete the group ")} "{deleting.name}"?
+      </p>
+      <!-- <p>
         Are you sure you want to delete the {deleting.name} group? This is a permanent
         action and cannot be undone.
-      </p>
+      </p> -->
 
       <div class="modal-buttons">
-        <div class="button" on:click={() => deleting = null}>Cancel</div>
+        <div class="button" on:click={() => deleting = null}>No, take me back</div>
         <div
           class="button active"
           on:click={() => {
             groups.delete(deleting)
             deleting = null
+            activeGroup.set(null)
           }}
-        >Yes, delete group</div>
+        >Yes, delete the group</div>
       </div>
     </div>
   </Modal>
@@ -340,10 +348,24 @@
     cursor: pointer;
   }
 
-  .modal {
-    text-align: center;
+  // .modal {
+  //   text-align: center;
+  // }
+
+  .modal-text p {
+    text-align: left;
+    line-height: 27px;
+    font-weight: 600;
+    font-size: 20px;
+    padding-top: 31px;
+    padding-bottom: 107px;
   }
 
-  // .divHeaderSortableList{ }
+  .modal-buttons {
+    justify-content: space-between;
+    .button {
+      margin: 0;
+    }
+  }
 
 </style>
