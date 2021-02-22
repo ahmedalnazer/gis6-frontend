@@ -1,6 +1,6 @@
 import api from 'data/api'
 import zones from 'data/zones'
-import process from 'data/process'
+import process, { activeProcess } from 'data/process'
 
 export let globalSettings
 
@@ -27,18 +27,18 @@ export default async function init() {
     proc = processes[0]
   }
   const z = await api.get('zone')
-  if(!z.length) await seed()
+  if(!z.length) await seed(proc)
   process.set(proc)
   zones.reload()
 }
 
-const seed = async () => {
+const seed = async (proc) => {
   for (let i = 1; i <= 50; i++) {
-    await api.post('zone', encodeZone({
+    await api.post('zone', {
       ZoneName: `Zone ${i}`,
       ZoneNumber: i,
       ref_process: proc.id
-    }))
+    })
   }
 }
 
