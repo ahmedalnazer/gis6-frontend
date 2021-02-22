@@ -151,12 +151,15 @@
 
     .editGroupMessage {
         padding: 15px;
-        color: red;
-        font-size: 22px;
+        color: #B32024;
+        font-size: 16px;
+        line-height: 22px;
+        font-weight: 600;
+        letter-spacing: 0;
     }
 
     .required {
-        color: red;
+        color: #B32024;
         font-size: 22px;
         font-weight: 700;
     }

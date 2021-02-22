@@ -95,16 +95,16 @@
 <div class="editGroupContainer">
   <div class="message">
     {#if maxGroups >= 3}
-      <p class="danger">
+      <p class="danger errorMessage">
         Part of your selection will exceed the maximum (3) number of groups
         and cannot be added to another.
       </p>
     {:else if hasMaxGroup}
-      <p class="danger">
+      <p class="danger errorMessage">
         Reached a maximum of 10 groups. Unable to create additional group.
       </p>    
     {:else}
-      <p class="danger">
+      <p class="danger errorMessage">
         {validationError}
       </p>
     {/if}
@@ -173,7 +173,7 @@
   }
 
   .required {
-    color: red;
+    color: #B32024;
     font-size: 22px;
     font-weight: 700;
   }
@@ -183,6 +183,15 @@
     min-width: 300px;
   }
 
+  .errorMessage {
+    padding: 15px;
+    color: #B32024;
+    font-size: 16px;
+    line-height: 22px;
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+  
   .groupSection2 {
     padding: 10px 10px 10px 18px;
   }
