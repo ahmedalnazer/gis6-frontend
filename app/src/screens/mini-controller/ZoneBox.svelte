@@ -15,24 +15,27 @@
     ? zoneGroups.map(x => x.color)
     : [ '#00E5FF' ]
 
-  $: deviation = Math.max(20, zone.DeviationSp || 0)
+  $: deviation = Math.max(30, zone.DeviationSp || 0)
 
-  $: manual = !zone.settings.auto
+  $: settings = zone.settings || {}
+
+  $: manual = !settings.auto
   $: setpoint = zone.temp_sp ? Math.round(zone.temp_sp / 10) * 10 : zone.ProcessSp
 
-  $: on = zone.settings.on
-  $: locked = zone.settings.locked
+  $: on = settings.on
+  $: locked = settings.locked
+  $: boost = settings.boost
+  $: standby = settings.standby
   $: live =  on && !locked &&  zone.actual_temp !== undefined
 
   $: falling = !manual && live && zone.actual_temp > setpoint + deviation
   $: rising = !manual && live && zone.actual_temp < setpoint - deviation
 
-  $: tempWarning = falling || rising
+  $: tempWarning = !boost && !standby && (falling || rising)
 
-  $: tempError = zone.hasTempError
-  $: powerError = zone.hasPowerError
+  $: tempError = zone.hasTempAlarm
+  $: powerError = zone.hasPowerAlarm
   let powerWarning = false
-  // $: tempError = [ 0, 1, 2, 3, 4, 5, 6, 7, 12, 14, 15 ].reduce((err, bit) => isTempBit(bit) || err, false)
 
   let dbl = false
   const click = e => {
@@ -66,11 +69,19 @@
         {Math.round((zone.actual_temp || 0) / 10)}&deg;<span class='temp-type'>F</span>
       </div>
       <div class='deviation-icon'>
-        {#if rising}
-          <Icon icon='up' color='white' />
-        {/if}
-        {#if falling}
-          <Icon icon='down' color='white' />
+        {#if boost || standby}
+          <div class='animated' class:boost class:standby>
+            <Icon icon='boost' color='var(--warning)' />
+            <Icon icon='boost' color='var(--warning)' />
+            <div class='gradient-overlay' />
+          </div>
+        {:else}
+          {#if rising}
+            <Icon icon='up' color='white' />
+          {/if}
+          {#if falling}
+            <Icon icon='down' color='white' />
+          {/if}
         {/if}
       </div>
       {#if on && zone.settings.sealed}
@@ -170,7 +181,7 @@
       font-weight: 600;
     }
     .setpoint, .temp-type {
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 400;
     }
   }
@@ -226,6 +237,39 @@
 
   .deviation-icon :global(svg) {
     width: 8px;
+  }
+
+  @keyframes boostAnimation {
+    0% {bottom: -100%}
+    100% {bottom: 0%}
+  }
+
+  .animated {
+    display:flex;
+    flex-direction: column;
+    margin: 2px;
+    position: relative;
+    overflow: hidden;
+    :global(svg) {
+      width: 8px;
+      height: 8px;
+    }
+    .gradient-overlay  {
+      animation: boostAnimation 1s infinite linear;
+      background: linear-gradient(var(--blue), transparent, transparent, var(--blue)) repeat;
+      background-size: 100% 50%;
+      background-repeat: repeat;
+      background-position: 0, 0;
+      position:absolute;
+      height: 200%;
+      width: 100%;
+      left: 0;
+      bottom: 0%
+    }
+  }
+
+  .standby.animated {
+    transform: rotate(180deg)
   }
 
 </style>

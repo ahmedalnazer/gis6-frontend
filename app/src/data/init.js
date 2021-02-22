@@ -1,4 +1,47 @@
 import api from 'data/api'
+import zones from 'data/zones'
+import process from 'data/process'
+
+export let globalSettings
+
+export default async function init() {
+
+  const global = await api.get('/global')
+  if(!global[0]) {
+    globalSettings = await api.post('/global', defaultGlobals)
+  } else {
+    globalSettings = global[0]
+  }
+
+  // globalSettings = await api.put(`/global/${globalSettings.id}`, { BoostTimeSP: 100 })
+
+  // console.log(globalSettings)
+
+  // TODO remove temporary workaround to specify 
+  let processes = []
+  let proc
+  processes = await api.get('process')
+  if (!processes.length) {
+    proc = await api.post('process', { name: 'Dummy Process' })
+  } else {
+    proc = processes[0]
+  }
+  const z = await api.get('zone')
+  if(!z.length) await seed()
+  process.set(proc)
+  zones.reload()
+}
+
+const seed = async () => {
+  for (let i = 1; i <= 50; i++) {
+    await api.post('zone', encodeZone({
+      ZoneName: `Zone ${i}`,
+      ZoneNumber: i,
+      ref_process: proc.id
+    }))
+  }
+}
+
 
 const defaultGlobals = {
   "SPsAreDegreesC": true,
@@ -44,21 +87,4 @@ const defaultGlobals = {
   "MoldDoctorOperatingTemperature": 0,
   "MoldDoctorSoakTime": 0,
   "SealTemperatureSP": 0
-}
-
-export let globalSettings
-
-export default async function init() {
-
-  const global = await api.get('/global')
-  if(!global[0]) {
-    globalSettings = await api.post('/global', defaultGlobals)
-  } else {
-    globalSettings = global[0]
-  }
-
-  // globalSettings = await api.put(`/global/${globalSettings.id}`, { BoostTimeSP: 100 })
-
-  // console.log(globalSettings)
-
 }

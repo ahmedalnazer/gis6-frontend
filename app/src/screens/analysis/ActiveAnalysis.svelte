@@ -5,6 +5,8 @@
   import _ from "data/language"
   import Error from "./Error.svelte"
   import TestResults from "./TestResults.svelte"
+  // import sysinfo from 'data/globalSettings'
+  // import { activeTest } from 'data/analysis/core'
 
   export let type = "fault"
 
@@ -14,6 +16,8 @@
   }
 
   $: analysis = analyses[type]
+
+  // $: console.log($sysinfo, $activeTest)
 </script>
 
 <div class="analysis">
@@ -24,7 +28,6 @@
       <h2>{$_("Test Status")}</h2>
       <div class="status-wrapper">
         <div class="text">
-          <p>{$_("All zones off.")}</p>
           <p>{$analysis.status}</p>
         </div>
         <div class="progress">

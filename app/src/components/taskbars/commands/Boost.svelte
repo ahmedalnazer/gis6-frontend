@@ -23,8 +23,7 @@
     })
 
     if($activeStandby) {
-      notify('Standby cancelled')
-      activeStandby.set(false)
+      notify('Standby canceled')
     }
     notify.success($_('Boost applied'))
   }

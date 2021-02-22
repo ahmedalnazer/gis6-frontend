@@ -2,7 +2,7 @@ import { writable, derived } from 'svelte/store'
 import api from 'data/api'
 import { id } from '../tools'
 
-const getBit = (int, bit) => int & 1 << bit
+const getBit = (int, bit) => !!(int & 1 << bit)
 
 const rawZones = writable([])
 export const realtime = writable([])
@@ -35,28 +35,47 @@ const zones = derived([ rawZones, realtime ], ([ $raw, $realtime ]) => {
     merged.hasAlarm = false
     merged.hasTempAlarm = false
     merged.hasPowerAlarm = false
-    if (merged.temp_alarm) {
+    if (merged.temp_alarm && merged.temp_alarm != 16) {
       merged.hasAlarm = true
       merged.hasTempAlarm = true
-      let map = [ 'tc_open', 'tc_shorted', 'tc_reversed', 'low', 'high', 'tc_high', 'tc_low', 'tc_power' ]
-      for(let i; i < map.length; i++) {
+      let map = [ 'tc_open', 'tc_short', 'tc_reversed', 'low', 'high', 'tc_high', 'tc_low', 'tc_power' ]
+      for(let i = 0; i < map.length; i++) {
         merged.alarms[map[i]] = getBit(merged.temp_alarm, i)
       }
       merged.alarms.com_loss = getBit(merged.temp_alarm, 15)
     }
     if (merged.power_alarm) {
+      // console.log('POWER ALARM', merged.power_alarm)
       merged.hasAlarm = true
       merged.hasPowerAlarm = true
-      // merged.temp_alarm = toBinary(merged.temp_alarm)
+      let map = [
+        'open_heater', 'heater_short', 'open_fuse', 'uncontrolled_input', 'no_voltage', 'ground_fault', 
+        'over_current', '', 'cross_wired', 'do_not_heat', 'tc_reversed'
+      ]
+      for(let i = 0; i < map.length; i++) {
+        if(map[i]) {
+          merged.alarms[map[i]] = getBit(merged.power_alarm, i)
+        }
+      }
     }
+    
+    if (merged.alarms.cross_wired) {
+      merged.alarms.crosswired_with = merged.temp_sp
+    }
+
     if (merged._settings) {
       merged.settings = {
         locked: getBit(merged._settings, 0),
         sealed: getBit(merged._settings, 1),
         on: getBit(merged._settings, 2),
-        auto: getBit(merged._settings, 3)
+        auto: getBit(merged._settings, 3),
+        standby: getBit(merged._settings, 4),
+        boost: getBit(merged._settings, 5),
+        testing: getBit(merged._settings, 6),
+        test_complete: getBit(merged._settings, 7)
       }
     }
+    if(merged.number == 1) console.log(merged)
     return merged
   })
   var collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' })
@@ -72,15 +91,12 @@ export const activeZones = derived([ selectedZones, zones ], ([ $selectedZones, 
 const decodeZone = z => {
   const d = {
     ...z,
+    // alias certain fields for legacy and convenience
     name: z.ZoneName,
     number: z.ZoneNumber,
     id: id(z.id),
     groups: z.ZoneGroups
   }
-
-  delete d.ZoneName
-  delete d.ZoneNumber
-  delete d.ZoneGroups
   return d
 }
 
@@ -117,43 +133,10 @@ const encodeZone = z => {
 
 
 const getZones = async () => {
-  await init()
   return (await api.get('zone')).map(x => decodeZone(x))
 }
 
-// TODO remove temporary workaround to specify 
-let processes = []
-let proc
-let initted = false
-const init = async () => {
-  if(initted) return
-  initted = true
-  processes = await api.get('process')
-  if (!processes.length) {
-    proc = await api.post('process', { name: 'Dummy Process' })
-  } else {
-    proc = processes[0]
-  }
-}
-
-zones.reload = async () => {
-  let z = await getZones()
-
-  // TODO: remove dummy zones
-  if (z.length == 0) {
-    for (let i = 1; i <= 50; i++) {
-      await api.post('zone', encodeZone({
-        name: `Zone ${i}`,
-        number: i,
-        ref_process: proc.id
-      }))
-    }
-    z = await getZones()
-  }
-
-  // console.log(z)
-  rawZones.set(z)
-}
+zones.reload = async () => rawZones.set(await getZones())
 
 zones.create = async zone => {
   await api.post('zone', encodeZone(zone))
@@ -186,8 +169,6 @@ zones.delete = async (zone, options = {}) => {
   await api.delete(`zone/${zone.id}`)
   if (!options.skipReload) await zones.reload()
 }
-
-zones.reload()
 
 window.DANGEROUS_reset_zones = async () => {
   let z

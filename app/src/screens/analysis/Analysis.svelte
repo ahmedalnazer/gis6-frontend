@@ -35,12 +35,12 @@
   $: messages = {
     fault: {
       start: $_("Fault analysis started"),
-      cancel: $_("Fault analysis cancelled"),
+      cancel: $_("Fault analysis canceled"),
       complete: $_("Fault analysis complete"),
     },
     wiring: {
       start: $_("Wiring analysis started"),
-      cancel: $_("Wiring analysis cancelled"),
+      cancel: $_("Wiring analysis canceled"),
       complete: $_("Wiring analysis complete"),
     },
   }
@@ -54,7 +54,7 @@
   let confirmStart = false
   let confirmStop = false
 
-  let maxStartingTemperature = 0
+  let maxStartingTemperature = 200
 
   $: status = $analysis && $analysis.status || "inactive"
   $: running = status != "inactive"
@@ -69,7 +69,7 @@
       messages[type].complete,
       selectedGroupName,
       selectedGroup == 'all' ? null : selectedGroup,
-      maxStartingTemperature,
+      maxStartingTemperature * 10,
       $user && $user.username || $_("Operator"),
       $mold.name || $_("Unknown")
     )
@@ -130,7 +130,7 @@
         >{$_("Start Analysis")}</a
       >
     {:else if status != "complete"}
-      <a class="button" on:click={() => confirmStop = true}
+      <a class="button" class:disabled={$analysis.canceling} on:click={() => confirmStop = true}
         >{$_("Cancel Test")}</a
       >
     {:else}
