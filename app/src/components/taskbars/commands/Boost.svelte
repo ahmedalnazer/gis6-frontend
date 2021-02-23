@@ -10,14 +10,14 @@
   export let onClose
 
   let boostTemp = $globalSettings.BoostTemperatureSP / 10
-  let time = $globalSettings.BoostTimeSP
+  let time = $globalSettings.BoostTimeSP / 60
   let manualBoost = $globalSettings.ManualBoostSP / 10
   let recoveryTime = $globalSettings.BoostRecoveryTimeSP / 10
 
   const boost = zones => {
     activeBoost.start(zones, {
       BoostTemperatureSP: boostTemp * 10,
-      BoostTimeSP: time,
+      BoostTimeSP: time * 60,
       ManualBoostSP: manualBoost * 10,
       BoostRecoveryTimeSP: recoveryTime * 10
     })
@@ -34,7 +34,7 @@
     <h2>Edit</h2>
     <div class='grid'>
       <Input type='number' bind:value={boostTemp} label='{$_('Boost Amount')}  (&#176;C)' />
-      <Input type='number' bind:value={time} label='{$_('Boost Time (sec)')}' />
+      <Input type='number' bind:value={time} label='{$_('Boost Time (min)')}' />
       <Input type='number' bind:value={recoveryTime} label='{$_('Recovery Time (min)')}' />
     </div>
 
