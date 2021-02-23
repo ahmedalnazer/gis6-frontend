@@ -86,7 +86,7 @@
     history.push("/hot-runner")
   }
 
-  $: zonesOn = $zones.filter(x => x.IsZoneOn).length
+  $: zonesOn = $zones.filter(x => x.settings && x.settings.on).length
 
   $: startMessage = zonesOn 
     ? $_(`All zones are currently ON and the system is running. The zones will

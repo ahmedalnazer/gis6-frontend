@@ -48,7 +48,7 @@ const createSocket = () => {
     if(mt == 6) {
       realtime.set(data.records)
     } else if(mt == 3) {
-      console.log('sys message received')
+      // console.log('sys message received')
       sysInfo_raw.set(data)
     } else {
       console.log(mt, JSON.stringify(data, null, 2))
