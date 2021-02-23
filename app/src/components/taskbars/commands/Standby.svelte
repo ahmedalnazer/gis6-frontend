@@ -5,11 +5,13 @@
   import { notify } from 'data/'
   import activeStandby from 'data/zones/standby'
   import activeBoost from 'data/zones/boost'
+  import zones, { activeZones } from 'data/zones'
+  import globalSettings from 'data/globalSettings'
 
   export let onClose
-
-  let auto = 104
-  let timeout = 0
+// $: console.log($activeZones[0].StandbySp, $zones[0].StandbySp)
+  let auto = (($activeZones[0] ? $activeZones[0].StandbySp : $zones[0].StandbySp) || 1000) / 10
+  let timeout = $globalSettings.StandbyTimeoutSP / 10
 
   const standby = zones => {
     if($activeStandby) {

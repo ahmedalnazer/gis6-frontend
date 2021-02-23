@@ -3,7 +3,7 @@ import notify from 'data/notifications'
 import { writable, derived } from 'svelte/store'
 import { activeGroup } from 'data/groups'
 import zones from 'data/zones'
-import sysInfo from 'data/globalSettings'
+import { sysInfo } from 'data/globalSettings'
 
 
 export const activeTest = derived([ zones ], ([ $zones ]) => {
@@ -22,7 +22,7 @@ export class Analysis {
     this.maxTemp = maxTemp
     this.user = user
     this.mold = mold
-    this.readMode = false
+    this.readMode = true
 
     // for efficient error deduping
     this.errorMap = {}
@@ -78,20 +78,9 @@ export class Analysis {
 
   processInfo(info) {
     const msg = info && info.sys_message || ''
-    if(msg.startsWith('Captured starting') || msg.startsWith('Set zone')) {
-      this.readMode = true
-    }
+    this.progress = info && info.order_status / 10 || 0
+    // console.log(`${this.progress}%: ${msg}`)
     if(this.unsubInfo) {
-      if(msg.includes('wait for') && !msg.includes('zones to cool') && !this.waitTracker) {
-        this.waitTracker = setInterval(() => {
-          if(this.progress < 75) {
-            this.progress += .3
-            this.update()
-          } else {
-            clearInterval(this.waitTracker)
-          }
-        }, 300)
-      }
       if(msg.includes('has temperature risen')) {
         setTimeout(() => {
           if(this && !this.completed) {
@@ -99,7 +88,7 @@ export class Analysis {
           }
         }, 5000)
       }
-      if (this.status != 'Initializing...' && (msg.startsWith('Analysis Completed') || msg.includes('operation canceled'))) {
+      if (this.status != 'Initializing...' && msg.startsWith('Analysis Completed')) {
         this.complete()
       } else if (!msg.startsWith('Analysis Completed') && !this.canceling) {
         this.status = msg

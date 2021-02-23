@@ -133,7 +133,8 @@
           class:applied={applied[group.id]}
           on:click={() => applyGroup(group)}
         >
-          <Icon icon='check' color='var(--primary)' /> {group.name}
+          <span><Icon icon='check' color='var(--primary)' /></span> 
+          <span>{group.name}</span>
         </div>
       {/each}
     </div>
@@ -179,7 +180,7 @@
   }
   .buttons {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     grid-gap: 24px;
     grid-row-gap: 32px;
     margin-bottom: 32px;

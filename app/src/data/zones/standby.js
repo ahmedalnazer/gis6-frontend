@@ -1,6 +1,6 @@
 import { derived } from 'svelte/store'
 import notify from 'data/notifications'
-import { globalSettings } from 'data/init'
+import globalSettings, { $globalSettings } from 'data/globalSettings'
 import api from 'data/api'
 import zones from 'data/zones'
 import { activeProcess } from 'data/process'
@@ -16,11 +16,12 @@ activeStandby.start = async (zones, StandbySp, params) => {
     zones: zones.map(x => x.number),
     data: { StandbySp }
   })
-  await api.put(`/global/${globalSettings.id}`, params)
+  await api.put(`/global/${$globalSettings.id}`, params)
   await api.post('/zones/standby', {
     ref_process_id: zones[0].ref_process,
     zones: zones.map(x => x.number)
   })
+  globalSettings.reload()
 }
 
 activeStandby.cancel = () => {

@@ -5,21 +5,21 @@
   import { notify } from 'data/'
   import activeBoost from 'data/zones/boost'
   import activeStandby from 'data/zones/standby'
+  import globalSettings from 'data/globalSettings'
+
   export let onClose
 
-  let boostTemp = 104
-  let timeout = 0
-  let time = 0
-  let manualBoost = 0
-  let recoveryTime = 0
+  let boostTemp = $globalSettings.BoostTemperatureSP / 10
+  let time = $globalSettings.BoostTimeSP
+  let manualBoost = $globalSettings.ManualBoostSP / 10
+  let recoveryTime = $globalSettings.BoostRecoveryTimeSP / 10
 
   const boost = zones => {
-    activeBoost.start(zones, 0, {
+    activeBoost.start(zones, {
       BoostTemperatureSP: boostTemp * 10,
-      StandbyTimeoutSP: timeout * 10,
       BoostTimeSP: time,
       ManualBoostSP: manualBoost * 10,
-      BoostRecoveryTimeSP: recoveryTime
+      BoostRecoveryTimeSP: recoveryTime * 10
     })
 
     if($activeStandby) {
@@ -34,13 +34,12 @@
     <h2>Edit</h2>
     <div class='grid'>
       <Input type='number' bind:value={boostTemp} label='{$_('Boost Amount')}  (&#176;C)' />
-      <Input type='number' bind:value={timeout} label='{$_('Standby Timeout (min)')}' />
-      <Input type='number' bind:value={time} label='{$_('Time (sec)')}' />
+      <Input type='number' bind:value={time} label='{$_('Boost Time (sec)')}' />
+      <Input type='number' bind:value={recoveryTime} label='{$_('Recovery Time (min)')}' />
     </div>
 
     <div class='grid'>
-      <Input type='number' bind:value={manualBoost} label='{$_('Manual Boost')}' />
-      <Input type='number' bind:value={recoveryTime} label='{$_('Recovery Time (min)')}' />
+      <Input type='number' bind:value={manualBoost} label='{$_('Manual Boost (%)')}' />
     </div>
   </Selector>
 </Modal>

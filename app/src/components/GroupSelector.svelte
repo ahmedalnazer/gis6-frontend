@@ -5,6 +5,7 @@
   import Sortable from 'sortablejs'
 
   // $: console.log($groups)
+  // $: namelen = $groups.map(element => element.name.length).reduce((a, b) => a + b, 0)
 
   let selector, sortable
 
@@ -33,7 +34,6 @@
     class:active={!$activeGroup}>
     {$_('All Zones')}
   </div> -->
-
   <div class='sortable-list' bind:this={selector}>
     <div
       class="tab"
@@ -67,12 +67,13 @@
       cursor: pointer;
     }
     .tab {
-      padding: 16px 32px;
+      padding: 16px 2px 16px 2px;
+      font-size: 85%;
+      min-width: 160px;
       white-space: nowrap;
       border: 1px solid var(--darkBlue);
       color: var(--darkBlue);
       background: white;
-      min-width: 166px;
       text-align: center;
       // margin: 1px;
       &.active {

@@ -1,16 +1,15 @@
 import api from 'data/api'
 import zones from 'data/zones'
-import process, { activeProcess } from 'data/process'
-
-export let globalSettings
+import process from 'data/process'
+import globalSettings from 'data/globalSettings'
 
 export default async function init() {
 
   const global = await api.get('/global')
   if(!global[0]) {
-    globalSettings = await api.post('/global', defaultGlobals)
+    globalSettings.set(await api.post('/global', defaultGlobals))
   } else {
-    globalSettings = global[0]
+    globalSettings.set(global[0])
   }
 
   // globalSettings = await api.put(`/global/${globalSettings.id}`, { BoostTimeSP: 100 })
