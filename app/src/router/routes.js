@@ -6,6 +6,7 @@ import UserProfile from 'screens/users/UserProfile'
 import GroupManagement from 'screens/groups/Manage'
 import EditGroup from 'screens/groups/EditGroup'
 import MiniController from 'screens/mini-controller/MiniController'
+import EasyScreen from 'screens/easy-screen/EasyScreen'
 import OrderFillin from 'screens/dashboard/OrderFillin.svelte'
 import HotRunner from 'screens/dashboard/HotRunner'
 import FaultAnalysis from 'screens/analysis/FaultAnalysis'
@@ -29,10 +30,11 @@ const routes = {
   '/group-management': GroupManagement,
   '/edit-group': EditGroup,
   '/mini-controller': MiniController,
+  '/easy-screen': EasyScreen,
   '/order-fillin': OrderFillin,
   '/hot-runner': HotRunner,
   '/analysis/fault': FaultAnalysis,
-  '/analysis/wiring': WiringAnalysis
+  '/analysis/wiring': WiringAnalysis,
 }
 
 export default routes

@@ -1,27 +1,18 @@
 <script>
   import { Icon } from 'components'
-  import { tick } from "svelte"
   import Screen from "layout/Screen"
-  import groups, { activeGroup, group_order, setGroupOrder } from "data/groups"
-  import zones, { selectedZones as _selected, toggleZones } from "data/zones"
+  import { activeGroup } from "data/groups"
+  import { selectedZones as _selected } from "data/zones"
   import _ from "data/language"
   import ZoneGroup from "./ZoneGroup"
   import { Modal, CheckBox } from "components"
   import ZoneTasks from "components/taskbars/ZoneTasks"
-  import { startSelection } from "../groups/selectZones"
   import ZoneBox from "./ZoneBox"
   import GroupSelector from "components/GroupSelector.svelte"
-  import Sortable from "sortablejs"
+  import Grouping from 'components/Grouping.svelte'
 
   $: selectedGroup = $activeGroup
   let sortGroups = true
-  let openSetPointEditor = false
-
-  $: displayedGroups = selectedGroup
-    ? [ selectedGroup ]
-    : $groups.concat([ { id: "unassigned", name: "Unassigned" } ])
-  // $: console.log(`disp grps: ${displayedGroups}`);
-  // $: selectedGroup,     console.log(selectedGroup)
 
   // selection when sorted by groups
   let selection = {}
@@ -42,118 +33,30 @@
       _selected.set(selectionZones.map(x => x.zone))
     }
   }
-  
-
-  const boxSelect = (nodes) => {
-    for(let [ nodeString, group ] of nodes) {
-      const node = parseInt(nodeString)
-      if(group) {
-        if(selection[group].includes(node)) {
-          selection[group] = selection[group].filter(x => x != node)
-        } else {
-          selection[group].push(node)
-        }
-      } else {
-        
-        if($_selected.includes(node)) {
-          _selected.update(z => z.filter(x => x != node))
-        } else {
-          _selected.update(z => z.concat(node))
-        }
-      }
-    }
-    selection = selection
-  }
-
-  $: displayedZones = selectedGroup
-    ? $zones.filter((x) => x.groups && x.groups.includes(selectedGroup))
-    : $zones
-
-  let openGroups = {}
-
-  let sortList, sortable
-
-  const resetSortable = async () => {
-    await tick()
-    if(sortable) sortable.destroy()
-    sortable = Sortable.create(sortList, {
-      store: {
-        get: s => $group_order,
-        set: s => setGroupOrder(s.toArray())
-      },
-      handle: ".drag-header"
-    })
-  }
-
-  $: {
-    if(sortList && sortGroups && $group_order) {
-      resetSortable()
-    }
-  }
 
   let showLegend = false
 </script>
 
-<Screen title={$_("Minicontroller")} id="minicontroller">
+<Screen group='zones' id="minicontroller" back='/hot-runner'>
   <div slot="tasks">
     <ZoneTasks />
   </div>
 
-  <div
-    class="selection-area"
-    on:touchstart={(e) => startSelection(e, boxSelect)}
-    on:mousedown={(e) => startSelection(e, boxSelect)}
-  >
-    <div class="tools">
-      {#if !selectedGroup}
-        <CheckBox label={$_("Show Groups")} bind:checked={sortGroups} />
+  <div class="tools">
+    {#if !selectedGroup}
+      <CheckBox label={$_("Show Groups")} bind:checked={sortGroups} />
+    {/if}
+
+    <div class='links'>
+      {#if $_selected.length}
+          <a on:click={clearSelection} class='clear'>{$_('Clear Selection')}</a>
       {/if}
-
-      <div class='links'>
-        {#if $_selected.length}
-           <a on:click={clearSelection} class='clear'>{$_('Clear Selection')}</a>
-        {/if}
-        <a on:click={() => showLegend = !showLegend}>{$_('Icon Legend')}</a>
-      </div>
-
+      <a on:click={() => showLegend = !showLegend}>{$_('Icon Legend')}</a>
     </div>
 
-    <div class="zone-container">
-      {#if !selectedGroup && sortGroups}
-        <div bind:this={sortList}>
-          {#each displayedGroups.filter(x => x.id != 'unassigned') as group (group.id)}
-            <div data-id={group.id}>
-              <ZoneGroup
-                bind:open={openGroups[group.id]}
-                {group}
-                bind:selection={selection[group.id]}
-              />
-            </div>
-          {/each}
-        </div>
-        {#each displayedGroups.filter(x => x.id == 'unassigned') as group (group.id)}
-            <ZoneGroup
-              bind:open={openGroups[group.id]}
-              {group}
-              bind:selection={selection[group.id]}
-            />
-        {/each}
-      {:else}
-        {#if selectedGroup && !displayedZones.length}
-          <p class="muted">{$_("No zones have been assigned to this group")}</p>
-        {/if}
-        <div class="zones">
-          {#each displayedZones as zone (zone.id)}
-            <ZoneBox
-              {zone}
-              active={$_selected.includes(zone.id)}
-              on:click={() => toggleZones(zone.id)}
-            />
-          {/each}
-        </div>
-      {/if}
-    </div>
   </div>
+
+  <Grouping grid Zone={ZoneBox} Group={ZoneGroup} bind:sortGroups bind:selection />
   <div class='footer-groups'>
     <GroupSelector />
   </div>
@@ -196,25 +99,6 @@
         margin-right: 16px;
       }
     }
-  }
-
-  .zone-container {
-    flex: 1;
-    overflow: auto;
-  }
-
-  .selection-area {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    overflow: auto;
-  }
-
-  .selection-area :global(.zones) {
-    display: grid;
-    grid-template-columns: repeat(8, 1fr);
-    grid-gap: 8px;
-    overflow: auto;
   }
 
   .footer-groups {

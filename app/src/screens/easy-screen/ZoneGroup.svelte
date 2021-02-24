@@ -1,10 +1,11 @@
 <script>
   import DragHeading from 'components/DragHeading.svelte'
   import _ from 'data/language'
-  import _zones from 'data/zones'
-  import ZoneBox from './ZoneBox'
+  import _zones, { selectedZones } from 'data/zones'
+  import ZoneRow from './ZoneRow'
   import groups from 'data/groups'
   import { Collapsible, Icon } from 'components'
+  import { CheckBox } from 'components/'
 
   export let group
   export let selection = []
@@ -22,6 +23,16 @@
     ? $_zones.filter(x => (x.groups || []).map(x => $groups.find(y => y.id == x)).filter(x => !!x).length == 0 )
     : $_zones.filter(x => x.groups && x.groups.includes(group && group.id))
 
+  $: allSelected = zones.filter(x => $selectedZones.includes(x.id)).length == zones.length
+
+  const toggleAll = () => {
+    if(selection.length) {
+      selection = []
+    } else {
+      selection = zones.map(x => x.id)
+    }
+  }
+
   export let open = true
 
 </script>
@@ -33,23 +44,36 @@
       <Icon icon='chevron' />
     </div></DragHeading>
     {#if zones.length == 0}
-        <p class='muted'>{$_('No zones have been assigned to this group')}</p>
+      <p class='muted'>{$_('No zones have been assigned to this group')}</p>
     {/if}
     
     <Collapsible {open} >
-      <div class='zones'>
-        {#each zones as zone}
-          <ZoneBox
-            zone={zone} 
-            group={group}
-            active={selection.includes(zone.id)} 
-            on:click={() => toggle(zone.id)}
-          />
-        {/each}
+      <div class='grid'>
+        <div>
+          <CheckBox checked={allSelected} minus={selection.length && !allSelected} onClick={toggleAll} label={$_('Zone')} /> 
+        </div>
+        <div>
+          {$_('Actual')}
+        </div>
+        <div>
+          {$_('Output')} (%)
+        </div>
+        <div>
+          {$_('Settings')}
+        </div>
       </div>
+      {#each zones as zone}
+        <ZoneRow
+          zone={zone} 
+          group={group}
+          active={selection.includes(zone.id)} 
+          on:click={() => toggle(zone.id)}
+        />
+      {/each}
     </Collapsible>
   </div>
 {/if}
+
 
 <style lang="scss">
   .zone-group {
@@ -73,5 +97,9 @@
   }
   .heading.open :global(svg:first-of-type) {
     transform: rotate(90deg)
+  }
+
+  table {
+    width: 100%;
   }
 </style>

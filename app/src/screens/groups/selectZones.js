@@ -1,3 +1,5 @@
+let activeSelection = true
+
 export const startSelection = (touchStartEl, callback) => {
   let selectedZoneElements = []
   // const zones = touchStartEl.target.closest('.zones')
@@ -38,10 +40,10 @@ export const startSelection = (touchStartEl, callback) => {
     getZones().forEach(function(element) {
       const box = element.getBoundingClientRect()
       if (
-        selectionRectangle.left <= box.left &&
-        selectionRectangle.top <= box.top &&
-        selectionRectangle.right >= box.right &&
-        selectionRectangle.bottom >= box.bottom
+        selectionRectangle.left <= box.right &&
+        selectionRectangle.right >= box.left &&
+        (selectionRectangle.top <= box.bottom &&
+        selectionRectangle.bottom >= box.top)
       ) {
         selectedZoneElements.push([ element.dataset.id, element.dataset.group ])
       }
@@ -62,6 +64,7 @@ export const startSelection = (touchStartEl, callback) => {
     const maxY = Math.max(currentY, touchStartY)
 
     if((offsetX > 20 || offsetX < -20) && rubberBox){
+      activeSelection = true
       rubberBox.style.width = `${maxX - minX}px`
       rubberBox.style.height = `${maxY - minY}px`
       rubberBox.style.top = `${minY}px`
@@ -75,7 +78,7 @@ export const startSelection = (touchStartEl, callback) => {
 
     if (rubberBox) {
       filterZones(rubberBox)
-      callback(selectedZoneElements)
+      if(activeSelection) callback(selectedZoneElements)
       selectedZoneElements.splice(0, selectedZoneElements.length)
       rubberBox.remove()
       document.removeEventListener('mousemove', touchMoveHandler)
@@ -83,6 +86,7 @@ export const startSelection = (touchStartEl, callback) => {
       document.removeEventListener('touchend', touchEndHandler)
       document.removeEventListener('mouseup', touchEndHandler)
     }
+    activeSelection = false
   }
 
   document.addEventListener('mousemove', touchMoveHandler)

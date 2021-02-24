@@ -1,10 +1,69 @@
 <script>
-  import { goBack } from 'router/history'
+  import _ from 'data/language'
+  import { Select } from 'components'
+  import history, { goBack } from 'router/history'
   import IconBackArrow from 'style/images/icon_backarrow'
+  import { onMount } from 'svelte'
   export let dashboard = false
   export let title = ''
+  export let group = null
+  let backUrl = ''
+  export { backUrl as back }
 
   let tasksEmpty
+
+  const groups = {
+    zones: {
+      ez: {
+        name: $_('EZ Screen'),
+        title: $_('Zone Table (EZ Screen)'),
+        url: '/easy-screen'
+      },
+      mini: {
+        name: $_('Minicontroller'),
+        url: '/mini-controller'
+      }
+    }
+  }
+
+  let options = []
+  let selectedScreen = ''
+  let targetUrl = $history.pathname
+  $: options = group && groups[group] && Object.keys(groups[group]).map(key => {
+    return { id: key, ...groups[group][key] }
+  }) || []
+
+  
+  $: {
+    if(group && groups[group]) {
+      
+      const selectedOption = selectedScreen && options.find(x => x.id == selectedScreen)
+      if(selectedOption && targetUrl != selectedOption.url) {
+        targetUrl = selectedOption.url
+        history.push(targetUrl)
+      }
+    } else {
+      options = []
+      selectedScreen = ''
+      targetUrl = ''
+    }
+  }
+
+  const back = () => {
+    if(backUrl) {
+      history.push(backUrl)
+    } else {
+      goBack()
+    }
+  }
+  
+  onMount(() => {
+    if(options.length) {
+      const selectedOption = options.find(x => x.url == $history.pathname)
+      selectedScreen = selectedOption ? selectedOption.id : ''
+    }
+  })
+  
 
 </script>
 
@@ -17,10 +76,14 @@
   </div>
   {#if !dashboard}
     <div class='screen-header'>
-      <div class='back' on:click={goBack}>
+      <div class='back' on:click={back}>
         <IconBackArrow width="45" height="45" />
       </div>
-      <h1>{title}</h1>
+      {#if options.length}
+        <Select isSearchable={false} bind:value={selectedScreen} options={options} />
+      {:else}
+        <h1>{title}</h1>
+      {/if}
     </div>
   {/if}
   <main class="screen-body">
@@ -45,6 +108,7 @@
     display: flex;
     padding: 16px 32px;
     align-items: center;
+    z-index: 3;
   }
 
   .back {
@@ -105,5 +169,28 @@
 
   .dashboard {
     background: #EEEFF4;
+  }
+
+  .screen-header :global(.select) {
+    min-width: 200px;
+    position: relative;
+    --border: 0;
+    --background: white;
+    --padding: 0px 8px;
+    --inputFontSize: 26px;
+    // --height: 32px;
+  }
+  .screen-header :global(.select .selectedItem) {
+    font-size: 26px;
+    font-weight: 600;
+    padding-right: 48px;
+  }
+
+  .screen-header :global(.select .selectContainer) {
+    padding: 0;
+  }
+
+  .screen-header :global(.select .selectContainer .indicator) {
+    display: none;
   }
 </style>
