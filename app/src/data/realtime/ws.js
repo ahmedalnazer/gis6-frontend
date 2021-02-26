@@ -5,9 +5,12 @@ import { sysInfo_raw } from 'data/globalSettings'
 const socketTarget = import.meta.env.SNOWPACK_PUBLIC_WS_URL || `ws://localhost:8080`
 
 const worker = new SharedWorker(new URL('./ws-worker.js', import.meta.url), { type: 'module' })
+
 worker.onerror = e => {
+  console.error('WS WORKER ERROR!!')
   console.error(e)
 }
+
 worker.port.start()
 
 worker.port.onmessage = e => {

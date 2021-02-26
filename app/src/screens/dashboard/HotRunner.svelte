@@ -6,6 +6,7 @@
   import WiringAnalysis from './cards/WiringAnalysis.svelte'
   import EasyScreen from './cards/EasyScreen.svelte'
   import _ from 'data/language'
+  import LinePlotCard from './cards/LinePlotCard.svelte'
 
 </script>
 
@@ -19,5 +20,6 @@
     <EasyScreen />
     <FaultAnalysis />
     <WiringAnalysis />
+    <LinePlotCard />
   </div>
 </Screen>

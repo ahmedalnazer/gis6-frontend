@@ -1,22 +1,69 @@
 import Pbf from 'pbf'
 import { tcdata, minmax, unknown_msg, tczone, sysinfo } from './decode.proto'
 
+const messageTypes = { tcdata, minmax, unknown_msg, tczone, sysinfo }
+
 let socket
 let ports = []
 
-let connected = false
+let connectedChannels = []
+let activeChannels = []
+
+const updateActive = async () => {
+  activeChannels = []
+  for(let p of ports) {
+    console.log(p.subscriptions)
+    activeChannels = activeChannels.concat(p.subscriptions)
+  }
+  activeChannels = [ ... new Set(activeChannels) ]
+  for(let c of connectedChannels) {
+    if(!activeChannels.includes(c)) {
+      await send(`-${c}`)
+    }
+  }
+  console.log(ports)
+  await connect()
+}
+
+const getPortData = port => {
+  const p = ports.find(x => x.port == port)
+  return p ? p.data : {}
+}
+
+const setPortData = (port, data) => {
+  const p = ports.find(x => x.port == port)
+  if(!p) {
+    ports.push({ ...data, port })
+  } else {
+    ports = ports.map(x => {
+      if(x.port == port) {
+        return { ...x, ...data, port }
+      }
+      return x
+    })
+  }
+}
+
+const addPortSubscriptions = (port, subscriptions) => {
+  const current = (getPortData(port) || {}).subscriptions || []
+  setPortData(port, {
+    subscriptions: [ ... new Set(current.concat(subscriptions)) ]
+  })
+  updateActive()
+}
+
+
 let ready = false
-
 let socketTarget
-
 let queue = []
 
-const initiate = () => {
+const initiate = async () => {
   ready = true
   for(let fn of queue) {
     fn()
   }
 }
+
 
 const createSocket = () => new Promise((resolve, reject) => {
   if(ready) resolve()
@@ -25,7 +72,6 @@ const createSocket = () => new Promise((resolve, reject) => {
     
     socket.addEventListener('open', e => {
       console.log('connecting')
-      connected = true
       initiate()
     })
 
@@ -36,13 +82,14 @@ const createSocket = () => new Promise((resolve, reject) => {
 
       const { mt } = unknown_msg.read(pbf)
       const decoders = {
-        2: minmax,
-        3: sysinfo,
-        4: tcdata,
-        6: tczone
+        2: 'minmax',
+        3: 'sysinfo',
+        4: 'tcdata',
+        6: 'tczone'
       }
+      const type = decoders[mt]
 
-      const data = decoders[mt].read(new Pbf(buffer))
+      const data = messageTypes[type].read(new Pbf(buffer))
 
       for(let key of Object.keys(data)) {
         if(data[key] && data[key].constructor === Uint8Array) {
@@ -50,17 +97,21 @@ const createSocket = () => new Promise((resolve, reject) => {
         }
       }
 
-      for(let port of ports) {
-        port.postMessage(data)
+      for(let { port, subscriptions } of ports) {
+        if(subscriptions.includes(type)) {
+          port.postMessage(data)
+        }
       }
       // postMessage(data)
     })
 
     socket.addEventListener('close', e => {
       console.log('Socket connection lost!')
-      connected = false
+      ready = false
+      socket = null
       setTimeout(() => {
-        // createSocket()
+        console.log('retrying')
+        createSocket()
       }, 1000)
     })
   }
@@ -71,6 +122,13 @@ const send = async msg => {
   await createSocket()
   console.log(`sending ${msg}`)
   socket.send(msg)
+}
+
+const connect = async () => {
+  for(let channel of activeChannels.filter(x => !connectedChannels.includes(x))) {
+    await send(`+${channel}`)
+  }
+  connectedChannels = [ ...activeChannels ]
 }
 
 // onmessage = async e => {
@@ -123,18 +181,26 @@ function getString(array) {
 
 onconnect = function(e) {
   const port = e.ports[0]
+  // ports[port] = {
+  //   subscriptions: []
+  // }
 
   port.onmessage = async e => {
+    console.log(e.data)
     const { data } = e
+
     if(data.command == 'start') {
       socketTarget = data.target
     }
+
     if(data.command == 'connect') {
-      for(let channel of data.channels) {
-        await send(`+${channel}`)
-      }
+      addPortSubscriptions(port, data.channels)
+    }
+
+    if(data.command == 'close') {
+      console.log('closing')
+      console.log(port, getPortData(port))
+      ports = ports.filter(x => x.port != port)
     }
   }
-
-  ports.push(port)
 }
