@@ -1,10 +1,10 @@
 <script>
   import Screen from 'layout/Screen.svelte'
-  import Minicontroller from './cards/Minicontroller'
-  import ZoneTasks from "components/taskbars/ZoneTasks"
-  import FaultAnalysis from './cards/FaultAnalysis'
-  import WiringAnalysis from './cards/WiringAnalysis'
-  import EasyScreen from './cards/EasyScreen'
+  import Minicontroller from './cards/Minicontroller.svelte'
+  import ZoneTasks from "components/taskbars/ZoneTasks.svelte"
+  import FaultAnalysis from './cards/FaultAnalysis.svelte'
+  import WiringAnalysis from './cards/WiringAnalysis.svelte'
+  import EasyScreen from './cards/EasyScreen.svelte'
   import _ from 'data/language'
 
 </script>

@@ -1,9 +1,9 @@
 <script>
-  import Screen from 'layout/Screen'
+  import Screen from 'layout/Screen.svelte'
   import { users } from 'data/user'
   import { deleteUser } from 'data/user/actions'
   import _ from 'data/language'
-  import Card from './Card'
+  import Card from './Card.svelte'
   import { Modal } from 'components'
 
   let toDelete = null

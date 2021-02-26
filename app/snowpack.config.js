@@ -1,4 +1,6 @@
-console.log('TESTING CONFIG FILE')
+const httpProxy = require('http-proxy')
+const proxy = httpProxy.createServer({ target: 'http://localhost:8000' })
+const extensions = require('rollup-plugin-extensions')
 
 module.exports = {
   mount: {
@@ -10,28 +12,29 @@ module.exports = {
     '@snowpack/plugin-dotenv',
     '@snowpack/plugin-sass'
   ],
-  install: [
-    /* ... */
-  ],
-  installOptions: {
+  // installOoptions: {
+  //   packageLookupFields: [ "svelte", "module", "main" ]
+  // },
+  packageOptions: {
     /* ... */
     rollup: {
-      plugins: [ require('rollup-plugin-scss')() ]
+      plugins: [ 
+        require('rollup-plugin-scss')(), 
+        extensions({
+          extensions: [ '.js', '.svelte', '.mjs' ]
+        })
+      ]
     }
   },
-  devOptions: {
-    /* ... */
-  },
-  buildOptions: {
-    /* ... */
-  },
-  proxy: {
-    "/api": "http://localhost:8000/api",
-    // "/ws": {
-    //   target: "ws://localhost:5000",
-    //   ws: true
-    // }
-  },
+  routes: [
+    {
+      src: '/api/.*',
+      dest: (req, res) => {
+        proxy.web(req, res)
+      }
+    },
+    { match: "routes", src: '.*', dest: '/index.html' }
+  ],
   alias: {
     "components": "./src/components",
     "screens": "./src/screens",

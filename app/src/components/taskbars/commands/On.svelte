@@ -1,5 +1,5 @@
 <script>
-  import Selector from '../Selector'
+  import Selector from '../Selector.svelte'
   import { Modal } from 'components'
   import _ from 'data/language'
   import { notify } from 'data'

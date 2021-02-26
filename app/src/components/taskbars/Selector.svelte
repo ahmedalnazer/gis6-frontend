@@ -7,7 +7,7 @@
   import groups from 'data/groups'
   import _ from 'data/language'
   import zones, { selectedZones, activeZones } from 'data/zones'
-  import ZoneDropdown from 'components/ZoneDropdown'
+  import ZoneDropdown from 'components/ZoneDropdown.svelte'
   import { notify } from 'data'
   import Icon from 'components/Icon.svelte'
 

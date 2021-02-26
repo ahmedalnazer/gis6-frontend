@@ -2,7 +2,7 @@
   import DragHeading from 'components/DragHeading.svelte'
   import _ from 'data/language'
   import _zones, { selectedZones } from 'data/zones'
-  import ZoneRow from './ZoneRow'
+  import ZoneRow from './ZoneRow.svelte'
   import groups from 'data/groups'
   import { Collapsible, Icon } from 'components'
   import { CheckBox } from 'components/'

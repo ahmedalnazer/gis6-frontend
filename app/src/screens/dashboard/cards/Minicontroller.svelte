@@ -1,7 +1,6 @@
 <script>
-  import Card from './Card'
+  import Card from './Card.svelte'
   import _ from 'data/language'
-  import process from 'data/process'
   
 </script>
 

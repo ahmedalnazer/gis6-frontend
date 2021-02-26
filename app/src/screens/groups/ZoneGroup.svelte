@@ -2,7 +2,7 @@
   import DragHeading from 'components/DragHeading.svelte'
   import _ from 'data/language'
   import _zones from 'data/zones'
-  import ZoneButton from './ZoneButton'
+  import ZoneButton from './ZoneButton.svelte'
   import groups from 'data/groups'
   import { activeSetpointEditor } from 'data/setpoint'
   import { Collapsible, Icon } from 'components'

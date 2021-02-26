@@ -2,7 +2,7 @@
   import DragHeading from 'components/DragHeading.svelte'
   import _ from 'data/language'
   import _zones from 'data/zones'
-  import ZoneBox from './ZoneBox'
+  import ZoneBox from './ZoneBox.svelte'
   import groups from 'data/groups'
   import { Collapsible, Icon } from 'components'
 

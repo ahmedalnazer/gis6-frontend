@@ -1,6 +1,6 @@
 <script>
   import _ from "data/language"
-  import Card from './Card'
+  import Card from './Card.svelte'
 </script>
 
 <Card link='/change-log'>

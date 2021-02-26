@@ -1,5 +1,5 @@
 <script>
-  import DragHeading from 'components/DragHeading'
+  import DragHeading from 'components/DragHeading.svelte'
   export let title
 </script>
 

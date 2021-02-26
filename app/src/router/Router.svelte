@@ -1,7 +1,7 @@
 <script>
   import routes from './routes'
   import history from './history'
-  import Error404 from 'screens/Error404'
+  import Error404 from 'screens/Error404.svelte'
   import Route from 'route-parser'
 
   const routeList = Object.keys(routes).map(x => ({
