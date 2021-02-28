@@ -1,5 +1,5 @@
 <script>
-  import DragIndicator from 'style/images/DragIndicator'
+  import DragIndicator from 'style/images/DragIndicator.svelte'
 </script>
 
 <div class='drag-header'>

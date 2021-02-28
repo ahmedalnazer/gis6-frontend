@@ -1,10 +1,10 @@
 <script>
   import _ from 'data/language'
   import user from 'data/user'
-  import DashboardSection from './DashboardSection'
-  import ChangeLog from './cards/ChangeLog'
-  import GroupManagement from './cards/GroupManagement'
-  import UserManagement from './cards/UserManagement'
+  import DashboardSection from './DashboardSection.svelte'
+  import ChangeLog from './cards/ChangeLog.svelte'
+  import GroupManagement from './cards/GroupManagement.svelte'
+  import UserManagement from './cards/UserManagement.svelte'
 
   let cards = [
     {

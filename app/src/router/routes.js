@@ -1,17 +1,18 @@
-import Dashboard from 'screens/dashboard/Dashboard'
-import ForgotPassword from 'screens/ForgotPassword'
-import ManageUsers from 'screens/users/ManageUsers'
-import AddUser from 'screens/users/AddUser'
-import UserProfile from 'screens/users/UserProfile'
-import GroupManagement from 'screens/groups/Manage'
-import EditGroup from 'screens/groups/EditGroup'
-import MiniController from 'screens/mini-controller/MiniController'
-import EasyScreen from 'screens/easy-screen/EasyScreen'
+import Dashboard from 'screens/dashboard/Dashboard.svelte'
+import ForgotPassword from 'screens/ForgotPassword.svelte'
+import ManageUsers from 'screens/users/ManageUsers.svelte'
+import AddUser from 'screens/users/AddUser.svelte'
+import UserProfile from 'screens/users/UserProfile.svelte'
+import GroupManagement from 'screens/groups/Manage.svelte'
+import EditGroup from 'screens/groups/EditGroup.svelte'
+import MiniController from 'screens/mini-controller/MiniController.svelte'
+import EasyScreen from 'screens/easy-screen/EasyScreen.svelte'
 import OrderFillin from 'screens/dashboard/OrderFillin.svelte'
-import HotRunner from 'screens/dashboard/HotRunner'
-import FaultAnalysis from 'screens/analysis/FaultAnalysis'
-import WiringAnalysis from 'screens/analysis/WiringAnalysis'
-import ZoneNames from "screens/groups/ZoneNames.svelte"
+import HotRunner from 'screens/dashboard/HotRunner.svelte'
+import FaultAnalysis from 'screens/analysis/FaultAnalysis.svelte'
+import WiringAnalysis from 'screens/analysis/WiringAnalysis.svelte'
+import LinePlot from 'screens/charts/line-plot/LinePlot.svelte'
+import ZoneNames from 'screens/groups/ZoneNames.svelte'
 
 /**
  *
@@ -37,6 +38,7 @@ const routes = {
   '/analysis/fault': FaultAnalysis,
   '/analysis/wiring': WiringAnalysis,
   '/zone-names': ZoneNames,
+  '/charts/line-plot': LinePlot
 }
 
 export default routes

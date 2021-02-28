@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte'
-  import ActiveAnalysis from "./ActiveAnalysis"
+  import ActiveAnalysis from "./ActiveAnalysis.svelte"
   import { Modal, Icon, Input, Select } from "components"
   import _ from "data/language"
   import groups, { activeGroup } from "data/groups"
@@ -11,7 +11,7 @@
   import notify from "data/notifications"
   import user from "data/user"
   import mold from "data/mold"
-  import AnalysisReport from './AnalysisReport'
+  import AnalysisReport from './AnalysisReport.svelte'
 
   export let type, description
 

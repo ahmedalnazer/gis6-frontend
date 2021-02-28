@@ -1,8 +1,8 @@
 <script>
   // import { Input } from 'components'
-  import { defaultNames, groupColors } from "data/groups"
-  import CreateGroup from "screens/groups/CreateGroup"
-  import EditGroup from "screens/groups/EditGroup"
+  // import { defaultNames, groupColors } from "data/groups"
+  import CreateGroup from "screens/groups/CreateGroup.svelte"
+  import EditGroup from "screens/groups/EditGroup.svelte"
   import _ from "data/language"
 
   /**

@@ -2,7 +2,7 @@
   import _ from 'data/language'
   import { Select } from 'components'
   import history, { goBack } from 'router/history'
-  import IconBackArrow from 'style/images/icon_backarrow'
+  import IconBackArrow from 'style/images/icon_backarrow.svelte'
   import { onMount } from 'svelte'
   export let dashboard = false
   export let title = ''

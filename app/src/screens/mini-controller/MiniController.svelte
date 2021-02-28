@@ -1,13 +1,13 @@
 <script>
   import { Icon } from 'components'
-  import Screen from "layout/Screen"
+  import Screen from "layout/Screen.svelte"
   import { activeGroup } from "data/groups"
   import { selectedZones as _selected } from "data/zones"
   import _ from "data/language"
-  import ZoneGroup from "./ZoneGroup"
+  import ZoneGroup from "./ZoneGroup.svelte"
   import { Modal, CheckBox } from "components"
-  import ZoneTasks from "components/taskbars/ZoneTasks"
-  import ZoneBox from "./ZoneBox"
+  import ZoneTasks from "components/taskbars/ZoneTasks.svelte"
+  import ZoneBox from "./ZoneBox.svelte"
   import GroupSelector from "components/GroupSelector.svelte"
   import Grouping from 'components/Grouping.svelte'
 

@@ -1,7 +1,7 @@
 <script>
-  import Screen from "layout/Screen"
+  import Screen from "layout/Screen.svelte"
   import _ from "data/language"
-  import ZoneTasks from "components/taskbars/ZoneTasks"
+  import ZoneTasks from "components/taskbars/ZoneTasks.svelte"
   import Analysis from './Analysis.svelte'
 </script>
 

@@ -1,5 +1,5 @@
 <script>
-  import Card from './Card'
+  import Card from './Card.svelte'
   import _ from 'data/language'
   import language from 'data/language/current'
   import { Progress } from 'components'
