@@ -11,6 +11,7 @@ import OrderFillin from 'screens/dashboard/OrderFillin.svelte'
 import HotRunner from 'screens/dashboard/HotRunner'
 import FaultAnalysis from 'screens/analysis/FaultAnalysis'
 import WiringAnalysis from 'screens/analysis/WiringAnalysis'
+import ZoneNames from "screens/groups/ZoneNames.svelte"
 
 /**
  *
@@ -35,6 +36,7 @@ const routes = {
   '/hot-runner': HotRunner,
   '/analysis/fault': FaultAnalysis,
   '/analysis/wiring': WiringAnalysis,
+  '/zone-names': ZoneNames,
 }
 
 export default routes

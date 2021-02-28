@@ -23,6 +23,7 @@ class API {
   update = async () => {
     try {
       this.status = await this.get('auth/status')
+      console.log(this.status)
     } catch(e) {
       console.error(e)
       this.status = { user: {}}
@@ -39,6 +40,7 @@ class API {
     } else {
       this.token = data.access
       this.refresh = data.refresh
+      console.log(data)
       await this.update()
       notify.success(`Signed in`)
       return true
