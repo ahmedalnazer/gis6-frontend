@@ -12,6 +12,7 @@ import HotRunner from 'screens/dashboard/HotRunner.svelte'
 import FaultAnalysis from 'screens/analysis/FaultAnalysis.svelte'
 import WiringAnalysis from 'screens/analysis/WiringAnalysis.svelte'
 import LinePlot from 'screens/charts/line-plot/LinePlot.svelte'
+import ZoneNames from 'screens/zone-names/ZoneNames.svelte'
 
 /**
  *
@@ -36,7 +37,7 @@ const routes = {
   '/hot-runner': HotRunner,
   '/analysis/fault': FaultAnalysis,
   '/analysis/wiring': WiringAnalysis,
-
+  '/zone-names': ZoneNames,
   '/charts/line-plot': LinePlot
 }
 
