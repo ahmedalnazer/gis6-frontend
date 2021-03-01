@@ -12,7 +12,7 @@ import HotRunner from 'screens/dashboard/HotRunner.svelte'
 import FaultAnalysis from 'screens/analysis/FaultAnalysis.svelte'
 import WiringAnalysis from 'screens/analysis/WiringAnalysis.svelte'
 import LinePlot from 'screens/charts/line-plot/LinePlot.svelte'
-import ZoneNames from 'screens/groups/ZoneNames.svelte'
+import ZoneNames from 'screens/zone-names/ZoneNames.svelte'
 
 /**
  *
