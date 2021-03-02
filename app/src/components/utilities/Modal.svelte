@@ -36,7 +36,7 @@
   .modal {
     position: fixed;
     z-index:999;
-    top: 284px;
+    top: 292px;
     left: 0;
     bottom: 120px;
     width: 100%;

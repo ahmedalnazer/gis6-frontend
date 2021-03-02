@@ -1,11 +1,16 @@
 <script>
+  export let onClick = false
   export let checked = false
   export let minus = false
   export let label = ''
 </script>
 
 <div class='input checkbox'>
-  <label on:click={() => checked = !checked}>
+  <label on:click={() => {
+    onClick 
+      ? onClick()
+      : checked = !checked
+  }}>
     <div class='check' class:checked class:minus>
       {#if checked}
         <svg viewbox="0 0 100 100">
@@ -62,14 +67,15 @@
   .minus-container {
     height: 100%;
     width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    position: relative;
   }
 
   .minus-bar {
     width: 12px;
     height: 3px;
+    position: absolute;
     background: white;
+    left: calc(50% - 6px);
+    top: calc(50% - 2px);
   }
 </style>

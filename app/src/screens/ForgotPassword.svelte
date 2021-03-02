@@ -1,5 +1,5 @@
 <script>
-  import Screen from 'layout/Screen'
+  import Screen from 'layout/Screen.svelte'
 </script>
 
 <Screen>

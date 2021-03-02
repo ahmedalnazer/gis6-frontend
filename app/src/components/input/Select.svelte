@@ -1,7 +1,7 @@
 <script>
   import Select from 'svelte-select'
   export let options = []
-  export let getLabel = l => l.name
+  export let getLabel = l => l && l.name
   export let id = 'id'
   export let value
   export let label = ''

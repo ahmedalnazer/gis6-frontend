@@ -1,6 +1,6 @@
 <script>
-  import Screen from 'layout/Screen'
-  import UserForm from './UserForm'
+  import Screen from 'layout/Screen.svelte'
+  import UserForm from './UserForm.svelte'
   import _ from 'data/language'
   import { createUser } from 'data/user/actions'
   import { goBack } from 'router/history'

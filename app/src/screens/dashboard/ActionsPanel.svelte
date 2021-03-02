@@ -1,13 +1,13 @@
 <script>
-    import { createEventDispatcher } from "svelte";
-    import Button, { Label } from "@smui/button";
+    import { createEventDispatcher } from "svelte"
+    // import Button, { Label } from "@smui/button";
 
-    const dispatchSetupProduction = createEventDispatcher();
-    let showSetupProductionButton = true;
+    const dispatchSetupProduction = createEventDispatcher()
+    let showSetupProductionButton = true
 
     const handleSetupProductionClick = () => {
-        showSetupProductionButton = false;
-        dispatchSetupProduction("actionsPanel", { showSetupProductionButton });
+      showSetupProductionButton = false
+      dispatchSetupProduction("actionsPanel", { showSetupProductionButton })
     }
 </script>
 

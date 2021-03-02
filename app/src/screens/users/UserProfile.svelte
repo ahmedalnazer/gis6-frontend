@@ -1,6 +1,6 @@
 <script>
-  import Screen from 'layout/Screen'
-  import UserForm from './UserForm'
+  import Screen from 'layout/Screen.svelte'
+  import UserForm from './UserForm.svelte'
   import _ from 'data/language'
   import { updateUser } from 'data/user/actions'
   import { users, defaultUser } from 'data/user'

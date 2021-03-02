@@ -2,7 +2,7 @@
   import { createEventDispatcher } from 'svelte'
   import { Collapsible } from 'components'
   import { slide } from 'svelte/transition'
-  import KeyPad from './KeyPad'
+  import KeyPad from './KeyPad.svelte'
 
   const dispatch = createEventDispatcher()
 

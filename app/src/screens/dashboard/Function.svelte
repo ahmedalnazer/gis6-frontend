@@ -1,7 +1,7 @@
 <script>
   import user from 'data/user'
-  import DashboardSection from './DashboardSection'
-  import HotRunner from './cards/HotRunner'
+  import DashboardSection from './DashboardSection.svelte'
+  import HotRunner from './cards/HotRunner.svelte'
   import _ from 'data/language'
 
   let cards = [

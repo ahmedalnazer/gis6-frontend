@@ -2,10 +2,10 @@
   import _ from "data/language"
   import { activeSetpointEditor } from 'data/setpoint'
   import { Icon } from 'components'
-  import On from './commands/On'
-  import Off from './commands/Off'
-  import Boost from './commands/Boost'
-  import Standby from './commands/Standby'
+  import On from './commands/On.svelte'
+  import Off from './commands/Off.svelte'
+  import Boost from './commands/Boost.svelte'
+  import Standby from './commands/Standby.svelte'
   import activeBoost from 'data/zones/boost'
   import activeStandby from 'data/zones/standby'
 

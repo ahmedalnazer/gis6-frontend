@@ -1,5 +1,5 @@
 <script>
-  import Card from './Card'
+  import Card from './Card.svelte'
   import _ from 'data/language'
   import language from 'data/language/current'
   import { Progress } from 'components'
@@ -13,7 +13,7 @@
 <Card {link}>
   <h2>{title}</h2>
   {#if $analysis && $analysis.status != 'inactive'}
-    <p class='muted'>{$_('Started')} {new Date().toLocaleString($language, {dateStyle: 'short', timeStyle: 'short'})}</p>
+    <p class='muted'>{$_('Started')} {new Date().toLocaleString($language, { dateStyle: 'short', timeStyle: 'short' })}</p>
     <div class='progress'>
       {#if $analysis.status == 'complete'}
         <p class='muted'>{$_('Report available')}</p>

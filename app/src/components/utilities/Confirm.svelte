@@ -1,6 +1,6 @@
 <script>
   import { currentConfirm } from 'data/confirm'
-  import Modal from './Modal'
+  import Modal from './Modal.svelte'
 
   const confirm = () => {
     $currentConfirm.fn()

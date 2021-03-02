@@ -1,9 +1,9 @@
 <script>
   import { onMount, onDestroy } from 'svelte'
-  import Card from './Card'
+  import Card from './Card.svelte'
   import CheckCircle from "style/images/CheckCircle.svelte"
   import api from "data/api"
-  import zones from 'data/zones';
+  import zones from 'data/zones'
   import _ from 'data/language'
 
   let hrValue = {}
