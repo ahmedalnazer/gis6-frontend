@@ -9,8 +9,8 @@
 </Card>
 
 <style lang="scss">
-  :global(.hot-runner-dash .card) {
-    overflow: scroll;
-    max-height: 340px;
-  }
+  // :global(.hot-runner-dash .card) {
+  //   overflow: scroll;
+  //   max-height: 340px;
+  // }
   </style>
