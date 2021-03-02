@@ -8,7 +8,7 @@
 
   $: {
     if(canvas && worker) {
-      // canvas.height = 400
+      canvas.height = canvas.width * 7.8 / 6.1
       const offscreen = canvas.transferControlToOffscreen()
       worker.postMessage({
         canvas: offscreen, type, properties
@@ -17,7 +17,7 @@
   }
 
   onMount(() => {
-    wsWorker = new SharedWorker(new URL('./../../data/realtime/ws-worker.js', import.meta.url), { type: 'module' })
+    wsWorker = new SharedWorker('/workers/ws-worker.js')
     wsPort = wsWorker.port
     wsPort.start()
 
@@ -25,7 +25,8 @@
       console.error('wsWorker ERROR!!')
       console.error(e)
     }
-    worker = new Worker(new URL('./../../data/charting/chart-worker.js', import.meta.url), { type: 'module' })
+    worker = new Worker('/workers/chart-worker.js')
+    console.log('chart worker created')
     worker.postMessage({ wsPort: wsPort }, [ wsPort ])
 
     // setTimeout(() => wsPort.postMessage({ command: 'close' }), 1000)
@@ -37,11 +38,10 @@
   })
 </script>
 
-<canvas width='1028' height='1028' bind:this={canvas} />
+<canvas width='1028' bind:this={canvas} />
 
 <style>
   canvas {
     width: 100%;
-    height: 100%;
   }
 </style>

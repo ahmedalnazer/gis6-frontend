@@ -1,6 +1,8 @@
 import Pbf from 'pbf'
 import { tcdata, minmax, unknown_msg, tczone, sysinfo } from './decode.proto'
 
+console.log('worker updated')
+
 const messageTypes = { tcdata, minmax, unknown_msg, tczone, sysinfo }
 
 let socket
@@ -73,6 +75,7 @@ const createSocket = () => new Promise((resolve, reject) => {
     socket.addEventListener('open', e => {
       console.log('connecting')
       initiate()
+      // connect()
     })
 
     socket.addEventListener('message', async e => {
@@ -97,6 +100,8 @@ const createSocket = () => new Promise((resolve, reject) => {
         }
       }
 
+      // ports[0].port.postMessage(data)
+
       for(let { port, subscriptions } of ports) {
         if(subscriptions.includes(type)) {
           port.postMessage(data)
@@ -109,6 +114,7 @@ const createSocket = () => new Promise((resolve, reject) => {
       console.log('Socket connection lost!')
       ready = false
       socket = null
+      connectedChannels = []
       setTimeout(() => {
         console.log('retrying')
         createSocket()
