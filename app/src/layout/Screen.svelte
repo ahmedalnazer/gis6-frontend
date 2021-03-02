@@ -108,7 +108,7 @@
     display: flex;
     padding: 16px 32px;
     align-items: center;
-    z-index: 3;
+    // z-index: 3;   // Commented
   }
 
   .back {
