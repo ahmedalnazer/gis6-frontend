@@ -15,7 +15,7 @@
 
   $: selectedGroup = $activeGroup
   let sortGroups = true
-  let selection = {}
+  let selection = []
   let displayedZones = []
 
   // $: {
@@ -24,15 +24,15 @@
   //   }
   // }
 
-  $: allSelected = $_selected.length == displayedZones.length
+  // $: allSelected = $_selected.length == displayedZones.length
 
-  const toggleAll = () => {
-    if($_selected.length) {
-      _selected.set([])
-    } else {
-      _selected.set(displayedZones.map(x => x.id))
-    }
-  }
+  // const toggleAll = () => {
+  //   if($_selected.length) {
+  //     _selected.set([])
+  //   } else {
+  //     _selected.set(displayedZones.map(x => x.id))
+  //   }
+  // }
 </script>
 
 <Screen title={$_('Zone Names')} id="zone-names" back='/hot-runner'>

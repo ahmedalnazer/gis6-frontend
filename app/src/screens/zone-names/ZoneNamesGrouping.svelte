@@ -1,11 +1,15 @@
 <script>
-    import { tick } from "svelte"
-    import groups, { activeGroup, group_order, setGroupOrder } from "data/groups"
-    import zones, { selectedZones as _selected, toggleZones } from "data/zones"
-    import _ from "data/language"
+    import { tick } from 'svelte'
+    import groups, { activeGroup, group_order, setGroupOrder } from 'data/groups'
+    import zones, { selectedZones as _selected, toggleZones } from 'data/zones'
+    import { selectedZones } from 'data/zones'
+    import _ from 'data/language'
     import { startSelection } from "screens/groups/selectZones"
-    import Sortable from "sortablejs"
+    import Sortable from 'sortablejs'
+    import { CheckBox } from 'components/'
   
+    // =================================
+ 
     export let Zone
     export let Group
     export let grid = false
@@ -20,7 +24,7 @@
       : $groups.concat([ { id: "unassigned", name: "Unassigned" } ])
   
     // selection when sorted by groups
-    export let selection = {}
+    export let selection = []
   
     export const clearSelection = () => {
       for (let key of Object.keys(selection)) {
@@ -29,46 +33,23 @@
       _selected.set([])
     }
   
-    $: selectionZones = Object.keys(selection)
-      .map((x) => selection[x].map((zone) => ({ zone, group: x })))
-      .reduce((all, arr) => all.concat(arr), [])
+    // $: selectionZones = Object.keys(selection)
+    //   .map((x) => selection[x].map((zone) => ({ zone, group: x })))
+    //   .reduce((all, arr) => all.concat(arr), [])
   
-    $: {
-      if(sortGroups) {
-        _selected.set(selectionZones.map(x => x.zone))
-      }
-    }
-    
-  
-    const boxSelect = (nodes) => {
-      for(let [ nodeString, group ] of nodes) {
-        const node = parseInt(nodeString)
-        if(group) {
-          if(selection[group].includes(node)) {
-            selection[group] = selection[group].filter(x => x != node)
-          } else {
-            selection[group].push(node)
-          }
-        } else {
-          
-          if($_selected.includes(node)) {
-            _selected.update(z => z.filter(x => x != node))
-          } else {
-            _selected.update(z => z.concat(node))
-          }
-        }
-      }
-      selection = selection
-    }
-  
+    // $: {
+    //   if(sortGroups) {
+    //     _selected.set(selectionZones.map(x => x.zone))
+    //   }
+    // }
+
     $: displayedZones = selectedGroup
       ? $zones.filter((x) => x.groups && x.groups.includes(selectedGroup))
       : $zones
-  
+      
     let openGroups = {}
   
     let sortList, sortable
-    $: console.log(displayedZones)
 
     const resetSortable = async () => {
       await tick()
@@ -86,72 +67,111 @@
       if(sortList && sortGroups && $group_order) resetSortable()
     }
   
-  </script>
-  
-  <div
-    class="selection-area"
-    class:grid
-    on:touchstart={(e) => startSelection(e, boxSelect)}
-    on:mousedown={(e) => startSelection(e, boxSelect)}
-  >
-    <div class="zone-container">
-      {#if !selectedGroup && sortGroups}
-        <div bind:this={sortList}>
-          {#each displayedGroups.filter(x => x.id != 'unassigned') as group (group.id)}
-            <div data-id={group.id}>
-              <Group
-                bind:open={openGroups[group.id]}
-                {group}
-                bind:selection={selection[group.id]}
-              />
+    $: allSelected = $zones.filter(x => (_selected.includes || []).includes(x.id)).length == zones.length
+
+    const toggleAll = () => {
+      if(selection.length) {
+        selection = []
+      } else {
+        selection = $zones.map(x => x.id)
+      }
+    }
+
+    $: displayedZonesRight = [ ...displayedZones ]
+    $: displayedZonesLeft = displayedZonesRight.splice(0, Math.ceil(displayedZones.length/2))
+</script>
+
+<div class="zone-names-main-container">
+    <div class="zone-names-main-grid">
+        <div class="zone-name-sub-container-header">
+            <div>
+                <CheckBox checked={allSelected} minus={selection.length && !allSelected} onClick={toggleAll} label={$_('ID')} />
             </div>
-          {/each}
+            <div>Name</div>    
         </div>
-        {#each displayedGroups.filter(x => x.id == 'unassigned') as group (group.id)}
-            <Group
-              bind:open={openGroups[group.id]}
-              {group}
-              bind:selection={selection[group.id]}
-            />
-        {/each}
-      {:else}
-        {#if selectedGroup && !displayedZones.length}
-          <p class="muted">{$_("No zones have been assigned to this group")}</p>
-        {/if}
-        <div class="zones">
-  
-          <slot name='all-zone-header' />
-  
-          {#each displayedZones as zone (zone.id)}
-            <Zone
-              {zone}
-              active={$_selected.includes(zone.id)}
-              on:click={() => toggleZones(zone.id)}
-            />
-          {/each}
-        </div>
-      {/if}
     </div>
-  </div>
-  
-  
-  <style lang="scss">
-    :global(#minicontroller) .screen-body {
-      display: flex;
-      flex-direction: column;
+    <div class="zone-names-main-grid">
+        <div class="zone-name-sub-container-header">
+            <div>ID</div>
+            <div>Name</div>    
+        </div>
+    </div>
+
+    <div class="zone-names-main-grid">
+        {#each displayedZonesLeft || [] as zone}
+        <div class="zone-name-sub-container">
+            <div>
+                <CheckBox checked={selection.includes(zone.id)} /> {zone.id}
+            </div>
+            <div>{zone.name}</div>    
+        </div>
+        {/each}
+    </div>
+
+    <div class="zone-names-main-grid">
+        {#each displayedZonesRight || [] as zone}
+        <div class="zone-name-sub-container">
+            <div>
+                <CheckBox checked={selection.includes(zone.id)} /> {zone.id}
+                <!-- <CheckBox checked={(selection.includes || []).includes(zone.id)} /> {zone.id} -->
+            </div>
+            <div>{zone.name}</div>    
+        </div>
+        {/each}
+    </div>
+</div>
+ 
+<style lang="scss">
+    .zone-names-main-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-gap: 8px;
     }
-  
-    .zone-container {
-      flex: 1;
-      overflow: auto;
+
+    .zone-names-main-grid {
+        padding: 5px;
     }
-  
-    .selection-area {
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-      overflow: auto;
+
+    .zone-name-sub-container-header {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        height: 70px;
+        align-content: center;
+        padding: 32px 17px 17px 17px; 
     }
+
+    .zone-name-sub-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        height: 70px;
+        align-content: center;
+        padding: 32px 17px 17px 17px;
+        border: 1px solid var(--grayBorder);
+        margin-bottom: -1px;
+    }
+
+    // :global(#minicontroller) .screen-body {
+    //   display: flex;
+    //   flex-direction: column;
+    // }
+  
+    // .zone-container {
+    //   flex: 1;
+    //   overflow: auto;
+    // }
+    // .zone-names-main-container- {
+    //   display: flex;
+    //   flex-direction: column;
+    //   flex: 1;
+    //   overflow: auto;
+    // }
+    // .selection-area- {
+    //   display: flex;
+    //   flex-direction: column;
+    //   flex: 1;
+    //   overflow: auto;
+    //   border: 1px solid salmon;
+    // }
   
     .selection-area.grid :global(.zones) {
       display: grid;

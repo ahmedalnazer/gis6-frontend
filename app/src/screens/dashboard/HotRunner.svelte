@@ -11,7 +11,8 @@
   import LinePlotCard from './cards/LinePlotCard.svelte'
 
   // USER_TYPE_CHOICES = ((1, "admin"), (2, "operator"), (3, "process_engineer"), (4, "setup"), (5, "plant_manager") )
-  $: showZoneNames = ($user || []).role ? ($user || []).role !== 2: false
+  // $: showZoneNames = ($user || []).role ? ($user || []).role !== 2: false
+  $: showZoneNames = ($user || []).role ? ($user || []).role == 1 || ($user || []).role == 4: false
 </script>
 
 <Screen title={$_('Hot Runner')} back='/'>
