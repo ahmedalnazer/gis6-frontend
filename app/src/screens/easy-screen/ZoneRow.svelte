@@ -53,24 +53,24 @@
 
 
 <div class='grid rb-box zone-box' on:click={click} class:active data-id={zone.id} data-group={group && group.id}>
-  <div>
+  <div class="table-body-item zone-name">
     <CheckBox checked={active} /> {zone.name}
   </div>
-  <div class:off={!on} class:error={tempError} class:warning={tempWarning}>
+  <div class="table-body-item temp" class:off={!on} class:error={tempError} class:warning={tempWarning}>
     {#if auto}
       {Math.round((zone.actual_temp || 0) / 10)}&deg;
     {:else}
       {((zone.actual_current || 0) / 10).toFixed(1)} A
     {/if}
   </div>
-  <div class:off={!on} class:error={powerError} class:warning={powerWarning}>
+  <div class="table-body-item temp" class:off={!on} class:error={powerError} class:warning={powerWarning}>
     {#if on}
       {((zone.actual_percent || 0) / 10).toFixed(1)}%
     {:else}
       <div class='circle' />
     {/if}
   </div>
-  <div class='settings' on:click|stopPropagation={setPoint}>
+  <div class='table-body-item settings' on:click|stopPropagation={setPoint}>
     <Icon icon='edit' color='var(--primary)' />
     {#if auto}
       {setpoint / 10 || '-'}&deg;<span class='temp-type'>F</span>
@@ -86,12 +86,12 @@
     {/if}
 
     {#if auto}
-      <span>{$_('Auto')}</span>
+       <span>{$_(' | Auto')}</span>
     {:else}
-      <span>{$_('Manual')}</span>
+       <span>{$_(' | Manual')}</span>
     {/if}
-    {#if settings.locked}<span>{$_('Locked')}</span>{/if}
-    {#if settings.sealed}<span>{$_('Sealed')}</span>{/if}
+    {#if settings.locked}<span>{$_(' | Locked')}</span>{/if}
+    {#if settings.sealed}<span>{$_(' | Sealed')}</span>{/if}
   </div>
 </div>
 
@@ -122,8 +122,6 @@
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    position: relative;
-    bottom: 8px;
   }
 
   @keyframes boostAnimation {
@@ -159,8 +157,43 @@
     transform: rotate(180deg)
   }
 
-  .settings {
+  .table-body-item {
     display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    font-family: "Open Sans";
+    letter-spacing: 0;
+    line-height: 22px;
+    font-size: 16px;
+    color: #011F3E;
+  }
+
+  .zone-name {
+    justify-content: flex-start;
+  }
+
+  .zone-name :global(.input label) {
+    margin-bottom: 0;
+  }
+
+  .temp {
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 24px;
+    margin-right: 2px;
+  }
+
+  .settings {
+    color: #358DCA;
+    font-weight: 600;
+  }
+
+  .settings :global(svg) {
+    margin-right: 8px;
+    height: 14px;
+    width: 14px;
+    color: #358DCA;
   }
 
 </style>
