@@ -1,16 +1,23 @@
 let buffer = {
-  entries: []
+  entries: [],
+  active: [],
+  paused: false
 }
 
 export default buffer
 
 buffer.write = function(data) {
-  // dummy testing
-  data = data.concat(data).concat(data)
+  const date = new Date()
   buffer.entries.push({
     data,
-    time: new Date()
+    date,
+    time: date.getTime(),
   })
   buffer.entries = buffer.entries.slice(-7500)
+  if(!buffer.paused) {
+    buffer.active = [ ...buffer.entries ]
+  }
   // console.log(buffer.entries.length)
 }
+buffer.play = () => buffer.paused = false
+buffer.pause = () => buffer.paused = true
