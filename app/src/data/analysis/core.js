@@ -3,7 +3,7 @@ import notify from 'data/notifications'
 import { writable, derived } from 'svelte/store'
 import { activeGroup } from 'data/groups'
 import zones from 'data/zones'
-import { sysInfo } from 'data/globalSettings'
+import { mdtMsg } from 'data/globalSettings'
 
 
 export const activeTest = derived([ zones ], ([ $zones ]) => {
@@ -59,7 +59,7 @@ export class Analysis {
     this.status = 'All zones off'
     this.completion_message = completion_message
     this.update(0)
-    this.unsubInfo = sysInfo.subscribe(info => {this.processInfo(info)})
+    this.unsubInfo = mdtMsg.subscribe(info => {this.processInfo(info)})
     this.unsubZones = zones.subscribe(zones => {this.processZones(zones)})
     activeGroup.set(this.groupId)
     await api.post(`/analysis/${this.type}`, { temp: this.maxTemp, zones: this.zones.map(x => x.number) })
@@ -77,8 +77,8 @@ export class Analysis {
   }
 
   processInfo(info) {
-    const msg = info && info.sys_message || ''
-    this.progress = info && info.order_status / 10 || 0
+    const msg = info && info.text_message || ''
+    this.progress = info && info.progress / 10 || 0
     // console.log(`${this.progress}%: ${msg}`)
     if(this.unsubInfo) {
       if(msg.includes('has temperature risen')) {

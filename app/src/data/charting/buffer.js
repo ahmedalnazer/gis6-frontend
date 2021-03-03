@@ -6,13 +6,9 @@ let buffer = {
 
 export default buffer
 
-buffer.write = function(data) {
-  const date = new Date()
-  buffer.entries.push({
-    data,
-    date,
-    time: date.getTime(),
-  })
+buffer.write = function({ ts, data }) {
+  const date = new Date(ts)
+  buffer.entries.push({ data, date, time: ts })
   buffer.entries = buffer.entries.slice(-7500)
   if(!buffer.paused) {
     buffer.active = [ ...buffer.entries ]
