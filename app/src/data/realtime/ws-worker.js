@@ -1,9 +1,9 @@
 import Pbf from 'pbf'
-import { tcdata, minmax, unknown_msg, tczone, sysinfo } from './decode.proto'
+import { tcdata, minmax, unknown_msg, tczone, sysinfo, mdtmsg } from './decode.proto'
 
 console.log('worker updated')
 
-const messageTypes = { tcdata, minmax, unknown_msg, tczone, sysinfo }
+const messageTypes = { tcdata, minmax, unknown_msg, tczone, sysinfo, mdtmsg }
 
 let socket
 let ports = []
@@ -80,6 +80,8 @@ const createSocket = () => new Promise((resolve, reject) => {
 
     socket.addEventListener('message', async e => {
       // console.log(e)
+      const ts = new Date()
+
       const buffer = await e.data.arrayBuffer()
       const pbf = new Pbf(buffer)
 
@@ -88,7 +90,8 @@ const createSocket = () => new Promise((resolve, reject) => {
         2: 'minmax',
         3: 'sysinfo',
         4: 'tcdata',
-        6: 'tczone'
+        6: 'tczone',
+        7: 'mdtmsg'
       }
       const type = decoders[mt]
 
@@ -104,7 +107,7 @@ const createSocket = () => new Promise((resolve, reject) => {
 
       for(let { port, subscriptions } of ports) {
         if(subscriptions.includes(type)) {
-          port.postMessage(data)
+          port.postMessage({ ts, data })
         }
       }
       // postMessage(data)

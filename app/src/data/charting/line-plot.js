@@ -1,95 +1,158 @@
 import buffer from './buffer'
 import { smooth } from './line-utils'
 
-let chartData = {}
-
-
-const draw = () => {
-  const { canvas, ctx, zoom } = chartData
-
-  // smooth(ctx, "#0000bb", [ 
-  //   { x: 100, y: 200 }, { x: 200, y: 400 }, { x: 300, y: 800 }, { x: 400, y: 700 }, { x: 500, y: 900 },
-  //   { x: 600, y: 200 }, { x: 700, y: 400 }, { x: 800, y: 800 }, { x: 900, y: 700 }, { x: 1000, y: 900 },
-  // ])
-  // return
-
+const draw = (chartData, logStats) => {
+  const { canvas, ctx, scale, paused, properties, maxLinePoints, maxZones } = chartData
   
-  // console.log('rendering')
-  ctx.clearRect(0, 0, canvas.width, canvas.height)
+  const latest = buffer.active[buffer.active.length - 1]
+  let xRange = scale && scale.x ? parseInt(scale.x) : 10
 
-  // const xScaleFactor = canvas.width / (zoom && zoom.x || 1)
+  if(isNaN(xRange)) xRange = 10
 
-  let xMax = new Date().getTime()
-  let xMin = new Date().getTime() - 10 * 1000
-  
-  // initial values
-  let tempMax = 0
-  let tempMin = 99999999
+  const now = new Date().getTime() - 500
+  let xMax = paused ? latest ? latest.time : now : now
+  let xMin = xMax - xRange * 1000
+  let renderLimit = xMin - 1000
+  let dX = xMax - xMin
 
-  let ampMax = 0
-  let ampMin = 999999999
+  // let sample = buffer.active.filter(x => x.time > renderLimit)
 
-  const xScale = canvas.width / (xMax - xMin)
+  let sample = []
 
-  let temps = []
-  let currents = []
-
-  // console.log(buffer.entries.length)
-
-  for(let i = 0; i < buffer.entries.length; i++) {
-    const frame = buffer.entries[i]
-    
-    const x = (frame.time.getTime() - xMin) * xScale
-    // console.log(frame.data.length)
-
-    if(x <= canvas.width) {
-      for (let p = 0; p < frame.data.length; p++) {
-        const point = frame.data[p]
-        if (!temps[p] || !temps[p].length) {
-          temps[p] = []
-          currents[p] = []
-        }
-
-        let y = point.actual_temp
-        let y2 = point.actual_current
-
-        temps[p].push({ x, y })
-        currents[p].push({ x, y: y2 })
-
-        if (y > tempMax) tempMax = y
-        if (y < tempMin) tempMin = y
-
-        if (y2 > ampMax) ampMax = y2
-        if (y2 < ampMin) ampMin = y2
+  for (let i = buffer.active.length; i >= 0; i--) {
+    const frame = buffer.active[i]
+    // console.log(frame && frame.time, renderLimit)
+    if (frame) {
+      if (frame.time >= renderLimit) {
+        sample.unshift(frame)
+      } else {
+        break
       }
     }
   }
 
-  const tempScale = canvas.height / (tempMax - tempMin)
-  const ampScale = canvas.height / (ampMax - ampMin)
+  const xScale = canvas.width / (xMax - xMin)
 
-  for(let i = 0; i < temps.length; i++) {
-    for(let p = 0; p < temps[i].length; p++) {
-      temps[i][p].y = canvas.height - (temps[i][p].y - tempMin) * tempScale
-      currents[i][p].y = canvas.height - (currents[i][p].y - ampMin) * ampScale
+  let numIntvls = 0
+  let totalIntvl = 0
+
+  // sample 50 frames to get average interval (mitigate effect of latency)
+  for (let i = 0; i < 50; i++) {
+    let a = sample[i]
+    let b = sample[i + 1]
+    if (a && b) {
+      const intvl = b.time - a.time
+      numIntvls++
+      totalIntvl += intvl
     }
   }
 
-  // console.log(temps[0])
+  // average samples above to determine interval between plot points (data rate)
+  const intvl = totalIntvl / numIntvls
 
-  for(let l of temps) {
-    smooth(ctx, "#dd1100", l)
+  // determine which points should be filtered based on max points per line
+  const minMSInterval = dX / maxLinePoints
+
+  let rendered = []
+
+  // filter data points to exclude ones in the excluded time intervals
+  for(let i = 0; i < sample.length; i++) {
+    if(!rendered.length || i == sample.length - 1) {
+      rendered.push(sample[i])
+    } else {
+      if ((sample[i].time - 1614799160000) %  minMSInterval < intvl) {
+        rendered.push(sample[i])
+      }
+    }
   }
 
-  for(let l of currents) {
-    smooth(ctx, "#0033aa", l)
+  let lines = {}
+  let max = {}
+  let min = {}
+  let autoScale = {}
+
+  for (let prop of properties) {
+    lines[prop] = []
+    max[prop] = 0
+    min[prop] = 99999999999999
   }
-}
 
 
-export default function renderLine(data) {
-  chartData = data
-  console.time('render')
-  draw()
-  console.timeEnd('render')
+  for(let i = 0; i < rendered.length; i++) {
+    const frame = rendered[i]
+    
+    const x = parseInt((frame.time - xMin) * xScale)
+
+    if(x <= canvas.width) {
+      for (let p = 0; p < frame.data.length && p < maxZones; p++) {
+        const point = frame.data[p]
+
+        for(let prop of properties) {
+          if (!lines[prop][p]) lines[prop][p] = []
+          let y = point[prop]
+          lines[prop][p].push({ x, y })
+          if(y > max[prop]) max[prop] = y
+          if(y < min[prop]) min[prop] = y
+        }
+      }
+    }
+  }
+
+  for(let prop of properties) {
+    autoScale[prop] = canvas.height / (max[prop] - min[prop])
+  }
+
+
+  // simplified lines for rendering
+  let renderedLines = {}
+
+  // track all rendered values per property
+  let yValues = {}
+
+
+  // loop through points and determine which ones are critical to geometry
+  for(let prop of properties) {
+    renderedLines[prop] = []
+    yValues[prop] = {
+      total: 0,
+      totalPoints: 0
+    }
+
+    for(let i = 0; i < lines[prop].length; i++) {
+      renderedLines[prop][i] = []
+
+      for (let p = 0; p < lines[prop][i].length; p++) {
+        let point = lines[prop][i][p]
+        yValues[prop].total += point.y
+        yValues[prop].totalPoints += 1
+        point.y = parseInt(canvas.height - (point.y - min[prop]) * autoScale[prop])
+        renderedLines[prop][i].push(point)
+      }
+    }
+  }
+
+  const colors = {
+    actual_temp: "#dd3300",
+    actual_current: "#0033aa",
+    actual_percent: "#33aabb"
+  }
+
+  // clear canvas for new frame
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+  let avg = {}
+
+  let totalPoints = 0
+  for(let prop of properties) {
+    avg[prop] = yValues[prop].total / yValues[prop].totalPoints
+    for(let i = 0; i < renderedLines[prop].length; i++) {
+      const line = renderedLines[prop][i]
+      totalPoints += line.length
+      smooth(ctx, line, colors[prop], 2)
+    }
+  }
+
+  logStats({ totalPoints, max, min, avg })
 }
+
+export default draw

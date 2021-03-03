@@ -1,5 +1,5 @@
 import { realtime } from 'data/zones'
-import { sysInfo_raw } from 'data/globalSettings'
+import { sysInfo, mdtMsg } from 'data/globalSettings'
 // import './ws-worker.mjs'
 
 const socketTarget = import.meta.env.SNOWPACK_PUBLIC_WS_URL || `ws://localhost:8080`
@@ -15,15 +15,18 @@ worker.port.start()
 
 worker.port.onmessage = e => {
   // console.log(e)
-  const { data } = e
+  const { data } = e.data
   const { mt } = data
   if (mt == 6) {
     realtime.set(data.records)
   } else if (mt == 3) {
     // console.log('sys message received')
-    sysInfo_raw.set(data)
+    sysInfo.set(data)
+  } else if (mt == 7) {
+    // console.log('mdt message received', data)
+    mdtMsg.set(data)
   } else {
-    console.log(mt, JSON.stringify(data, null, 2))
+    // console.log(mt, JSON.stringify(data, null, 2))
   }
 }
 
@@ -37,7 +40,7 @@ const createSocket = () => {
   // connect to necessary channels
   worker.port.postMessage({
     command: 'connect',
-    channels: [ 'tczone', 'sysinfo' ]
+    channels: [ 'tczone', 'sysinfo', 'mdtmsg' ]
   })
 }
 

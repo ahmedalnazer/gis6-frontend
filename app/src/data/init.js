@@ -32,7 +32,7 @@ export default async function init() {
 }
 
 const seed = async (proc) => {
-  for (let i = 1; i <= 50; i++) {
+  for (let i = 1; i <= 150; i++) {
     await api.post('zone', {
       ZoneName: `Zone ${i}`,
       ZoneNumber: i,
