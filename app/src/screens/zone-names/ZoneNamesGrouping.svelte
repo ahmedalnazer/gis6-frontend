@@ -7,32 +7,39 @@
     import { startSelection } from "screens/groups/selectZones"
     import Sortable from 'sortablejs'
     import { CheckBox } from 'components/'
-  
-    // =================================
- 
+
     export let Zone
     export let Group
     export let grid = false
     
     export let displayedZones = []
+    let selectedGroupChanged = false
   
+    // $: selectedGroupChanged = selectedGroup !== $activeGroup
     $: selectedGroup = $activeGroup
-    export let sortGroups = true
-  
-    $: displayedGroups = selectedGroup
-      ? [ selectedGroup ]
-      : $groups.concat([ { id: "unassigned", name: "Unassigned" } ])
-  
-    // selection when sorted by groups
+    $: { newGroupSelected($activeGroup)}
+
+    // export let sortGroups = true
     export let selection = []
   
-    export const clearSelection = () => {
-      for (let key of Object.keys(selection)) {
-        selection[key] = []
-      }
+    // $: displayedGroups = selectedGroup
+    //   ? [ selectedGroup ]
+    //   : $groups.concat([ { id: "unassigned", name: "Unassigned" } ])
+  
+    // selection when sorted by groups
+  
+    const clearSelection = () => {
+      selection = []
       _selected.set([])
     }
-  
+
+    const newGroupSelected = (df) => {
+      // Clear selection when group tab changes
+      clearSelection()
+    }
+
+    let showManageZoneType = false
+    
     // $: selectionZones = Object.keys(selection)
     //   .map((x) => selection[x].map((zone) => ({ zone, group: x })))
     //   .reduce((all, arr) => all.concat(arr), [])
@@ -47,7 +54,7 @@
       ? $zones.filter((x) => x.groups && x.groups.includes(selectedGroup))
       : $zones
       
-    let openGroups = {}
+    // let openGroups = {}
   
     let sortList, sortable
 
@@ -66,20 +73,43 @@
     $: {
       if(sortList && sortGroups && $group_order) resetSortable()
     }
-  
-    $: allSelected = $zones.filter(x => (_selected.includes || []).includes(x.id)).length == zones.length
-
+    
     const toggleAll = () => {
       if(selection.length) {
         selection = []
       } else {
-        selection = $zones.map(x => x.id)
+        selection = displayedZones.map(x => x.id)
       }
     }
 
+    const setSelection = (zoneid) => {
+      if (selection.includes(zoneid)) {
+        selection = selection.filter(x => x != zoneid)
+      }
+      else {
+        selection = selection.concat(zoneid)
+      }
+    }
+
+    // $: allSelected = $zones.filter(x => (_selected.includes || []).includes(x.id)).length == zones.length
+
     $: displayedZonesRight = [ ...displayedZones ]
     $: displayedZonesLeft = displayedZonesRight.splice(0, Math.ceil(displayedZones.length/2))
+    $: allSelected = selection.length == displayedZones.length
+    
 </script>
+
+<div class="zone-names-top-submenu">
+    {#if selection.length}
+        <div on:click={clearSelection}>
+            <div class="zone-names-top-submenu-content">{$_("Clear Selection")}</div>
+        </div>
+    {:else}
+        <div>
+            <div class="muted zone-names-top-submenu-content">{$_("Clear Selection")}</div>
+        </div>
+    {/if}
+</div>
 
 <div class="zone-names-main-container">
     <div class="zone-names-main-grid">
@@ -101,7 +131,7 @@
         {#each displayedZonesLeft || [] as zone}
         <div class="zone-name-sub-container">
             <div>
-                <CheckBox checked={selection.includes(zone.id)} /> {zone.id}
+                <CheckBox checked={selection.includes(zone.id)} label={zone.id} onClick={() => setSelection(zone.id)} />
             </div>
             <div>{zone.name}</div>    
         </div>
@@ -112,32 +142,60 @@
         {#each displayedZonesRight || [] as zone}
         <div class="zone-name-sub-container">
             <div>
-                <CheckBox checked={selection.includes(zone.id)} /> {zone.id}
-                <!-- <CheckBox checked={(selection.includes || []).includes(zone.id)} /> {zone.id} -->
+                <CheckBox checked={selection.includes(zone.id)} label={zone.id} onClick={() => setSelection(zone.id)} />  
             </div>
             <div>{zone.name}</div>    
         </div>
         {/each}
     </div>
 </div>
- 
+
+<div class="zone-type-toggle" on:click={() => showManageZoneType = !showManageZoneType }>
+    {#if showManageZoneType}
+        <div>
+            Hide Manage Zone Types
+        </div>
+    {:else}
+        <div>
+            Show Manage Zone Types
+        </div>
+    {/if}
+</div>
+
+{#if showManageZoneType}
+    <div class="zone-type-panel">
+        <div>{$_("Manage Zone Types comes here")}</div>
+    </div>
+{/if}
+
 <style lang="scss">
     .zone-names-main-container {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        grid-gap: 8px;
+        // grid-gap: 15px;
+        row-gap: 0px;
+        column-gap: 15px;
+    }
+
+    .zone-names-top-submenu {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        grid-gap: 15px;
     }
 
     .zone-names-main-grid {
-        padding: 5px;
+        padding: 5px 5px 0px 5px;
     }
 
     .zone-name-sub-container-header {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        height: 70px;
+        height: 10px;
         align-content: center;
-        padding: 32px 17px 17px 17px; 
+        padding: 32px 17px 15px 17px; 
+        font-weight: 600;
+        font-size: 16px;
+        
     }
 
     .zone-name-sub-container {
@@ -150,35 +208,23 @@
         margin-bottom: -1px;
     }
 
-    // :global(#minicontroller) .screen-body {
-    //   display: flex;
-    //   flex-direction: column;
-    // }
-  
-    // .zone-container {
-    //   flex: 1;
-    //   overflow: auto;
-    // }
-    // .zone-names-main-container- {
-    //   display: flex;
-    //   flex-direction: column;
-    //   flex: 1;
-    //   overflow: auto;
-    // }
-    // .selection-area- {
-    //   display: flex;
-    //   flex-direction: column;
-    //   flex: 1;
-    //   overflow: auto;
-    //   border: 1px solid salmon;
-    // }
-  
-    .selection-area.grid :global(.zones) {
-      display: grid;
-      grid-template-columns: repeat(8, 1fr);
-      grid-gap: 8px;
-      overflow: auto;
+    .zone-type-toggle {
+        float: right;
+        padding: 10px;
+        cursor: pointer;
     }
-  
+
+    .zone-names-top-submenu-content {
+        float: right;
+        padding: 3px 10px 0px 10px;
+        cursor: pointer;
+    }
+
+    .zone-type-panel {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        padding: 60px;
+    }
+
   </style>
   
