@@ -7,6 +7,8 @@
     import { startSelection } from "screens/groups/selectZones"
     import Sortable from 'sortablejs'
     import { CheckBox } from 'components/'
+    import ManageTypes from './ManageTypes.svelte'
+
 
     // export let Zone
     // export let Group
@@ -163,9 +165,7 @@
 </div>
 
 {#if showManageZoneType}
-    <div class="zone-type-panel">
-        <div>{$_("Manage Zone Types comes here")}</div>
-    </div>
+  <ManageTypes onClose={() => showManageZoneType = false} />
 {/if}
 
 <style lang="scss">
