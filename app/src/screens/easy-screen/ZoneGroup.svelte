@@ -48,7 +48,7 @@
     {/if}
     
     <Collapsible {open} >
-      <div class='grid'>
+      <div class='table-header-item grid'>
         <div>
           <CheckBox checked={allSelected} minus={selection.length && !allSelected} onClick={toggleAll} label={$_('Zone')} /> 
         </div>
@@ -101,5 +101,28 @@
 
   table {
     width: 100%;
+  }
+
+  .table-header-item.grid {
+    border: none;
+    color: #011F3E;
+    font-family: "Open Sans";
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0;
+    line-height: 22px;
+    div {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    div:first-of-type {
+      justify-content: flex-start;
+    }
+  }
+
+  .zone-group :global(.drag-header) {
+    margin-bottom: 0;
   }
 </style>

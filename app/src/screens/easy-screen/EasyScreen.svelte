@@ -65,13 +65,13 @@
 
   <div class='grouping'>
     <Grouping Zone={ZoneRow} Group={ZoneGroup} bind:sortGroups bind:selection bind:displayedZones >
-      <div slot='all-zone-header' class='grid'>
+      <div slot='all-zone-header' class='table-header-item grid'>
         <div>
           <CheckBox checked={allSelected} minus={$_selected.length && !allSelected} onClick={toggleAll} label={$_('Zone')} /> 
         </div>
         <div>{$_('Actual')}</div>
         <div>{$_('Output')} (%)</div>
-        <div>{$_('Settings')}</div>
+        <div>{$_('Zone Settings')}</div>
       </div>
     </Grouping>
   </div>
@@ -87,7 +87,6 @@
     flex-direction: column;
   }
   .tools {
-    margin-bottom: 24px;
     display: flex;
     > :global(*) {
       margin-right: 16px;
@@ -106,7 +105,6 @@
     margin-right: -40px;
   }
 
-
   .stacked {
     display: flex;
     flex-direction: column;
@@ -120,13 +118,37 @@
   .grouping :global(.grid) {
     display: grid;
     grid-template-columns: 264px 125px 125px 1fr;
+    border: 1px solid #A2A4A8;
+    border-bottom: 0px;
   }
 
-  .grouping :global(.grid > div:last-child) {
-    padding-left: 130px;
+  .grouping :global(.grid:last-child) {
+    border-bottom: 1px solid #A2A4A8;
   }
 
+  .grouping .grid.table-header-item {
+    border: none;
+    color: #011F3E;
+    font-family: "Open Sans";
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0;
+    line-height: 22px;
+    div {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    div:first-of-type {
+      justify-content: flex-start;
+    }
+  }
 
+  #easy-screen :global(.screen-body) {
+    padding-top: 2px;
+  }
+  
 
   // .divHeaderSortableList{ }
 
