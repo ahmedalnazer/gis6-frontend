@@ -24,7 +24,8 @@
         url: '/mini-controller'
       },
       plot: {
-        name: $_('Line Plot'),
+        name: $_('Line'),
+        title: $_('Line Plot'),
         url: '/charts/line-plot'
       }
     }

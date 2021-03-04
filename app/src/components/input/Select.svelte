@@ -7,7 +7,7 @@
   export let label = ''
   export let display = false
   export let selectedLabel = ''
-  export let selectedItemLabel
+  export let selectedItemLabel = ''
 
   export let getLabel = l =>  l && l[label || 'name']
   export let getSelectionLabel = l => l && l[selectedItemLabel || label || 'name'] || getLabel(l)
