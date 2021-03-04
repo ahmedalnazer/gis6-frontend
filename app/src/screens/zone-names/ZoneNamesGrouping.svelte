@@ -7,20 +7,22 @@
     import { startSelection } from "screens/groups/selectZones"
     import Sortable from 'sortablejs'
     import { CheckBox } from 'components/'
+    import ManageTypes from './ManageTypes.svelte'
 
-    export let Zone
-    export let Group
-    export let grid = false
+
+    // export let Zone
+    // export let Group
+    // export let grid = false
     
     export let displayedZones = []
+    export let selection = []
+
     let selectedGroupChanged = false
   
     // $: selectedGroupChanged = selectedGroup !== $activeGroup
     $: selectedGroup = $activeGroup
     $: { newGroupSelected($activeGroup)}
-
     // export let sortGroups = true
-    export let selection = []
   
     // $: displayedGroups = selectedGroup
     //   ? [ selectedGroup ]
@@ -96,20 +98,20 @@
     $: displayedZonesRight = [ ...displayedZones ]
     $: displayedZonesLeft = displayedZonesRight.splice(0, Math.ceil(displayedZones.length/2))
     $: allSelected = selection.length == displayedZones.length
-    
+
 </script>
 
-<div class="zone-names-top-submenu">
+<!-- <div class="zone-names-top-submenu">
     {#if selection.length}
         <div on:click={clearSelection}>
-            <div class="zone-names-top-submenu-content">{$_("Clear Selection")}</div>
+            <div class="zone-names-top-submenu-content">{$_("Clear Select Zones")}</div>
         </div>
     {:else}
         <div>
-            <div class="muted zone-names-top-submenu-content">{$_("Clear Selection")}</div>
+            <div class="muted zone-names-top-submenu-content">{$_("Clear Select Zones")}</div>
         </div>
     {/if}
-</div>
+</div> -->
 
 <div class="zone-names-main-container">
     <div class="zone-names-main-grid">
@@ -129,22 +131,22 @@
 
     <div class="zone-names-main-grid">
         {#each displayedZonesLeft || [] as zone}
-        <div class="zone-name-sub-container">
+        <div class="zone-name-sub-container" class:active={selection.includes(zone.id)} on:click={() => setSelection(zone.id)} data-id={zone.id}>
             <div>
-                <CheckBox checked={selection.includes(zone.id)} label={zone.id} onClick={() => setSelection(zone.id)} />
+                <CheckBox checked={selection.includes(zone.id)} label={zone.ZoneNumber} />
             </div>
-            <div>{zone.name}</div>    
+            <div class="zone-name-text">{zone.name}</div>    
         </div>
         {/each}
     </div>
 
     <div class="zone-names-main-grid">
         {#each displayedZonesRight || [] as zone}
-        <div class="zone-name-sub-container">
+        <div class="zone-name-sub-container" class:active={selection.includes(zone.id)} on:click={() => setSelection(zone.id)} data-id={zone.id}>
             <div>
-                <CheckBox checked={selection.includes(zone.id)} label={zone.id} onClick={() => setSelection(zone.id)} />  
+                <CheckBox checked={selection.includes(zone.id)} label={zone.ZoneNumber} />  
             </div>
-            <div>{zone.name}</div>    
+            <div class="zone-name-text">{zone.name}</div>    
         </div>
         {/each}
     </div>
@@ -152,20 +154,18 @@
 
 <div class="zone-type-toggle" on:click={() => showManageZoneType = !showManageZoneType }>
     {#if showManageZoneType}
-        <div>
-            Hide Manage Zone Types
+        <div class="zone-footer-text">
+            Manage Zone Types
         </div>
     {:else}
-        <div>
-            Show Manage Zone Types
+        <div class="zone-footer-text">
+            Manage Zone Types
         </div>
     {/if}
 </div>
 
 {#if showManageZoneType}
-    <div class="zone-type-panel">
-        <div>{$_("Manage Zone Types comes here")}</div>
-    </div>
+  <ManageTypes onClose={() => showManageZoneType = false} />
 {/if}
 
 <style lang="scss">
@@ -175,12 +175,6 @@
         // grid-gap: 15px;
         row-gap: 0px;
         column-gap: 15px;
-    }
-
-    .zone-names-top-submenu {
-        display: grid;
-        grid-template-columns: repeat(1, 1fr);
-        grid-gap: 15px;
     }
 
     .zone-names-main-grid {
@@ -194,8 +188,7 @@
         align-content: center;
         padding: 32px 17px 15px 17px; 
         font-weight: 600;
-        font-size: 16px;
-        
+        font-size: 16px;        
     }
 
     .zone-name-sub-container {
@@ -214,16 +207,37 @@
         cursor: pointer;
     }
 
-    .zone-names-top-submenu-content {
-        float: right;
-        padding: 3px 10px 0px 10px;
-        cursor: pointer;
-    }
+    // .zone-names-top-submenu-content {
+    //     float: right;
+    //     padding: 3px 10px 0px 10px;
+    //     cursor: pointer;
+    // }
 
     .zone-type-panel {
         display: grid;
         grid-template-columns: repeat(1, 1fr);
-        padding: 60px;
+        padding: 100px;
+    }
+    
+    .zone-name-text {
+        color: #358DCA;
+        font-size: 16px;
+        font-weight: 600;
+        letter-spacing: 0;
+        line-height: 22px;
+    }
+
+    .zone-footer-text {
+        color: #358DCA;
+        font-size: 16px;
+        font-weight: 600;
+        letter-spacing: 0;
+        line-height: 22px;
+        padding-top: 54px;
+    }
+
+    .active {
+        background: var(--pale);
     }
 
   </style>

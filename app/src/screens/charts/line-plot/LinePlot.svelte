@@ -4,7 +4,7 @@
   import ZoneTasks from "components/taskbars/ZoneTasks.svelte"
 </script>
 
-<Screen back='/hot-runner'>
+<Screen back='/hot-runner' group='zones'>
   <div slot="tasks">
     <ZoneTasks />
   </div>

@@ -22,6 +22,11 @@
       mini: {
         name: $_('Minicontroller'),
         url: '/mini-controller'
+      },
+      plot: {
+        name: $_('Line'),
+        title: $_('Line Plot'),
+        url: '/charts/line-plot'
       }
     }
   }
@@ -80,7 +85,7 @@
         <IconBackArrow width="45" height="45" />
       </div>
       {#if options.length}
-        <Select isSearchable={false} bind:value={selectedScreen} options={options} />
+        <Select isSearchable={false} selectedItemLabel='title'  bind:value={selectedScreen} options={options} />
       {:else}
         <h1>{title}</h1>
       {/if}
@@ -120,7 +125,6 @@
 
   .screen-body {
     padding: 40px;
-    z-index: 2;
     overflow: auto;
     display: flex;
     flex-direction: column;
