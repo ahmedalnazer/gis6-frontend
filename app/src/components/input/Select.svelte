@@ -1,11 +1,16 @@
 <script>
   import Select from 'svelte-select'
   export let options = []
-  export let getLabel = l => l && l.name
+  
   export let id = 'id'
   export let value
   export let label = ''
   export let display = false
+  export let selectedLabel = ''
+  export let selectedItemLabel
+
+  export let getLabel = l =>  l && l[label || 'name']
+  export let getSelectionLabel = l => l && l[selectedItemLabel || label || 'name'] || getLabel(l)
 
   let selectedValue
 
@@ -38,7 +43,7 @@
         on:select={select}
         optionIdentifier={id}
         getOptionLabel={$$restProps.getOptionLabel || getLabel}
-        getSelectionLabel={$$restProps.getSelectionLabel || getLabel}
+        getSelectionLabel={getSelectionLabel}
         isClearable={false}
       />
       <div class='arrow'>
