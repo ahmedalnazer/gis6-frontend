@@ -120,7 +120,6 @@
 
   .screen-body {
     padding: 40px;
-    z-index: 2;
     overflow: auto;
     display: flex;
     flex-direction: column;
