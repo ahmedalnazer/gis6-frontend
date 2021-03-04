@@ -131,7 +131,7 @@
         {#each displayedZonesLeft || [] as zone}
         <div class="zone-name-sub-container" class:active={selection.includes(zone.id)} on:click={() => setSelection(zone.id)} data-id={zone.id}>
             <div>
-                <CheckBox checked={selection.includes(zone.id)} label={zone.id} />
+                <CheckBox checked={selection.includes(zone.id)} label={zone.ZoneNumber} />
             </div>
             <div class="zone-name-text">{zone.name}</div>    
         </div>
@@ -142,7 +142,7 @@
         {#each displayedZonesRight || [] as zone}
         <div class="zone-name-sub-container" class:active={selection.includes(zone.id)} on:click={() => setSelection(zone.id)} data-id={zone.id}>
             <div>
-                <CheckBox checked={selection.includes(zone.id)} label={zone.id} />  
+                <CheckBox checked={selection.includes(zone.id)} label={zone.ZoneNumber} />  
             </div>
             <div class="zone-name-text">{zone.name}</div>    
         </div>
