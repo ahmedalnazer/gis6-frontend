@@ -14,7 +14,7 @@
   import GroupSelector from "components/GroupSelector.svelte"
   import Sortable from "sortablejs"
   import { activeSetpointEditor } from 'data/setpoint'
-import zoneTypes from "data/zones/zone-types"
+  import zoneTypes from "data/zones/zone-types"
 
   $: selectedGroup = $activeGroup
   $: selectedGroupObj = $groups.filter(x => x.id == selectedGroup)[0]

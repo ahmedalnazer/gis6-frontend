@@ -3,13 +3,12 @@
   import { defaultNames, groupColors } from "data/groups"
   import { Input } from "components"
   import _ from "data/language"
-  import zones from "data/zones"
-  import zoneTypes from "data/zones/zone-types"
 
   export let name = ""
   export let color = ""
   export let groupList = []
   export let onClose
+  export let defaultList
 
   let _zones
   export { _zones as zones }
@@ -17,8 +16,6 @@
   let selectedColor = ""
   let selectedGroup = ""
   let adding = true
-  $: defaultUnselectedGroupList = $zoneTypes
-    .filter(t => !$groups.find(g => g.name == t.name)).map(x => x.name)
   let selectedGroups = []
 
   $: groupIds = $groups.map((x) => x.id)
@@ -108,7 +105,7 @@
         <select bind:value={selectedGroup}>
           <option value="">--Select One--</option>
           <option value="__CUSTOM__">Custom</option>
-          {#each defaultUnselectedGroupList || [] as defaultNames}
+          {#each defaultList || [] as defaultNames}
             <option value={defaultNames}>{defaultNames}</option>
           {/each}
         </select>
