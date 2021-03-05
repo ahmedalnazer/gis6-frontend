@@ -70,7 +70,7 @@
   }
 
   $: {
-    if(enabled || customTypes) {
+    if(enabled || customTypes || toDelete) {
       diff()
     }
   }
