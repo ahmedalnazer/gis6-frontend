@@ -6,11 +6,12 @@
   export let value
   export let label = ''
   export let display = false
+  export let valueLabel = ''
   export let selectedLabel = ''
   export let selectedItemLabel = ''
 
-  export let getLabel = l =>  l && l[label || 'name']
-  export let getSelectionLabel = l => l && l[selectedItemLabel || label || 'name'] || getLabel(l)
+  export let getLabel = l =>  l && l[valueLabel || 'name']
+  export let getSelectionLabel = l => l && l[selectedItemLabel || valueLabel || 'name'] || getLabel(l)
 
   let selectedValue
 

@@ -11,21 +11,17 @@ const defaultTypes = [
 
 export const seedTypes = async () => {
   const current = await api.get('/zonetype')
-  if(Array.isArray(current) && !current.length) {
-    for(let type of defaultTypes) {
+  for(let type of defaultTypes) {
+    if(Array.isArray(current) && !current.find(x => x.name == type)) {
       await api.post('/zonetype', {
         name: type,
         isDefault: true,
         isVisible: true
       })
     }
-    zoneTypes.reload()
-  } else {
-    zoneTypes.set(current)
   }
+  await zoneTypes.reload()
 }
-
-
 
 
 const zoneTypes = writable([])
@@ -38,25 +34,33 @@ const getTypes = () => {
 
 zoneTypes.reload = async () => zoneTypes.set(await api.get('/zonetype'))
 
+// perform cleanup actions based on provided options
+const processOptions = async ops => {
+  if(!ops.skipReload) {
+    await zoneTypes.reload()
+  }
+}
 
-zoneTypes.create = async data => {
+
+zoneTypes.create = async (data, ops = {}) => {
   await api.post('/zonetype', data)
+  await processOptions(ops)
 } 
 
 zoneTypes._update = zoneTypes.update
 
-zoneTypes.update = async data => {
+zoneTypes.update = async (data, ops = {}) => {
   if(!data.id) return
   const { id } = data
   delete data.id
   await api.put(`/zonetype/${id}`, data)
-  await zoneTypes.reload()
+  await processOptions(ops)
 }
 
-zoneTypes.delete = async data => {
+zoneTypes.delete = async (data, ops = {}) => {
   const id = data.id || data
   await api.delete(`/zonetype/${id}`)
-  await zoneTypes.reload()
+  await processOptions(ops)
 }
 
 

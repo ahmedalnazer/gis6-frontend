@@ -1,11 +1,10 @@
 <script>
-  import { onMount, beforeUpdate, afterUpdate, onDestroy } from "svelte"
   import groups from "data/groups"
   import { defaultNames, groupColors } from "data/groups"
   import { Input } from "components"
-  import { get_binding_group_value } from "svelte/internal"
   import _ from "data/language"
   import zones from "data/zones"
+  import zoneTypes from "data/zones/zone-types"
 
   export let name = ""
   export let color = ""
@@ -18,7 +17,8 @@
   let selectedColor = ""
   let selectedGroup = ""
   let adding = true
-  let defaultUnselectedGroupList = []
+  $: defaultUnselectedGroupList = $zoneTypes
+    .filter(t => !$groups.find(g => g.name == t.name)).map(x => x.name)
   let selectedGroups = []
 
   $: groupIds = $groups.map((x) => x.id)
@@ -40,12 +40,6 @@
       .reduce((max, cur) => cur > max ? cur : max, 0)
     : 0
 
-  onMount(() => {
-    defaultUnselectedGroupList = defaultNames.filter((x) => {
-      let grpContains = groupList.filter((g) => g.name == x)
-      return !grpContains.length
-    })
-  })
 
   const handleEditGroupClick_Create = () => {
     // Validate form errors
@@ -88,8 +82,6 @@
   const handleColorSelectedClick_Create = (e) => {
     selectedColor = e.target.getAttribute("data-color")
   }
-
-  onDestroy(() => {})
 </script>
 
 <div class="editGroupContainer">
