@@ -1,10 +1,10 @@
 <script>
-  import { createEventDispatcher } from 'svelte';
+  import { createEventDispatcher } from 'svelte'
   import { Icon } from 'components'
   import _ from 'data/language'
   import { onDestroy, onMount } from 'svelte'
 
-  const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher()
 
   export let keypadNumber = 0
   export let value = 0
@@ -13,7 +13,7 @@
   export let onModalOpen = false
   export let anchor
   let leftArrow = false, rightArrow = false, arrowPosition = 0
-  let styleTag = document.createElement("style");
+  let styleTag = document.createElement("style")
   
   $: {
     keypadNumber = parseFloat(_keypadNumber)
@@ -31,7 +31,7 @@
       if (modal) {
         const modalDimensions = modal.getBoundingClientRect()
         
-        if ((window.innerWidth - inputDimensions.right - 20) > modalDimensions.width) {
+        if (window.innerWidth - inputDimensions.right - 20 > modalDimensions.width) {
           left = inputDimensions.right + 20
           leftArrow = true
         } else {
@@ -39,7 +39,7 @@
           rightArrow = true
         }       
 
-        if ((window.innerHeight - inputDimensions.top - 20) > modalDimensions.height) {
+        if (window.innerHeight - inputDimensions.top - 20 > modalDimensions.height) {
           top = inputDimensions.top - 20
           arrowPosition = 'top: 26px; bottom: unset;'
         } else {
@@ -74,7 +74,7 @@
 
   const closeKeypadModal = () => {
     openKeypad = false
-    dispatch('keypadClosed', { closed: value });
+    dispatch('keypadClosed', { closed: value })
   }
 
   const clearNumber = () => {
@@ -104,17 +104,17 @@
       <div class="content">
         <input type="text" id='place-number' />
         <div class="number-box">
-            <div class="number ml-0"><span on:click={e => getNumber(e)}>7</span></div>
-            <div class="number"><span on:click={e => getNumber(e)}>8</span></div>
-            <div class="number mr-0"><span on:click={e => getNumber(e)}>9</span></div>
-            <div class="number ml-0"><span on:click={e => getNumber(e)}>4</span></div>
-            <div class="number"><span on:click={e => getNumber(e)}>5</span></div>
-            <div class="number mr-0"><span on:click={e => getNumber(e)}>6</span></div>
-            <div class="number ml-0"><span on:click={e => getNumber(e)}>1</span></div>
-            <div class="number"><span on:click={e => getNumber(e)}>2</span></div>
-            <div class="number mr-0"><span on:click={e => getNumber(e)}>3</span></div>
-            <div class="number ml-0"><span on:click={e => getNumber(e)}>.</span></div>
-            <div class="number"><span on:click={e => getNumber(e)}>0</span></div>
+            <div class="number ml-0" on:click={e => getNumber(e)}><span>7</span></div>
+            <div class="number" on:click={e => getNumber(e)}><span>8</span></div>
+            <div class="number mr-0" on:click={e => getNumber(e)}><span>9</span></div>
+            <div class="number ml-0" on:click={e => getNumber(e)}><span>4</span></div>
+            <div class="number" on:click={e => getNumber(e)}><span>5</span></div>
+            <div class="number mr-0" on:click={e => getNumber(e)}><span>6</span></div>
+            <div class="number ml-0" on:click={e => getNumber(e)}><span>1</span></div>
+            <div class="number" on:click={e => getNumber(e)}><span>2</span></div>
+            <div class="number mr-0" on:click={e => getNumber(e)}><span>3</span></div>
+            <div class="number ml-0" on:click={e => getNumber(e)}><span>.</span></div>
+            <div class="number" on:click={e => getNumber(e)}><span>0</span></div>
             <div class="number mr-0" on:click={() => clearNumber()}>
               <label class='clear-button'>
                 <Icon icon='close' color='var(--primary)' />

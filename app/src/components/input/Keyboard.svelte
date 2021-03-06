@@ -4,16 +4,17 @@
   import _ from 'data/language'
   import { onDestroy, onMount } from 'svelte'
 
-  const dispatch = createEventDispatcher()
-
   export let keypadNumber = 0
-  export let value = 0
-  
-  let _keypadNumber = ''
+  export let value = ''
   export let onModalOpen = false
   export let anchor
-  let leftArrow = false, rightArrow = false, arrowPosition = 0
+
+  const dispatch = createEventDispatcher()
+
+  let _keypadNumber = ''
+  let leftArrow = false, rightArrow = false, arrowPosition = 0, capLock = false
   let styleTag = document.createElement("style")
+  let keyboardCapLock = 'OFF'
   
   $: {
     keypadNumber = parseFloat(_keypadNumber)
@@ -24,7 +25,7 @@
   export const openKeypadModal = () => {
     let top, left
     openKeypad = true
-    const inputDimensions = anchor.getBoundingClientRect()
+    // const inputDimensions = anchor.getBoundingClientRect()
 
     setTimeout(() => {
       const modal = getInputField('content-wrapper')
@@ -69,13 +70,43 @@
   const getNumber = e => {
     getInputField('place-char').value += e.target.innerText
     value = parseFloat(getInputField('place-char').value)
-    anchor.dispatchEvent(new Event('change'))
+
+    if (anchor && anchor.dispatchEvent) {
+      anchor.dispatchEvent(new Event('change'))
+    }
   }
 
   const getText = e => {
     getInputField('place-char').value += e.target.innerText
     value = getInputField('place-char').value
-    anchor.dispatchEvent(new Event('change'))
+    if (anchor && anchor.dispatchEvent) {
+      anchor.dispatchEvent(new Event('change'))
+    }
+  }
+
+  const actionKey = (actionKeyType) => {
+    if (actionKeyType == 'backspace') {
+      value = value.slice(0, -1)
+    }
+    else if (actionKeyType == 'delete') {
+      value = ''
+    }
+    else if (actionKeyType == 'cap') {
+      if (keyboardCapLock == 'ON') { 
+        keyboardCapLock = 'OFF' 
+        capLock = false
+      }
+      else {
+        keyboardCapLock = 'ON'
+        capLock = true
+      }
+    }
+    else if (actionKeyType == 'shift') {
+      // TODO: not sure how to handle this
+    }
+    else if (actionKeyType == 'space') {
+      value = value + ' '
+    }
   }
 
   const closeKeypadModal = () => {
@@ -83,9 +114,23 @@
     dispatch('keypadClosed', { closed: value })
   }
 
+  const doneKeypadModal = () => {
+    openKeypad = false
+    dispatch('done', { done: value })
+  }
+
   const clearNumber = () => {
     getInputField('place-char').value = ''
   }
+
+  // const setCharCase = (currChar) => {
+  //   if (capLock) {
+  //     return currChar.toUpperCase()
+  //   }
+  //   else {
+  //     return currChar.toLowerCase()
+  //   }
+  // }
 
   onMount(() => {
     if (onModalOpen) openKeypadModal()
@@ -96,7 +141,7 @@
   })
 </script>
 
-  
+
 {#if openKeypad}
   <div class="modal" on:click={() => closeKeypadModal()}>
     <div class="backdrop" />
@@ -109,51 +154,74 @@
     >
       <div class="content">
         <div class="text-content">
-          <input type="text" id='place-char' />
+          <input type="text" id='place-char' bind:value="{value}" />
         </div>
         <div class="char-box">
-          <div class="char"><span on:click={e => getText(e)}>{$_('~')}</span></div>
-            <div class="char"><span on:click={e => getText(e)}>{$_('1')}</span></div>
-            <div class="char"><span on:click={e => getText(e)}>{$_('2')}</span></div>
-            <div class="char"><span on:click={e => getText(e)}>{$_('3')}</span></div>
-            <div class="char"><span on:click={e => getText(e)}>{$_('4')}</span></div>
-            <div class="char"><span on:click={e => getText(e)}>{$_('5')}</span></div>
-            <div class="char"><span on:click={e => getText(e)}>{$_('6')}</span></div>
-            <div class="char"><span on:click={e => getText(e)}>{$_('7')}</span></div>
-            <div class="char"><span on:click={e => getText(e)}>{$_('8')}</span></div>
-            <div class="char"><span on:click={e => getText(e)}>{$_('9')}</span></div>
-            <div class="char"><span on:click={e => getText(e)}>{$_('0')}</span></div>
-            <div class="char"><span on:click={e => getText(e)}>{$_('-')}</span></div>
-            <div class="char"><span on:click={e => getText(e)}>{$_('+')}</span></div>
-            <div class="char"><span on:click={e => getText(e)}>{$_('\\')}</span></div>
-            <div class="char"><span on:click={e => getText(e)}>{$_('Backspace')}</span></div> 
-            <!-- 
-          -->
-          </div>
-          <div class="char-box">
-            <div class="char"><span on:click={e => getText(e)}>{$_('q')}</span></div>
-            <div class="char"><span on:click={e => getText(e)}>{$_('w')}</span></div>
-            <div class="char"><span on:click={e => getText(e)}>{$_('e')}</span></div>
-            <div class="char"><span on:click={e => getText(e)}>{$_('r')}</span></div>
-            <div class="char"><span on:click={e => getText(e)}>{$_('t')}</span></div>
-            <div class="char"><span on:click={e => getText(e)}>{$_('y')}</span></div>
-            <div class="char"><span on:click={e => getText(e)}>{$_('u')}</span></div>
-            <div class="char"><span on:click={e => getText(e)}>{$_('i')}</span></div>
-            <div class="char"><span on:click={e => getText(e)}>{$_('o')}</span></div>
-            <div class="char"><span on:click={e => getText(e)}>{$_('p')}</span></div>
-            <div class="char"><span on:click={e => getText(e)}>{$_('{')}</span></div>
-            <div class="char"><span on:click={e => getText(e)}>{$_('}')}</span></div>
-            <div class="char"><span on:click={e => getText(e)}>{$_('Delete')}</span></div>
-            <!-- <div class="char"><span on:click={e => getText(e)}>{$_('0')}</span></div>
-
-            <div class="char mr-0" on:click={() => clearNumber()}>
-              <label class='clear-button'>
-                <Icon icon='close' color='var(--primary)' />
-                <label class="clear">{$_('Clear')}</label>
-              </label>
-            </div> -->
+          <div class="char" on:click={e => getText(e)}><span>{$_('~')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_('1')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_('2')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_('3')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_('4')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_('5')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_('6')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_('7')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_('8')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_('9')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_('0')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_('-')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_('+')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_('\\')}</span></div>
+          <div class="splchar" on:click={e => actionKey('backspace')}><span>{$_('Backspace')}</span></div>
         </div>
-        <button on:click={() => closeKeypadModal()} class="keypad-ok-btn">OK</button>
+        <div class="char-box">
+          <div class="char" on:click={e => getText(e)}><span>{$_(capLock? 'Q': 'q')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_(capLock? 'W': 'w')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_(capLock? 'E': 'e')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_(capLock? 'R': 'r')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_(capLock? 'T': 't')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_(capLock? 'Y': 'y')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_(capLock? 'U': 'u')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_(capLock? 'I': 'i')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_(capLock? 'O': 'o')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_(capLock? 'P': 'p')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_(capLock? '[': '{')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_(capLock? ']': '}')}</span></div>
+          <div class="splchar" on:click={e => actionKey('delete')}><span>{$_('Delete')}</span></div>
+        </div>
+        <div class="char-box">
+          <div class="splchar" on:click={e => actionKey('cap')}><span class:capLock>{$_('Cap')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_(capLock? 'A': 'a')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_(capLock? 'S': 's')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_(capLock? 'D': 'd')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_(capLock? 'F': 'f')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_(capLock? 'G': 'g')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_(capLock? 'H': 'h')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_(capLock? 'J': 'j')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_(capLock? 'K': 'k')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_(capLock? 'L': 'l')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_(capLock? ':': ';')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_(capLock? '\"': '\'')}</span></div>
+        </div>
+        <div class="char-box">
+          <div class="splchar" on:click={e => actionKey('shift')}><span>{$_('Shift')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_(capLock? 'Z': 'z')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_(capLock? 'X': 'x')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_(capLock? 'C': 'c')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_(capLock? 'V': 'v')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_(capLock? 'B': 'b')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_(capLock? 'N': 'n')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_(capLock? 'M': 'm')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_(capLock? ',': '<')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_(capLock? '.': '>')}</span></div>
+          <div class="char" on:click={e => getText(e)}><span>{$_(capLock? '/': '?')}</span></div>
+          <div class="splchar" on:click={e => actionKey('shift')}><span>{$_('Shift')}</span></div>
+        </div>
+        <div class="char-box-">
+          <div class="splchar" on:click={e => actionKey('space')}><span>{$_('Space')}</span></div>
+        </div>
+        <div class="char-box-">
+          <button on:click={(e) => { closeKeypadModal(); doneKeypadModal() }} class="keypad-ok-btn">OK</button>
+        </div>
       </div>
     </div>
   </div>
@@ -170,7 +238,6 @@
     justify-content: center;
     align-items: center;
     z-index: 9;
-    border: 1px solid salmon;
   }
   div.backdrop {
     position: absolute;
@@ -184,11 +251,15 @@
     border-radius: 0.3rem;
     background-color: white;
     position: relative;
-    border: 1px solid salmon;
     /* left:0px; */
     /* right: 0px; */
     /* width: 100%; */
   }
+
+  .capLock {
+    font-weight: 650;
+  }
+
   .content-wrapper.leftArrow:before {
     content: '';
     position: absolute;
@@ -212,9 +283,11 @@
     clear: both;
   }
   .text-content {
-    margin: 0 auto;
-    background-color: green;
   }
+  .text-content input {
+    margin: 0 auto;
+  }
+
   div.content {
     /* width: 1264px; */
     border-radius: 2px;
@@ -228,34 +301,65 @@
     flex-wrap: wrap;
   }
   .char {
-    height: 60px;
-    width: 60px;
+    /* height: 60px;
+    width: 60px; */
     border-radius: 4px;
     background-color: #FFFFFF;
     box-shadow: 0 2px 5px 0 rgba(54,72,96,0.5);
     flex-grow: 1;
     margin: 7px;
-    padding: 14px;
+    padding: 14px 14px 14px 14px;
+    cursor: pointer;
   }
+
+  .char:hover {
+    opacity: .7;
+  }
+
+  .char span {
+    color: #358DCA;
+    /* font-size: 36px; */
+    font-size: 28px;
+    letter-spacing: 0;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+  }
+  .splchar {
+    border-radius: 4px;
+    background-color: #FFFFFF;
+    box-shadow: 0 2px 5px 0 rgba(54,72,96,0.5);
+    flex-grow: 1;
+    margin: 7px;
+    padding: 14px 14px 14px 14px;
+    cursor: pointer;
+  }
+
+  .splchar:hover {
+    opacity: .7;
+  }
+
+  .splchar span {
+    color: #358DCA;
+    /* font-size: 36px; */
+    font-size: 24px;
+    letter-spacing: 0;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+  }
+
   .ml-0, .mr-0 {
     margin-left: 0;   
   }
   .mr-0 {
     margin-right: 0;   
   }
-  .char span {
-    color: #358DCA;
-    font-family: "Open Sans";
-    font-size: 36px;
-    letter-spacing: 0;
-    justify-content: center;
-    align-items: center;
-    display: flex;
-  }
+
   #place-char {
     box-sizing: border-box;
     height: 59px;
-    width: 224px;
+    /* width: 224px; */
     border: 1px solid #CCCCCC;
     border-radius: 2px;
     background-color: #FFFFFF;

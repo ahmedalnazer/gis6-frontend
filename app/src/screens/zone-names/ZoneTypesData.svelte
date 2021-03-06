@@ -2,27 +2,40 @@
     import _ from 'data/language'
     import { Input, Select } from 'components'
     import Keyboard from 'components/input/Keyboard.svelte'
-
     import zones, { selectedZones, activeZones } from 'data/zones'
     import zoneTypes from 'data/zones/zone-types'
+    import { Icon } from 'components'
     import api from 'data/api'
 
     export let selection = []
     import { createEventDispatcher } from 'svelte'
+    import { text } from 'svelte/internal'
 
     let indexStart = 1
     let indexStartIncr = 0
     let zoneTypeName = null
+    let zoneTypeCustomName = ''
+    let openKeyboard = false
 
     $: defaultTypes = $zoneTypes.filter(x => x.isDefault)
     let customTypes = $zoneTypes.filter(x => !x.isDefault)
+    $: zoneTypeValues = getZoneTypesDisplayData($zoneTypes)
+    $: showCustomKB = zoneTypeName == 0
+    $: { showCustomKB? showKeyboard(): null }
 
-    $: console.log(defaultTypes)
-  
+    const getZoneTypesDisplayData = (currZoneTypes) => {
+      let hasCustom = currZoneTypes.filter(x => x.id == 0)
+      if (! (hasCustom || []).length) {
+        currZoneTypes.push({ id: 0, name: "Custom", isDefault: true, isVisible: true })
+      }
+
+      return currZoneTypes
+    }
+
     const setGroupName = async (itemSelected, itemStartIndex, itemZoneName) => { 
       indexStartIncr = itemStartIndex
       for(let selectionItem of selection) { 
-        // await api.put(`zone/${currZone.id}`, { ...currZone, ZoneName: `itemZoneName ${indexStartIncr}` })
+        await api.put(`zone/${currZone.id}`, { ...currZone, ZoneName: `itemZoneName ${indexStartIncr}` })
         console.log(`${itemZoneName} ${indexStartIncr}`)
         indexStartIncr++
       }
@@ -46,52 +59,50 @@
       else {
         console.error('Validation Error: Nothing selected or Zone type dropdown is empty or invalid')
       }
-
     }
 
-const dispatch = createEventDispatcher()
-    const handleInput = e => value = e.target.value
+    const clearStartIndex = () => {
+      indexStart = 1
+    }
 
-    export let errors = []
-    export let info = []
-    export let value
-    export let label = ''
-    export let note = ''
-    export let type = 'text'
-    export let inputClass = ''
-    export let changed = false
-    export let input = null
-    export let display = false
+    const showKeyboard = () => {
+      openKeyboard = true
+    }
 
-    let modalOpened = false
+    const getKeyboardText = (textobj) => {
+      console.log(textobj.detail.done)
+      zoneTypeCustomName = textobj.detail.done
+    }
 
+    const clearZoneTypeCustomName = () => {
+      zoneTypeCustomName = ''
+    }
 </script>
 
 <div><h2>{$_('Select zone type and index number')}</h2></div>
 
 <div class="zone-type-container">
     <div>
-      <label>{$_('Zone type')}</label>
-      <select bind:value={zoneTypeName}>
-        <option value="">--Select One--</option>
-        <option value="__CUSTOM__">Custom</option>
-        {#each defaultTypes || [] as defaultTypes}
-            <option value={defaultTypes.id}>{defaultTypes.name}</option>
-        {/each}
-      </select>
-      <!-- <Select
-            bind:value={zoneTypeName}
-            placeholder={$_('Zone type')}
-            id='selZoneType'
-            options={defaultTypes}
-        /> -->
+      <Select isSearchable={true} label={$_("Zone type")} bind:value={zoneTypeName} options={zoneTypeValues || []} />
+
+      {#if zoneTypeCustomName !== ''}
+      <div class="zone-type-index-desc">
+        <div class="edit-icon" on:click={e => showKeyboard()} ><Icon icon='edit' color='var(--primary)' />{zoneTypeCustomName}</div>
+        <div on:click={clearZoneTypeCustomName} class="clear-zone-type">clear</div>
+      </div>
+      {/if}
     </div>
-    <div>
+    <div class="zone-type-index-num">
         <Input
             label="{$_('Index start number')}"
             type="number"
             bind:value={indexStart}
+            style="width:100%;"
         />
+        <div class="zone-type-index-desc">
+            <div class="edit-icon"><Icon icon='edit' color='var(--primary)' on:click={e => console.log('edit clicked')} />{indexStart}</div>
+            <div on:click={clearStartIndex} class="clear-index">clear</div>
+        </div>
     </div>
     <div>
         <label>&nbsp</label>
@@ -100,29 +111,10 @@ const dispatch = createEventDispatcher()
         </button>
     </div>
 </div>
-<!-- 
-<div class='input text {$$restProps.class || ''}' style={modalOpened ? 'z-index: 11;' : ''}>
-    <input {type} 
-      on:change 
-      on:input={handleInput} 
-      class:changed
-      {value} 
-      {...$$restProps} 
-      class={inputClass} 
-      autocomplete='new-password'
-      bind:this={input}
-      on:focus={e => {
-        dispatch('focus', e)
-      if(type == 'text') {
-        modalOpened = true
-      } 
-      }}
-    />
-</div> -->
 
-<!-- {#if type == 'text' && modalOpened}
-    <Keyboard anchor={input} bind:onModalOpen={modalOpened} bind:value on:keypadClosed={() => modalOpened = false} />
-{/if} -->
+{#if openKeyboard}
+    <Keyboard bind:onModalOpen={openKeyboard} bind:value={zoneTypeCustomName} on:keypadClosed={() => openKeyboard = false} on:done={(kcontent) => getKeyboardText(kcontent)} />
+{/if}
 
 <style lang="scss">
     .zone-type-container {
@@ -131,7 +123,28 @@ const dispatch = createEventDispatcher()
         grid-gap: 8px;
     }
 
-    input {
-        border: 1px solid var(--pale)
+    .zone-type-index-num {
+        width: 100%;
     }
+
+    .zone-type-index-desc {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+        align-items: center;
+        padding: 10px;
+    }
+
+    .zone-type-container :global(svg) {
+      margin-right: 8px;
+      height: 14px;
+      width: 14px;
+      color: #358DCA;
+    }
+
+    .edit-icon, .clear-index, .clear-zone-type {
+      cursor: pointer;
+      color: #358DCA;
+    }
+
 </style>
