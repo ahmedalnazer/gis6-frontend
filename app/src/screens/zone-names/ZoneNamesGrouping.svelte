@@ -2,34 +2,20 @@
     import { tick } from 'svelte'
     import groups, { activeGroup, group_order, setGroupOrder } from 'data/groups'
     import zones, { selectedZones as _selected, toggleZones } from 'data/zones'
-    import { selectedZones } from 'data/zones'
     import _ from 'data/language'
-    import { startSelection } from "screens/groups/selectZones"
     import Sortable from 'sortablejs'
     import { CheckBox } from 'components/'
     import ManageTypes from './ManageTypes.svelte'
+    import ZoneTypesData from './ZoneTypesData.svelte'
 
-
-    // export let Zone
-    // export let Group
-    // export let grid = false
-    
     export let displayedZones = []
     export let selection = []
 
     let selectedGroupChanged = false
   
-    // $: selectedGroupChanged = selectedGroup !== $activeGroup
     $: selectedGroup = $activeGroup
     $: { newGroupSelected($activeGroup)}
-    // export let sortGroups = true
-  
-    // $: displayedGroups = selectedGroup
-    //   ? [ selectedGroup ]
-    //   : $groups.concat([ { id: "unassigned", name: "Unassigned" } ])
-  
-    // selection when sorted by groups
-  
+ 
     const clearSelection = () => {
       selection = []
       _selected.set([])
@@ -41,23 +27,10 @@
     }
 
     let showManageZoneType = false
-    
-    // $: selectionZones = Object.keys(selection)
-    //   .map((x) => selection[x].map((zone) => ({ zone, group: x })))
-    //   .reduce((all, arr) => all.concat(arr), [])
-  
-    // $: {
-    //   if(sortGroups) {
-    //     _selected.set(selectionZones.map(x => x.zone))
-    //   }
-    // }
-
     $: displayedZones = selectedGroup
       ? $zones.filter((x) => x.groups && x.groups.includes(selectedGroup))
       : $zones
       
-    // let openGroups = {}
-  
     let sortList, sortable
 
     const resetSortable = async () => {
@@ -101,18 +74,6 @@
 
 </script>
 
-<!-- <div class="zone-names-top-submenu">
-    {#if selection.length}
-        <div on:click={clearSelection}>
-            <div class="zone-names-top-submenu-content">{$_("Clear Select Zones")}</div>
-        </div>
-    {:else}
-        <div>
-            <div class="muted zone-names-top-submenu-content">{$_("Clear Select Zones")}</div>
-        </div>
-    {/if}
-</div> -->
-
 <div class="zone-names-main-container">
     <div class="zone-names-main-grid">
         <div class="zone-name-sub-container-header">
@@ -128,7 +89,6 @@
             <div>Name</div>    
         </div>
     </div>
-
     <div class="zone-names-main-grid">
         {#each displayedZonesLeft || [] as zone}
         <div class="zone-name-sub-container" class:active={selection.includes(zone.id)} on:click={() => setSelection(zone.id)} data-id={zone.id}>
@@ -139,7 +99,6 @@
         </div>
         {/each}
     </div>
-
     <div class="zone-names-main-grid">
         {#each displayedZonesRight || [] as zone}
         <div class="zone-name-sub-container" class:active={selection.includes(zone.id)} on:click={() => setSelection(zone.id)} data-id={zone.id}>
@@ -152,21 +111,28 @@
     </div>
 </div>
 
-<div class="zone-type-toggle" on:click={() => showManageZoneType = !showManageZoneType }>
-    {#if showManageZoneType}
-        <div class="zone-footer-text">
-            Manage Zone Types
-        </div>
-    {:else}
-        <div class="zone-footer-text">
-            Manage Zone Types
-        </div>
-    {/if}
-</div>
+<div class="zone-names-footer">
+    <div class="zone-type-toggle" on:click={() => showManageZoneType = !showManageZoneType }>
+        {#if showManageZoneType}
+            <div class="zone-footer-text">
+                Manage Zone Types
+            </div>
+        {:else}
+            <div class="zone-footer-text">
+                Manage Zone Types
+            </div>
+        {/if}
+    </div>
+    <div>
+        {#if showManageZoneType}
+            <ManageTypes onClose={() => showManageZoneType = false} />
+        {/if}
+    </div>
+        <ZoneTypesData selection={selection}></ZoneTypesData>
+    <div>
 
-{#if showManageZoneType}
-  <ManageTypes onClose={() => showManageZoneType = false} />
-{/if}
+    </div>
+</div>
 
 <style lang="scss">
     .zone-names-main-container {
@@ -233,11 +199,18 @@
         font-weight: 600;
         letter-spacing: 0;
         line-height: 22px;
-        padding-top: 54px;
+        padding-top: 5px;
+        float: right;
     }
 
     .active {
         background: var(--pale);
+    }
+
+    .zone-names-footer {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        padding: 5px;
     }
 
   </style>
