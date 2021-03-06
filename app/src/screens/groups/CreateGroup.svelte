@@ -1,16 +1,14 @@
 <script>
-  import { onMount, beforeUpdate, afterUpdate, onDestroy } from "svelte"
   import groups from "data/groups"
   import { defaultNames, groupColors } from "data/groups"
   import { Input } from "components"
-  import { get_binding_group_value } from "svelte/internal"
   import _ from "data/language"
-  import zones from "data/zones"
 
   export let name = ""
   export let color = ""
   export let groupList = []
   export let onClose
+  export let defaultList
 
   let _zones
   export { _zones as zones }
@@ -18,7 +16,6 @@
   let selectedColor = ""
   let selectedGroup = ""
   let adding = true
-  let defaultUnselectedGroupList = []
   let selectedGroups = []
 
   $: groupIds = $groups.map((x) => x.id)
@@ -40,12 +37,6 @@
       .reduce((max, cur) => cur > max ? cur : max, 0)
     : 0
 
-  onMount(() => {
-    defaultUnselectedGroupList = defaultNames.filter((x) => {
-      let grpContains = groupList.filter((g) => g.name == x)
-      return !grpContains.length
-    })
-  })
 
   const handleEditGroupClick_Create = () => {
     // Validate form errors
@@ -88,8 +79,6 @@
   const handleColorSelectedClick_Create = (e) => {
     selectedColor = e.target.getAttribute("data-color")
   }
-
-  onDestroy(() => {})
 </script>
 
 <div class="editGroupContainer">
@@ -116,7 +105,7 @@
         <select bind:value={selectedGroup}>
           <option value="">--Select One--</option>
           <option value="__CUSTOM__">Custom</option>
-          {#each defaultUnselectedGroupList || [] as defaultNames}
+          {#each defaultList || [] as defaultNames}
             <option value={defaultNames}>{defaultNames}</option>
           {/each}
         </select>

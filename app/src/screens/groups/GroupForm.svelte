@@ -4,10 +4,12 @@
   import CreateGroup from "screens/groups/CreateGroup.svelte"
   import EditGroup from "screens/groups/EditGroup.svelte"
   import _ from "data/language"
+  import groups from 'data/groups'
 
-  /**
-   * defaultNames contains the list of names for the dropdown
-   */
+  import zoneTypes from "data/zones/zone-types"
+  $: defaultList = $zoneTypes
+    .filter(t => !$groups.find(g => g.name == t.name) && t.isVisible).map(x => x.name)
+
 
   export let onSubmit
   export let name = ""
@@ -29,9 +31,9 @@
 <form on:submit|preventDefault={onSubmit}>
   {#if formType == 'EDIT'}
     <h1>{$_('EDIT GROUP')}</h1>
-    <EditGroup {groupList} {onClose} bind:name bind:color bind:selectedGroupId bind:selectedGroupItem={selectedGroupItem} />
+    <EditGroup {groupList} {defaultList} {onClose} bind:name bind:color bind:selectedGroupId bind:selectedGroupItem={selectedGroupItem} />
   {:else}
     <h1>{$_('CREATE GROUP')}</h1>
-    <CreateGroup {groupList} {onClose} bind:name bind:color zones={_zones} />
+    <CreateGroup {groupList} {defaultList} {onClose} bind:name bind:color zones={_zones} />
   {/if}
 </form>

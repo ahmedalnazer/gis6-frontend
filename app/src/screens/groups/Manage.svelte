@@ -14,6 +14,7 @@
   import GroupSelector from "components/GroupSelector.svelte"
   import Sortable from "sortablejs"
   import { activeSetpointEditor } from 'data/setpoint'
+  import zoneTypes from "data/zones/zone-types"
 
   $: selectedGroup = $activeGroup
   $: selectedGroupObj = $groups.filter(x => x.id == selectedGroup)[0]
@@ -35,6 +36,9 @@
   const createGroup = async () => {
     creating = false
     let newGrp = { name: newName, color: newColor }
+    if(!$zoneTypes.find(x => x.name == newName)) {
+      zoneTypes.create({ name: newName, isVisible: true })
+    }
     const g = await groups.create(newGrp, { skipReload: true })
     await groups.reload()
 
