@@ -8,6 +8,7 @@
   export let value = ''
   export let onModalOpen = false
   export let anchor
+  export let maxCharacter = 99999
 
   const dispatch = createEventDispatcher()
 
@@ -15,7 +16,9 @@
   let leftArrow = false, rightArrow = false, arrowPosition = 0, capLock = false
   let styleTag = document.createElement("style")
   let keyboardCapLock = 'OFF'
-  
+
+  $: reachedMaxChar = value.length >= maxCharacter
+
   $: {
     keypadNumber = parseFloat(_keypadNumber)
   }
@@ -77,10 +80,12 @@
   }
 
   const getText = e => {
-    getInputField('place-char').value += e.target.innerText
-    value = getInputField('place-char').value
-    if (anchor && anchor.dispatchEvent) {
-      anchor.dispatchEvent(new Event('change'))
+    if(!reachedMaxChar) {
+      getInputField('place-char').value += e.target.innerText
+      value = getInputField('place-char').value
+      if (anchor && anchor.dispatchEvent) {
+        anchor.dispatchEvent(new Event('change'))
+      }
     }
   }
 
@@ -122,15 +127,6 @@
   const clearNumber = () => {
     getInputField('place-char').value = ''
   }
-
-  // const setCharCase = (currChar) => {
-  //   if (capLock) {
-  //     return currChar.toUpperCase()
-  //   }
-  //   else {
-  //     return currChar.toLowerCase()
-  //   }
-  // }
 
   onMount(() => {
     if (onModalOpen) openKeypadModal()
@@ -220,7 +216,7 @@
           <div class="splchar" on:click={e => actionKey('space')}><span>{$_('Space')}</span></div>
         </div>
         <div class="char-box-">
-          <button on:click={(e) => { closeKeypadModal(); doneKeypadModal() }} class="keypad-ok-btn">OK</button>
+          <button on:click={(e) => { closeKeypadModal(); doneKeypadModal() }} class="button ignore-task-styles active keypad-ok-btn">Done</button>
         </div>
       </div>
     </div>
@@ -375,10 +371,9 @@
     text-align: right;
   }
   .keypad-ok-btn {
-    border-radius: 2px;
+    /* border-radius: 2px;
     background-color: #358DCA;
     box-shadow: 0 2px 0 0 #364860;
-
     color: #FFFFFF;
     font-family: "Open Sans";
     font-size: 16px;
@@ -388,7 +383,7 @@
     text-align: center;
 
     padding: 10px 54px;
-    border-color: #358DCA;
+    border-color: #358DCA; */
     margin-top: 30px;
   }
   .char label {

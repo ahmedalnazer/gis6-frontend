@@ -112,13 +112,13 @@
 </div>
 
 <div class="zone-names-footer">
-    <div class="zone-type-toggle" on:click={() => showManageZoneType = !showManageZoneType }>
+    <div class="zone-type-toggle">
         {#if showManageZoneType}
-            <div class="zone-footer-text">
+            <div class="zone-footer-text" on:click={() => showManageZoneType = !showManageZoneType }>
                 Manage Zone Types
             </div>
         {:else}
-            <div class="zone-footer-text">
+            <div class="zone-footer-text"  on:click={() => showManageZoneType = !showManageZoneType }>
                 Manage Zone Types
             </div>
         {/if}
@@ -170,7 +170,6 @@
     .zone-type-toggle {
         float: right;
         padding: 10px;
-        cursor: pointer;
     }
 
     // .zone-names-top-submenu-content {
@@ -201,8 +200,9 @@
         line-height: 22px;
         padding-top: 5px;
         float: right;
+        cursor: pointer;
     }
-
+    
     .active {
         background: var(--pale);
     }

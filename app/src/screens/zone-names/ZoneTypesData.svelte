@@ -16,20 +16,27 @@
     let zoneTypeName = null
     let zoneTypeCustomName = ''
     let openKeyboard = false
+    let enableSave = false
 
     $: defaultTypes = $zoneTypes.filter(x => x.isDefault)
     let customTypes = $zoneTypes.filter(x => !x.isDefault)
-    $: zoneTypeValues = getZoneTypesDisplayData($zoneTypes)
+    $: zoneTypeValues = getZoneTypesDisplayData([ ...$zoneTypes ])
     $: showCustomKB = zoneTypeName == 0
     $: { showCustomKB? showKeyboard(): null }
+    $: enableSave = zoneTypeName > 0
 
     const getZoneTypesDisplayData = (currZoneTypes) => {
-      let hasCustom = currZoneTypes.filter(x => x.id == 0)
+      let hasCustom = (currZoneTypes || []).filter(x => x.id == 0)
+      let defaultZoneTypes = currZoneTypes.filter(x => x.isDefault && x.isVisible)
+      let customZoneTypes = currZoneTypes.filter(x => !x.isDefault && x.isVisible)
+      customZoneTypes = customZoneTypes.map((x) => { x.name += ' (custom)'; return x})
+      let selectZoneTypes = defaultZoneTypes.concat(customZoneTypes)
+
       if (! (hasCustom || []).length) {
-        currZoneTypes.push({ id: 0, name: "Custom", isDefault: true, isVisible: true })
+        selectZoneTypes.push({ id: 0, name: "Custom", isDefault: true, isVisible: true })
       }
 
-      return currZoneTypes
+      return selectZoneTypes
     }
 
     const setGroupName = async (itemSelected, itemStartIndex, itemZoneName) => { 
@@ -42,6 +49,7 @@
     }
 
     const applyGroupName = async () => {
+      debugger
       // Process if the dropdown value is selected
       if(selection.length && zoneTypeName && zoneTypeName !== '__CUSTOM__' && zoneTypeName !== '') {
         let currZoneNameData = defaultTypes.filter(x => x.id == zoneTypeName)
@@ -106,14 +114,14 @@
     </div>
     <div>
         <label>&nbsp</label>
-        <button class="button ignore-task-styles active" on:click={e => applyGroupName()}>
+        <button class="button active" class:disabled={!enableSave} on:click={e => applyGroupName()}>
             {$_("Apply")}
         </button>
     </div>
 </div>
 
 {#if openKeyboard}
-    <Keyboard bind:onModalOpen={openKeyboard} bind:value={zoneTypeCustomName} on:keypadClosed={() => openKeyboard = false} on:done={(kcontent) => getKeyboardText(kcontent)} />
+    <Keyboard bind:onModalOpen={openKeyboard} bind:value={zoneTypeCustomName} on:keypadClosed={() => openKeyboard = false} on:done={(kcontent) => getKeyboardText(kcontent)} maxCharacter=12/>
 {/if}
 
 <style lang="scss">
