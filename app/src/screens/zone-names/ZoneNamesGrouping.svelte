@@ -1,7 +1,8 @@
 <script>
     import { tick } from 'svelte'
     import groups, { activeGroup, group_order, setGroupOrder } from 'data/groups'
-    import zones, { selectedZones as _selected } from 'data/zones'
+    import zones, { selectedZones as _selected, toggleZones } from 'data/zones'
+    import { startSelection } from "screens/groups/selectZones"
     import _ from 'data/language'
     import Sortable from 'sortablejs'
     import { CheckBox } from 'components/'
@@ -23,7 +24,6 @@
       // Clear selection when group tab changes
       clearSelection()
     }
-
 
     $: displayedZones = selectedGroup
       ? $zones.filter((x) => x.groups && x.groups.includes(selectedGroup))
@@ -70,9 +70,32 @@
     $: displayedZonesLeft = displayedZonesRight.splice(0, Math.ceil(displayedZones.length/2))
     $: allSelected = selection.length == displayedZones.length
 
+    const boxSelect = (nodes) => {
+    for(let [ nodeString, group ] of nodes) {
+      const node = parseInt(nodeString)
+      if(group) {
+        if(selection[group].includes(node)) {
+          selection[group] = selection[group].filter(x => x != node)
+        } else {
+          selection[group].push(node)
+        }
+      } else {
+        if (selection.includes(node)) {
+          selection = selection.filter(x => x != node)
+        } else {
+          selection = selection.concat(node)
+        }
+      }
+    }
+    selection = selection
+  }
+
 </script>
 
-<div class="zone-names-main-container">
+<div class="zone-names-main-container"
+  on:touchstart={(e) => startSelection(e, boxSelect)}
+  on:mousedown={(e) => startSelection(e, boxSelect)}
+>
     <div class="zone-names-main-grid">
         <div class="zone-name-sub-container-header">
             <div>
@@ -89,7 +112,7 @@
     </div>
     <div class="zone-names-main-grid">
         {#each displayedZonesLeft || [] as zone}
-        <div class="zone-name-sub-container" class:active={selection.includes(zone.id)} on:click={() => setSelection(zone.id)} data-id={zone.id}>
+        <div class="zone-name-sub-container rb-box" class:active={selection.includes(zone.id)} on:click={() => setSelection(zone.id)} data-id={zone.id}>
             <div>
                 <CheckBox checked={selection.includes(zone.id)} label={zone.ZoneNumber} />
             </div>
@@ -99,7 +122,7 @@
     </div>
     <div class="zone-names-main-grid">
         {#each displayedZonesRight || [] as zone}
-        <div class="zone-name-sub-container" class:active={selection.includes(zone.id)} on:click={() => setSelection(zone.id)} data-id={zone.id}>
+        <div class="zone-name-sub-container rb-box" class:active={selection.includes(zone.id)} on:click={() => setSelection(zone.id)} data-id={zone.id}>
             <div>
                 <CheckBox checked={selection.includes(zone.id)} label={zone.ZoneNumber} />  
             </div>
