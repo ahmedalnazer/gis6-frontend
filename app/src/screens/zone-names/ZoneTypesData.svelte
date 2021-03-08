@@ -2,10 +2,12 @@
     import _ from 'data/language'
     import { Input, Select } from 'components'
     import Keyboard from 'components/input/Keyboard.svelte'
+    import KeyPad from 'components/input/KeyPad.svelte'
     import zones, { selectedZones, activeZones } from 'data/zones'
     import zoneTypes from 'data/zones/zone-types'
     import { Icon } from 'components'
     import api from 'data/api'
+    import { notify } from 'data/'
 
     export let selection = []
     import { createEventDispatcher } from 'svelte'
@@ -15,15 +17,33 @@
     let indexStartIncr = 0
     let zoneTypeName = null
     let zoneTypeCustomName = ''
+    let keypadValue = ''
     let openKeyboard = false
+    let openKeypad = false
     let enableSave = false
+
+    export let keypadAnchor = null
 
     $: defaultTypes = $zoneTypes.filter(x => x.isDefault)
     let customTypes = $zoneTypes.filter(x => !x.isDefault)
     $: zoneTypeValues = getZoneTypesDisplayData([ ...$zoneTypes ])
     $: showCustomKB = zoneTypeName == 0
     $: { showCustomKB? showKeyboard(): null }
-    $: enableSave = zoneTypeName > 0
+    $: enableSave =  getEnableSaveValue(selection, zoneTypeName, zoneTypeCustomName, indexStart) 
+
+    const getEnableSaveValue = (selectedItemsValue, zoneTypeNameValue, zoneTypeCustomNameValue, indexStartValue) => {
+      let canSave = false
+
+      if (zoneTypeNameValue > 0 && indexStartValue !== '' && indexStartValue > 0 && selectedItemsValue.length) {
+        canSave = true
+      }
+      else if (zoneTypeNameValue == 0 && zoneTypeCustomNameValue !== '' && indexStartValue !== '' && indexStartValue > 0  && selectedItemsValue.length)
+      {
+        canSave = true
+      }
+
+      return canSave
+    }
 
     const getZoneTypesDisplayData = (currZoneTypes) => {
       let hasCustom = (currZoneTypes || []).filter(x => x.id == 0)
@@ -41,32 +61,38 @@
 
     const setGroupName = async (itemSelected, itemStartIndex, itemZoneName) => { 
       indexStartIncr = itemStartIndex
-      for(let selectionItem of selection) { 
-        await api.put(`zone/${currZone.id}`, { ...currZone, ZoneName: `itemZoneName ${indexStartIncr}` })
-        console.log(`${itemZoneName} ${indexStartIncr}`)
+      for(let selectionItem of itemSelected) { 
+        let currZone = $zones.filter(x => x.id == selectionItem)
+        if (currZone.length) {
+          await api.put(`zone/${currZone[0].id}`, { ...currZone[0], ZoneName: `${itemZoneName} ${indexStartIncr}` })
+          console.log(`${selectionItem} ${currZone[0].id}: ${itemZoneName} ${indexStartIncr} ${currZone[0]}`)
+        }
+
         indexStartIncr++
       }
     }
 
     const applyGroupName = async () => {
-      debugger
       // Process if the dropdown value is selected
-      if(selection.length && zoneTypeName && zoneTypeName !== '__CUSTOM__' && zoneTypeName !== '') {
-        let currZoneNameData = defaultTypes.filter(x => x.id == zoneTypeName)
-        let currZoneName = ''
+      let ztname = ''
 
+      if (selection.length && zoneTypeName == 0 && zoneTypeCustomName !== '') {
+        // Custom name
+        ztname = zoneTypeCustomName
+      }
+      else if(selection.length && zoneTypeName !== 0 && zoneTypeName !== '') {
+        // default name or custom pre defined
+        let currZoneNameData = $zoneTypes.filter(x => x.id == zoneTypeName)
         if (currZoneNameData.length) {
-          currZoneName = currZoneNameData[0].name
-          await setGroupName(selection, indexStart, currZoneName)
-          await zones.reload()
-        }
-        else {
-          console.error('Validation Error: Zone type name is not invalid')
+          ztname = currZoneNameData[0].name
         }
       }
-      else {
-        console.error('Validation Error: Nothing selected or Zone type dropdown is empty or invalid')
-      }
+
+      if (ztname !== '') {
+        await setGroupName(selection, indexStart, ztname)
+        await zones.reload()
+        notify.success($_('Changes applied'))
+      }    
     }
 
     const clearStartIndex = () => {
@@ -75,6 +101,10 @@
 
     const showKeyboard = () => {
       openKeyboard = true
+    }
+
+    const showKeypad = () => {
+      openKeypad = true
     }
 
     const getKeyboardText = (textobj) => {
@@ -96,7 +126,7 @@
       {#if zoneTypeCustomName !== ''}
       <div class="zone-type-index-desc">
         <div class="edit-icon" on:click={e => showKeyboard()} ><Icon icon='edit' color='var(--primary)' />{zoneTypeCustomName}</div>
-        <div on:click={clearZoneTypeCustomName} class="clear-zone-type">clear</div>
+        <div on:click={clearZoneTypeCustomName} class="clear-zone-type">Clear</div>
       </div>
       {/if}
     </div>
@@ -107,14 +137,15 @@
             bind:value={indexStart}
             style="width:100%;"
         />
+        <!-- <input type="text" class="input" /> -->
         <div class="zone-type-index-desc">
-            <div class="edit-icon"><Icon icon='edit' color='var(--primary)' on:click={e => console.log('edit clicked')} />{indexStart}</div>
-            <div on:click={clearStartIndex} class="clear-index">clear</div>
+            <div class="edit-icon" on:click={e => showKeypad()} bind:this={keypadAnchor} ><Icon icon='edit' color='var(--primary)' on:click={e => console.log('edit clicked')} />{indexStart}</div>
+            <div on:click={clearStartIndex} class="clear-index">Clear</div>
         </div>
     </div>
     <div>
         <label>&nbsp</label>
-        <button class="button active" class:disabled={!enableSave} on:click={e => applyGroupName()}>
+        <button class="button active zone-type-apply" class:disabled={!enableSave} on:click={e => applyGroupName()}>
             {$_("Apply")}
         </button>
     </div>
@@ -124,11 +155,16 @@
     <Keyboard bind:onModalOpen={openKeyboard} bind:value={zoneTypeCustomName} on:keypadClosed={() => openKeyboard = false} on:done={(kcontent) => getKeyboardText(kcontent)} maxCharacter=12/>
 {/if}
 
+{#if openKeypad}
+  <KeyPad anchor={keypadAnchor} value="{indexStart}" bind:onModalOpen={openKeypad} bind:keypadValue on:keypadClosed={(val) => { indexStart = val.detail.closed; openKeypad = false }} />
+{/if}
+
 <style lang="scss">
     .zone-type-container {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         grid-gap: 8px;
+        padding-top: 12px;
     }
 
     .zone-type-index-num {
@@ -150,9 +186,29 @@
       color: #358DCA;
     }
 
-    .edit-icon, .clear-index, .clear-zone-type {
+    .clear-index, .clear-zone-type {
       cursor: pointer;
       color: #358DCA;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0;
+      line-height: 22px;
+      text-align: right;
+      padding-top: 16px;
+    }
+
+    .edit-icon {
+      cursor: pointer;
+      color: #358DCA;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0;
+      line-height: 22px;
+      padding-top: 16px;
+    }
+
+    .zone-type-apply {
+      margin-left: 15px;
     }
 
 </style>

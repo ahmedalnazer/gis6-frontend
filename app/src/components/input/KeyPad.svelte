@@ -102,7 +102,7 @@
       class:rightArrow
     >
       <div class="content">
-        <input type="text" id='place-number' />
+        <input type="text" id='place-number' bind:value="{value}" />
         <div class="number-box">
             <div class="number ml-0" on:click={e => getNumber(e)}><span>7</span></div>
             <div class="number" on:click={e => getNumber(e)}><span>8</span></div>
