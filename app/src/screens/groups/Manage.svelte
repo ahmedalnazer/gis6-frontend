@@ -1,7 +1,7 @@
 <script>
   import { tick } from "svelte"
   import Screen from "layout/Screen.svelte"
-  import groups, { activeGroup, group_order, setGroupOrder } from "data/groups"
+  import groups, { sortGroups as _sortGroups, activeGroup, group_order, setGroupOrder } from "data/groups"
   import zones, { selectedZones as _selected, toggleZones } from "data/zones"
   import _ from "data/language"
   import ZoneGroup from "./ZoneGroup.svelte"
@@ -14,14 +14,16 @@
   import GroupSelector from "components/GroupSelector.svelte"
   import Sortable from "sortablejs"
   import { activeSetpointEditor } from 'data/setpoint'
+  import zoneTypes from "data/zones/zone-types"
 
   $: selectedGroup = $activeGroup
   $: selectedGroupObj = $groups.filter(x => x.id == selectedGroup)[0]
-  let sortGroups = true
 
   $: displayedGroups = selectedGroup
     ? [ selectedGroup ]
     : $groups.concat([ { id: "unassigned", name: "Unassigned" } ])
+
+  $: sortGroups = $_sortGroups
 
   let creating = false
   let adding = false
@@ -35,6 +37,9 @@
   const createGroup = async () => {
     creating = false
     let newGrp = { name: newName, color: newColor }
+    if(!$zoneTypes.find(x => x.name == newName)) {
+      zoneTypes.create({ name: newName, isVisible: true })
+    }
     const g = await groups.create(newGrp, { skipReload: true })
     await groups.reload()
 
@@ -159,7 +164,7 @@
     <GroupSelector />
     <div class="tools">
       {#if !selectedGroup}
-        <CheckBox label={$_("Show Groups")} bind:checked={sortGroups} />
+        <CheckBox label={$_("Show Groups")} checked={sortGroups} onClick={_sortGroups.toggle} />
       {/if}
 
       {#if $_selected.length}

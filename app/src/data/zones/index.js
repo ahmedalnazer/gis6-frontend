@@ -169,6 +169,8 @@ zones.delete = async (zone, options = {}) => {
   if (!options.skipReload) await zones.reload()
 }
 
+
+// TODO: remove this before production release
 window.DANGEROUS_reset_zones = async () => {
   let z
   zones.subscribe(x => z = x)()

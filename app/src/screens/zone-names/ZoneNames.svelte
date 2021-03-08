@@ -12,11 +12,15 @@
   // import ZoneGroup from "../groups/ZoneGroup.svelte"
   import { selectedZones as _selected } from 'data/zones'
   import _ from 'data/language'
+  import ManageTypes from './ManageTypes.svelte'
+  import ZoneTypesData from './ZoneTypesData.svelte'
 
   $: selectedGroup = $activeGroup
   let sortGroups = true
   let selection = []
   let displayedZones = []
+
+  let showManageZoneType = false
 
   const clearSelection = () => {
     selection = []
@@ -67,15 +71,23 @@
 
   <div class="grouping-container">
     <div class='grouping'>
-      <ZoneNamesGrouping bind:selection >
-      </ZoneNamesGrouping>
+      <ZoneNamesGrouping bind:selection />
     </div>    
+  </div>
+
+  <div class="zone-names-footer">
+    {#if showManageZoneType}
+      <ManageTypes onClose={() => showManageZoneType = false} />
+    {/if}
+    <ZoneTypesData selection={selection} bind:showManageZoneType />
   </div>
 </Screen>
 
 <style lang="scss">
   .grouping-container {
     padding-top: 20px;
+    padding-bottom: 20px;
+    overflow: auto;
   }
 
   .zone-name-subtitle-container {

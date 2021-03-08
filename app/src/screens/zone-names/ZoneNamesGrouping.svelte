@@ -2,34 +2,19 @@
     import { tick } from 'svelte'
     import groups, { activeGroup, group_order, setGroupOrder } from 'data/groups'
     import zones, { selectedZones as _selected, toggleZones } from 'data/zones'
-    import { selectedZones } from 'data/zones'
-    import _ from 'data/language'
     import { startSelection } from "screens/groups/selectZones"
+    import _ from 'data/language'
     import Sortable from 'sortablejs'
     import { CheckBox } from 'components/'
-    import ManageTypes from './ManageTypes.svelte'
 
-
-    // export let Zone
-    // export let Group
-    // export let grid = false
-    
     export let displayedZones = []
     export let selection = []
 
     let selectedGroupChanged = false
   
-    // $: selectedGroupChanged = selectedGroup !== $activeGroup
     $: selectedGroup = $activeGroup
     $: { newGroupSelected($activeGroup)}
-    // export let sortGroups = true
-  
-    // $: displayedGroups = selectedGroup
-    //   ? [ selectedGroup ]
-    //   : $groups.concat([ { id: "unassigned", name: "Unassigned" } ])
-  
-    // selection when sorted by groups
-  
+ 
     const clearSelection = () => {
       selection = []
       _selected.set([])
@@ -40,24 +25,10 @@
       clearSelection()
     }
 
-    let showManageZoneType = false
-    
-    // $: selectionZones = Object.keys(selection)
-    //   .map((x) => selection[x].map((zone) => ({ zone, group: x })))
-    //   .reduce((all, arr) => all.concat(arr), [])
-  
-    // $: {
-    //   if(sortGroups) {
-    //     _selected.set(selectionZones.map(x => x.zone))
-    //   }
-    // }
-
     $: displayedZones = selectedGroup
       ? $zones.filter((x) => x.groups && x.groups.includes(selectedGroup))
       : $zones
       
-    // let openGroups = {}
-  
     let sortList, sortable
 
     const resetSortable = async () => {
@@ -99,21 +70,32 @@
     $: displayedZonesLeft = displayedZonesRight.splice(0, Math.ceil(displayedZones.length/2))
     $: allSelected = selection.length == displayedZones.length
 
+    const boxSelect = (nodes) => {
+    for(let [ nodeString, group ] of nodes) {
+      const node = parseInt(nodeString)
+      if(group) {
+        if(selection[group].includes(node)) {
+          selection[group] = selection[group].filter(x => x != node)
+        } else {
+          selection[group].push(node)
+        }
+      } else {
+        if (selection.includes(node)) {
+          selection = selection.filter(x => x != node)
+        } else {
+          selection = selection.concat(node)
+        }
+      }
+    }
+    selection = selection
+  }
+
 </script>
 
-<!-- <div class="zone-names-top-submenu">
-    {#if selection.length}
-        <div on:click={clearSelection}>
-            <div class="zone-names-top-submenu-content">{$_("Clear Select Zones")}</div>
-        </div>
-    {:else}
-        <div>
-            <div class="muted zone-names-top-submenu-content">{$_("Clear Select Zones")}</div>
-        </div>
-    {/if}
-</div> -->
-
-<div class="zone-names-main-container">
+<div class="zone-names-main-container"
+  on:touchstart={(e) => startSelection(e, boxSelect)}
+  on:mousedown={(e) => startSelection(e, boxSelect)}
+>
     <div class="zone-names-main-grid">
         <div class="zone-name-sub-container-header">
             <div>
@@ -128,10 +110,9 @@
             <div>Name</div>    
         </div>
     </div>
-
     <div class="zone-names-main-grid">
         {#each displayedZonesLeft || [] as zone}
-        <div class="zone-name-sub-container" class:active={selection.includes(zone.id)} on:click={() => setSelection(zone.id)} data-id={zone.id}>
+        <div class="zone-name-sub-container rb-box" class:active={selection.includes(zone.id)} on:click={() => setSelection(zone.id)} data-id={zone.id}>
             <div>
                 <CheckBox checked={selection.includes(zone.id)} label={zone.ZoneNumber} />
             </div>
@@ -139,10 +120,9 @@
         </div>
         {/each}
     </div>
-
     <div class="zone-names-main-grid">
         {#each displayedZonesRight || [] as zone}
-        <div class="zone-name-sub-container" class:active={selection.includes(zone.id)} on:click={() => setSelection(zone.id)} data-id={zone.id}>
+        <div class="zone-name-sub-container rb-box" class:active={selection.includes(zone.id)} on:click={() => setSelection(zone.id)} data-id={zone.id}>
             <div>
                 <CheckBox checked={selection.includes(zone.id)} label={zone.ZoneNumber} />  
             </div>
@@ -151,22 +131,6 @@
         {/each}
     </div>
 </div>
-
-<div class="zone-type-toggle" on:click={() => showManageZoneType = !showManageZoneType }>
-    {#if showManageZoneType}
-        <div class="zone-footer-text">
-            Manage Zone Types
-        </div>
-    {:else}
-        <div class="zone-footer-text">
-            Manage Zone Types
-        </div>
-    {/if}
-</div>
-
-{#if showManageZoneType}
-  <ManageTypes onClose={() => showManageZoneType = false} />
-{/if}
 
 <style lang="scss">
     .zone-names-main-container {
@@ -204,7 +168,6 @@
     .zone-type-toggle {
         float: right;
         padding: 10px;
-        cursor: pointer;
     }
 
     // .zone-names-top-submenu-content {
@@ -226,16 +189,7 @@
         letter-spacing: 0;
         line-height: 22px;
     }
-
-    .zone-footer-text {
-        color: #358DCA;
-        font-size: 16px;
-        font-weight: 600;
-        letter-spacing: 0;
-        line-height: 22px;
-        padding-top: 54px;
-    }
-
+    
     .active {
         background: var(--pale);
     }

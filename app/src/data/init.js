@@ -2,6 +2,7 @@ import api from 'data/api'
 import zones from 'data/zones'
 import process from 'data/process'
 import globalSettings from 'data/globalSettings'
+import { seedTypes } from 'data/zones/zone-types'
 
 export default async function init() {
 
@@ -29,6 +30,7 @@ export default async function init() {
   if(!z.length) await seed(proc)
   process.set(proc)
   zones.reload()
+  await seedTypes()
 }
 
 const seed = async (proc) => {

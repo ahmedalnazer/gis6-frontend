@@ -9,6 +9,7 @@
     export let name = ""
     export let color = ""
     export let groupList = []
+    export let defaultList
     export let onClose
     export let selectedGroupId = ""
     export let selectedGroupItem = ""
@@ -221,9 +222,9 @@
                 <!-- svelte-ignore a11y-no-onchange -->
                 <select bind:value={selectedGroup}>
                     <option value="">-- Select One --</option>
-                    {#each groupListItems || [] as grpLstItem}
-                        <option value={grpLstItem.name}>
-                            {grpLstItem.name}
+                    {#each defaultList || [] as grpLstItem}
+                        <option value={grpLstItem}>
+                            {grpLstItem}
                         </option>
                     {/each}
                 </select>
