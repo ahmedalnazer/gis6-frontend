@@ -15,6 +15,9 @@
   export let anchor
   let leftArrow = false, rightArrow = false, arrowPosition = 0
   let styleTag = document.createElement("style")
+  let disabledButton = false
+  let disableNegativeBtn = !keypadcontrols.negativeSign
+  let notInRange = false
   
   $: {
     keypadNumber = parseFloat(_keypadNumber)
@@ -69,8 +72,25 @@
 
   const getNumber = e => {
     getInputField('place-number').value += e.target.innerText
-    value = parseFloat(getInputField('place-number').value)
+    value = !isNaN(e.target.innerText) ? parseFloat(getInputField('place-number').value) : getInputField('place-number').value
+    validateKeypad(value)
     anchor.dispatchEvent(new Event('change'))
+  }
+
+  const validateKeypad = num => {
+    if (
+      !isNaN(num) &&
+      keypadcontrols.rangeMin &&
+      keypadcontrols.rangeMin &&
+      (num < keypadcontrols.rangeMin ||
+      num > keypadcontrols.rangeMax)
+      ) {
+        disabledButton = true
+        notInRange = true
+    } else {
+      disabledButton = false
+      notInRange = false
+    }
   }
 
   const closeKeypadModal = () => {
@@ -80,6 +100,8 @@
 
   const clearNumber = () => {
     getInputField('place-number').value = ''
+    disabledButton = false
+    notInRange = false
   }
 
   onMount(() => {
@@ -102,7 +124,7 @@
       class:leftArrow
       class:rightArrow
     >
-      <div class="content">
+      <div class="content" class:notInRange>
         {#if keypadcontrols.rangeMax && keypadcontrols.rangeMin}
           <div class="range">
             <span class="min">Min: {keypadcontrols.rangeMin}</span>
@@ -128,17 +150,19 @@
                 <label class="clear">{$_('Clear')}</label>
               </label>
             </div>
-            {#if keypadcontrols.negativeSign}
-              <div class="number ml-0"><span on:click={e => getNumber(e)}>-</span></div>
-            {/if}
-        </div>
-        <button on:click={() => closeKeypadModal()} class="keypad-ok-btn">OK</button>
+          </div>
+          <div class="keypad-footer">
+            <div class="negative" class:disableNegativeBtn><span on:click={e => getNumber(e)}>-</span></div>
+            <div class="keypad-btn">
+              <button class:disabledButton disabled={disabledButton} on:click={() => closeKeypadModal()}  class="keypad-ok-btn">OK</button>
+            </div>
+          </div>
       </div>
     </div>
   </div>
 {/if}
 
-<style>
+<style lang="scss">
   div.modal {
     position: fixed;
     top: 0;
@@ -232,7 +256,7 @@
     margin-bottom: 14px;
     padding: 9px 20px;
   }
-  input[type=text]#place-number{
+  input[type=text]#place-number {
     color: #364860;
     font-family: "Open Sans";
     font-size: 30px;
@@ -240,23 +264,7 @@
     line-height: 41px;
     text-align: right;
   }
-  .keypad-ok-btn {
-    border-radius: 2px;
-    background-color: #358DCA;
-    box-shadow: 0 2px 0 0 #364860;
 
-    color: #FFFFFF;
-    font-family: "Open Sans";
-    font-size: 16px;
-    font-weight: 600;
-    letter-spacing: 0;
-    line-height: 18px;
-    text-align: center;
-
-    padding: 10px 54px;
-    border-color: #358DCA;
-    margin-top: 30px;
-  }
   .number label {
     color: #358DCA;
     font-family: "Open Sans";
@@ -282,6 +290,66 @@
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: space-around;
+    justify-content: space-between;
+  }
+  .notInRange {
+    .min, .max {
+      color: red;
+    }
+    input[type=text]#place-number {
+      border: 1px solid red;
+    }
+  }
+
+  .keypad-footer {
+    display: flex;
+    flex-wrap: wrap;
+    .disableNegativeBtn {
+      background-color: var(--darkGray) !important;
+    }
+    .negative {
+      height: 60px;
+      width: 63px;
+      border-radius: 4px;
+      background-color: #FFFFFF;
+      box-shadow: 0 2px 5px 0 rgb(54 72 96 / 50%);
+      flex-grow: 1;
+      margin: 7px 7px 7px 0;
+      padding: 14px;
+      span {
+        color: #358DCA;
+        font-family: "Open Sans";
+        font-size: 36px;
+        letter-spacing: 0;
+        justify-content: center;
+        align-items: center;
+        display: flex;
+      }
+    }
+    .keypad-btn {
+      flex-grow: 2;
+      margin: 7px 0 7px 7px;
+      .disabledButton {
+        background-color: var(--darkGray) !important;
+        border-color: var(--darkGray) !important;
+      }
+      .keypad-ok-btn {
+        border-radius: 2px;
+        background-color: #358DCA;
+        box-shadow: 0 2px 0 0 #364860;
+
+        color: #FFFFFF;
+        font-family: "Open Sans";
+        font-size: 16px;
+        font-weight: 600;
+        letter-spacing: 0;
+        line-height: 18px;
+        text-align: center;
+
+        padding: 10px 54px;
+        border-color: #358DCA;
+        width: 100%;
+      }
+    }
   }
 </style>
