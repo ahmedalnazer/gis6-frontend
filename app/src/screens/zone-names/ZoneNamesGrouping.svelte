@@ -1,12 +1,10 @@
 <script>
     import { tick } from 'svelte'
     import groups, { activeGroup, group_order, setGroupOrder } from 'data/groups'
-    import zones, { selectedZones as _selected, toggleZones } from 'data/zones'
+    import zones, { selectedZones as _selected } from 'data/zones'
     import _ from 'data/language'
     import Sortable from 'sortablejs'
     import { CheckBox } from 'components/'
-    import ManageTypes from './ManageTypes.svelte'
-    import ZoneTypesData from './ZoneTypesData.svelte'
 
     export let displayedZones = []
     export let selection = []
@@ -26,7 +24,7 @@
       clearSelection()
     }
 
-    let showManageZoneType = false
+
     $: displayedZones = selectedGroup
       ? $zones.filter((x) => x.groups && x.groups.includes(selectedGroup))
       : $zones
@@ -111,29 +109,6 @@
     </div>
 </div>
 
-<div class="zone-names-footer">
-    <div class="zone-type-toggle">
-        {#if showManageZoneType}
-            <div class="zone-footer-text" on:click={() => showManageZoneType = !showManageZoneType }>
-                Manage Zone Types
-            </div>
-        {:else}
-            <div class="zone-footer-text"  on:click={() => showManageZoneType = !showManageZoneType }>
-                Manage Zone Types
-            </div>
-        {/if}
-    </div>
-    <div>
-        {#if showManageZoneType}
-            <ManageTypes onClose={() => showManageZoneType = false} />
-        {/if}
-    </div>
-        <ZoneTypesData selection={selection}></ZoneTypesData>
-    <div>
-
-    </div>
-</div>
-
 <style lang="scss">
     .zone-names-main-container {
         display: grid;
@@ -191,26 +166,9 @@
         letter-spacing: 0;
         line-height: 22px;
     }
-
-    .zone-footer-text {
-        color: #358DCA;
-        font-size: 16px;
-        font-weight: 600;
-        letter-spacing: 0;
-        line-height: 22px;
-        padding-top: 5px;
-        float: right;
-        cursor: pointer;
-    }
     
     .active {
         background: var(--pale);
-    }
-
-    .zone-names-footer {
-        display: grid;
-        grid-template-columns: repeat(1, 1fr);
-        padding: 5px;
     }
 
   </style>

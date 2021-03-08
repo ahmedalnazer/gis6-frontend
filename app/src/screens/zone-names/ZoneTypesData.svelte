@@ -116,39 +116,46 @@
       zoneTypeCustomName = ''
     }
 </script>
+<div class='wrapper'>
+  <div class='widget-wrapper'>
+    <h2>{$_('Select zone type and index number')}</h2>
+    <div class="zone-type-container">
+        <div>
+          <Select isSearchable={true} label={$_("Zone type")} bind:value={zoneTypeName} options={zoneTypeValues || []} />
 
-<div><h2>{$_('Select zone type and index number')}</h2></div>
-
-<div class="zone-type-container">
-    <div>
-      <Select isSearchable={true} label={$_("Zone type")} bind:value={zoneTypeName} options={zoneTypeValues || []} />
-
-      {#if zoneTypeCustomName !== ''}
-      <div class="zone-type-index-desc">
-        <div class="edit-icon" on:click={e => showKeyboard()} ><Icon icon='edit' color='var(--primary)' />{zoneTypeCustomName}</div>
-        <div on:click={clearZoneTypeCustomName} class="clear-zone-type">Clear</div>
-      </div>
-      {/if}
-    </div>
-    <div class="zone-type-index-num">
-        <Input
-            label="{$_('Index start number')}"
-            type="number"
-            bind:value={indexStart}
-            style="width:100%;"
-        />
-        <!-- <input type="text" class="input" /> -->
-        <div class="zone-type-index-desc">
-            <div class="edit-icon" on:click={e => showKeypad()} bind:this={keypadAnchor} ><Icon icon='edit' color='var(--primary)' on:click={e => console.log('edit clicked')} />{indexStart}</div>
-            <div on:click={clearStartIndex} class="clear-index">Clear</div>
+          {#if zoneTypeCustomName !== ''}
+          <div class="zone-type-index-desc">
+            <div class="edit-icon" on:click={e => showKeyboard()} ><Icon icon='edit' color='var(--primary)' />{zoneTypeCustomName}</div>
+            <div on:click={clearZoneTypeCustomName} class="clear-zone-type">Clear</div>
+          </div>
+          {/if}
+        </div>
+        <div class="zone-type-index-num">
+            <Input
+                label="{$_('Index start number')}"
+                type="number"
+                bind:value={indexStart}
+                style="width:100%;"
+            />
+            <!-- <input type="text" class="input" /> -->
+            <div class="zone-type-index-desc">
+                <div class="edit-icon" on:click={e => showKeypad()} bind:this={keypadAnchor} ><Icon icon='edit' color='var(--primary)' on:click={e => console.log('edit clicked')} />{indexStart}</div>
+                <div on:click={clearStartIndex} class="clear-index">Clear</div>
+            </div>
+        </div>
+        <div>
+            <label>&nbsp</label>
+            <button class="button active zone-type-apply" class:disabled={!enableSave} on:click={e => applyGroupName()}>
+                {$_("Apply")}
+            </button>
         </div>
     </div>
-    <div>
-        <label>&nbsp</label>
-        <button class="button active zone-type-apply" class:disabled={!enableSave} on:click={e => applyGroupName()}>
-            {$_("Apply")}
-        </button>
+  </div>
+  <div class="zone-type-toggle">
+    <div class="zone-footer-text" on:click={() => showManageZoneType = !showManageZoneType }>
+        Manage Zone Types
     </div>
+  </div>
 </div>
 
 {#if openKeyboard}
@@ -160,12 +167,44 @@
 {/if}
 
 <style lang="scss">
-    .zone-type-container {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        grid-gap: 8px;
-        padding-top: 12px;
+  .wrapper {
+    display: flex;
+    padding-top: 40px;
+  }
+
+  .widget-wrapper {
+    flex: 1;
+    padding-right: 100px;
+    > h2 {
+      padding-top: 0;
+      margin-top: 0;
     }
+  }
+
+  .zone-names-footer {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    padding: 5px;
+    padding-top: 20px;
+  }
+
+  .zone-footer-text {
+    color: #358DCA;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0;
+    line-height: 22px;
+    padding-top: 5px;
+    float: right;
+    cursor: pointer;
+  }
+
+  .zone-type-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 8px;
+    padding-top: 12px;
+  }
 
     .zone-type-index-num {
         width: 100%;
