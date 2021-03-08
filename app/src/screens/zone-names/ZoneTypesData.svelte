@@ -141,7 +141,9 @@
             <!-- <input type="text" class="input" /> -->
             <div class="zone-type-index-desc">
                 <div class="edit-icon" on:click={e => showKeypad()} bind:this={keypadAnchor} ><Icon icon='edit' color='var(--primary)' on:click={e => console.log('edit clicked')} />{indexStart}</div>
-                <div on:click={clearStartIndex} class="clear-index">Clear</div>
+                {#if indexStart !== 1}
+                  <div on:click={clearStartIndex} class="clear-index">Clear</div>
+                {/if}
             </div>
         </div>
         <div>
