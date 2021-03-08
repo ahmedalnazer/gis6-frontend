@@ -1,7 +1,7 @@
 <script>
   import { tick } from "svelte"
   import Screen from "layout/Screen.svelte"
-  import groups, { activeGroup, group_order, setGroupOrder } from "data/groups"
+  import groups, { sortGroups as _sortGroups, activeGroup, group_order, setGroupOrder } from "data/groups"
   import zones, { selectedZones as _selected, toggleZones } from "data/zones"
   import _ from "data/language"
   import ZoneGroup from "./ZoneGroup.svelte"
@@ -18,11 +18,12 @@
 
   $: selectedGroup = $activeGroup
   $: selectedGroupObj = $groups.filter(x => x.id == selectedGroup)[0]
-  let sortGroups = true
 
   $: displayedGroups = selectedGroup
     ? [ selectedGroup ]
     : $groups.concat([ { id: "unassigned", name: "Unassigned" } ])
+
+  $: sortGroups = $_sortGroups
 
   let creating = false
   let adding = false
@@ -163,7 +164,7 @@
     <GroupSelector />
     <div class="tools">
       {#if !selectedGroup}
-        <CheckBox label={$_("Show Groups")} bind:checked={sortGroups} />
+        <CheckBox label={$_("Show Groups")} checked={sortGroups} onClick={_sortGroups.toggle} />
       {/if}
 
       {#if $_selected.length}

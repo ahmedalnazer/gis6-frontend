@@ -1,7 +1,7 @@
 <script>
   import { Icon } from 'components'
   import Screen from "layout/Screen.svelte"
-  import { activeGroup } from "data/groups"
+  import { activeGroup, sortGroups } from "data/groups"
   import { selectedZones as _selected } from "data/zones"
   import _ from "data/language"
   import ZoneGroup from "./ZoneGroup.svelte"
@@ -12,7 +12,6 @@
   import Grouping from 'components/Grouping.svelte'
 
   $: selectedGroup = $activeGroup
-  let sortGroups = true
 
   // selection when sorted by groups
   let selection = {}
@@ -44,7 +43,7 @@
 
   <div class="tools">
     {#if !selectedGroup}
-      <CheckBox label={$_("Show Groups")} bind:checked={sortGroups} />
+      <CheckBox label={$_("Show Groups")} checked={$sortGroups} onClick={sortGroups.toggle}/>
     {/if}
 
     <div class='links'>
@@ -56,7 +55,7 @@
 
   </div>
 
-  <Grouping grid Zone={ZoneBox} Group={ZoneGroup} bind:sortGroups bind:selection />
+  <Grouping grid Zone={ZoneBox} Group={ZoneGroup} bind:selection />
   <div class='footer-groups'>
     <GroupSelector />
   </div>

@@ -1,6 +1,6 @@
 <script>
   import { tick } from "svelte"
-  import groups, { activeGroup, group_order, setGroupOrder } from "data/groups"
+  import groups, { sortGroups as _sortGroups, activeGroup, group_order, setGroupOrder } from "data/groups"
   import zones, { selectedZones as _selected, toggleZones } from "data/zones"
   import _ from "data/language"
   import { startSelection } from "screens/groups/selectZones"
@@ -13,7 +13,7 @@
   export let displayedZones = []
 
   $: selectedGroup = $activeGroup
-  export let sortGroups = true
+  $: sortGroups = $_sortGroups
 
   $: displayedGroups = selectedGroup
     ? [ selectedGroup ]

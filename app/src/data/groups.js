@@ -5,6 +5,8 @@ import zones from './zones'
 
 const _groups = writable([])
 const _groupOrder = writable(JSON.parse(localStorage.getItem('group_order') || '[]'))
+export const sortGroups = writable(true)
+sortGroups.toggle = () => sortGroups.update(x => !x)
 
 /**
  * Store which returns an Array containing group ids in desired display order
