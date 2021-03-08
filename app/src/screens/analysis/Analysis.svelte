@@ -45,7 +45,11 @@
     },
   }
 
+  $: other = analyses[type == 'fault' ? 'wiring' : 'fault']
   $: analysis = analyses[type]
+
+  $: console.log($other && $other.status)
+  $: disabled = $other && ![ 'complete', 'inactive' ].includes($other.status)
 
   let selectedGroup = $activeGroup || "all"
 
@@ -106,6 +110,9 @@
 
 <div class="analysis">
   <p class="description">{description}</p>
+  {#if disabled}
+    <p class='muted disabled-note'>{$_('Only one active analysis can be run at a time.')}</p>
+  {/if}
   <div class="inputs">
     <Select
       bind:value={selectedGroup}
@@ -121,14 +128,17 @@
     />
 
     {#if status == "inactive"}
-      <a class="button active" on:click={() => {
-        if(!toTest.length) {
-          notify('Please select a group containing at least one zone')
-        } else {
-          confirmStart = true
-      }}}
-        >{$_("Start Analysis")}</a
+      <a class="button active" 
+        class:disabled
+        on:click={() => {
+          if(!toTest.length) {
+            notify('Please select a group containing at least one zone')
+          } else {
+            confirmStart = true
+        }}}
       >
+        {$_("Start Analysis")}
+      </a>
     {:else if status != "complete"}
       <a class="button" class:disabled={$analysis.canceling} on:click={() => confirmStop = true}
         >{$_("Cancel Test")}</a
@@ -144,9 +154,6 @@
       </div>
     {/if}
   </div>
-
-  <!-- {#if status != "inactive"}
-    <ActiveAnalysis type="fault" /> -->
 
   {#if status != "inactive"}
     <ActiveAnalysis {type} />
@@ -284,5 +291,8 @@
   }
   .cancel-message {
     margin-bottom: 100px;
+  }
+  .disabled-note {
+    text-align: right;
   }
 </style>
