@@ -8,6 +8,7 @@
 
   export let keypadNumber = 0
   export let value = 0
+  export let keypadcontrols = {}
   
   let _keypadNumber = ''
   export let onModalOpen = false
@@ -102,6 +103,12 @@
       class:rightArrow
     >
       <div class="content">
+        {#if keypadcontrols.rangeMax && keypadcontrols.rangeMin}
+          <div class="range">
+            <span class="min">Min: {keypadcontrols.rangeMin}</span>
+            <span class="max">Max: {keypadcontrols.rangeMax}</span>
+          </div>
+        {/if}
         <input type="text" id='place-number' bind:value="{value}" />
         <div class="number-box">
             <div class="number ml-0" on:click={e => getNumber(e)}><span>7</span></div>
@@ -121,6 +128,9 @@
                 <label class="clear">{$_('Clear')}</label>
               </label>
             </div>
+            {#if keypadcontrols.negativeSign}
+              <div class="number ml-0"><span on:click={e => getNumber(e)}>-</span></div>
+            {/if}
         </div>
         <button on:click={() => closeKeypadModal()} class="keypad-ok-btn">OK</button>
       </div>
@@ -264,5 +274,14 @@
   .clear-button :global(svg) {
     width: 16px;
     margin-bottom: 5px;
+  }
+  .range {
+    color: #364860;
+    font-family: "Open Sans";
+    margin-bottom: 14px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
   }
 </style>

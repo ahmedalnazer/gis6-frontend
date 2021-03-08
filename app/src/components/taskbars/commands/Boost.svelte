@@ -8,6 +8,11 @@
   import globalSettings from 'data/globalSettings'
 
   export let onClose
+  let keypadcontrols = {
+    negativeSign: true,
+    rangeMin: 10,
+    rangeMax: 20
+  }
 
   let boostTemp = $globalSettings.BoostTemperatureSP / 10
   let time = $globalSettings.BoostTimeSP / 60
@@ -33,7 +38,7 @@
   <Selector onSubmit={boost} onDone={onClose}>
     <h2>Edit</h2>
     <div class='grid'>
-      <Input type='number' bind:value={boostTemp} label='{$_('Boost Amount')}  (&#176;C)' />
+      <Input type='number' {keypadcontrols} bind:value={boostTemp} label='{$_('Boost Amount')}  (&#176;C)' />
       <Input type='number' bind:value={time} label='{$_('Boost Time (min)')}' />
       <Input type='number' bind:value={recoveryTime} label='{$_('Recovery Time (min)')}' />
     </div>
