@@ -21,6 +21,7 @@
     let openKeyboard = false
     let openKeypad = false
     let enableSave = false
+    export let showManageZoneType = false
 
     export let keypadAnchor = null
 
