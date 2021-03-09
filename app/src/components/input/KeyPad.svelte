@@ -3,6 +3,7 @@
   import { Icon } from 'components'
   import _ from 'data/language'
   import { onDestroy, onMount } from 'svelte'
+  import notify from "data/notifications"
 
   const dispatch = createEventDispatcher()
 
@@ -19,7 +20,9 @@
   let disableNegativeBtn = !keypadcontrols.negativeSign
   let notInRange = false
   let toDecimal = keypadcontrols.decimalPlace
-  let keypadNewValue = 0
+  let keypadNewValue = value
+  let stopToDecimal = false
+  let showNegativeSign = true
   
   $: {
     keypadNumber = parseFloat(_keypadNumber)
@@ -72,12 +75,29 @@
     return document.getElementById(field)
   }
 
+  const toggleNumberSign = () => {
+    keypadNewValue = keypadNewValue * -1
+    getInputField('place-number').value = keypadNewValue
+    showNegativeSign = !showNegativeSign
+  }
+
   const getNumber = e => {
+    if (stopToDecimal) {
+      notify.error($_("Restricted to the correct precision"))
+      return false
+    }
     getInputField('place-number').value += e.target.innerText
     keypadNewValue = parseFloat(getInputField('place-number').value)
     validateKeypad(keypadNewValue)
-
+    
     anchor.dispatchEvent(new Event('change'))
+  }
+
+  const decimalCount = value => {
+    if (Math.floor(value) !== value) {
+      return value.toString().split(".")[1].length || 0;
+    }
+    return 0;
   }
 
   const validateKeypad = num => {
@@ -90,20 +110,21 @@
     ) {
       disabledButton = true
       notInRange = true
+      notify.error($_("Not in range"))
     } else {
       disabledButton = false
       notInRange = false
     }
-  }
 
-  const validate = (e) => {
-    let t = e.value;
-    e.value = (t.indexOf(".") >= 0) ? (t.substr(0, t.indexOf(".")) + t.substr(t.indexOf("."), toDecimal)) : t;
+    if (toDecimal && toDecimal < decimalCount(num)) {
+      stopToDecimal = true
+      notify.error($_("Restricted to the correct precision"))
+    }
   }
 
   const closeKeypadModal = () => {
     openKeypad = false
-    value = parseFloat(keypadNewValue).toFixed(toDecimal)
+    value = parseFloat(keypadNewValue)
     dispatch('keypadClosed', { closed: value })
   }
 
@@ -111,6 +132,8 @@
     getInputField('place-number').value = ''
     disabledButton = false
     notInRange = false
+    stopToDecimal = false
+    keypadNewValue = value
   }
 
   onMount(() => {
@@ -140,7 +163,9 @@
             <span class="max">Max: {keypadcontrols.rangeMax}</span>
           </div>
         {/if}
-        <input type="text" id='place-number' bind:value="{value}" oninput="validate(this)" />
+
+        <input type="text" id='place-number' bind:value="{value}" />
+
         <div class="number-box">
             <div class="number ml-0" on:click={e => getNumber(e)}><span>7</span></div>
             <div class="number" on:click={e => getNumber(e)}><span>8</span></div>
@@ -151,7 +176,14 @@
             <div class="number ml-0" on:click={e => getNumber(e)}><span>1</span></div>
             <div class="number" on:click={e => getNumber(e)}><span>2</span></div>
             <div class="number mr-0" on:click={e => getNumber(e)}><span>3</span></div>
-            <div class="number ml-0" on:click={e => getNumber(e)}><span>.</span></div>
+            <div class="number ml-0" class:disableBtn={keypadcontrols.integerOnly}
+              on:click={e => {
+                if (keypadcontrols.integerOnly) {
+                  return false
+                }
+                getNumber(e)
+              }}
+            ><span>.</span></div>
             <div class="number" on:click={e => getNumber(e)}><span>0</span></div>
             <div class="number mr-0" on:click={() => clearNumber()}>
               <label class='clear-button'>
@@ -160,8 +192,18 @@
               </label>
             </div>
           </div>
+          
           <div class="keypad-footer">
-            <div class="negative" class:disableNegativeBtn><span on:click={e => getNumber(e)}>-</span></div>
+            <div class="negative" class:disableBtn={disableNegativeBtn}>
+              <span 
+                on:click={e => {
+                if (disableNegativeBtn) {
+                  return false
+                }
+                toggleNumberSign(e)
+              }}
+              >{#if showNegativeSign}-{:else}+{/if}</span>
+            </div>
             <div class="keypad-btn">
               <button class:disabledButton disabled={disabledButton} on:click={() => closeKeypadModal()}  class="keypad-ok-btn">OK</button>
             </div>
@@ -310,12 +352,13 @@
     }
   }
 
+  .disableBtn {
+    background-color: var(--darkGray) !important;
+  }
+
   .keypad-footer {
     display: flex;
     flex-wrap: wrap;
-    .disableNegativeBtn {
-      background-color: var(--darkGray) !important;
-    }
     .negative {
       height: 60px;
       width: 63px;
@@ -349,15 +392,16 @@
 
         color: #FFFFFF;
         font-family: "Open Sans";
-        font-size: 16px;
+        font-size: 20px;
         font-weight: 600;
         letter-spacing: 0;
         line-height: 18px;
         text-align: center;
 
-        padding: 10px 54px;
+        padding: 10px 50px;
         border-color: #358DCA;
         width: 100%;
+        height: 100%;
       }
     }
   }
