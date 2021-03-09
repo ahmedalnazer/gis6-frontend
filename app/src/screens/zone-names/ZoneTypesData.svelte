@@ -149,7 +149,7 @@
     <h2>{$_('Select zone type and index number')}</h2>
     <div class="zone-type-container">
         <div>
-          <Select isSearchable={true} label={$_("Zone type")} bind:value={zoneTypeName} options={zoneTypeValues || []} bind:selectedItemLabel={zoneTypeValues1} />
+          <Select isSearchable={true} listPlacement='top' label={$_("Zone type")} bind:value={zoneTypeName} options={zoneTypeValues || []} bind:selectedItemLabel={zoneTypeValues1} />
 
           {#if zoneTypeCustomName !== ''}
           <div class="zone-type-index-desc">
