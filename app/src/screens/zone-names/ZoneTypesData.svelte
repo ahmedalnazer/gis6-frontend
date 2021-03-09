@@ -67,6 +67,7 @@
 
     const setGroupName = async (itemSelected, itemStartIndex, itemZoneName) => { 
       indexStartIncr = itemStartIndex
+      itemSelected = itemSelected.sort()
       for(let selectionItem of itemSelected) { 
         let currZone = $zones.filter(x => x.id == selectionItem)
         if (currZone.length) {
@@ -75,9 +76,8 @@
             await zoneTypes.create({ name: itemZoneName, isDefault: false, isVisible: true })
           }
 
-          // await api.put(`zone/${currZone[0].id}`, { ...currZone[0], ZoneName: `${itemZoneName} ${indexStartIncr}` })
           await api.put(`zone/${currZone[0].id}`, { ...currZone[0], ZoneName: `${itemZoneName} ${indexStartIncr}` })
-          console.log(`${selectionItem} ${currZone[0].id}: ${itemZoneName} ${indexStartIncr} ${currZone[0]}`)
+          // console.log(`${selectionItem} ${currZone[0].id}: ${itemZoneName} ${indexStartIncr} ${currZone[0]}`)
         }
 
         indexStartIncr++
@@ -85,7 +85,6 @@
     }
 
     const applyGroupName = async () => {
-      debugger
       // Process if the dropdown value is selected
       let ztname = ''
 
