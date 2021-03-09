@@ -9,10 +9,49 @@
   import user, { roles } from 'data/user'
   import _ from 'data/language'
   import LinePlotCard from './cards/LinePlotCard.svelte'
+  import GroupManagement from './cards/GroupManagement.svelte'
 
   // USER_TYPE_CHOICES = ((1, "admin"), (2, "operator"), (3, "process_engineer"), (4, "setup"), (5, "plant_manager") )
-  // Zone name card is visible to only Admin and Process Engineer
-  $: showZoneNames = ($user || []).role ? ($user || []).role == 1 || ($user || []).role == 3: false
+  let cards = [
+    {
+      id: 1,
+      roles: [ 'all' ],
+      component: Minicontroller
+    },
+    {
+      id: 2,
+      roles: [ 'all' ],
+      component: EasyScreen
+    },
+    {
+      id: 4,
+      roles: [ 1, 4 ],
+      component: GroupManagement
+    },
+    {
+      id: 3,
+      roles: [ 1, 3 ],
+      component: ZoneNames
+    },
+    {
+      id: 5,
+      roles: [ 'all' ],
+      component: FaultAnalysis
+    },
+    {
+      id: 6,
+      roles: [ 'all' ],
+      component: WiringAnalysis
+    },
+    {
+      id: 7,
+      roles: [ 'all' ],
+      component: LinePlotCard
+    }
+  ]
+
+  $: availableCards = cards.filter(x => x.roles.includes('all') || x.roles.includes($user && $user.role))
+
 </script>
 
 <Screen title={$_('Hot Runner')} back='/'>
@@ -21,13 +60,16 @@
   </div>
   
   <div class='hot-runner-dash card-grid'>
-    <Minicontroller />
+    {#each availableCards as card (card.id)}
+      <svelte:component this={card.component} />
+    {/each}
+    <!-- <Minicontroller />
     <EasyScreen />
     {#if showZoneNames}
       <ZoneNames />
     {/if}
     <FaultAnalysis />
     <WiringAnalysis />
-    <LinePlotCard />
+    <LinePlotCard /> -->
   </div>
 </Screen>

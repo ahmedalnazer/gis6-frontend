@@ -22,12 +22,10 @@
     let openKeypad = false
     let enableSave = false
 
-    let zoneTypeValues1 = ''
-
-    $: console.log(zoneTypeValues1)
+    let currentItemSelectedId = 0
+    let currentItemSelectedName = ''
 
     export let showManageZoneType = false
-
     export let keypadAnchor = null
 
     $: defaultTypes = $zoneTypes.filter(x => x.isDefault)
@@ -72,6 +70,12 @@
       for(let selectionItem of itemSelected) { 
         let currZone = $zones.filter(x => x.id == selectionItem)
         if (currZone.length) {
+          const currentType = $zoneTypes.find(x => x.name == itemZoneName)
+          if(!currentType) {
+            await zoneTypes.create({ name: itemZoneName, isDefault: false, isVisible: true })
+          }
+
+          // await api.put(`zone/${currZone[0].id}`, { ...currZone[0], ZoneName: `${itemZoneName} ${indexStartIncr}` })
           await api.put(`zone/${currZone[0].id}`, { ...currZone[0], ZoneName: `${itemZoneName} ${indexStartIncr}` })
           console.log(`${selectionItem} ${currZone[0].id}: ${itemZoneName} ${indexStartIncr} ${currZone[0]}`)
         }
@@ -81,10 +85,15 @@
     }
 
     const applyGroupName = async () => {
+      debugger
       // Process if the dropdown value is selected
       let ztname = ''
 
-      if (selection.length && zoneTypeName == 0 && zoneTypeCustomName !== '') {
+      if (selection.length && currentItemSelectedId == 0 && zoneTypeCustomName !== '') {
+        // Custom name edited thru default
+        ztname = zoneTypeCustomName
+      }
+      else if (selection.length && zoneTypeName == 0 && zoneTypeCustomName !== '') {
         // Custom name
         ztname = zoneTypeCustomName
       }
@@ -122,14 +131,28 @@
         let zoneNameVal = ''
         if (selZoneNameChange.length > 0) {
           zoneNameVal = selZoneNameChange[0].name
+          currentItemSelectedName = selZoneNameChange[0].name
+          currentItemSelectedId = selZoneNameChange[0].id
         }
         zoneTypeCustomName = zoneNameVal
       }
     }
 
     const getKeyboardText = (textobj) => {
-      console.log(textobj.detail.done)
       zoneTypeCustomName = textobj.detail.done
+
+      if (currentItemSelectedName !== zoneTypeCustomName) {
+        // Create as new custome zone
+        let containsZoneName = $zoneTypes.filter(x => x.name == zoneTypeCustomName)
+        if (containsZoneName.length > 0) {
+          // If the zone exist then repoint there
+          currentItemSelectedId = containsZoneName[0].id
+          zoneTypeName = currentItemSelectedId
+        }
+        else {
+          currentItemSelectedId = 0 //Custom
+        }
+      }
     }
 
     const clearZoneTypeCustomName = () => {
@@ -141,7 +164,7 @@
     <h2>{$_('Select zone type and index number')}</h2>
     <div class="zone-type-container">
         <div>
-          <Select isSearchable={true} label={$_("Zone type")} bind:value={zoneTypeName} options={zoneTypeValues || []} bind:selectedItemLabel={zoneTypeValues1} />
+          <Select isSearchable={true} label={$_("Zone type")} bind:value={zoneTypeName} options={zoneTypeValues || []} />
 
           {#if zoneTypeCustomName !== ''}
           <div class="zone-type-index-desc">

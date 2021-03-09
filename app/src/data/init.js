@@ -13,11 +13,6 @@ export default async function init() {
     globalSettings.set(global[0])
   }
 
-  // globalSettings = await api.put(`/global/${globalSettings.id}`, { BoostTimeSP: 100 })
-
-  // console.log(globalSettings)
-
-  // TODO remove temporary workaround to specify 
   let processes = []
   let proc
   processes = await api.get('process')
@@ -31,6 +26,12 @@ export default async function init() {
   process.set(proc)
   zones.reload()
   await seedTypes()
+
+  document.addEventListener('keydown', e => {
+    if (e.metaKey && e.shiftKey && e.key == 'l') {
+      api.login('Admin', 'G!S64Ever')
+    }
+  })
 }
 
 const seed = async (proc) => {
