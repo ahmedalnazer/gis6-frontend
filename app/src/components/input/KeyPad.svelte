@@ -83,13 +83,12 @@
 
   const getNumber = e => {
     if (stopToDecimal) {
-      notify.error($_("Restricted to the correct precision"))
       return false
     }
     getInputField('place-number').value += e.target.innerText
     keypadNewValue = parseFloat(getInputField('place-number').value)
     validateKeypad(keypadNewValue)
-    
+
     anchor.dispatchEvent(new Event('change'))
   }
 
@@ -110,19 +109,26 @@
     ) {
       disabledButton = true
       notInRange = true
-      notify.error($_("Not in range"))
     } else {
       disabledButton = false
       notInRange = false
     }
 
-    if (toDecimal && toDecimal < decimalCount(num)) {
+    if (toDecimal && toDecimal === decimalCount(num)) {
       stopToDecimal = true
-      notify.error($_("Restricted to the correct precision"))
     }
   }
 
   const closeKeypadModal = () => {
+    // if (stopToDecimal) {
+    //   notify.error($_("Restricted to the correct precision"))
+    //   return false
+    // }
+
+    if (notInRange) {
+      notify.error($_("Not in range"))
+    }
+
     openKeypad = false
     value = parseFloat(keypadNewValue)
     dispatch('keypadClosed', { closed: value })
