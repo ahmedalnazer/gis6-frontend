@@ -159,12 +159,12 @@
       zoneTypeCustomName = ''
     }
 </script>
-<div class='wrapper zone-type-name-panel'>
+<div class='wrapper'>
   <div class='widget-wrapper'>
     <h2>{$_('Select zone type and index number')}</h2>
     <div class="zone-type-container">
         <div>
-          <Select isSearchable={true} label={$_("Zone type")} bind:value={zoneTypeName} options={zoneTypeValues || []} />
+          <Select isSearchable={true} listPlacement='top' label={$_("Zone type")} bind:value={zoneTypeName} options={zoneTypeValues || []} />
 
           {#if zoneTypeCustomName !== ''}
           <div class="zone-type-index-desc">
@@ -226,13 +226,6 @@
     }
   }
 
-  .zone-names-footer {
-    display: grid;
-    grid-template-columns: repeat(1, 1fr);
-    padding: 5px;
-    padding-top: 20px;
-  }
-
   .zone-footer-text {
     color: #358DCA;
     font-size: 16px;
@@ -257,7 +250,7 @@
 
     .zone-type-index-desc {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: 2fr 1fr;
         gap: 16px;
         align-items: center;
         padding: 10px;
