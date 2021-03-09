@@ -18,6 +18,8 @@
   let disabledButton = false
   let disableNegativeBtn = !keypadcontrols.negativeSign
   let notInRange = false
+  let toDecimal = keypadcontrols.decimalPlace
+  let keypadNewValue = 0
   
   $: {
     keypadNumber = parseFloat(_keypadNumber)
@@ -72,8 +74,9 @@
 
   const getNumber = e => {
     getInputField('place-number').value += e.target.innerText
-    value = !isNaN(e.target.innerText) ? parseFloat(getInputField('place-number').value) : getInputField('place-number').value
-    validateKeypad(value)
+    keypadNewValue = parseFloat(getInputField('place-number').value)
+    validateKeypad(keypadNewValue)
+
     anchor.dispatchEvent(new Event('change'))
   }
 
@@ -84,17 +87,23 @@
       keypadcontrols.rangeMin &&
       (num < keypadcontrols.rangeMin ||
       num > keypadcontrols.rangeMax)
-      ) {
-        disabledButton = true
-        notInRange = true
+    ) {
+      disabledButton = true
+      notInRange = true
     } else {
       disabledButton = false
       notInRange = false
     }
   }
 
+  const validate = (e) => {
+    let t = e.value;
+    e.value = (t.indexOf(".") >= 0) ? (t.substr(0, t.indexOf(".")) + t.substr(t.indexOf("."), toDecimal)) : t;
+  }
+
   const closeKeypadModal = () => {
     openKeypad = false
+    value = parseFloat(keypadNewValue).toFixed(toDecimal)
     dispatch('keypadClosed', { closed: value })
   }
 
@@ -131,7 +140,7 @@
             <span class="max">Max: {keypadcontrols.rangeMax}</span>
           </div>
         {/if}
-        <input type="text" id='place-number' bind:value="{value}" />
+        <input type="text" id='place-number' bind:value="{value}" oninput="validate(this)" />
         <div class="number-box">
             <div class="number ml-0" on:click={e => getNumber(e)}><span>7</span></div>
             <div class="number" on:click={e => getNumber(e)}><span>8</span></div>

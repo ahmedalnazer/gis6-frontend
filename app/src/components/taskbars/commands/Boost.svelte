@@ -11,7 +11,8 @@
   let keypadcontrols = {
     negativeSign: true,
     rangeMin: 10,
-    rangeMax: 20
+    rangeMax: 20,
+    decimalPlace: 1,
   }
 
   let boostTemp = $globalSettings.BoostTemperatureSP / 10
