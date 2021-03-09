@@ -16,6 +16,7 @@
   export let changed = false
   export let input = null
   export let display = false
+  export let keypadcontrols = {}
 
   let modalOpened = false
 
@@ -65,7 +66,7 @@
 </div>
 
 {#if type == 'number' && modalOpened}
-  <KeyPad anchor={input} bind:onModalOpen={modalOpened} bind:value on:keypadClosed={() => modalOpened = false} />
+  <KeyPad anchor={input} {keypadcontrols} bind:onModalOpen={modalOpened} bind:value on:keypadClosed={() => modalOpened = false} />
 {/if}
 
 <style>
