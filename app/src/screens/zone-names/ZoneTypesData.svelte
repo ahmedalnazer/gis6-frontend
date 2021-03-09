@@ -21,6 +21,11 @@
     let openKeyboard = false
     let openKeypad = false
     let enableSave = false
+
+    let zoneTypeValues1 = ''
+
+    $: console.log(zoneTypeValues1)
+
     export let showManageZoneType = false
 
     export let keypadAnchor = null
@@ -31,6 +36,12 @@
     $: showCustomKB = zoneTypeName == 0
     $: { showCustomKB? showKeyboard(): null }
     $: enableSave =  getEnableSaveValue(selection, zoneTypeName, zoneTypeCustomName, indexStart) 
+
+    // $: console.log($zoneTypes.filter(x => x.id == zoneTypeName))
+    // $: console.log(zoneTypeName)
+    $: setZoneTypeCustomName(zoneTypeName)
+
+    // $: zoneTypeCustomName = $zoneTypes.filter(x => x.id == zoneTypeName).length? $zoneTypes.filter(x => x.id == zoneTypeName)[0].name : '' 
 
     const getEnableSaveValue = (selectedItemsValue, zoneTypeNameValue, zoneTypeCustomNameValue, indexStartValue) => {
       let canSave = false
@@ -65,7 +76,7 @@
       for(let selectionItem of itemSelected) { 
         let currZone = $zones.filter(x => x.id == selectionItem)
         if (currZone.length) {
-          await api.put(`zone/${currZone[0].id}`, { ...currZone[0], ZoneName: `${itemZoneName} ${indexStartIncr}` })
+          // await api.put(`zone/${currZone[0].id}`, { ...currZone[0], ZoneName: `${itemZoneName} ${indexStartIncr}` })
           console.log(`${selectionItem} ${currZone[0].id}: ${itemZoneName} ${indexStartIncr} ${currZone[0]}`)
         }
 
@@ -108,6 +119,18 @@
       openKeypad = true
     }
 
+    const setZoneTypeCustomName = (zoneTypeCustomNameValue) => {
+      // Set the zone type edit value based on the select change
+      if (zoneTypeCustomNameValue) {
+        let selZoneNameChange = $zoneTypes.filter(x => x.id == zoneTypeCustomNameValue)
+        let zoneNameVal = ''
+        if (selZoneNameChange.length > 0) {
+          zoneNameVal = selZoneNameChange[0].name
+        }
+        zoneTypeCustomName = zoneNameVal
+      }
+    }
+
     const getKeyboardText = (textobj) => {
       console.log(textobj.detail.done)
       zoneTypeCustomName = textobj.detail.done
@@ -122,7 +145,7 @@
     <h2>{$_('Select zone type and index number')}</h2>
     <div class="zone-type-container">
         <div>
-          <Select isSearchable={true} label={$_("Zone type")} bind:value={zoneTypeName} options={zoneTypeValues || []} />
+          <Select isSearchable={true} label={$_("Zone type")} bind:value={zoneTypeName} options={zoneTypeValues || []} bind:selectedItemLabel={zoneTypeValues1} />
 
           {#if zoneTypeCustomName !== ''}
           <div class="zone-type-index-desc">
