@@ -3,17 +3,26 @@
   import { Icon } from 'components'
   import _ from 'data/language'
   import { onDestroy, onMount } from 'svelte'
+  import notify from "data/notifications"
 
   const dispatch = createEventDispatcher()
 
   export let keypadNumber = 0
   export let value = 0
+  export let keypadcontrols = {}
   
   let _keypadNumber = ''
   export let onModalOpen = false
   export let anchor
   let leftArrow = false, rightArrow = false, arrowPosition = 0
   let styleTag = document.createElement("style")
+  let disabledButton = false
+  let disableNegativeBtn = !keypadcontrols.negativeSign
+  let notInRange = false
+  let toDecimal = keypadcontrols.decimalPlace
+  let keypadNewValue = value
+  let stopToDecimal = false
+  let showNegativeSign = true
   
   $: {
     keypadNumber = parseFloat(_keypadNumber)
@@ -66,19 +75,71 @@
     return document.getElementById(field)
   }
 
+  const toggleNumberSign = () => {
+    keypadNewValue = keypadNewValue * -1
+    getInputField('place-number').value = keypadNewValue
+    showNegativeSign = !showNegativeSign
+  }
+
   const getNumber = e => {
+    if (stopToDecimal) {
+      return false
+    }
     getInputField('place-number').value += e.target.innerText
-    value = parseFloat(getInputField('place-number').value)
+    keypadNewValue = parseFloat(getInputField('place-number').value)
+    validateKeypad(keypadNewValue)
+
     anchor.dispatchEvent(new Event('change'))
   }
 
+  const decimalCount = value => {
+    if (Math.floor(value) !== value) {
+      return value.toString().split(".")[1].length || 0;
+    }
+    return 0;
+  }
+
+  const validateKeypad = num => {
+    if (
+      !isNaN(num) &&
+      keypadcontrols.rangeMin &&
+      keypadcontrols.rangeMin &&
+      (num < keypadcontrols.rangeMin ||
+      num > keypadcontrols.rangeMax)
+    ) {
+      disabledButton = true
+      notInRange = true
+    } else {
+      disabledButton = false
+      notInRange = false
+    }
+
+    if (toDecimal && toDecimal === decimalCount(num)) {
+      stopToDecimal = true
+    }
+  }
+
   const closeKeypadModal = () => {
+    // if (stopToDecimal) {
+    //   notify.error($_("Restricted to the correct precision"))
+    //   return false
+    // }
+
+    if (notInRange) {
+      notify.error($_("Not in range"))
+    }
+
     openKeypad = false
+    value = parseFloat(keypadNewValue)
     dispatch('keypadClosed', { closed: value })
   }
 
   const clearNumber = () => {
     getInputField('place-number').value = ''
+    disabledButton = false
+    notInRange = false
+    stopToDecimal = false
+    keypadNewValue = value
   }
 
   onMount(() => {
@@ -101,8 +162,16 @@
       class:leftArrow
       class:rightArrow
     >
-      <div class="content">
+      <div class="content" class:notInRange>
+        {#if keypadcontrols.rangeMax && keypadcontrols.rangeMin}
+          <div class="range">
+            <span class="min">Min: {keypadcontrols.rangeMin}</span>
+            <span class="max">Max: {keypadcontrols.rangeMax}</span>
+          </div>
+        {/if}
+
         <input type="text" id='place-number' bind:value="{value}" />
+
         <div class="number-box">
             <div class="number ml-0" on:click={e => getNumber(e)}><span>7</span></div>
             <div class="number" on:click={e => getNumber(e)}><span>8</span></div>
@@ -113,7 +182,14 @@
             <div class="number ml-0" on:click={e => getNumber(e)}><span>1</span></div>
             <div class="number" on:click={e => getNumber(e)}><span>2</span></div>
             <div class="number mr-0" on:click={e => getNumber(e)}><span>3</span></div>
-            <div class="number ml-0" on:click={e => getNumber(e)}><span>.</span></div>
+            <div class="number ml-0" class:disableBtn={keypadcontrols.integerOnly}
+              on:click={e => {
+                if (keypadcontrols.integerOnly) {
+                  return false
+                }
+                getNumber(e)
+              }}
+            ><span>.</span></div>
             <div class="number" on:click={e => getNumber(e)}><span>0</span></div>
             <div class="number mr-0" on:click={() => clearNumber()}>
               <label class='clear-button'>
@@ -121,14 +197,29 @@
                 <label class="clear">{$_('Clear')}</label>
               </label>
             </div>
-        </div>
-        <button on:click={() => closeKeypadModal()} class="keypad-ok-btn">OK</button>
+          </div>
+          
+          <div class="keypad-footer">
+            <div class="negative" class:disableBtn={disableNegativeBtn}>
+              <span 
+                on:click={e => {
+                if (disableNegativeBtn) {
+                  return false
+                }
+                toggleNumberSign(e)
+              }}
+              >{#if showNegativeSign}-{:else}+{/if}</span>
+            </div>
+            <div class="keypad-btn">
+              <button class:disabledButton disabled={disabledButton} on:click={() => closeKeypadModal()}  class="keypad-ok-btn">OK</button>
+            </div>
+          </div>
       </div>
     </div>
   </div>
 {/if}
 
-<style>
+<style lang="scss">
   div.modal {
     position: fixed;
     top: 0;
@@ -222,7 +313,7 @@
     margin-bottom: 14px;
     padding: 9px 20px;
   }
-  input[type=text]#place-number{
+  input[type=text]#place-number {
     color: #364860;
     font-family: "Open Sans";
     font-size: 30px;
@@ -230,23 +321,7 @@
     line-height: 41px;
     text-align: right;
   }
-  .keypad-ok-btn {
-    border-radius: 2px;
-    background-color: #358DCA;
-    box-shadow: 0 2px 0 0 #364860;
 
-    color: #FFFFFF;
-    font-family: "Open Sans";
-    font-size: 16px;
-    font-weight: 600;
-    letter-spacing: 0;
-    line-height: 18px;
-    text-align: center;
-
-    padding: 10px 54px;
-    border-color: #358DCA;
-    margin-top: 30px;
-  }
   .number label {
     color: #358DCA;
     font-family: "Open Sans";
@@ -264,5 +339,76 @@
   .clear-button :global(svg) {
     width: 16px;
     margin-bottom: 5px;
+  }
+  .range {
+    color: #364860;
+    font-family: "Open Sans";
+    margin-bottom: 14px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  .notInRange {
+    .min, .max {
+      color: red;
+    }
+    input[type=text]#place-number {
+      border: 1px solid red;
+    }
+  }
+
+  .disableBtn {
+    background-color: var(--darkGray) !important;
+  }
+
+  .keypad-footer {
+    display: flex;
+    flex-wrap: wrap;
+    .negative {
+      height: 60px;
+      width: 63px;
+      border-radius: 4px;
+      background-color: #FFFFFF;
+      box-shadow: 0 2px 5px 0 rgb(54 72 96 / 50%);
+      flex-grow: 1;
+      margin: 7px 7px 7px 0;
+      padding: 14px;
+      span {
+        color: #358DCA;
+        font-family: "Open Sans";
+        font-size: 36px;
+        letter-spacing: 0;
+        justify-content: center;
+        align-items: center;
+        display: flex;
+      }
+    }
+    .keypad-btn {
+      flex-grow: 2;
+      margin: 7px 0 7px 7px;
+      .disabledButton {
+        background-color: var(--darkGray) !important;
+        border-color: var(--darkGray) !important;
+      }
+      .keypad-ok-btn {
+        border-radius: 2px;
+        background-color: #358DCA;
+        box-shadow: 0 2px 0 0 #364860;
+
+        color: #FFFFFF;
+        font-family: "Open Sans";
+        font-size: 20px;
+        font-weight: 600;
+        letter-spacing: 0;
+        line-height: 18px;
+        text-align: center;
+
+        padding: 10px 50px;
+        border-color: #358DCA;
+        width: 100%;
+        height: 100%;
+      }
+    }
   }
 </style>

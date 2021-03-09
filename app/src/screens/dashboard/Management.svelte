@@ -3,7 +3,6 @@
   import user from 'data/user'
   import DashboardSection from './DashboardSection.svelte'
   import ChangeLog from './cards/ChangeLog.svelte'
-  import GroupManagement from './cards/GroupManagement.svelte'
   import UserManagement from './cards/UserManagement.svelte'
 
   let cards = [
@@ -14,11 +13,6 @@
     },
     {
       id: 2,
-      roles: [ 1, 4 ],
-      component: GroupManagement
-    },
-    {
-      id: 3,
       roles: [ 1 ],
       component: UserManagement
     }

@@ -64,6 +64,7 @@ const initiate = async () => {
   for(let fn of queue) {
     fn()
   }
+  connect()
 }
 
 
@@ -134,23 +135,13 @@ const send = async msg => {
 }
 
 const connect = async () => {
-  for(let channel of activeChannels.filter(x => !connectedChannels.includes(x))) {
-    await send(`+${channel}`)
-  }
+  let toConnect = activeChannels.filter(x => !connectedChannels.includes(x))
   connectedChannels = [ ...activeChannels ]
-}
+  for(let channel of toConnect) {
+    await send(`+${channel}`)
 
-// onmessage = async e => {
-//   const { data } = e
-//   if (data.command == 'start') {
-//     socketTarget = data.target
-//   }
-//   if (data.command == 'connect') {
-//     for (let channel of data.channels) {
-//       await send(`+${channel}`)
-//     }
-//   }
-// }
+  }
+}
 
 
 function getString(array) {
