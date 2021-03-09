@@ -36,12 +36,7 @@
     $: showCustomKB = zoneTypeName == 0
     $: { showCustomKB? showKeyboard(): null }
     $: enableSave =  getEnableSaveValue(selection, zoneTypeName, zoneTypeCustomName, indexStart) 
-
-    // $: console.log($zoneTypes.filter(x => x.id == zoneTypeName))
-    // $: console.log(zoneTypeName)
     $: setZoneTypeCustomName(zoneTypeName)
-
-    // $: zoneTypeCustomName = $zoneTypes.filter(x => x.id == zoneTypeName).length? $zoneTypes.filter(x => x.id == zoneTypeName)[0].name : '' 
 
     const getEnableSaveValue = (selectedItemsValue, zoneTypeNameValue, zoneTypeCustomNameValue, indexStartValue) => {
       let canSave = false
@@ -58,11 +53,12 @@
     }
 
     const getZoneTypesDisplayData = (currZoneTypes) => {
-      let hasCustom = (currZoneTypes || []).filter(x => x.id == 0)
-      let defaultZoneTypes = currZoneTypes.filter(x => x.isDefault && x.isVisible)
-      let customZoneTypes = currZoneTypes.filter(x => !x.isDefault && x.isVisible)
-      customZoneTypes = customZoneTypes.map((x) => { x.name += ' (custom)'; return x})
-      let selectZoneTypes = defaultZoneTypes.concat(customZoneTypes)
+      let zoneTypesCopy = currZoneTypes.map(x => ({ ...x })) // Make a copy of the array
+      let hasCustom = (zoneTypesCopy || []).filter(x => x.id == 0)
+      let defaultZoneTypes = zoneTypesCopy.filter(x => x.isDefault && x.isVisible)
+      zoneTypesCopy = zoneTypesCopy.filter(x => !x.isDefault && x.isVisible)
+      zoneTypesCopy = zoneTypesCopy.map((x) => { x.name += ' (custom)'; return x})
+      let selectZoneTypes = defaultZoneTypes.concat(zoneTypesCopy)
 
       if (! (hasCustom || []).length) {
         selectZoneTypes.push({ id: 0, name: "Custom", isDefault: true, isVisible: true })
@@ -76,7 +72,7 @@
       for(let selectionItem of itemSelected) { 
         let currZone = $zones.filter(x => x.id == selectionItem)
         if (currZone.length) {
-          // await api.put(`zone/${currZone[0].id}`, { ...currZone[0], ZoneName: `${itemZoneName} ${indexStartIncr}` })
+          await api.put(`zone/${currZone[0].id}`, { ...currZone[0], ZoneName: `${itemZoneName} ${indexStartIncr}` })
           console.log(`${selectionItem} ${currZone[0].id}: ${itemZoneName} ${indexStartIncr} ${currZone[0]}`)
         }
 
@@ -140,7 +136,7 @@
       zoneTypeCustomName = ''
     }
 </script>
-<div class='wrapper'>
+<div class='wrapper zone-type-name-panel'>
   <div class='widget-wrapper'>
     <h2>{$_('Select zone type and index number')}</h2>
     <div class="zone-type-container">
