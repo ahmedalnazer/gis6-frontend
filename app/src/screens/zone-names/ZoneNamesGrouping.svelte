@@ -66,29 +66,29 @@
 
     // $: allSelected = $zones.filter(x => (_selected.includes || []).includes(x.id)).length == zones.length
 
-    $: displayedZonesRight = [ ...displayedZones ]
+    $: displayedZonesRight = [ ...displayedZones.sort((a, b) => a.id > b.id ? 1 : -1) ]
     $: displayedZonesLeft = displayedZonesRight.splice(0, Math.ceil(displayedZones.length/2))
     $: allSelected = selection.length == displayedZones.length
 
     const boxSelect = (nodes) => {
-    for(let [ nodeString, group ] of nodes) {
-      const node = parseInt(nodeString)
-      if(group) {
-        if(selection[group].includes(node)) {
-          selection[group] = selection[group].filter(x => x != node)
+      for(let [ nodeString, group ] of nodes) {
+        const node = parseInt(nodeString)
+        if(group) {
+          if(selection[group].includes(node)) {
+            selection[group] = selection[group].filter(x => x != node)
+          } else {
+            selection[group].push(node)
+          }
         } else {
-          selection[group].push(node)
-        }
-      } else {
-        if (selection.includes(node)) {
-          selection = selection.filter(x => x != node)
-        } else {
-          selection = selection.concat(node)
+          if (selection.includes(node)) {
+            selection = selection.filter(x => x != node)
+          } else {
+            selection = selection.concat(node)
+          }
         }
       }
-    }
-    selection = selection
-  }
+      selection = selection
+}
 
 </script>
 
