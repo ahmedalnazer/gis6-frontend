@@ -28,6 +28,12 @@
     export let showManageZoneType = false
     export let keypadAnchor = null
 
+    const keypadcontrols1 = {
+      rangeMin: 1,
+      rangeMax: 450,
+      integerOnly: true,
+    }
+    
     $: defaultTypes = $zoneTypes.filter(x => x.isDefault)
     let customTypes = $zoneTypes.filter(x => !x.isDefault)
     $: zoneTypeValues = getZoneTypesDisplayData([ ...$zoneTypes ])
@@ -177,6 +183,7 @@
                 label="{$_('Index start number')}"
                 type="number"
                 bind:value={indexStart}
+                keypadcontrols={keypadcontrols1}
                 style="width:100%;"
             />
             <!-- <input type="text" class="input" /> -->
@@ -207,7 +214,7 @@
 {/if}
 
 {#if openKeypad}
-  <KeyPad anchor={keypadAnchor} value="{indexStart}" bind:onModalOpen={openKeypad} bind:keypadValue on:keypadClosed={(val) => { indexStart = val.detail.closed; openKeypad = false }} />
+  <KeyPad anchor={keypadAnchor} value="{indexStart}" bind:onModalOpen={openKeypad} bind:keypadValue on:keypadClosed={(val) => { indexStart = val.detail.closed; openKeypad = false }} keypadcontrols={keypadcontrols1} />
 {/if}
 
 <style lang="scss">
