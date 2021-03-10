@@ -17,5 +17,5 @@
 </script>
 
 <Modal title={$_('Turn Zones On')} {onClose}>
-  <Selector onSubmit={on} onDone={onClose}/>
+  <Selector onSubmit={on}/>
 </Modal>

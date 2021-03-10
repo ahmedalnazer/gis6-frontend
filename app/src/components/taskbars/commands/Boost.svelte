@@ -30,7 +30,7 @@
 </script>
 
 <Modal title={$_('Boost')} {onClose}>
-  <Selector onSubmit={boost} onDone={onClose}>
+  <Selector onSubmit={boost}>
     <h2>Edit</h2>
     <div class='grid'>
       <Input type='number' bind:value={boostTemp} label='{$_('Boost Amount')}  (&#176;C)' />

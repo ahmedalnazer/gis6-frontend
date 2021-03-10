@@ -1,8 +1,12 @@
 <script>
+  import { createEventDispatcher } from 'svelte'
   export let onClick = false
   export let checked = false
   export let minus = false
   export let label = ''
+
+  const dispatch = createEventDispatcher()
+
 </script>
 
 <div class='input checkbox'>
@@ -10,6 +14,7 @@
     onClick 
       ? onClick()
       : checked = !checked
+    dispatch('change')
   }}>
     <div class='check' class:checked class:minus>
       {#if checked}

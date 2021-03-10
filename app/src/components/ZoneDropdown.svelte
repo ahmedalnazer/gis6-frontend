@@ -31,8 +31,7 @@
       selectedZones.set($zones.map(x => x.id))
     } else {
       // Select the first zone as default if everything is empty
-      // selectedZones.set([])
-      selectedZones.set([ $zones.map(x => x.id)[0] ])
+      selectedZones.set($zones.map(x => x.id).slice(0, 1))
     }
   }
 
@@ -79,7 +78,10 @@
               class:selected={$selectedZones.includes(zone.id)}
               on:click={() => {toggleZones(zone); setDefaultIfEmpty()}}
             >
-              <CheckBox checked={$selectedZones.includes(zone.id)} /> {zone.name}
+              <CheckBox checked={$selectedZones.includes(zone.id)} /> 
+              <span class:danger-text={zone.hasAlarm} class:warning-text={zone.hasWarning} class:muted={!zone.settings.on}>
+                {zone.name}
+              </span>
             </div>
           {/each}
         </div>
@@ -94,9 +96,11 @@
   }
   .zone-dropdown {
     position: relative;
+    width: 100%;
+    min-width: 0;
   }
   .current {
-    width: 400px;
+    width: 100%;
     position: relative;
     padding-right: 32px;
     background: var(--pale);
@@ -107,12 +111,16 @@
   }
   .label {
     white-space: nowrap;
+    max-height: 18px;
     text-overflow: ellipsis;
+    margin-right: 20px;
     overflow: hidden;
-    width: calc(100% - 32px);
+    min-width: 0;
+    max-width: 100%;
   }
   .dropdown-anchor {
     position: absolute;
+    width: 100%;
     top: 100%;
   }
   .dropdown {
