@@ -14,6 +14,7 @@
   export let type = ''
   export let inputClass = ''
   export let changed = false
+  export let trackChange = false
   export let input = null
   export let display = false
   export let keypadcontrols = {}
@@ -34,7 +35,10 @@
     </div>
   {:else}
     <input {type} 
-      on:change 
+      on:change={e => {
+        dispatch('change', e)
+        if(trackChange) changed = true
+      }}
       on:input={handleInput} 
       class:changed
       {value} 

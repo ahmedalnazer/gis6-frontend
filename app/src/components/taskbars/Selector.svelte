@@ -10,19 +10,22 @@
   import ZoneDropdown from 'components/ZoneDropdown.svelte'
   import { notify } from 'data'
   import Icon from 'components/Icon.svelte'
+  import ZoneReadout from './ZoneReadout.svelte'
 
   export let onSubmit
-  export let onDone
   export let trackHistory = false
   export let getUndoAction = _zones => {
     const cached = _zones.map(x => ({ ...x }))
     return async () => {
       for(let z of cached) {
+        // console.log(z)
         await zones.update(z, z, { skipReload: true })
       }
       await zones.reload()
     }
   }
+
+  export let valid = true
 
   let emptyBody
   let applied = {}
@@ -89,7 +92,10 @@
 <div class="zone-select-wrapper">
   <div class="zone-dropdown">
     <h2>{$_('Select')}</h2>
-    <ZoneDropdown />
+    <div class='selection'>
+      <ZoneDropdown on:change />
+      <ZoneReadout zone={$activeZones[0]} />
+    </div>
   </div>
 
   <div class="body">
@@ -111,7 +117,7 @@
       <div 
         class="button ignore-task-styles" 
         class:applied={applied.selected && $activeZones.length} 
-        class:disabled={!$activeZones.length}
+        class:disabled={!$activeZones.length || !valid}
         on:click={applySelected}
       >
         <Icon icon='check' color='var(--primary)' /> {#if $activeZones.length == 1}
@@ -123,6 +129,7 @@
       <div 
         class="button ignore-task-styles" 
         class:applied={applied.all}
+        class:disabled={!valid}
         on:click={applyAll}
       >
         <Icon icon='check' color='var(--primary)' /> {$_("All Zones")}
@@ -131,6 +138,7 @@
         <div
           class="button ignore-task-styles"
           class:applied={applied[group.id]}
+          class:disabled={!valid}
           on:click={() => applyGroup(group)}
         >
           <span><Icon icon='check' color='var(--primary)' /></span> 
@@ -140,11 +148,11 @@
     </div>
   </div>
 
-  <div class="done">
+  <!-- <div class="done">
     <button class="button ignore-task-styles active" on:click={e => onDone()}>
       {$_("Done")}
     </button>
-  </div>
+  </div> -->
 </div>
 
 {#if emptyBody}
@@ -160,11 +168,14 @@
     margin-top: 0;
     padding-top: 0;
     font-size: 22px;
-    margin-bottom: 32px;
+    margin-bottom: 16px;
   }
-  .zone-dropdown,
-  .body,
-  .groups {
+  .selection {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .zone-dropdown, .body, .groups {
     padding: 32px 0;
   }
   .zone-dropdown,

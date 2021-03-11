@@ -1,8 +1,10 @@
 <script>
   import zones, { selectedZones, activeZones, toggleZones } from 'data/zones'
   import { Collapsible, CheckBox } from 'components'
-  import { onDestroy } from 'svelte'
+  import { onDestroy, createEventDispatcher } from 'svelte'
   import _ from 'data/language'
+  
+  const dispatch = createEventDispatcher()
 
   $: label = $activeZones.map(x => x.name).join(', ')
   let open = false
@@ -26,20 +28,25 @@
     }, 0)
   }
 
+  const toggleZone = zone => {
+    toggleZones(zone)
+    dispatch('change', $selectedZones)
+  }
+
   const toggleAll = () => {
     if($selectedZones.length == 0 || $selectedZones.length == 1) {
       selectedZones.set($zones.map(x => x.id))
     } else {
       // Select the first zone as default if everything is empty
-      // selectedZones.set([])
-      selectedZones.set([ $zones.map(x => x.id)[0] ])
+      selectedZones.set($zones.map(x => x.id).slice(0, 1))
     }
+    dispatch('change', $selectedZones)
   }
 
-  const setDefaultIfEmpty = () => {
-    // There should be atleast one zone selected
+  $: {
     if($selectedZones.length == 0) {
-      selectedZones.set([ $zones.map(x => x.id)[0] ])
+      selectedZones.set($zones.map(x => x.id).slice(0, 1))
+      dispatch('change', $selectedZones)
     }
   }
 
@@ -77,9 +84,12 @@
             <div
               class='zone'
               class:selected={$selectedZones.includes(zone.id)}
-              on:click={() => {toggleZones(zone); setDefaultIfEmpty()}}
+              on:click={() => toggleZone(zone)}
             >
-              <CheckBox checked={$selectedZones.includes(zone.id)} /> {zone.name}
+              <CheckBox checked={$selectedZones.includes(zone.id)} /> 
+              <span class:danger-text={zone.hasAlarm} class:warning-text={zone.hasWarning} class:muted={!zone.settings.on}>
+                {zone.name}
+              </span>
             </div>
           {/each}
         </div>
@@ -88,15 +98,17 @@
   </div>
 </div>
 
-<style>
+<style lang="scss">
   h3 {
     margin-bottom: 10px;
   }
   .zone-dropdown {
     position: relative;
+    width: 100%;
+    min-width: 0;
   }
   .current {
-    width: 400px;
+    width: 100%;
     position: relative;
     padding-right: 32px;
     background: var(--pale);
@@ -107,12 +119,16 @@
   }
   .label {
     white-space: nowrap;
+    max-height: 18px;
     text-overflow: ellipsis;
+    margin-right: 20px;
     overflow: hidden;
-    width: calc(100% - 32px);
+    min-width: 0;
+    max-width: 100%;
   }
   .dropdown-anchor {
     position: absolute;
+    width: 100%;
     top: 100%;
   }
   .dropdown {
@@ -129,6 +145,10 @@
     font-size: 16px;
     padding: 10px 20px;
     display: flex;
+    align-items: center;
+    :global(.checkbox) {
+      padding: 0;
+    }
   }
 
   .arrow {
