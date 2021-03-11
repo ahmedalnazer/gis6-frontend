@@ -18,6 +18,7 @@
     const cached = _zones.map(x => ({ ...x }))
     return async () => {
       for(let z of cached) {
+        // console.log(z)
         await zones.update(z, z, { skipReload: true })
       }
       await zones.reload()
@@ -92,7 +93,7 @@
   <div class="zone-dropdown">
     <h2>{$_('Select')}</h2>
     <div class='selection'>
-      <ZoneDropdown />
+      <ZoneDropdown on:change />
       <ZoneReadout zone={$activeZones[0]} />
     </div>
   </div>

@@ -1,14 +1,17 @@
 <script>
+  import { onMount } from 'svelte'
   import { Modal } from "components"
   import Selector from "components/taskbars/Selector.svelte"
   import _ from "data/language"
   import notify from "data/notifications"
+  import confirm from "data/confirm"
   import { Input, Switch } from "components"
   import { activeSetpointEditor } from 'data/setpoint'
   import Collapsible from "../../widgets/Collapsible.svelte"
   import zones, { activeZones } from "data/zones"
   import ZoneTab from './ZoneTab.svelte'
   import CheckBox from "components/input/CheckBox.svelte"
+  import Select from 'components/input/Select.svelte'
 
   let showAdvanced = false
   $: showHideLabel = showAdvanced ? $_("Hide Advanced Settings") : $_("Show Advanced Settings")
@@ -30,12 +33,49 @@
     }
   }
 
+  // track which fields should be updated
+  let changed = {}
+  let applied = false
+
+  $: changedFields = Object.entries(changed).filter(([ key, val ]) => val).map(([ key, val ]) => key)
+
+  $: valid = changedFields.length
+
   const setMode = m => {
     resetFields()
     mode = m
     formData = { ...formData, ...modes[m] }
     changed = { ...changed, manual: true, MonitorEnable: true }
   }
+
+  const resetFields = () => {
+    changed = {}
+    let target = $activeZones[0] || $zones[0] || {}
+    formData = { ...initialFormData }
+    for(let field of Object.keys(initialFormData)) {
+      const key = fieldMapping[field] || field
+      let data = target[key]
+      if(tenXfields.includes(field)) data = data / 10
+      formData[field] = data
+    }
+
+    if(formData.manual) {
+      mode = 'manual'
+    } else if(formData.MonitorEnable) {
+      mode = 'monitor'
+    } else {
+      mode = 'auto'
+    }
+  }
+
+  const tuningTypes = [
+    { id: 0, name: $_('Min Limit') },
+    { id: 5, name: $_('Max Limit') },
+    { id: 1, name: $_('Automatic Default') },
+    { id: 2, name: $_('Amps') },
+    { id: 3, name: $_('Auto Select') },
+    { id: 4, name: $_('Automatic') }
+  ]
 
 
   let initialFormData = {
@@ -53,18 +93,22 @@
     tuningOverride: 0,
     powerPriority: 0,
     wattAlarm: 0,
+
     criticalOverTemperature: 0,
+
+    TuningType: 0,
+    OutputAttenuationSP: 0,
 
     MonitorEnable: false,
     MonitorTestHighAlarm: false,
     MonitorTestLowAlarm: false,
     MonitorHighAlarmSP: 0,
-    MonitorLowAlarmSP: 0
+    MonitorLowAlarmSP: 0,
+    WattAlarmHigh: 0,
+    WattAlarmLow: 0,
   }
 
   let formData = { ...initialFormData }
-
-  let changed = {}
 
   const fieldMapping = {
     temperature: 'ProcessSp',
@@ -80,7 +124,6 @@
     tcShortDetectTime: 'ShortDetectTime',
     tuningOverride: 'TuningRangeOverride',
     powerPriority: 'PowerPrioritySP',
-    wattAlarm: 'WattAlarmHigh',
     criticalOverTemperature: 'CriticalOvertempSp'
   }
 
@@ -91,48 +134,47 @@
 
   const commitChanges = async (_zones) => {
     let update = {}
-    for(let field of Object.keys(changed)) {
+    for(let field of changedFields) {
       const f = fieldMapping[field] || field
       update[f] = formData[field]
-      if(tenXfields.includes(field)) update[f] = update[f] * 10 
+      if(tenXfields.includes(field)) update[f] = parseInt(update[f]) * 10 
     }
 
-    console.log(update)
     await zones.update(_zones, update)
-    
-    // await Promise.all(_zones.map(async z => {
-    //   await zones.update({ ...z, ...update }, { skipReload: true })
-    // }))
 
     // await zones.reload()
+    applied = true
     notify.success($_("Changes applied"))
     
   }
 
-  const resetFields = () => {
-    open = true
-    changed = {}
-    let target = $activeZones[0] || $zones[0] || {}
-    formData = { ...initialFormData }
-    for(let field of Object.keys(fieldMapping)) {
-      let data = target[fieldMapping[field]]
-      if(tenXfields.includes(field)) data = data / 10
-      formData[field] = data
+  const close = async () => {
+    if(!valid || applied || await confirm(
+      $_('Are you sure you want to close this window without applying the changes?'),
+      {
+        yes: $_('Yes'),
+        no: $_('Back'),
+        title: $_('Changes were not applied.')
+      }
+    )) {
+      activeSetpointEditor.set('')
     }
   }
+
 
   let open = false
-
   $: {
     if($activeSetpointEditor == "setpoint" && !open) {
+      open = true
+      applied = false
+      showAdvanced = false
       resetFields()
     }
+    if($activeSetpointEditor != 'setpoint') {
+      open = false
+    }
   }
-  
-  const close = () => {
-    activeSetpointEditor.set('')
-    open = false
-  }
+
 </script>
 
 {#if $activeSetpointEditor == "setpoint"}
@@ -142,9 +184,9 @@
   >
     <Selector
       trackHistory
+      on:change={resetFields}
       onSubmit={commitChanges}
-      onDone={close}
-      valid={Object.entries(changed).filter(([ key, val ]) => val).length}
+      {valid}
     >
 
       <div class="sp-editor-container">
@@ -165,31 +207,33 @@
             {#if mode == 'auto'}
               <Input
                 label='{$_("Temperature Setpoint")} (&#176;C)'
-                type="number" 
+                type="number"
+                trackChange
                 bind:value={formData.temperature}
-                on:change={() => changed.temperature = true}
-                changed={changed.temperature}
+                bind:changed={changed.temperature}
               />
             {:else}
               <Input
                 label={$_("Manual %")}
                 type="number"
-                changed={changed.manualSp}
-                on:change={() => changed.manualSp = true}
+                trackChange
+                bind:changed={changed.manualSp}
                 bind:value={formData.manualSp}
               />
             {/if}
-            <div class='inputs'>
+            <div class='checkboxes'>
               <CheckBox 
                 label={$_('Lock')}
+                trackChange
                 bind:checked={formData.locked}
-                on:change={() => changed.locked = true}
+                bind:changed={changed.locked}
               />
 
               <CheckBox 
                 label={$_('Seal')}
+                trackChange
                 bind:checked={formData.sealed}
-                on:change={() => changed.sealed = true}
+                bind:changed={changed.sealed}
               />
             </div>
 
@@ -198,17 +242,17 @@
               <Input
                 label='{$_("High Alarm Setpoint")} (&#176;C)'
                 type="number" 
+                trackChange
                 bind:value={formData.MonitorHighAlarmSP}
-                on:change={() => changed.MonitorHighAlarmSP = true}
-                changed={changed.MonitorHighAlarmSP}
+                bind:changed={changed.MonitorHighAlarmSP}
               />
 
               <Input
                 label='{$_("Low Alarm Setpoint")} (&#176;C)'
                 type="number" 
+                trackChange
                 bind:value={formData.MonitorLowAlarmSP}
-                on:change={() => changed.MonitorLowAlarmSP = true}
-                changed={changed.MonitorLowAlarmSP}
+                bind:changed={changed.MonitorLowAlarmSP}
               />
 
               <!-- grid placeholders -->
@@ -216,14 +260,16 @@
 
               <CheckBox 
                 label={$_('Test for high alarm')}
+                trackChange
                 bind:checked={formData.MonitorTestHighAlarm}
-                on:change={() => changed.MonitorTestHighAlarm = true}
+                bind:changed={changed.MonitorTestHighAlarm}
               />
 
               <CheckBox 
                 label={$_('Test for low alarm')}
+                trackChange
                 bind:checked={formData.MonitorTestLowAlarm}
-                on:change={() => changed.MonitorTestLowAlarm = true}
+                bind:changed={changed.MonitorTestLowAlarm}
               />
 
 
@@ -248,17 +294,17 @@
               <Input
                 label="{$_('Deviation Low')} (&#176;C)"
                 type="number"
+                trackChange
                 bind:value={formData.low}
-                on:change={() => changed.low= true}
-                changed={changed.low}
+                bind:changed={changed.low}
               />
 
               <Input
                 label="{$_("Deviation High")} (&#176;C)"
                 type="number"
+                trackChange
                 bind:value={formData.high}
-                on:change={() => changed.high = true}
-                changed={changed.high}
+                bind:changed={changed.high}
               />
 
               <!-- grid placeholders -->
@@ -268,16 +314,16 @@
                 <Input
                   label='{$_("Temperature Setpoint")} (&#176;C)'
                   type="number" 
+                  trackChange
                   bind:value={formData.temperature}
-                  on:change={() => changed.temperature = true}
-                  changed={changed.temperature}
+                  bind:changed={changed.temperature}
                 />
               {:else if mode == 'auto'}
                 <Input
                   label={$_("Manual %")}
                   type="number"
-                  changed={changed.manualSp}
-                  on:change={() => changed.manualSp = true}
+                  trackChange
+                  bind:changed={changed.manualSp}
                   bind:value={formData.manualSp}
                 />
               {/if}
@@ -285,33 +331,49 @@
               <Input
                 label='{$_("Trim")} (&#176;C)'
                 type="number"
+                trackChange
                 bind:value={formData.trim}
-                on:change={() => changed.trim = true}
-                changed={changed.trim}
+                bind:changed={changed.trim}
               />
 
               <Input
                 label='{$_("Auto Standby")} (&#176;C)'
                 type="number"
+                trackChange
                 bind:value={formData.autoStandby}
-                on:change={() => changed.autoStandby = true}
-                changed={changed.autoStandby}
+                bind:changed={changed.autoStandby}
               />
 
               <Input
                 label={$_("T/C Short Detect Time (min)")}
                 type="number"
+                trackChange
                 bind:value={formData.tcShortDetectTime}
-                on:change={() => changed.tcShortDetectTime = true}
-                changed={changed.tcShortDetectTime}
+                bind:changed={changed.tcShortDetectTime}
               />
 
               <Input
                 label={$_("Tuning Override")}
                 type="number"
+                trackChange
                 bind:value={formData.tuningOverride}
-                on:change={() => changed.tuningOverride = true}
-                changed={changed.tuningOverride}
+                bind:changed={changed.tuningOverride}
+              />
+
+              <Select
+                label={$_('Tuning Type')}
+                trackChange
+                options={tuningTypes}
+                bind:value={formData.TuningType}
+                bind:changed={changed.TuningType}
+              />
+
+              <Input
+                label={$_("Attenuated Output (%)")}
+                type="number"
+                trackChange
+                bind:value={formData.OutputAttenuationSP}
+                bind:changed={changed.OutputAttenuationSP}
               />
               
               <!-- // tuning type? attenuated output -->
@@ -319,25 +381,33 @@
               <Input
                 label={$_("Power Priority")}
                 type="number"
+                trackChange
                 bind:value={formData.powerPriority}
-                on:change={() => changed.powerPriority = true}
-                changed={changed.powerPriority}
+                bind:changed={changed.powerPriority}
               />
 
               <Input
-                label={$_("Watt Alarm (W)")}
+                label={$_("Low Watt Alarm (W)")}
                 type="number"
-                bind:value={formData.wattAlarm}
-                on:change={() => changed.wattAlarm = true}
-                changed={changed.wattAlarm}
+                trackChange
+                bind:value={formData.WattAlarmLow}
+                bind:changed={changed.WattAlarmLow}
+              />
+
+              <Input
+                label={$_("High Watt Alarm (W)")}
+                type="number"
+                trackChange
+                bind:value={formData.WattAlarmHigh}
+                bind:changed={changed.WattAlarmHigh}
               />
 
               <Input
                 label='{$_("Critical Over Temperature")}(&#176;C)'
                 type="number"
+                trackChange
                 bind:value={formData.criticalOverTemperature}
-                on:change={() => changed.criticalOverTemperature = true}
-                changed={changed.criticalOverTemperature}
+                bind:changed={changed.criticalOverTemperature}
               />
             </div>
           </Collapsible>
@@ -384,5 +454,9 @@
   .grid :global(.switch-container) {
     margin-top: auto;
     justify-content: auto;
+  }
+
+  .checkboxes {
+    margin-top: auto;
   }
 </style>

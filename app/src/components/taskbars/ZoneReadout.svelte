@@ -1,8 +1,7 @@
 <script>
-import _ from "data/language"
+  import _ from "data/language"
 
-
-export let zone
+  export let zone
 </script>
 
 
@@ -13,10 +12,16 @@ export let zone
         <label>{zone.name}</label>
       </div>
       <div class='item'>
-        {$_('Actual')} <span>{parseInt(zone.actual_temp / 10)}&deg;C</span>
+        {$_('Actual')} 
+        <span class:danger={zone.hasAlarm} class:warning={zone.hasWarning}>
+          {parseInt(zone.actual_temp / 10)}&deg;C
+        </span>
       </div>
       <div class='item'>
-        {$_('Output')} <span>{(zone.actual_percent / 10).toFixed(1)}%</span>
+        {$_('Output')} 
+        <span class:danger={zone.hasAlarm} class:warning={zone.hasWarning}>
+          {(zone.actual_percent / 10).toFixed(1)}%
+        </span>
       </div>
     </div>
   {/if}
@@ -36,6 +41,7 @@ export let zone
   }
   .item {
     padding: 12px;
+    padding-right: 0;
     label {
       padding: 0;
       margin: 0;
@@ -43,7 +49,12 @@ export let zone
     span {
       margin-left: 5px;
       font-weight: bold;
-      color: var(--danger)
+      &.danger {
+        color: var(--danger)
+      }
+      &.warning {
+        color: var(--warning)
+      }
     }
   }
 </style>

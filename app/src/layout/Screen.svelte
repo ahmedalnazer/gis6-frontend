@@ -184,6 +184,7 @@
   .screen-header :global(.select) {
     min-width: 200px;
     position: relative;
+    border: 0;
     --border: 0;
     --background: white;
     --padding: 0px 8px;
