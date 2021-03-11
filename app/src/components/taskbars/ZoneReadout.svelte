@@ -2,6 +2,9 @@
   import _ from "data/language"
 
   export let zone
+  export let manual = false
+
+  $: manualMode = zone && zone.settings && zone.settings.manual || manual
 </script>
 
 
@@ -14,7 +17,11 @@
       <div class='item'>
         {$_('Actual')} 
         <span class:danger={zone.hasAlarm} class:warning={zone.hasWarning}>
-          {parseInt(zone.actual_temp / 10)}&deg;C
+          {#if manualMode}
+            {((zone.actual_current || 0) / 10).toFixed(1)} A
+          {:else}
+            {parseInt(zone.actual_temp / 10)}&deg;C
+          {/if}
         </span>
       </div>
       <div class='item'>

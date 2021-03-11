@@ -88,7 +88,7 @@ const zones = derived([ rawZones, realtime ], ([ $raw, $realtime ]) => {
 
     return merged
   })
-  console.log(sorted.filter(x => x.warning))
+  
   var collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' })
   sorted.sort((a, b) => collator.compare(a.name, b.name))
   // console.log(sorted[0] && sorted[0].alarms)

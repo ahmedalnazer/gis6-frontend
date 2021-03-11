@@ -14,6 +14,8 @@
 
   export let onSubmit
   export let trackHistory = false
+  export let manualReadout = false
+
   export let getUndoAction = _zones => {
     const cached = _zones.map(x => ({ ...x }))
     return async () => {
@@ -94,7 +96,7 @@
     <h2>{$_('Select')}</h2>
     <div class='selection'>
       <ZoneDropdown on:change />
-      <ZoneReadout zone={$activeZones[0]} />
+      <ZoneReadout zone={$activeZones[0]} manual={manualReadout} />
     </div>
   </div>
 

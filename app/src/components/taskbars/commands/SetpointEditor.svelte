@@ -187,6 +187,7 @@
       on:change={resetFields}
       onSubmit={commitChanges}
       {valid}
+      manualReadout={mode == 'manual'}
     >
 
       <div class="sp-editor-container">

@@ -1,3 +1,3 @@
 import { writable } from 'svelte/store'
 
-export const activeSetpointEditor = writable('setpoint')
+export const activeSetpointEditor = writable('')
