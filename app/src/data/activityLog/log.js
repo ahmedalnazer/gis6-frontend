@@ -20,7 +20,7 @@ const getLevel = i => {
 
 
 // monitor _logs and current language status
-const logs = derived([ _logs, _ ], ([ $logs, $_ ]) => {
+const translated = derived([ _logs, _ ], ([ $logs, $_ ]) => {
 
   // get human readable log data (see get message in ./log-text.js)
   return $logs.map(log => {
@@ -40,11 +40,17 @@ const logs = derived([ _logs, _ ], ([ $logs, $_ ]) => {
  * @param {String} params.level
  * @param {String} params.interval 
  */
-logs.search = async (params = {}) => {
+async function search(params = {}) {
   // pass params to API, automatically update all consumers
   _logs.set(await api.post('/activity', params))
 }
 
+const logs = {
+  subscribe: translated.subscribe,
+  search
+}
+
+export default logs
 
 
 /*
