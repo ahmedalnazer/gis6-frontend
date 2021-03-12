@@ -8,7 +8,7 @@
   import Footer from 'layout/Footer.svelte'
   import Login from 'screens/Login.svelte'
   import { loggingIn } from 'data/user/actions'
-  import SetpointEditor from 'components/SetpointEditor.svelte'
+  import SetpointEditor from 'components/taskbars/commands/SetpointEditor.svelte'
   import createSocket from 'data/realtime/ws'
   import init from 'data/init'
 

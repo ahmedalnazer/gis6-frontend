@@ -29,7 +29,7 @@
 </script>
 
 <Modal title={$_('Standby')} {onClose}>
-  <Selector onSubmit={standby} onDone={onClose}>
+  <Selector onSubmit={standby}>
     <h2>Edit</h2>
     <div class='grid'>
       <Input type='number' bind:value={auto} label='{$_('Auto Standby')}  (&#176;C)' />

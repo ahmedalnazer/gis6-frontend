@@ -124,8 +124,11 @@ input {
   color: var(--muted);
 }
 
-.danger {
+.danger, .danger-text {
   color: var(--danger);
+}
+.warning, .warning-text {
+  color: var(--warning);
 }
 
 // Layout
