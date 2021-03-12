@@ -4,7 +4,7 @@
     import Card from './cards/Card.svelte'
     import language from "data/language/current"
     import ProgressBar from "@okrad/svelte-progressbar"
-    import time from "data/time"
+    import time from "data/utils/time"
     import api from "data/api"
 
     let goodpartfrom = 0

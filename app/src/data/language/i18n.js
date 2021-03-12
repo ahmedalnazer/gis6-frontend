@@ -7,16 +7,24 @@ import fr from './translations/fr.json'
 const _ = derived([ current ], ([ $current ]) => {
   return (text, options) => {
     options = options || {}
-    if($current == 'en-US') return text
+    
+    // if($current == 'en-US') return text
     let datasets = {
       'de-DE': de,
       'fr-FR': fr
     }
+
+    let translation = text + ''
+
     if(datasets[$current] && datasets[$current][text]) {
-      return datasets[$current][text]
-    } else {
-      return text
+      translation = datasets[$current][text]
     }
+
+    const params = options.params || []
+    for (let param of params) {
+      translation = translation.replace('%s', param)
+    }
+    return translation
   }
 })
 
