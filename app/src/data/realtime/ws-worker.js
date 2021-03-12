@@ -139,7 +139,6 @@ const connect = async () => {
   connectedChannels = [ ...activeChannels ]
   for(let channel of toConnect) {
     await send(`+${channel}`)
-
   }
 }
 

@@ -221,8 +221,9 @@
 {/if}
 
 <style lang="scss">
+
   .description {
-    margin-top: -20px;
+    margin-top: 0px;
     margin-bottom: 40px;
     color: #011f3e;
     font-size: 16px;
