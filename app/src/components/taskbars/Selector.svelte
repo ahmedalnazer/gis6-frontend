@@ -89,7 +89,7 @@
 <div class="zone-select-wrapper">
   <div class="zone-dropdown">
     <h2>{$_('Select')}</h2>
-    <ZoneDropdown />
+    <ZoneDropdown on:setpointZoneChange />
   </div>
 
   <div class="body">

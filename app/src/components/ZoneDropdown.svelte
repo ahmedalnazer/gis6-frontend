@@ -1,8 +1,11 @@
 <script>
+  import { createEventDispatcher } from 'svelte'
   import zones, { selectedZones, activeZones, toggleZones } from 'data/zones'
   import { Collapsible, CheckBox } from 'components'
   import { onDestroy } from 'svelte'
   import _ from 'data/language'
+
+  const dispatch = createEventDispatcher()
 
   $: label = $activeZones.map(x => x.name).join(', ')
   let open = false
@@ -41,6 +44,7 @@
     if($selectedZones.length == 0) {
       selectedZones.set([ $zones.map(x => x.id)[0] ])
     }
+    dispatch('setpointZoneChange')
   }
 
 </script>

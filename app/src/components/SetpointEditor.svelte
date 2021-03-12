@@ -98,6 +98,17 @@
       }
     }
   }
+
+  const handleZoneChange = () => {
+    changed = {}
+    let target = $activeZones[0] || $zones[0] || {}
+    formData = { ...initialFormData }
+    for(let field of Object.keys(fieldMapping)) {
+      let data = target[fieldMapping[field]]
+      if(tenXfields.includes(field)) data = data / 10
+      formData[field] = data
+    }
+  }
   
   const close = () => {
     activeSetpointEditor.set('')
@@ -114,6 +125,7 @@
       trackHistory
       onSubmit={commitChanges}
       onDone={close}
+       on:setpointZoneChange={handleZoneChange}
     >
       <div class="sp-editor-container">
         <h2>{$_("Edit")}</h2>
