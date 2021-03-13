@@ -1,5 +1,6 @@
 <script>
     import _ from 'data/language'
+    import ActivityLogFilter from './ActivityLogFilter.svelte'
 </script>
 
 <div>
@@ -9,7 +10,9 @@
         </h2>
     </div>
     <div class="activity-log-panel">
-        <div>View By</div>
+        <div>View By
+            <ActivityLogFilter on:change displayData={[ { id:0, name:'Alerts/Warnings' }, { id:1, name:'Changes' } ]} />
+        </div>
         <div>Select Systems</div>
         <div>Range</div>
         <div>
