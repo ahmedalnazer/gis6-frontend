@@ -5,7 +5,7 @@
   import { Collapsible } from 'components'
   import mold from 'data/mold'
   import process from 'data/process'
-  import time from 'data/time'
+  import time from 'data/utils/time'
   import Icon from 'components/Icon.svelte'
   import { logIn } from 'data/user/actions'
   import api from 'data/api'

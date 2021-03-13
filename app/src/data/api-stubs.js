@@ -1,4 +1,4 @@
-import { getId } from 'data/tools'
+import { getId } from 'data/utils/tools'
 import Route from 'route-parser'
 
 const offline = import.meta.env.SNOWPACK_PUBLIC_OFFLINE == 'true'

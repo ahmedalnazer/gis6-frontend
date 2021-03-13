@@ -2,7 +2,7 @@
   import { Input, CheckBox, Select } from 'components'
   import _ from 'data/language'
   import { defaultUser } from 'data/user'
-  import { isEmail } from 'data/tools'
+  import { isEmail } from 'data/utils/tools'
 
   export let permissionsLocked = false
 
