@@ -1,14 +1,15 @@
 <script>
-  import status from "data/status";
-  import UpdateIcon from "./../style/images/UpdateIcon.svelte";
-  import Icon from "components/Icon.svelte";
-  import _ from "data/language";
-  import history from 'router/history';
+  import status from "data/status"
+  import UpdateIcon from "./../style/images/UpdateIcon.svelte"
+  import Icon from "components/Icon.svelte"
+  import _ from "data/language"
+  import history from 'router/history'
+  import { activeActivityLog } from 'data/activitylog.js'
 </script>
 
 <header class={$status.level}>
   <div class="logo">    
-    <div class="homelogo" on:click={() => { history.push('/'); /*window.location.href = '/'*/ }} title="Home">
+    <div class="homelogo" on:click={() => { history.push('/') /*window.location.href = '/'*/ }} title="Home">
       <Icon icon="homelogo" color="#FFFFFF" />
       <div class="homelogo-text">{$_("Barnes GIS6")}</div>
     </div>
@@ -27,7 +28,7 @@
     </div>
   </div>
 
-  <div class="icon">
+  <div class="icon" on:click={() => { $activeActivityLog = "activitylog" }}>
     <img src="/images/icons/icon-history.svg" alt="History" title="History" />
   </div>
 </header>

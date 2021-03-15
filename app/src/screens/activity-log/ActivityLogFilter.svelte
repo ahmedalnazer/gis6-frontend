@@ -7,10 +7,11 @@
   export let displayData = []
   export let selectedData = []
   export let label = ''
+  export let allItemLabel = 'All'
   
   const dispatch = createEventDispatcher()
 
-  $: selectLabel = selectedData.map(x => x.name).join(', ')
+  $: selectLabel = displayData == selectedData? allItemLabel: selectedData.map(x => x.name).join(', ')
   // $: label = $activeZones.map(x => x.name).join(', ')
   let open = false
   let anchor, dropdown
@@ -44,18 +45,13 @@
     }
     else {
       selectedData = [ ...selectedData, displayDataItem ]
-      console.log('push')
     }
-
-    console.log(selectedData)
-
     dispatch('change', selectedData)
   }
 
   const isSelected = displayDataItem => {
     return selectedData.filter(x => x.id == displayDataItem.id).length > 0
-
-    // toggleZones(zone)
+    dispatch('change', selectedData)
     // dispatch('change', $selectedZones)
   }
 
@@ -66,26 +62,7 @@
     else {
       selectedData = displayData
     }
-
-    // if(selectedData.length == 0 || selectedData.length == 1) {      
-    // }
-
-    // if(selectedData.length == 0 || selectedData.length == 1) {
-    //   selectedData.push(displayData.map(x => x.id))
-    // } else {
-    //   // Select the first zone as default if everything is empty
-    //   selectedData.push(displayData.map(x => x.id).slice(0, 1))
-    // }
-    // dispatch('change', selectedData)
   }
-
-  // $: {
-  //   if($selectedZones.length == 0) {
-  //     selectedZones.set($zones.map(x => x.id).slice(0, 1))
-  //     dispatch('change', $selectedZones)
-  //   }
-  // }
-
 </script>
 
 <div class='control-area-dropdown'>
@@ -114,7 +91,7 @@
       <Collapsible {open}>
         <div class='menu'>
           <div class='check-area' on:click={toggleAll}>
-            <CheckBox checked={selectedData.length == displayData.length} minus={selectedData.length > 0} /> {$_('All types')}
+            <CheckBox checked={selectedData.length == displayData.length} minus={selectedData.length > 0} /> {$_(allItemLabel)}
           </div>
           {#each displayData as displayDataItem}
             <div class='check-area' on:click={() => toggleSelected(displayDataItem)}>
@@ -125,20 +102,6 @@
               </span>
             </div>
           {/each}
-          
-          <!-- {#each $zones as zone (zone.id)}
-            <div
-              class='zone'
-              class:selected={$selectedZones.includes(zone.id)}
-              on:click={() => toggleZone(zone)}
-            >
-              <CheckBox checked={$selectedZones.includes(zone.id)} /> 
-              <span class:danger-text={zone.hasAlarm} class:warning-text={zone.hasWarning} class:muted={!zone.settings.on}>
-                {zone.name}
-              </span>
-            </div>
-          {/each} -->
-
         </div>
       </Collapsible>
     </div>
@@ -154,11 +117,6 @@
     width: 100%;
     min-width: 0;
   }
-  // .zone-dropdown {
-  //   position: relative;
-  //   width: 100%;
-  //   min-width: 0;
-  // }
   .current {
     width: 100%;
     position: relative;
@@ -176,7 +134,7 @@
     margin-right: 20px;
     overflow: hidden;
     min-width: 0;
-    max-width: 100%;
+    max-width: 150px;
   }
   .dropdown-anchor {
     position: absolute;
@@ -193,17 +151,6 @@
   .menu {
     padding-top: 16px;
   }
-
-  // .zone {
-  //   font-size: 16px;
-  //   padding: 10px 20px;
-  //   display: flex;
-  //   align-items: center;
-  //   :global(.checkbox) {
-  //     padding: 0;
-  //   }
-  // }
-
   .check-area {
     font-size: 16px;
     padding: 10px 20px;

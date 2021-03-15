@@ -4,6 +4,7 @@
   import Notifications from 'components/utilities/Notifications.svelte'
   import Confirm from 'components/utilities/Confirm.svelte'
   import SplashScreen from "screens/SplashScreen.svelte"
+  import ActivityLog from "screens/activity-log/ActivityLog.svelte"
   import Header from 'layout/Header.svelte'
   import Footer from 'layout/Footer.svelte'
   import Login from 'screens/Login.svelte'
@@ -42,3 +43,4 @@
 <SetpointEditor />
 <Notifications />
 <Confirm />
+<ActivityLog />
