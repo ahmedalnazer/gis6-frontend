@@ -1,18 +1,17 @@
 <script>
-  import zones, { selectedZones, activeZones, toggleZones } from 'data/zones'
+  // import zones, { selectedZones, activeZones } from 'data/zones'
   import { Collapsible, CheckBox } from 'components'
   import { onDestroy, createEventDispatcher } from 'svelte'
   import _ from 'data/language'
-
+  
   export let displayData = []
   export let selectedData = []
+  export let label = ''
   
-  $: console.log(displayData)
-  $: console.log(selectedData)
-
   const dispatch = createEventDispatcher()
 
-  $: label = $activeZones.map(x => x.name).join(', ')
+  $: selectLabel = selectedData.map(x => x.name).join(', ')
+  // $: label = $activeZones.map(x => x.name).join(', ')
   let open = false
   let anchor, dropdown
 
@@ -28,28 +27,49 @@
     const { top, left, right } = anchor.getBoundingClientRect()
     dropdown.style.top = `${top - 48}px`
     dropdown.style.left = `${left}px`
-    dropdown.style.width = `${Math.max(right - left, 400)}px`
+    dropdown.style.width = `${Math.max(right - left, 200)}px`
+
     setTimeout(() => {
       dropdown.focus()
     }, 0)
   }
 
-  const toggleZone = zone => {
-    console.log(zone)
-    // toggleZones(zone)
-    // dispatch('change', $selectedZones)
+  const toggleSelected = displayDataItem => {
+    console.log(selectedData)
+
+    let isChecked = selectedData.filter(x => x.id == displayDataItem.id).length > 0
+    if (isChecked) {
+      selectedData = selectedData.filter(x => x.id !== displayDataItem.id)
+      console.log('pop')
+    }
+    else {
+      selectedData = [ ...selectedData, displayDataItem ]
+      console.log('push')
+    }
+
+    console.log(selectedData)
+
+    dispatch('change', selectedData)
   }
 
-  const isSelected = zone => {
-    return false
-    console.log(zone)
+  const isSelected = displayDataItem => {
+    return selectedData.filter(x => x.id == displayDataItem.id).length > 0
+
     // toggleZones(zone)
     // dispatch('change', $selectedZones)
   }
 
   const toggleAll = () => {
-    console.log(displayData)
-    console.log(selectedData)
+    if (selectedData == displayData) {
+      selectedData = []
+    }
+    else {
+      selectedData = displayData
+    }
+
+    // if(selectedData.length == 0 || selectedData.length == 1) {      
+    // }
+
     // if(selectedData.length == 0 || selectedData.length == 1) {
     //   selectedData.push(displayData.map(x => x.id))
     // } else {
@@ -68,12 +88,12 @@
 
 </script>
 
-<div class='zone-dropdown'>
-  <h3>{$_('Type')}</h3>
+<div class='control-area-dropdown'>
+  <h3>{label}</h3>
   <div class='current' on:click={openDropdown}>
     <div class='label'>
-      {#if $activeZones.length}
-        <span class='selected'>{label}</span>
+      {#if selectedData.length}
+        <span class='selected'>{selectLabel}</span>
       {:else}
         <span class='muted'>No item selected</span>
       {/if}
@@ -93,19 +113,19 @@
     >
       <Collapsible {open}>
         <div class='menu'>
-          <div class='zone' on:click={toggleAll}>
+          <div class='check-area' on:click={toggleAll}>
             <CheckBox checked={selectedData.length == displayData.length} minus={selectedData.length > 0} /> {$_('All types')}
           </div>
           {#each displayData as displayDataItem}
-            <div class='zone' on:click={() => toggleZone(displayDataItem)}>
-              <CheckBox checked={() => { isSelected(selectedData, displayDataItem)}} /> 
+            <div class='check-area' on:click={() => toggleSelected(displayDataItem)}>
+                <CheckBox checked={selectedData.filter(x => x.id == displayDataItem.id).length > 0} /> 
+                <!-- <CheckBox checked={(displayDataItem) => isSelected(displayDataItem)} />  -->
               <span>
-                <!-- isSelected -->
                 {displayDataItem.name}
               </span>
             </div>
           {/each}
-
+          
           <!-- {#each $zones as zone (zone.id)}
             <div
               class='zone'
@@ -129,11 +149,16 @@
   h3 {
     margin-bottom: 10px;
   }
-  .zone-dropdown {
+  .control-area-dropdown {
     position: relative;
     width: 100%;
     min-width: 0;
   }
+  // .zone-dropdown {
+  //   position: relative;
+  //   width: 100%;
+  //   min-width: 0;
+  // }
   .current {
     width: 100%;
     position: relative;
@@ -168,11 +193,23 @@
   .menu {
     padding-top: 16px;
   }
-  .zone {
+
+  // .zone {
+  //   font-size: 16px;
+  //   padding: 10px 20px;
+  //   display: flex;
+  //   align-items: center;
+  //   :global(.checkbox) {
+  //     padding: 0;
+  //   }
+  // }
+
+  .check-area {
     font-size: 16px;
     padding: 10px 20px;
     display: flex;
     align-items: center;
+    cursor: pointer;
     :global(.checkbox) {
       padding: 0;
     }
