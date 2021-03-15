@@ -13,6 +13,7 @@ import FaultAnalysis from 'screens/analysis/FaultAnalysis.svelte'
 import WiringAnalysis from 'screens/analysis/WiringAnalysis.svelte'
 import LinePlot from 'screens/charts/line-plot/LinePlot.svelte'
 import ZoneNames from 'screens/zone-names/ZoneNames.svelte'
+import ActivityLog from 'screens/activity-log/ActivityLog.svelte'
 
 /**
  *
@@ -38,7 +39,8 @@ const routes = {
   '/analysis/fault': FaultAnalysis,
   '/analysis/wiring': WiringAnalysis,
   '/zone-names': ZoneNames,
-  '/charts/line-plot': LinePlot
+  '/charts/line-plot': LinePlot,
+  '/activity-log': ActivityLog
 }
 
 export default routes

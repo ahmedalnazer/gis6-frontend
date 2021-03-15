@@ -1,9 +1,9 @@
 <script>
-  import { Icon } from "components";
-  import { error_types } from "data/analysis/core";
-  export let error;
+  import { Icon } from "components"
+  import { error_types } from "data/analysis/core"
+  export let error
 
-  $: details = error_types[error.type];
+  $: details = error_types[error.type]
 </script>
 
 <div class="error">
