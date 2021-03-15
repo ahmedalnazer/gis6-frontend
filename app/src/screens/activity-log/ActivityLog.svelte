@@ -2,6 +2,9 @@
     import _ from 'data/language'
     import ActivityLogFilter from './ActivityLogFilter.svelte'
     import AlertChips from './AlertChips.svelte'
+    import { activeSetpointEditor } from 'data/setpoint'
+    import { activeActivityLog } from 'data/activitylog.js'
+    import { Modal } from 'components'
 
     let activityLogData = []
 
@@ -13,6 +16,10 @@
     activityLogData.push({ id: 6, type: 'warning', datetime: '03/11/2021 7:32 AM', description: 'The machine is on fire', system: 'Hot Runner', user: '--' })
     activityLogData.push({ id: 7, type: 'warning', datetime: '03/11/2021 7:32 AM', description: 'The machine is on fire', system: 'Hot Runner', user: '--' })
     activityLogData.push({ id: 8, type: 'warning', datetime: '03/11/2021 7:32 AM', description: 'Description of change made. Lorem ipsum short dalor sit. Resolved.', system: 'Monitoring', user: 'Resolved by Todd Knight' })
+
+    let viewByFilterControlData = [ { id:0, name:'Alerts/Warnings' }, { id:1, name:'Changes' } ]
+    let selectSystemsFilterControlData = [ { id:0, name:'Balancing' }, { id:1, name:'Hot runner' }, { id:2, name:'Monitoring' }, { id:3, name:'Valve pin' } ]
+    let rangeFilterControlData = [ { id:0, name:'Last hour' }, { id:1, name:'Last 3 hrs' }, { id:2, name:'Last 8 hrs' }, { id:3, name:'Last 24 hrs' }, { id:4, name:'Last week' }, { id:5, name:'Last month' }, { id:6, name:'Last 3 months' } ]
 
     let viewByFilterData = []
     let selectSystemsFilterData = []
@@ -37,90 +44,71 @@
       filterGridRefresh()
     }
 
+    const close = async () => {
+      activeActivityLog.set('')
+    }
 </script>
 
-<div>
-    <div class="activity-log-header">
-        <h2>
-            Recent Activity
-        </h2>
-    </div>
-    <div class="activity-log-panel-container">
-        <div class="activity-log-panel">
+{#if $activeActivityLog == "activitylog"}
+    <Modal
+    title={$_("Recent Activity")}
+    onClose={close}
+    >
+        <div>
+            <!-- <div class="activity-log-header">
+                <h2>
+                    Recent Activity
+                </h2>
+            </div> -->
+            <div class="activity-log-panel-container">
+                <div class="activity-log-panel">
 
-            <div class="activity-log-filter">
-                <ActivityLogFilter label={$_("View By")} on:change={viewByChanged} displayData={[ { id:0, name:'Alerts/Warnings' }, { id:1, name:'Changes' } ]} />
-            </div>
-            <div class="activity-log-filter">
-                <ActivityLogFilter label={$_("Select Systems")} on:change={selectSystemsChanged} displayData={[ { id:0, name:'Balancing' }, { id:1, name:'Hot runner' }, { id:2, name:'Monitoring' }, { id:3, name:'Valve pin' } ]} />
-            </div>
-            <div class="activity-log-filter">
-                <ActivityLogFilter label={$_("Range")} on:change={rangeChanged}  displayData={[ { id:0, name:'Last hour' }, { id:1, name:'Last 3 hrs' }, { id:2, name:'Last 8 hrs' }, { id:3, name:'Last 24 hrs' }, { id:4, name:'Last week' }, { id:5, name:'Last month' }, { id:6, name:'Last 3 months' } ]} />
-            </div>
-            <div class="activity-log-filter">
-                <div>
-                    <div class="empty-action-label">&nbsp</div>
-                    <div>
-                        <button class="button zone-type-apply" on:click={e => console.log("clicked")}>
-                            {$_("Apply")}
-                        </button>    
+                    <div class="activity-log-filter">
+                        <ActivityLogFilter selectedData={viewByFilterControlData} label={$_("View By")} on:change={viewByChanged} displayData={viewByFilterControlData} allItemLabel="All Types" />
                     </div>
+                    <div class="activity-log-filter">
+                        <ActivityLogFilter selectedData={selectSystemsFilterControlData} label={$_("Select Systems")} on:change={selectSystemsChanged} displayData={selectSystemsFilterControlData} allItemLabel="All Systems" />
+                    </div>
+                    <div class="activity-log-filter">
+                        <ActivityLogFilter selectedData={rangeFilterControlData.filter(x => x.id == 2)} label={$_("Range")} on:change={rangeChanged}  displayData={rangeFilterControlData} allItemLabel="All Days" />
+                    </div>
+                    <div class="activity-log-filter">
+                        <div>
+                            <div class="empty-action-label">&nbsp</div>
+                            <div>
+                                <button class="button zone-type-apply" on:click={e => console.log("clicked")}>
+                                    {$_("Apply")}
+                                </button>    
+                            </div>
+                        </div>
+                    </div>
+                    <div>&nbsp;</div>
                 </div>
             </div>
-            <div>&nbsp;</div>
-        </div>
-    </div>
-    <div class="activity-log-container">
-        <div class="activity-log-grid header">
-            <div>Type</div>
-            <div>Date/Time</div>
-            <div>Description</div>
-            <div>System</div>
-            <div>User</div>    
-        </div>
-
-        {#each activityLogData as activityLogDataItem (activityLogDataItem.id)}
-            <div class="activity-log-grid item">
-                <div>  
-                    <AlertChips type={activityLogDataItem.type} />
+            <div class="activity-log-container">
+                <div class="activity-log-grid header">
+                    <div>Type</div>
+                    <div>Date/Time</div>
+                    <div>Description</div>
+                    <div>System</div>
+                    <div>User</div>    
                 </div>
-                <div>{activityLogDataItem.datetime}</div>
-                <div>{activityLogDataItem.description}</div>
-                <div>{activityLogDataItem.system}</div>
-                <div>{activityLogDataItem.user}</div>  
-            </div>
-        {/each}
 
-
-        <!-- <div class="activity-log-grid item">
-            <div>  
-                <AlertChips type='alert' />
-            </div>
-            <div>03/11/2021 7:32 AM</div>
-            <div>The machine is on fire</div>
-            <div>Hot Runner</div>
-            <div>--</div>  
+                {#each activityLogData as activityLogDataItem (activityLogDataItem.id)}
+                    <div class="activity-log-grid item">
+                        <div>  
+                            <AlertChips type={activityLogDataItem.type} />
+                        </div>
+                        <div>{activityLogDataItem.datetime}</div>
+                        <div>{activityLogDataItem.description}</div>
+                        <div>{activityLogDataItem.system}</div>
+                        <div>{activityLogDataItem.user}</div>  
+                    </div>
+                {/each}
+            </div>    
         </div>
-        <div class="activity-log-grid item">
-            <div>                
-                <AlertChips type='warning' />
-            </div>
-            <div>03/10/2021 7:32 AM</div>
-            <div>The machine is on fire</div>
-            <div>Hot Runner</div>
-            <div>--</div> 
-        </div>
-        <div class="activity-log-grid item">
-            <div>                
-                <AlertChips />
-            </div>
-            <div>03/10/2021 7:32 AM</div>
-            <div>The machine is on fire</div>
-            <div>Hot Runner</div>
-            <div>--</div> 
-        </div> -->
-    </div>    
-</div>
+    </Modal>
+{/if}
 
 <style lang="scss">
 
