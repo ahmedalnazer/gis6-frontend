@@ -485,10 +485,17 @@
         xml:space="preserve"
     >
         <path
-            fill="#D61F33"
+            fill={color ? color: "#D61F33" }
             d="M10,0L0,16h20L10,0z M11,13.908H9v-2h2V13.908z M9,10.908v-6h2v6H9z"
         />
     </svg>
+
+    <!--
+    <path
+        fill="#D61F33"
+        d="M10,0L0,16h20L10,0z M11,13.908H9v-2h2V13.908z M9,10.908v-6h2v6H9z"
+    />
+    -->
 {/if}
 
 {#if icon == 'report'}

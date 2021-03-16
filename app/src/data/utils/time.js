@@ -1,5 +1,5 @@
 import { writable, derived } from 'svelte/store'
-import language from './language/current'
+import language from '../language/current'
 
 const _time = writable(new Date())
 
