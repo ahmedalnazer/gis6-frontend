@@ -2,7 +2,6 @@
     import _ from 'data/language'
     import ActivityLogFilter from './ActivityLogFilter.svelte'
     import AlertChips from './AlertChips.svelte'
-    import { activeSetpointEditor } from 'data/setpoint'
     import { activeActivityLog } from 'data/activitylog.js'
     import { Modal } from 'components'
 
