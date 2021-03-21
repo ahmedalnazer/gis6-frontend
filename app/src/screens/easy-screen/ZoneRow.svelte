@@ -34,6 +34,12 @@
   $: powerError = zone.hasPowerAlarm
   let powerWarning = false
 
+  $: monitor = zone.MonitorEnable
+  $: monitorHA = zone.MonitorTestHighAlarm
+  $: monitorLA = zone.MonitorTestLowAlarm
+  $: monitorHSP = zone.MonitorHighAlarmSP
+  $: monitorLSP = zone.MonitorLowAlarmSP
+
   const setPoint = () => {
     selectedZones.set([ zone.id ])
     activeSetpointEditor.set('setpoint')
@@ -65,17 +71,28 @@
   </div>
   <div class="table-body-item temp" class:off={!on} class:error={powerError} class:warning={powerWarning}>
     {#if on}
-      {((zone.actual_percent || 0) / 10).toFixed(1)}%
+      {#if monitor}
+        -
+      {:else}
+        {((zone.actual_percent || 0) / 10).toFixed(1)}%
+      {/if}
     {:else}
       <div class='circle' />
     {/if}
   </div>
   <div class='table-body-item settings' on:click|stopPropagation={setPoint}>
     <Icon icon='edit' color='var(--primary)' />
-    {#if auto}
-      {setpoint / 10 || '-'}&deg;<span class='temp-type'>F</span>
+    {#if monitor}
+      {#if monitorHA}<span>{$_('High')}&nbsp;</span>{Math.round((monitorHSP || 0) / 10)}&deg;<span class='temp-type'>C</span>{/if}
+      {#if monitorHA && monitorLA}&nbsp;-&nbsp;{/if}
+      {#if monitorLA}<span>{$_('Low')}&nbsp;</span>{Math.round((monitorLSP || 0) / 10)}&deg;<span class='temp-type'>C</span>{/if}
+      {#if monitorHA || monitorLA}&nbsp;|&nbsp;{/if}
     {:else}
-      {((zone.actual_percent || 0) / 10).toFixed(1)}%
+      {#if auto}
+        {setpoint / 10 || '-'}&deg;<span class='temp-type'>F</span>
+      {:else}
+        {((zone.actual_percent || 0) / 10).toFixed(1)}%
+      {/if}
     {/if}
     {#if boost || standby}
       <div class='animated' class:boost class:standby>
@@ -85,10 +102,14 @@
       </div>
     {/if}
 
-    {#if auto}
-       <span>{$_(' | Auto')}</span>
+    {#if monitor}
+      <span>{$_('Monitor')}</span>
     {:else}
-       <span>{$_(' | Manual')}</span>
+      {#if auto}
+        <span>{$_(' | Auto')}</span>
+      {:else}
+        <span>{$_(' | Manual')}</span>
+       {/if}
     {/if}
     {#if settings.locked}<span>{$_(' | Locked')}</span>{/if}
     {#if settings.sealed}<span>{$_(' | Sealed')}</span>{/if}
