@@ -8,8 +8,6 @@
     import log from 'data/activityLog/log.js'
     import moment from 'moment'
 
-    $: console.log(viewByFilterControlDataSelected)
-
     let showDownloadMessage = false
     let activityLogData = []
 

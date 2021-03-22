@@ -10,7 +10,6 @@
   
   const dispatch = createEventDispatcher()
 
-  $: console.log(selectLabel)
   $: selectLabel = displayData == selectedData? allItemLabel: selectedData.map(x => x.name).join(', ')
   let open = false
   let anchor, dropdown
