@@ -221,7 +221,7 @@
                     </div>
                 {/if}
 
-                {#each activityLogData as activityLogDataItem (activityLogDataItem.id)}
+                <!-- {#each activityLogData as activityLogDataItem (activityLogDataItem.id)}
                     <div class="activity-log-grid item">
                         <div>  
                             <AlertChips type={activityLogDataItem.type} />
@@ -231,7 +231,7 @@
                         <div>{activityLogDataItem.system}</div>
                         <div>{activityLogDataItem.user}</div>  
                     </div>
-                {/each}
+                {/each} -->
             </div>    
         </div>
     </Modal>
