@@ -1,6 +1,7 @@
 import { writable, derived } from 'svelte/store'
 import _ from 'data/language'
 import getLogText from './log-text'
+import api from '../api'
 
 
 // raw output from API
@@ -18,7 +19,6 @@ const getLevel = i => {
   }
 }
 
-
 // monitor _logs and current language status
 const translated = derived([ _logs, _ ], ([ $logs, $_ ]) => {
 
@@ -32,6 +32,47 @@ const translated = derived([ _logs, _ ], ([ $logs, $_ ]) => {
   })
 })
 
+async function seedLogs(params = {}) {
+  await api.post('/activity', {
+    system: 'Balancing',
+    message_content: '',
+    created: '2021-03-19T17:14:33.591000Z',
+    user: 'Admin',
+    status: 0,
+    ref_log_level: 5,
+    ref_message: 3
+  })
+
+  await api.post('/activity', {
+    system: 'Hot runner',
+    message_content: '',
+    created: '2021-02-19T17:14:33.591000Z',
+    user: 'Admin',
+    status: 0,
+    ref_log_level: 1,
+    ref_message: 1
+  })
+
+  await api.post('/activity', {
+    system: 'Monitoring',
+    message_content: '',
+    created: '2021-01-19T17:14:33.591000Z',
+    user: 'Admin',
+    status: 0,
+    ref_log_level: 2,
+    ref_message: 2
+  })
+
+  await api.post('/activity', {
+    system: 'Valve pin',
+    message_content: '',
+    created: '2021-03-19T17:14:33.591000Z',
+    user: 'Admin',
+    status: 0,
+    ref_log_level: 2,
+    ref_message: 3
+  })
+}
 
 /**
  * Function to load logs for UI consumption (params TBD)
@@ -40,9 +81,30 @@ const translated = derived([ _logs, _ ], ([ $logs, $_ ]) => {
  * @param {String} params.level
  * @param {String} params.interval 
  */
+// async function search(params = {}) {
+//   // pass params to API, automatically update all consumers
+//   _logs.set(await api.post('/activity', params))
+//   // _logs.set(await api.get('/activity', params))
+// }
+
 async function search(params = {}) {
   // pass params to API, automatically update all consumers
-  _logs.set(await api.post('/activity', params))
+  // params ={
+  //   "system": "Balancing",
+  //   "created": "2021-03-19T17:14:33.591000Z",
+  //   "user": "",
+  //   "status": 0,
+  //   "ref_log_level": 5,
+  //   "ref_message": 3
+  // }
+  const activityLogs = await api.get('/activity/', params)
+  if (!Array.isArray(activityLogs)) {
+    // seedLogs([])
+    _logs.set([])
+  }
+  else {
+    _logs.set(activityLogs)
+  }
 }
 
 const logs = {

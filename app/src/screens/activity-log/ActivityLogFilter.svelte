@@ -1,5 +1,4 @@
 <script>
-  // import zones, { selectedZones, activeZones } from 'data/zones'
   import { Collapsible, CheckBox } from 'components'
   import { onDestroy, createEventDispatcher } from 'svelte'
   import _ from 'data/language'
@@ -11,8 +10,8 @@
   
   const dispatch = createEventDispatcher()
 
+  $: console.log(selectLabel)
   $: selectLabel = displayData == selectedData? allItemLabel: selectedData.map(x => x.name).join(', ')
-  // $: label = $activeZones.map(x => x.name).join(', ')
   let open = false
   let anchor, dropdown
 
@@ -36,12 +35,9 @@
   }
 
   const toggleSelected = displayDataItem => {
-    console.log(selectedData)
-
     let isChecked = selectedData.filter(x => x.id == displayDataItem.id).length > 0
     if (isChecked) {
       selectedData = selectedData.filter(x => x.id !== displayDataItem.id)
-      console.log('pop')
     }
     else {
       selectedData = [ ...selectedData, displayDataItem ]
@@ -62,6 +58,7 @@
     else {
       selectedData = displayData
     }
+    dispatch('change', selectedData)
   }
 </script>
 
@@ -161,7 +158,6 @@
       padding: 0;
     }
   }
-
   .arrow {
     position: absolute;
     display: flex;
