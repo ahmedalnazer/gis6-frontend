@@ -22,9 +22,36 @@
     activityLogData.push({ id: 9, type: 'warning1', datetime: '03/11/2021 7:32 AM', description: 'Description of change made. Lorem ipsum short dalor sit. Resolved.', system: 'Monitoring', user: 'Resolved by Todd Knight' })
     activityLogData.push({ id: 10, type: 'alert1', datetime: '03/11/2021 7:32 AM', description: 'The machine is on fire', system: 'Hot Runner', user: '--' })
 
-    let viewByFilterControlData = [ { id:0, name:'Alerts/Warnings' }, { id:1, name:'Changes' } ]
-    let selectSystemsFilterControlData = [ { id:0, name:'Balancing' }, { id:1, name:'Hot Runner' }, { id:2, name:'Monitoring' }, { id:3, name:'Valve Pins' } ]
-    let rangeFilterControlData = [ { id:0, name:'Last hour' }, { id:1, name:'Last 3 hrs' }, { id:2, name:'Last 8 hrs' }, { id:3, name:'Last 24 hrs' }, { id:4, name:'Last week' }, { id:5, name:'Last month' }, { id:6, name:'Last 3 months' } ]
+    const convertMonthsToHours = m => {
+      let todayDate = new Date()
+      let beforeDate = new Date()
+      beforeDate.setMonth(beforeDate.getMonth() - m)
+      return (todayDate - beforeDate) / 3600000
+    }
+    const lastOneMonths = convertMonthsToHours(1)
+    const lastThreeMonths = convertMonthsToHours(3)
+
+    let viewByFilterControlData = [
+      { id:0, name:'Alerts/Warnings', logLevels: "0,1,2,3,4" },
+      { id:1, name:'Changes', logLevels: "5,6,7,8" }
+    ]
+
+    let selectSystemsFilterControlData = [
+      { id:0, name:'Balancing' },
+      { id:1, name:'Hot Runner' },
+      { id:2, name:'Monitoring' },
+      { id:3, name:'Valve Pins' }
+    ]
+
+    let rangeFilterControlData = [
+      { id:0, name:'Last hour', hoursAgo: 1 },
+      { id:1, name:'Last 3 hrs', hoursAgo: 3 },
+      { id:2, name:'Last 8 hrs', hoursAgo: 8 },
+      { id:3, name:'Last 24 hrs', hoursAgo: 24 },
+      { id:4, name:'Last week', hoursAgo: 168 },
+      { id:5, name:'Last month', hoursAgo: lastOneMonths },
+      { id:6, name:'Last 3 months', hoursAgo: lastThreeMonths }
+    ]
 
     let viewByFilterControlDataSelected = []
     let selectSystemsFilterControlDataSelected = []
@@ -44,7 +71,26 @@
       selectSystemsFilterControlDataSelected = $activityLogFilterSelectSystem && $activityLogFilterSelectSystem !== ''? $activityLogFilterSelectSystem: selectSystemsFilterControlData
       rangeFilterControlDataSelected = $activityLogFilterRange && $activityLogFilterRange !== ''? $activityLogFilterRange: rangeFilterControlData.filter(x => x.id == 2)
 
-      await log.search({})
+      let systems = []
+      for (let item of selectSystemsFilterControlDataSelected) {
+        systems.push(item.name)
+      }
+      let refLogLevels = []
+      for (let item of viewByFilterControlDataSelected) {
+        refLogLevels.push(item.logLevels)
+      }
+      const maxValue = Math.max(...rangeFilterControlDataSelected.map(l => l.hoursAgo))
+
+      const params = {
+        system: systems.join(','),
+        ref_log_level: refLogLevels.join(','),
+      }
+
+      if (Number.isInteger(maxValue)) {
+        params.hours_ago = maxValue
+      }
+
+      await log.search(params)
     }
 
     const setDefaultViewByFilter = (viewByFilterControlDataSelected, viewByFilterControlData) => {
