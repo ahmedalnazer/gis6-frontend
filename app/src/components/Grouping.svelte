@@ -49,16 +49,11 @@
         } else {
           selection[group].push(node)
         }
+        selection = selection
       } else {
-        
-        if($_selected.includes(node)) {
-          _selected.update(z => z.filter(x => x != node))
-        } else {
-          _selected.update(z => z.concat(node))
-        }
+        toggleZones(node)
       }
     }
-    selection = selection
   }
 
   $: displayedZones = selectedGroup
