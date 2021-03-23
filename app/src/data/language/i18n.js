@@ -21,8 +21,13 @@ const _ = derived([ current ], ([ $current ]) => {
     }
 
     const params = options.params || []
-    for (let param of params) {
-      translation = translation.replace('%s', param)
+    for (let [ i, param ] of params.entries()) {
+      const r = new RegExp(`\\$${i}`)
+      if(translation.match(r)) {
+        translation = translation.replace(r, param)
+      } else {
+        translation = translation.replace('%s', param)
+      }      
     }
     return translation
   }
