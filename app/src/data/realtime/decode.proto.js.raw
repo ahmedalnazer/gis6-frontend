@@ -215,7 +215,7 @@ vgcdata.write = function (obj, pbf) {
 var tczone_record = exports.tczone_record = {};
 
 tczone_record.read = function (pbf, end) {
-    return pbf.readFields(tczone_record._readField, {temp_sp: 0, manual_sp: 0, actual_temp: 0, actual_percent: 0, actual_current: 0, settings: [], temperature_alarm: [], power_alarm: []}, end);
+    return pbf.readFields(tczone_record._readField, {temp_sp: 0, manual_sp: 0, actual_temp: 0, actual_percent: 0, actual_current: 0, settings: 0, temperature_alarm: 0, power_alarm: 0}, end);
 };
 tczone_record._readField = function (tag, obj, pbf) {
     if (tag === 1) obj.temp_sp = pbf.readVarint();
@@ -223,9 +223,9 @@ tczone_record._readField = function (tag, obj, pbf) {
     else if (tag === 3) obj.actual_temp = pbf.readVarint();
     else if (tag === 4) obj.actual_percent = pbf.readVarint();
     else if (tag === 5) obj.actual_current = pbf.readVarint();
-    else if (tag === 6) pbf.readPackedBoolean(obj.settings);
-    else if (tag === 7) pbf.readPackedBoolean(obj.temperature_alarm);
-    else if (tag === 8) pbf.readPackedBoolean(obj.power_alarm);
+    else if (tag === 6) obj.settings = pbf.readVarint();
+    else if (tag === 7) obj.temperature_alarm = pbf.readVarint();
+    else if (tag === 8) obj.power_alarm = pbf.readVarint();
 };
 tczone_record.write = function (obj, pbf) {
     if (obj.temp_sp) pbf.writeVarintField(1, obj.temp_sp);
@@ -233,9 +233,9 @@ tczone_record.write = function (obj, pbf) {
     if (obj.actual_temp) pbf.writeVarintField(3, obj.actual_temp);
     if (obj.actual_percent) pbf.writeVarintField(4, obj.actual_percent);
     if (obj.actual_current) pbf.writeVarintField(5, obj.actual_current);
-    if (obj.settings) pbf.writePackedBoolean(6, obj.settings);
-    if (obj.temperature_alarm) pbf.writePackedBoolean(7, obj.temperature_alarm);
-    if (obj.power_alarm) pbf.writePackedBoolean(8, obj.power_alarm);
+    if (obj.settings) pbf.writeVarintField(6, obj.settings);
+    if (obj.temperature_alarm) pbf.writeVarintField(7, obj.temperature_alarm);
+    if (obj.power_alarm) pbf.writeVarintField(8, obj.power_alarm);
 };
 
 // tczone ========================================
