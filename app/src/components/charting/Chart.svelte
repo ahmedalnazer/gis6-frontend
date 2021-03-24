@@ -1,74 +1,94 @@
 <script>
   import CheckBox from 'components/input/CheckBox.svelte'
   import Input from 'components/input/Input.svelte'
-  import { onDestroy, onMount } from 'svelte'
+  import ChartCanvas from './ChartCanvas.svelte'
+  import Scale from './Scale.svelte'
 
   export let type = 'line'
+  export let properties = [ 'actual_temp', 'actual_percent', 'actual_current' ]
   export let maxLinePoints = 80
-  export let maxZones = 150
+  export let maxZones = 50
 
-  let rendered = {
-    actual_temp: true,
-    actual_percent: true,
-    actual_current: true
+  $: totalZones = maxZones
+
+  $: rendered = {
+    actual_temp: properties.includes('actual_temp'),
+    actual_percent: properties.includes('actual_percent'),
+    actual_current: properties.includes('actual_current')
   }
 
   let stats = {}
-  
-  $: properties = Object.keys(rendered).filter(x => rendered[x])
 
-  // export let properties = [ 'actual_temp', 'actual_percent', 'actual_current' ]
-
-  let canvas, worker, wsWorker, wsPort
-  let offscreen = false
   let paused = false
 
   let scale = {
     y: 'auto',
     x: 10
   }
-
-  $: {
-    if(canvas && worker) {
-      if(!offscreen) {
-        canvas.height = canvas.width * 6.1 / 7.8
-        offscreen = canvas.transferControlToOffscreen()
-        worker.postMessage({ canvas: offscreen }, [ offscreen ])
-      }
-      worker.postMessage({ type, properties, scale, paused, maxLinePoints, maxZones })
-    }
-  }
-
-  onMount(() => {
-    wsWorker = new SharedWorker('/workers/ws-worker.js')
-    wsPort = wsWorker.port
-    wsPort.start()
-
-    wsWorker.onerror = e => {
-      console.error('wsWorker ERROR!!')
-      console.error(e)
-    }
-    worker = new Worker('/workers/chart-worker.js')
-    console.log('chart worker created')
-    worker.postMessage({ wsPort: wsPort }, [ wsPort ])
-    worker.onmessage = e => {
-      stats = e.data
-    }
-
-    // setTimeout(() => wsPort.postMessage({ command: 'close' }), 1000)
-  })
-
-  onDestroy(() => {
-    worker.postMessage('close')
-    worker.terminate()
-  })
 </script>
 
-<canvas width='1028' bind:this={canvas} />
+<div class='chart'>
+  <div class='scales'>
+    {#if properties[0]}
+      <Scale property={properties[0]} {stats} />
+    {/if}
+    {#if properties[2]}
+      <Scale property={properties[2]} {stats} />
+    {/if}
+  </div>
 
-<h3><strong>Framerate:</strong> {stats.framerate} fps</h3>
+  <div class='canvas'>
+    <ChartCanvas bind:stats {...{ properties, paused, type, scale, maxLinePoints, maxZones }} />
+    <div class='stats'>
+      <p><strong>Framerate:</strong> {stats.framerate} fps</p>
+      <p><strong>Points:</strong> {stats.totalPoints}</p>
+      <p><strong>Zones:</strong> {totalZones}</p>
+      <p><strong>Lines:</strong> {totalZones * properties.length}</p>
+    </div>
+  </div>
 
-<div class='test-tools'>
+  <div class='scales'>
+    {#if properties[1]}
+      <Scale property={properties[1]} {stats} />
+    {/if}
+    {#if properties[3]}
+      <Scale property={properties[3]} {stats} />
+    {/if}
+  </div>
+</div>
+
+<style lang="scss">
+  .chart {
+    display: flex;
+  }
+  .canvas {
+    position: relative;
+    .stats {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: rgba(0,0, 0, .5);
+      color: white;
+      padding: 4px 8px;
+      p {
+        margin: 0;
+        padding: 0;
+      }
+    }
+  }
+  .scales {
+    display: flex;
+  }
+  .test-tools {
+    margin: 40px 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+  }
+</style>
+
+
+<!-- <div class='test-tools'>
   <CheckBox label='Render Temperature' bind:checked={rendered.actual_temp} />
   <CheckBox label='Render Percent' bind:checked={rendered.actual_percent} />
   <CheckBox label='Render Current' bind:checked={rendered.actual_current} />
@@ -80,25 +100,10 @@
 
 <div class='button' class:active={paused} on:click={() => paused = !paused}>
   {#if paused}Play{:else}Pause{/if}
-</div>
+</div> -->
 
 
-<h4>Stats:</h4>
+<h4>Stats:</h4> 
 <pre>
   {JSON.stringify(stats, null, 2)}
 </pre>
-
-
-<style>
-  canvas {
-    width: 100%;
-    border: 1px solid var(--gray);
-  }
-
-  .test-tools {
-    margin: 40px 0;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 32px;
-  }
-</style>

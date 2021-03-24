@@ -99,6 +99,26 @@ const draw = (chartData, logStats) => {
   }
 
   for(let prop of properties) {
+    min[prop] = Math.max(min[prop], 1)
+    const r = max[prop] - min[prop]
+    if(max[prop] < min[prop] + 1) {
+      max[prop] = min[prop] + 1
+    }
+    const even = i => {
+      min[prop] = -i + i * Math.ceil(min[prop] / i)
+      max[prop] = i + i * Math.floor(max[prop] / i)
+    }
+    if(r <= 10) {
+      max[prop] = 1 + Math.floor(max[prop])
+      min[prop] = -1 + Math.ceil(min[prop])
+    } else if(r <= 100) {
+      even(10)
+    } else if (r <= 1000) {
+      even(100)
+    } else if (r <= 10000) {
+      even(1000)
+    }
+    
     autoScale[prop] = canvas.height / (max[prop] - min[prop])
   }
 
