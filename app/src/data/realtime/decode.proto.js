@@ -107,29 +107,47 @@ minmax.write = function (obj, pbf) {
 export const sysinfo = exports.sysinfo = {};
 
 sysinfo.read = function (pbf, end) {
-    return pbf.readFields(sysinfo._readField, {mt: 0, state: 0, text_message: "", order_status: 0, order_id: 0, target: 0, inj_cycle: 0, cycle_id: 0, good_parts: 0}, end);
+    return pbf.readFields(sysinfo._readField, {mt: 0, state: 0, order_status: 0, order_id: 0, target: 0, inj_cycle: 0, cycle_id: 0, good_parts: 0, text_message: "", msg: null, dmsg: null}, end);
 };
 sysinfo._readField = function (tag, obj, pbf) {
     if (tag === 1) obj.mt = pbf.readVarint();
     else if (tag === 2) obj.state = pbf.readVarint();
-    else if (tag === 3) obj.text_message = pbf.readString();
     else if (tag === 4) obj.order_status = pbf.readVarint();
     else if (tag === 5) obj.order_id = pbf.readVarint(true);
     else if (tag === 6) obj.target = pbf.readVarint(true);
     else if (tag === 7) obj.inj_cycle = pbf.readVarint(true);
     else if (tag === 8) obj.cycle_id = pbf.readVarint(true);
     else if (tag === 9) obj.good_parts = pbf.readVarint(true);
+    else if (tag === 3) obj.text_message = pbf.readString(), obj.msg = "text_message";
+    else if (tag === 10) obj.dmsg = dbmsg.read(pbf, pbf.readVarint() + pbf.pos), obj.msg = "dmsg";
 };
 sysinfo.write = function (obj, pbf) {
     if (obj.mt) pbf.writeVarintField(1, obj.mt);
     if (obj.state) pbf.writeVarintField(2, obj.state);
-    if (obj.text_message) pbf.writeStringField(3, obj.text_message);
     if (obj.order_status) pbf.writeVarintField(4, obj.order_status);
     if (obj.order_id) pbf.writeVarintField(5, obj.order_id);
     if (obj.target) pbf.writeVarintField(6, obj.target);
     if (obj.inj_cycle) pbf.writeVarintField(7, obj.inj_cycle);
     if (obj.cycle_id) pbf.writeVarintField(8, obj.cycle_id);
     if (obj.good_parts) pbf.writeVarintField(9, obj.good_parts);
+    if (obj.text_message) pbf.writeStringField(3, obj.text_message);
+    if (obj.dmsg) pbf.writeMessage(10, dbmsg.write, obj.dmsg);
+};
+
+// dbmsg ========================================
+
+export const dbmsg = exports.dbmsg = {};
+
+dbmsg.read = function (pbf, end) {
+    return pbf.readFields(dbmsg._readField, {dbid: 0, parameters: ""}, end);
+};
+dbmsg._readField = function (tag, obj, pbf) {
+    if (tag === 100) obj.dbid = pbf.readVarint(true);
+    else if (tag === 101) obj.parameters = pbf.readString();
+};
+dbmsg.write = function (obj, pbf) {
+    if (obj.dbid) pbf.writeVarintField(100, obj.dbid);
+    if (obj.parameters) pbf.writeStringField(101, obj.parameters);
 };
 
 // mdtmsg ========================================
@@ -137,17 +155,19 @@ sysinfo.write = function (obj, pbf) {
 export const mdtmsg = exports.mdtmsg = {};
 
 mdtmsg.read = function (pbf, end) {
-    return pbf.readFields(mdtmsg._readField, {mt: 0, progress: 0, text_message: ""}, end);
+    return pbf.readFields(mdtmsg._readField, {mt: 0, progress: 0, text_message: "", msg: null, dmsg: null}, end);
 };
 mdtmsg._readField = function (tag, obj, pbf) {
     if (tag === 1) obj.mt = pbf.readVarint();
     else if (tag === 2) obj.progress = pbf.readVarint(true);
-    else if (tag === 3) obj.text_message = pbf.readString();
+    else if (tag === 3) obj.text_message = pbf.readString(), obj.msg = "text_message";
+    else if (tag === 4) obj.dmsg = dbmsg.read(pbf, pbf.readVarint() + pbf.pos), obj.msg = "dmsg";
 };
 mdtmsg.write = function (obj, pbf) {
     if (obj.mt) pbf.writeVarintField(1, obj.mt);
     if (obj.progress) pbf.writeVarintField(2, obj.progress);
     if (obj.text_message) pbf.writeStringField(3, obj.text_message);
+    if (obj.dmsg) pbf.writeMessage(4, dbmsg.write, obj.dmsg);
 };
 
 // tcdata ========================================
@@ -195,7 +215,7 @@ vgcdata.write = function (obj, pbf) {
 export const tczone_record = exports.tczone_record = {};
 
 tczone_record.read = function (pbf, end) {
-    return pbf.readFields(tczone_record._readField, {temp_sp: 0, manual_sp: 0, actual_temp: 0, actual_percent: 0, actual_current: 0, settings: 0, temp_alarm: 0, power_alarm: 0}, end);
+    return pbf.readFields(tczone_record._readField, {temp_sp: 0, manual_sp: 0, actual_temp: 0, actual_percent: 0, actual_current: 0, settings: 0, temperature_alarm: 0, power_alarm: 0}, end);
 };
 tczone_record._readField = function (tag, obj, pbf) {
     if (tag === 1) obj.temp_sp = pbf.readVarint();
@@ -204,7 +224,7 @@ tczone_record._readField = function (tag, obj, pbf) {
     else if (tag === 4) obj.actual_percent = pbf.readVarint();
     else if (tag === 5) obj.actual_current = pbf.readVarint();
     else if (tag === 6) obj.settings = pbf.readVarint();
-    else if (tag === 7) obj.temp_alarm = pbf.readVarint();
+    else if (tag === 7) obj.temperature_alarm = pbf.readVarint();
     else if (tag === 8) obj.power_alarm = pbf.readVarint();
 };
 tczone_record.write = function (obj, pbf) {
@@ -214,7 +234,7 @@ tczone_record.write = function (obj, pbf) {
     if (obj.actual_percent) pbf.writeVarintField(4, obj.actual_percent);
     if (obj.actual_current) pbf.writeVarintField(5, obj.actual_current);
     if (obj.settings) pbf.writeVarintField(6, obj.settings);
-    if (obj.temp_alarm) pbf.writeVarintField(7, obj.temp_alarm);
+    if (obj.temperature_alarm) pbf.writeVarintField(7, obj.temperature_alarm);
     if (obj.power_alarm) pbf.writeVarintField(8, obj.power_alarm);
 };
 

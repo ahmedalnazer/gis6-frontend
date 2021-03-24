@@ -1,8 +1,6 @@
 import Pbf from 'pbf'
 import { tcdata, minmax, unknown_msg, tczone, sysinfo, mdtmsg } from './decode.proto'
 
-console.log('worker updated')
-
 const messageTypes = { tcdata, minmax, unknown_msg, tczone, sysinfo, mdtmsg }
 
 let socket
