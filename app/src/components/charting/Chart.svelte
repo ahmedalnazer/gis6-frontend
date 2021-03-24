@@ -7,17 +7,12 @@
   export let type = 'line'
   export let properties = [ 'actual_temp', 'actual_percent', 'actual_current' ]
   export let maxLinePoints = 80
-  export let maxZones = 50
+  export let zones = []
+  export let colors = {}
 
-  $: totalZones = maxZones
+  $: totalZones = zones.length
 
-  $: rendered = {
-    actual_temp: properties.includes('actual_temp'),
-    actual_percent: properties.includes('actual_percent'),
-    actual_current: properties.includes('actual_current')
-  }
-
-  let stats = {}
+  export let stats = {}
 
   let paused = false
 
@@ -29,47 +24,45 @@
 
 <div class='chart'>
   <div class='scales'>
-    {#if properties[0]}
-      <Scale property={properties[0]} {stats} />
-    {/if}
-    {#if properties[2]}
-      <Scale property={properties[2]} {stats} />
-    {/if}
+    <Scale property={properties[2]} {stats} color={colors[3]} />
+    <Scale property={properties[0]} {stats} color={colors[1]} />
   </div>
 
   <div class='canvas'>
-    <ChartCanvas bind:stats {...{ properties, paused, type, scale, maxLinePoints, maxZones }} />
+    <ChartCanvas bind:stats {...{ properties, paused, type, scale, maxLinePoints, zones, type }} />
     <div class='stats'>
-      <p><strong>Framerate:</strong> {stats.framerate} fps</p>
+      <p><strong>{stats.framerate} fps</strong></p>
       <p><strong>Points:</strong> {stats.totalPoints}</p>
       <p><strong>Zones:</strong> {totalZones}</p>
-      <p><strong>Lines:</strong> {totalZones * properties.length}</p>
+      <p><strong>Lines:</strong> {totalZones * properties.filter(x => !!x).length}</p>
     </div>
   </div>
 
   <div class='scales'>
-    {#if properties[1]}
-      <Scale property={properties[1]} {stats} />
-    {/if}
-    {#if properties[3]}
-      <Scale property={properties[3]} {stats} />
-    {/if}
+    <Scale property={properties[1]} {stats} color={colors[2]} />
+    <Scale property={properties[3]} {stats} color={colors[4]} />
   </div>
 </div>
 
 <style lang="scss">
   .chart {
     display: flex;
+    border: 1px solid #ddd;
+    padding: 16px;
   }
   .canvas {
     position: relative;
     .stats {
+      opacity: .5;
       position: absolute;
       top: 0;
       right: 0;
       background: rgba(0,0, 0, .5);
       color: white;
       padding: 4px 8px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
       p {
         margin: 0;
         padding: 0;
@@ -103,7 +96,7 @@
 </div> -->
 
 
-<h4>Stats:</h4> 
+<!-- <h4>Stats:</h4> 
 <pre>
   {JSON.stringify(stats, null, 2)}
-</pre>
+</pre> -->

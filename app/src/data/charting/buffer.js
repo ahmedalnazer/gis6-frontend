@@ -13,7 +13,6 @@ buffer.write = function({ ts, data }) {
   if(!buffer.paused) {
     buffer.active = [ ...buffer.entries ]
   }
-  // console.log(buffer.entries.length)
 }
 buffer.play = () => buffer.paused = false
 buffer.pause = () => buffer.paused = true

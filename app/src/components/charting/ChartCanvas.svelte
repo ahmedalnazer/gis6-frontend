@@ -1,7 +1,7 @@
 <script>
   import { onDestroy, onMount } from 'svelte'
 
-  export let type, properties, scale, paused, maxLinePoints, maxZones
+  export let type, properties, scale, paused, maxLinePoints, zones
 
   export let stats = {}
 
@@ -15,7 +15,7 @@
         offscreen = canvas.transferControlToOffscreen()
         worker.postMessage({ canvas: offscreen }, [ offscreen ])
       }
-      worker.postMessage({ type, properties, scale, paused, maxLinePoints, maxZones })
+      worker.postMessage({ type, properties, scale, paused, maxLinePoints, zones })
     }
   }
 

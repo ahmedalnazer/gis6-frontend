@@ -15,7 +15,7 @@
   <label on:click={() => {
     onClick 
       ? onClick()
-      : checked = !checked
+      : checked = minus ? false : !checked
     dispatch('change')
     if(trackChange) changed = true
   }}>

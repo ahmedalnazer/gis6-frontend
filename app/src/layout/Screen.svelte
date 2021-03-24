@@ -4,9 +4,11 @@
   import history, { goBack } from 'router/history'
   import IconBackArrow from 'style/images/icon_backarrow.svelte'
   import { onMount } from 'svelte'
+
   export let dashboard = false
   export let title = ''
   export let group = null
+  export let scroll = true
   let backUrl = ''
   export { backUrl as back }
 
@@ -25,7 +27,7 @@
       },
       plot: {
         name: $_('Line'),
-        title: $_('Line Plot'),
+        title: $_('Line Graph'),
         url: '/charts/line-plot'
       }
     }
@@ -89,9 +91,10 @@
       {:else}
         <h1>{title}</h1>
       {/if}
+      <slot name='header' />
     </div>
   {/if}
-  <main class="screen-body">
+  <main class="screen-body" class:scroll>
     <slot />
   </main>
 </div>
@@ -131,9 +134,11 @@
 
   .screen-body {
     padding: 40px;
-    overflow: auto;
     display: flex;
     flex-direction: column;
+    &.scroll {
+      overflow: auto;
+    }
   }
   
   .screen-header + .screen-body {
