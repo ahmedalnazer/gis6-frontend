@@ -9,18 +9,18 @@
     import moment from 'moment'
 
     let showDownloadMessage = false
-    let activityLogData = []
+    // let activityLogData = []
 
-    activityLogData.push({ id: 1, type: 'error', datetime: '03/11/2021 7:32 AM', description: 'The machine is on fire', system: 'Hot Runner', user: '--' })
-    activityLogData.push({ id: 2, type: 'warning', datetime: '03/11/2021 7:32 AM', description: 'The machine is on fire', system: 'Hot Runner', user: '--' })
-    activityLogData.push({ id: 3, type: '', datetime: '03/11/2021 7:32 AM', description: 'The machine is on fire', system: 'Hot Runner', user: '--' })
-    activityLogData.push({ id: 4, type: 'warning', datetime: '03/11/2021 7:32 AM', description: 'The machine is on fire', system: 'Hot Runner', user: '--' })
-    activityLogData.push({ id: 5, type: 'warning', datetime: '03/11/2021 7:32 AM', description: 'The machine is on fire', system: 'Hot Runner', user: '--' })
-    activityLogData.push({ id: 6, type: 'warning', datetime: '03/11/2021 7:32 AM', description: 'The machine is on fire', system: 'Hot Runner', user: '--' })
-    activityLogData.push({ id: 7, type: 'warning', datetime: '03/11/2021 7:32 AM', description: 'The machine is on fire', system: 'Hot Runner', user: '--' })
-    activityLogData.push({ id: 8, type: 'warning', datetime: '03/11/2021 7:32 AM', description: 'Description of change made. Lorem ipsum short dalor sit. Resolved.', system: 'Monitoring', user: 'Resolved by Todd Knight' })
-    activityLogData.push({ id: 9, type: 'warning1', datetime: '03/11/2021 7:32 AM', description: 'Description of change made. Lorem ipsum short dalor sit. Resolved.', system: 'Monitoring', user: 'Resolved by Todd Knight' })
-    activityLogData.push({ id: 10, type: 'alert1', datetime: '03/11/2021 7:32 AM', description: 'The machine is on fire', system: 'Hot Runner', user: '--' })
+    // activityLogData.push({ id: 1, type: 'error', datetime: '03/11/2021 7:32 AM', description: 'The machine is on fire', system: 'Hot Runner', user: '--' })
+    // activityLogData.push({ id: 2, type: 'warning', datetime: '03/11/2021 7:32 AM', description: 'The machine is on fire', system: 'Hot Runner', user: '--' })
+    // activityLogData.push({ id: 3, type: '', datetime: '03/11/2021 7:32 AM', description: 'The machine is on fire', system: 'Hot Runner', user: '--' })
+    // activityLogData.push({ id: 4, type: 'warning', datetime: '03/11/2021 7:32 AM', description: 'The machine is on fire', system: 'Hot Runner', user: '--' })
+    // activityLogData.push({ id: 5, type: 'warning', datetime: '03/11/2021 7:32 AM', description: 'The machine is on fire', system: 'Hot Runner', user: '--' })
+    // activityLogData.push({ id: 6, type: 'warning', datetime: '03/11/2021 7:32 AM', description: 'The machine is on fire', system: 'Hot Runner', user: '--' })
+    // activityLogData.push({ id: 7, type: 'warning', datetime: '03/11/2021 7:32 AM', description: 'The machine is on fire', system: 'Hot Runner', user: '--' })
+    // activityLogData.push({ id: 8, type: 'warning', datetime: '03/11/2021 7:32 AM', description: 'Description of change made. Lorem ipsum short dalor sit. Resolved.', system: 'Monitoring', user: 'Resolved by Todd Knight' })
+    // activityLogData.push({ id: 9, type: 'warning1', datetime: '03/11/2021 7:32 AM', description: 'Description of change made. Lorem ipsum short dalor sit. Resolved.', system: 'Monitoring', user: 'Resolved by Todd Knight' })
+    // activityLogData.push({ id: 10, type: 'alert1', datetime: '03/11/2021 7:32 AM', description: 'The machine is on fire', system: 'Hot Runner', user: '--' })
 
     const convertMonthsToHours = m => {
       let todayDate = new Date()
@@ -129,16 +129,6 @@
       activeActivityLog.set('')
     }
 
-    const getLogLevelFromId = (i) => {        
-      if(i <= 3) {
-        return 'error'
-      } else if (i == 4) {
-        return 'warning'
-      } else {
-        return 'change'
-      }
-    }
-
     const closeDownloadData = async () => {
       showDownloadMessage = false
     }
@@ -204,15 +194,15 @@
                 </div>
 
                 {#each $log as logData (logData.id)}
-                <div class="activity-log-grid item">
-                    <div>  
-                        <AlertChips type={getLogLevelFromId(logData.ref_log_level)} />
+                    <div class="activity-log-grid item">
+                        <div>  
+                            <AlertChips type={logData.logLevel} />
+                        </div>
+                        <div>{logData.logCreated}</div>
+                        <div>{logData.logText}</div>
+                        <div>{logData.system}</div>
+                        <div>{logData.logUser}</div>  
                     </div>
-                    <div>{moment(logData.created).format("L LT")}</div>
-                    <div>{logData.message_text}</div>
-                    <div>{logData.system}</div>
-                    <div>{logData.user}</div>  
-                </div>
                 {/each}
 
                 {#if $log.length <= 0}

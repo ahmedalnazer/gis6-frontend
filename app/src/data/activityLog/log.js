@@ -2,14 +2,32 @@ import { writable, derived } from 'svelte/store'
 import _ from 'data/language'
 import getLogText from './log-text'
 import api from '../api'
+import zones from 'data/zones'
+import moment from 'moment'
 
 
 // raw output from API
 const _logs = writable([])
 
+// get the list of zones
+const getZoneList = z => {
+  let list
+  let zoneNames = ''
+  zones.subscribe(x => list = x)()
+  z = list.filter(x => z.includes(x.number))
 
+  if (z.length) {
+    zoneNames = z.map(x => x.name).join(',')
+    return zoneNames
+  }
+  else {
+    return ''
+  }
+}
+ 
 // level will be stored as a number 1 - 7, we need to condense them down to "error", "warning", or "change"
 const getLevel = i => {
+
   if(i <= 3) {
     return 'error'
   } else if (i == 4) {
@@ -26,53 +44,14 @@ const translated = derived([ _logs, _ ], ([ $logs, $_ ]) => {
   return $logs.map(log => {
     return {
       ...log,
-      logText: getLogText($_, log.message_id),
-      logLevel: getLevel(log.log_type)
+      logText: getLogText($_, log.message_text, log.ref_message, log.message_content, getZoneList(log.zones)),
+      logLevel: getLevel(log.ref_log_level),
+      logUser: log.user? log.user: 'User not logged in',
+      logCreated: moment(log.created).format("L LT"),
+      logZoneNames: getZoneList(log.zones)
     }
   })
 })
-
-async function seedLogs(params = {}) {
-  await api.post('/activity', {
-    system: 'Balancing',
-    message_content: '',
-    created: '2021-03-19T17:14:33.591000Z',
-    user: 'Admin',
-    status: 0,
-    ref_log_level: 5,
-    ref_message: 3
-  })
-
-  await api.post('/activity', {
-    system: 'Hot runner',
-    message_content: '',
-    created: '2021-02-19T17:14:33.591000Z',
-    user: 'Admin',
-    status: 0,
-    ref_log_level: 1,
-    ref_message: 1
-  })
-
-  await api.post('/activity', {
-    system: 'Monitoring',
-    message_content: '',
-    created: '2021-01-19T17:14:33.591000Z',
-    user: 'Admin',
-    status: 0,
-    ref_log_level: 2,
-    ref_message: 2
-  })
-
-  await api.post('/activity', {
-    system: 'Valve pin',
-    message_content: '',
-    created: '2021-03-19T17:14:33.591000Z',
-    user: 'Admin',
-    status: 0,
-    ref_log_level: 2,
-    ref_message: 3
-  })
-}
 
 /**
  * Function to load logs for UI consumption (params TBD)
@@ -89,17 +68,8 @@ async function seedLogs(params = {}) {
 
 async function search(params = {}) {
   // pass params to API, automatically update all consumers
-  // params ={
-  //   "system": "Balancing",
-  //   "created": "2021-03-19T17:14:33.591000Z",
-  //   "user": "",
-  //   "status": 0,
-  //   "ref_log_level": 5,
-  //   "ref_message": 3
-  // }
   const activityLogs = await api.get('/activity/', params)
   if (!Array.isArray(activityLogs)) {
-    // seedLogs([])
     _logs.set([])
   }
   else {
@@ -113,13 +83,3 @@ const logs = {
 }
 
 export default logs
-
-
-/*
-For now, I'm thinking "search" is the only method we'll need. You can do something like this on init for testing/demo:
-
-if( *no activities in api* ) await api.post('/activity', {dummy error} )
-
-If Noel can take care of sending the login activity logs, we won't need to actually push anything from the api
-
-*/
