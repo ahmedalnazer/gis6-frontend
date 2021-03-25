@@ -17,12 +17,13 @@
   let leftArrow = false, rightArrow = false, arrowPosition = 0
   let styleTag = document.createElement("style")
   let disabledButton = false
-  let disableNegativeBtn = !keypadcontrols.negativeSign
+  let disableNegativeBtn = !keypadcontrols.negative
   let notInRange = false
-  let toDecimal = keypadcontrols.decimalPlace
+  let toDecimal = keypadcontrols.precision
   let keypadNewValue = value
   let stopToDecimal = false
   let showNegativeSign = true
+  let removeOldValue = true
   
   $: {
     keypadNumber = parseFloat(_keypadNumber)
@@ -82,6 +83,10 @@
   }
 
   const getNumber = e => {
+    if (removeOldValue) {
+      getInputField('place-number').value = ''
+      removeOldValue = false
+    }
     if (stopToDecimal) {
       return false
     }
@@ -102,10 +107,10 @@
   const validateKeypad = num => {
     if (
       !isNaN(num) &&
-      keypadcontrols.rangeMin &&
-      keypadcontrols.rangeMin &&
-      (num < keypadcontrols.rangeMin ||
-      num > keypadcontrols.rangeMax)
+      keypadcontrols.min &&
+      keypadcontrols.max &&
+      (num < keypadcontrols.min ||
+      num > keypadcontrols.max)
     ) {
       disabledButton = true
       notInRange = true
@@ -163,10 +168,10 @@
       class:rightArrow
     >
       <div class="content" class:notInRange>
-        {#if keypadcontrols.rangeMax && keypadcontrols.rangeMin}
+        {#if keypadcontrols.max && keypadcontrols.min}
           <div class="range">
-            <span class="min">Min: {keypadcontrols.rangeMin}</span>
-            <span class="max">Max: {keypadcontrols.rangeMax}</span>
+            <span class="min">Min: {keypadcontrols.min}</span>
+            <span class="max">Max: {keypadcontrols.max}</span>
           </div>
         {/if}
 
@@ -182,9 +187,9 @@
             <div class="number ml-0" on:click={e => getNumber(e)}><span>1</span></div>
             <div class="number" on:click={e => getNumber(e)}><span>2</span></div>
             <div class="number mr-0" on:click={e => getNumber(e)}><span>3</span></div>
-            <div class="number ml-0" class:disableBtn={keypadcontrols.integerOnly}
+            <div class="number ml-0" class:disableBtn={keypadcontrols.integer}
               on:click={e => {
-                if (keypadcontrols.integerOnly) {
+                if (keypadcontrols.integer) {
                   return false
                 }
                 getNumber(e)
