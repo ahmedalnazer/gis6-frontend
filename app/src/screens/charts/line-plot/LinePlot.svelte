@@ -1,10 +1,11 @@
 <script>
-  import { onMount } from 'svelte'
+  import { onDestroy } from 'svelte'
   import GroupSelector from "components/GroupSelector.svelte"
-  import { Select, CheckBox } from 'components'
+  import { Select, CheckBox, Icon } from 'components'
   import Screen from 'layout/Screen.svelte'
   import Chart from 'components/charting/Chart.svelte'
   import ZoneTasks from "components/taskbars/ZoneTasks.svelte"
+  import Settings from './LinePlotSettings.svelte'
   import _ from 'data/language'
   import { colors } from 'data/charting/line-plot'
   import zones, { activeZones, selectedZones, toggleZones } from 'data/zones'
@@ -34,23 +35,14 @@
     return ops.concat(propertyOptions.filter(x => !properties.includes(x.id)))
   }
 
-  
-
   let stats = {}
 
-  activeGroup.subscribe(g => {
-    if(g) {
-      selectedZones.set($zones.filter(x => x.groups && x.groups.includes(g)).map(x => x.id))
-    } else {
-      selectedZones.set([ $zones[0] && $zones[0].id ])
-    }
-  })
+  let showSettings = false
+
 
   $: availableZones = $activeGroup
     ? $zones.filter(x => x.groups && x.groups.includes($activeGroup))
     : $zones
-
-  // $: console.log(availableZones, activeGroup, $zones)
 
   $: rendered = $activeZones.map(x => x.number)
 
@@ -64,7 +56,28 @@
     }
   }
 
-  // let rendered = [ 1, 2, 3, 4, 5, 6, 7 ]
+  let initialized = false
+  $: {
+    if(!$selectedZones.filter(x => !!x).length && $zones.length && $zones[0].id && !initialized) {
+      selectedZones.set([ $zones[0] && $zones[0].id ])
+      initialized = true
+    }
+  }
+
+  const unsubActive = activeGroup.subscribe(g => {
+    if($zones[0]) {
+      if(g) {
+        selectedZones.set($zones.filter(x => x.groups && x.groups.includes(g)).map(x => x.id))
+      } else {
+        selectedZones.set([ $zones[0].id ])
+      }
+      initialized = true
+    }
+  })
+
+  onDestroy(() => {
+    unsubActive()
+  })
 </script>
 
 <Screen back='/hot-runner' group='zones' scroll>
@@ -72,17 +85,21 @@
     <ZoneTasks />
   </div>
 
+  <div slot="header" class='tools'>
+    <Icon icon='settings' color='var(--primary)' on:click={() => showSettings = true}/>
+  </div>
+
   <div class='wrapper'>
     
     <Chart type='line' bind:stats zones={rendered} {...{ properties, colors }} />
 
-    <div class='tools'>
+    <div class='options'>
       <div class='properties'>
         {#each [ 1, 2, 3, 4 ] as n}
           <div class='selector'>
             <Select bind:value={params[n]} options={getOptions(params[n])}/>
             {#if params[n] && stats.avg}
-              <div class='average'>
+              <div class='average' style='opacity: {isNaN(stats.avg[params[n]]) ? 0 : 1}'>
                 <div class='color' style='background:{colors[n]}' />
                 Average
                 <span style='color:{colors[n]}'>{(stats.avg[params[n]] / 10).toFixed(1)}</span>
@@ -114,6 +131,10 @@
   </div>
 </Screen>
 
+{#if showSettings}
+  <Settings onClose={() => showSettings = false} />
+{/if}
+
 <style lang="scss">
   .wrapper {
     height: 100%;
@@ -121,17 +142,28 @@
     display: flex;
     flex-direction: column;
   }
+
+  .tools {
+    display: flex;
+    justify-content: flex-end;
+    flex: 1;
+    align-items: flex-end;
+    padding-right: 8px;
+  }
+
   .properties {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 16px;
   }
-  .tools {
+
+  .options {
     margin-top: 40px;
     flex: 1;
     display: flex;
     flex-direction: column;
   }
+
   .selection-header {
     margin-top: 24px;
     display: flex;
@@ -140,11 +172,13 @@
       margin-right: 32px;
     }
   }
+
   .zone-selections {
     flex: 1;
     display: flex;
     flex-direction: column;
   }
+
   .available-zones {
     flex: 1;
     flex-basis: 0;

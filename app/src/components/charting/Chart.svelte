@@ -20,6 +20,12 @@
     y: 'auto',
     x: 10
   }
+
+  let hLines = []
+  for(let i = 0; i < 21; i++) {
+    hLines.push(i)
+  }
+
 </script>
 
 <div class='chart'>
@@ -29,6 +35,11 @@
   </div>
 
   <div class='canvas'>
+    <div class='h-grid'>
+      {#each hLines as l}
+        <div class='grid-line' />
+      {/each}
+    </div>
     <ChartCanvas bind:stats {...{ properties, paused, type, scale, maxLinePoints, zones, type }} />
     <div class='stats'>
       <p><strong>{stats.framerate} fps</strong></p>
@@ -48,10 +59,33 @@
   .chart {
     display: flex;
     border: 1px solid #ddd;
-    padding: 16px;
+    padding: 24px 16px;
   }
+  .scales {
+    display: flex;
+  }
+  .h-grid {
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction:column;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-left: 1px solid var(--gray);
+    border-right: 1px solid var(--gray);
+    .grid-line {
+      border-bottom: 1px solid var(--gray);
+    }
+  }
+
   .canvas {
     position: relative;
+    padding: 8px 0;
+    flex: 1;
     .stats {
       opacity: .5;
       position: absolute;
@@ -68,9 +102,6 @@
         padding: 0;
       }
     }
-  }
-  .scales {
-    display: flex;
   }
   .test-tools {
     margin: 40px 0;

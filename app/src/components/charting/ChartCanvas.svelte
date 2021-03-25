@@ -11,6 +11,7 @@
   $: {
     if(canvas && worker) {
       if(!offscreen) {
+        canvas.width = canvas.offsetWidth * 1
         canvas.height = canvas.width * 6.1 / 7.8
         offscreen = canvas.transferControlToOffscreen()
         worker.postMessage({ canvas: offscreen }, [ offscreen ])
@@ -44,12 +45,12 @@
   })
 </script>
 
-<canvas width='1028' bind:this={canvas} />
+<canvas bind:this={canvas} />
 
 <style>
   canvas {
     width: 100%;
-    /* border: 1px solid var(--gray); */
     flex: 1;
+    /* filter: blur(.5px); */
   }
 </style>

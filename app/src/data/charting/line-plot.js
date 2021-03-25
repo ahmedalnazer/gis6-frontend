@@ -48,10 +48,10 @@ const draw = (chartData, logStats) => {
 
   if(isNaN(xRange)) xRange = 10
 
-  const now = new Date().getTime() - 500
+  const now = new Date().getTime() - 1000
   let xMax = paused ? latest ? latest.time : now : now
   let xMin = xMax - xRange * 1000
-  let renderLimit = xMin - 1000
+  let renderLimit = xMin - 2000
   let dX = xMax - xMin
 
   // let sample = buffer.active.filter(x => x.time > renderLimit)
@@ -96,7 +96,7 @@ const draw = (chartData, logStats) => {
 
   // filter data points to exclude ones in the excluded time intervals
   for(let i = 0; i < sample.length; i++) {
-    if(!rendered.length || i == sample.length - 1) {
+    if(i == 0 || !rendered.length || i == sample.length - 1) {
       rendered.push(sample[i])
     } else {
       if ((sample[i].time - 1614799160000) %  minMSInterval < intvl) {
@@ -104,6 +104,8 @@ const draw = (chartData, logStats) => {
       }
     }
   }
+
+  // rendered.reverse()
 
   let lines = {}
   let max = {}
@@ -120,29 +122,27 @@ const draw = (chartData, logStats) => {
   for(let i = 0; i < rendered.length; i++) {
     const frame = rendered[i]
     
-    const x = parseInt((frame.time - xMin) * xScale)
+    const x = (frame.time - xMin) * xScale
 
-    if(x <= canvas.width) {
-      for (let z of zones) {
-        const point = frame.data[z - 1]
+    for (let z of zones) {
+      const point = frame.data[z - 1]
 
-        for(let prop of properties) {
-          if (!lines[prop][z - 1]) lines[prop][z - 1] = []
-          let y = point[prop]
-          if(prop == 'deviation') {
-            const settings = getSettings(point)
-            if(!settings.on) {
-              y = 0
-            } else if(settings.manual) {
-              y = point.manual_sp - point.actual_percent
-            } else {
-              y = point.temp_sp - point.actual_temp
-            }
+      for (let prop of properties) {
+        if (!lines[prop][z - 1]) lines[prop][z - 1] = []
+        let y = point[prop]
+        if (prop == 'deviation') {
+          const settings = getSettings(point)
+          if (!settings.on) {
+            y = 0
+          } else if (settings.manual) {
+            y = point.manual_sp - point.actual_percent
+          } else {
+            y = point.temp_sp - point.actual_temp
           }
-          lines[prop][z - 1].push({ x, y })
-          if(y > max[prop]) max[prop] = y
-          if(y < min[prop]) min[prop] = y
         }
+        lines[prop][z - 1].push({ x, y })
+        if (y > max[prop]) max[prop] = y
+        if (y < min[prop]) min[prop] = y
       }
     }
   }
@@ -162,9 +162,7 @@ const draw = (chartData, logStats) => {
       max[prop] = i + i * Math.floor(max[prop] / i)
     }
 
-    if(r <= 10) {
-      even(2)
-    } else if(r <= 100) {
+    if(r <= 100) {
       even(20)
     } else if (r <= 1000) {
       even(200)
@@ -227,7 +225,7 @@ const draw = (chartData, logStats) => {
     for(let i = 0; i < renderedLines[prop].length; i++) {
       if(renderedLines[prop][i]) {
         const line = renderedLines[prop][i]
-        smooth(ctx, line, lineColors[prop], 2)
+        smooth(ctx, line, lineColors[prop], 1)
       }
     }
   }

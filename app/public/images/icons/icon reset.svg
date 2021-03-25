@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="20px" viewBox="0 0 16 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>7A3C691E-0649-4969-B85D-AF61F3F073E5</title>
+    <g id="Line-Graph" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Line-Graph---2-parameter" transform="translate(-770.000000, -325.000000)" fill="#CCCCCC" fill-rule="nonzero">
+            <g id="Group-12" transform="translate(756.000000, 313.000000)">
+                <g id="Group" transform="translate(14.000000, 12.000000)">
+                    <path d="M0,8 L0,9 L2,9 L2,8 C2,4.691 4.691,2 8,2 C11.309,2 14,4.691 14,8 C14,11.309 11.309,14 8,14 L7,14 L7,10 L2,15 L7,20 L7,16 L8,16 C12.411,16 16,12.411 16,8 C16,3.589 12.411,0 8,0 C3.589,0 0,3.589 0,8 Z" id="Path"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

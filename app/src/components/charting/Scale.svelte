@@ -15,7 +15,7 @@
   $: {
     let values = []
     const spaces = 20
-    for(let i = 1; i < spaces - 1; i++) {
+    for(let i = 1; i < spaces; i++) {
       values.push(max - i / spaces * range)
     }
     intervals = values
@@ -45,8 +45,9 @@
     display:flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 100%;
+    /* height: calc(100% + 8px); */
     margin: 0 4px;
     min-width: 40px;
+    text-align: right;
   }
 </style>
