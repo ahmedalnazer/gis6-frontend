@@ -9,6 +9,7 @@
   export let maxLinePoints = 80
   export let zones = []
   export let colors = {}
+  export let scales = {}
 
   $: totalZones = zones.length
 
@@ -17,8 +18,17 @@
   let paused = false
 
   let scale = {
-    y: 'auto',
+    y: {},
     x: 10
+  }
+
+  $: {
+    let y = {}
+    for(let i = 1; i <= 4; i++) {
+      const prop = properties[i - 1]
+      y[prop] = scales[i] ? scales[i] : { max: 'auto', min: 'auto' }
+    }
+    scale = { ...scale, y }
   }
 
   let hLines = []

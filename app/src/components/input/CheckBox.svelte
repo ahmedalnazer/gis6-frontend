@@ -6,6 +6,7 @@
   export let label = ''
   export let changed = false
   export let trackChange = false
+  export let controlled = false
 
   const dispatch = createEventDispatcher()
 
@@ -15,8 +16,9 @@
   <label on:click={() => {
     onClick 
       ? onClick()
-      : checked = minus ? false : !checked
+      : !controlled && (checked = minus ? false : !checked)
     dispatch('change')
+    dispatch('click')
     if(trackChange) changed = true
   }}>
     <div class='check' class:checked class:minus>

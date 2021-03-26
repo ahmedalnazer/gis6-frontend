@@ -148,6 +148,9 @@ const draw = (chartData, logStats) => {
   }
 
   for(let prop of properties) {
+
+    const scaleParams = scale.y && scale.y[prop]
+
     if(!negatives.includes(prop)) {
       min[prop] = Math.max(min[prop], 1)
     }
@@ -170,6 +173,11 @@ const draw = (chartData, logStats) => {
       even(2000)
     } else {
       even(20000)
+    }
+
+    if (scaleParams) {
+      if (scaleParams.min != 'auto') min[prop] = scaleParams.min * 10
+      if (scaleParams.max != 'auto') max[prop] = scaleParams.max * 10
     }
     
     autoScale[prop] = canvas.height / (max[prop] - min[prop])

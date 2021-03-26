@@ -39,6 +39,9 @@
 
   let showSettings = false
 
+  let scales = {}
+
+  $: console.log(scales)
 
   $: availableZones = $activeGroup
     ? $zones.filter(x => x.groups && x.groups.includes($activeGroup))
@@ -91,7 +94,7 @@
 
   <div class='wrapper'>
     
-    <Chart type='line' bind:stats zones={rendered} {...{ properties, colors }} />
+    <Chart type='line' bind:stats zones={rendered} {...{ properties, colors, scales }} />
 
     <div class='options'>
       <div class='properties'>
@@ -132,7 +135,7 @@
 </Screen>
 
 {#if showSettings}
-  <Settings onClose={() => showSettings = false} />
+  <Settings onClose={() => showSettings = false} onSubmit={s => scales = s} />
 {/if}
 
 <style lang="scss">
