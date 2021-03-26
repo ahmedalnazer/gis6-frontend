@@ -201,7 +201,10 @@
                         <div>{logData.logCreated}</div>
                         <div>{logData.logText}</div>
                         <div>{logData.system}</div>
-                        <div>{logData.logUser}</div>  
+                        <div>{logData.logUser} 
+                        <!-- <br/>
+                            {logData.logZoneNames_} -->
+                        </div>  
                     </div>
                 {/each}
 

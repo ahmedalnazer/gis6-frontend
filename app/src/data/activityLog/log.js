@@ -3,28 +3,58 @@ import _ from 'data/language'
 import getLogText from './log-text'
 import api from '../api'
 import zones from 'data/zones'
+import groups from 'data/groups'
 import moment from 'moment'
-
 
 // raw output from API
 const _logs = writable([])
 
-// get the list of zones
+const isZoneInGroup = (zoneGroupArr, zoneArr) => {
+  return zoneGroupArr.sort().toString() === zoneArr.sort().toString() 
+}
+
+const getZoneGroup = z => {
+  let g
+  groups.subscribe(x => g = x)()
+  let grpnames = []
+
+  let grps = g.filter(x => x.ref_zones.length > 0)
+
+  for (let gp in grps) {
+    let zoneInGrp = isZoneInGroup(z, grps[gp].ref_zones)
+    if (zoneInGrp) {
+      grpnames.push(grps[gp].name)
+    }
+  }
+
+  return grpnames
+}
+
 const getZoneList = z => {
   let list
   let zoneNames = ''
-  zones.subscribe(x => list = x)()
-  z = list.filter(x => z.includes(x.number))
+  let zoneGroup = ''
+  let zs
 
-  if (z.length) {
-    zoneNames = z.map(x => x.name).join(',')
+  zones.subscribe(x => list = x)()
+  
+  zs = list.filter(x => z.includes(x.id))
+
+  if (zs.length) {
+    zoneNames = zs.map(x => x.name).join(',')
+    zoneGroup = getZoneGroup(z)
+
+    if (zoneGroup.length >= 1) {
+      zoneNames = zoneGroup.join(',')
+    }
+    
     return zoneNames
   }
   else {
     return ''
   }
 }
- 
+
 // level will be stored as a number 1 - 7, we need to condense them down to "error", "warning", or "change"
 const getLevel = i => {
 
@@ -48,7 +78,8 @@ const translated = derived([ _logs, _ ], ([ $logs, $_ ]) => {
       logLevel: getLevel(log.ref_log_level),
       logUser: log.user? log.user: 'User not logged in',
       logCreated: moment(log.created).format("L LT"),
-      logZoneNames: getZoneList(log.zones)
+      logZoneNames: getZoneList(log.zones) //,
+      // logZoneNames_: getZoneList([ 293,294,295,296,297,298,300,301,302,303,304,310,291,292,299,305,306,307,308,309 ])
     }
   })
 })
