@@ -14,11 +14,12 @@ sortGroups.toggle = () => sortGroups.update(x => !x)
 export const group_order = derived([ _groups, _groupOrder ], ([ $_groups, $_groupOrder ]) => {
   // filter non-existent groups from the order list
   const _order = $_groupOrder.map(x => id(x))
-  const order = _order
+  const order = [ ... new Set(_order
     .filter(x => !!$_groups.find(g => id(g.id) == x))
     .concat(
       $_groups.filter(x => !_order.includes(id(x.id))).map(x => id(x.id))
     )
+  ) ]
   return order
 })
 
@@ -118,6 +119,26 @@ groups.removeZones = async (group, _zones) => {
 groups.reload()
 
 export default groups
+
+window.DANGEROUS_dummy_data = async () => {
+  let _zones
+  zones.subscribe(z => _zones = z)()
+  const a = await groups.create({
+    name: 'Tips',
+    color: '#004D40',
+  })
+  const b = await groups.create({
+    name: 'Manifold',
+    color: '#311B92',
+  })
+  const c = await groups.create({
+    name: 'Sprue',
+    color: '#C2185B',
+  })
+  await groups.addZones(a, _zones.slice(0, 10))
+  await groups.addZones(b, _zones.slice(10, 20))
+  await groups.addZones(c, _zones.slice(15, 30))
+}
 
 
 export const defaultNames = [

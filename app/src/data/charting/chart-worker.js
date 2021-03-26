@@ -73,8 +73,8 @@ const initialize = async () => {
 
       // test tweening
       if(lastBuffer) {
-        for(let x of [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 ]) {
-        // for(let x of [ 1, 3, 5, 7, 9, 11 ]) {
+        // for(let x of [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 ]) {
+        for(let x of [ 2.4, 4.8, 7.2, 9.6 ]) {
         // for(let x of [ 6 ]) {
           let tween = []
           for(let i = 0; i < records.length; i++) {
