@@ -152,7 +152,7 @@
         title={$_("Recent Activity")}
         onClose={close}
     >
-        <div>
+        <div class="activity-log-main-container">
             <div class="activity-log-panel-container">
                 <div class="activity-log-panel">
 
@@ -185,36 +185,37 @@
                 </div>
             </div>
             <div class="activity-log-container">
-                <div class="activity-log-grid header">
-                    <div>Type</div>
-                    <div>Date/Time</div>
-                    <div>Description</div>
-                    <div>System</div>
-                    <div>User</div>    
-                </div>
-
-                {#each $log as logData (logData.id)}
-                    <div class="activity-log-grid item">
-                        <div>  
-                            <AlertChips type={logData.logLevel} />
+                <div class="activity-log-grid-body">
+                    <div class="activity-log-grid header">
+                        <div>Type</div>
+                        <div>Date/Time</div>
+                        <div>Description</div>
+                        <div>System</div>
+                        <div>User</div>    
+                    </div>
+    
+                    {#each $log as logData (logData.id)}
+                        <div class="activity-log-grid item">
+                            <div>  
+                                <AlertChips type={logData.logLevel} />
+                            </div>
+                            <div>{logData.logCreated}</div>
+                            <div>{logData.logText}</div>
+                            <div>{logData.system}</div>
+                            <div>{logData.logUser} 
+                            <!-- <br/>
+                                {logData.logZoneNames_} -->
+                            </div>  
                         </div>
-                        <div>{logData.logCreated}</div>
-                        <div>{logData.logText}</div>
-                        <div>{logData.system}</div>
-                        <div>{logData.logUser} 
-                        <!-- <br/>
-                            {logData.logZoneNames_} -->
-                        </div>  
-                    </div>
-                {/each}
+                    {/each}
+    
+                    {#if $log.length <= 0}
+                        <div class="item mute">
+                            <div class="no-record muted">{$_("No records found")}</div>
+                        </div>
+                    {/if}
 
-                {#if $log.length <= 0}
-                    <div class="item mute">
-                        <div class="no-record muted">{$_("No records found")}</div>
-                    </div>
-                {/if}
-
-                <!-- {#each activityLogData as activityLogDataItem (activityLogDataItem.id)}
+                    <!-- {#each activityLogData as activityLogDataItem (activityLogDataItem.id)}
                     <div class="activity-log-grid item">
                         <div>  
                             <AlertChips type={activityLogDataItem.type} />
@@ -225,7 +226,11 @@
                         <div>{activityLogDataItem.user}</div>  
                     </div>
                 {/each} -->
+
+                </div>
+
             </div>    
+            <div class="activity-log-container- activity-log-footer">&nbsp;</div>
         </div>
     </Modal>
 {/if}
@@ -239,6 +244,9 @@
 {/if}
 
 <style lang="scss">
+
+    .activity-log-main-container {
+    }
 
     .activity-log-header {
         padding: 5px 30px 5px 30px;
@@ -303,5 +311,9 @@
         padding-top: 70px;
         padding-bottom: 70px;
     }
+
+    :global(.modal-wrapper) {
+        max-height: calc(85vh) !important;
+    } 
 </style>
 
