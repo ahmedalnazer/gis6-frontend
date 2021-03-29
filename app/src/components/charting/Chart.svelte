@@ -1,6 +1,5 @@
 <script>
-  import CheckBox from 'components/input/CheckBox.svelte'
-  import Input from 'components/input/Input.svelte'
+  import _ from 'data/language'
   import ChartCanvas from './ChartCanvas.svelte'
   import Scale from './Scale.svelte'
 
@@ -63,6 +62,12 @@
     <Scale property={properties[1]} {stats} color={colors[2]} />
     <Scale property={properties[3]} {stats} color={colors[4]} />
   </div>
+
+  {#if stats.loading}
+    <div class='loading'>
+      {$_('Loading data...')}
+    </div>
+  {/if}
 </div>
 
 <style lang="scss">
@@ -70,6 +75,7 @@
     display: flex;
     border: 1px solid #ddd;
     padding: 24px 16px;
+    position: relative;
   }
   .scales {
     display: flex;
@@ -118,6 +124,19 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 32px;
+  }
+
+  .loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background:rgba(0,0, 0, .5);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 </style>
 

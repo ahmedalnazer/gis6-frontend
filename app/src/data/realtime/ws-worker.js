@@ -1,5 +1,6 @@
 import Pbf from 'pbf'
 import { tcdata, minmax, unknown_msg, tczone, sysinfo, mdtmsg } from './decode.proto'
+import dataBuffer, { bufferCommands } from './buffer'
 
 const messageTypes = { tcdata, minmax, unknown_msg, tczone, sysinfo, mdtmsg }
 
@@ -104,6 +105,10 @@ const createSocket = () => new Promise((resolve, reject) => {
 
       // ports[0].port.postMessage(data)
 
+      if(mt == 6) {
+        dataBuffer.write({ ts, data: data.records })
+      }
+
       for(let { port, subscriptions } of ports) {
         if(subscriptions.includes(type)) {
           port.postMessage({ ts, data })
@@ -176,7 +181,14 @@ function getString(array) {
 }
 
 
+const id = () => {
+  return '_' + Math.random().toString(36).substr(2, 9)
+}
+
 onconnect = function(e) {
+
+  const connectionId = id()
+
   const port = e.ports[0]
   // ports[port] = {
   //   subscriptions: []
@@ -199,5 +211,7 @@ onconnect = function(e) {
       console.log(port, getPortData(port))
       ports = ports.filter(x => x.port != port)
     }
+
+    bufferCommands(port, e, connectionId)
   }
 }

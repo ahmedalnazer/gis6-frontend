@@ -1,12 +1,20 @@
 import { writable, derived } from 'svelte/store'
 import process from './process'
 import _ from 'data/language'
+import zones from 'data/zones'
 
+
+// info message displayed in header if not running and no warning/error declared
+const info = derived([ process, _ ], ([ $process, $_ ]) => {
+  // TODO determine "ready state" messages
+  return $process ? $_('Ready for Production') : $_('System is ready')
+})
 
 // info message displayed in header if no warning/error declared
-const info = derived([ process, _ ], ([ $process, $_ ]) => {
+const running = derived([ process, zones, _ ], ([ $process, $zones, $_ ]) => {
   // determine default message based on whether or not a process is running
-  return $process ? $_('System is running') : $_('Ready for Production')
+  const on = $zones.find(x => x.settings && x.settings.on)
+  return on && $process && $_('System is running')
 })
 
 
@@ -19,10 +27,14 @@ const warning = writable('')
 
 
 // calculate message to be displayed in header
-const status = derived([ error, warning, info ], ([ $error, $warning, $info ]) => {
+const status = derived([ error, warning, info, running ], ([ $error, $warning, $info, $running ]) => {
   let s = {
     level: 'info',
     message: $info
+  }
+  if($running) {
+    s.level = 'running',
+    s.message = $running
   }
   if($warning) {
     s.level = 'warning',
