@@ -8,6 +8,7 @@ const rawZones = writable([])
 export const realtime = writable([])
 
 export const selectedZones = writable([])
+
 export const toggleZones = (zones) => {
   if (!Array.isArray(zones)) {
     zones = [ zones ]
