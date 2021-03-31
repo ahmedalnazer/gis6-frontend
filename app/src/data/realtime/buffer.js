@@ -1,5 +1,9 @@
 export const maxChunkSize = 200
 
+let params = {
+  rate: 25
+}
+
 let buffer = []
 
 export default buffer
@@ -7,7 +11,7 @@ export default buffer
 buffer.write = function ({ ts, data }) {
 
   // simulate 450 zones
-  data = data.concat(data).concat(data)
+  // data = data.concat(data).concat(data)
 
   const date = new Date(ts)
   const frame = { data, date, time: ts }
@@ -21,6 +25,8 @@ buffer.write = function ({ ts, data }) {
 
 let intervals = {}
 let latest = {}
+let earliest = {}
+let start = {}
 
 export const bufferCommands = (port, e, id) => {
   const { data } = e
@@ -30,21 +36,32 @@ export const bufferCommands = (port, e, id) => {
     // send data in batches, limiting max to avoid OOM when serializing to
     // pass between threads
     const sendChunk = () => {
-      if (!latest[id]) latest[id] = buffer[0] && buffer[0].time
-
-      if (latest[id]) {
-        const remaining = buffer.filter(x => x.time > latest[id])
-        const update = remaining.slice(0, maxChunkSize)
+      if (!latest[id] && buffer.length) {
+        latest[id] = buffer[buffer.length - 1] && buffer[buffer.length - 1].time
+        earliest[id] = latest[id] + 1
+      }
+      
+      if(latest[id]) {
+        const newest = buffer.filter(x => x.time > latest[id])
+        const backFill = buffer.filter(x => x.time < earliest[id]).slice(-(maxChunkSize - newest.length))
+        const update = backFill.concat(newest)
+        // console.log(backFill.length, newest.length)
         if (update.length) {
           const latestEntry = update[update.length - 1]
+          const firstEntry = update[0]
           latest[id] = latestEntry.time
+          if(firstEntry.time < earliest[id]) earliest[id] = firstEntry.time
           port.postMessage({ update })
         }
       }
       // console.log(sizeOf([ ...buffer ]))
     }
 
-    intervals[id] = setInterval(sendChunk, 100)
+    intervals[id] = setInterval(sendChunk, 500)
+  }
+
+  if (data.command = 'setBufferParams') {
+    params = data.params
   }
 
   if (data.command == 'close') {
