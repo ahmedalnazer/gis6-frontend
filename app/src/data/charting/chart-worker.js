@@ -1,7 +1,7 @@
 import renderLine from './line-plot'
 import buffer from './buffer'
+import { maxChunkSize } from '../realtime/buffer'
 
-console.log('chart worker intialized')
 
 const renderers = {
   'line': renderLine
@@ -22,7 +22,7 @@ let port
 
 
 let stats = {}
-const logStats = s => stats = s
+const logStats = s => stats = { ...stats, ...s }
 
 
 let renderTimes = []
@@ -60,49 +60,17 @@ setInterval(collectStats, 300)
 
 const initialize = async () => {
   port.onmessage = e => {
-    // console.log(e)
-    const { data } = e.data
-    const { mt } = data
-    if (mt == 6) {
-      let { records } = data
-      const ts = e.data.ts.getTime()
-      // records = records.slice(0, 1)
-      records = records.concat(records).concat(records)
-      // records = records.slice(0, maxZones)
-
-
-      // test tweening
-      if(lastBuffer) {
-        // for(let x of [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 ]) {
-        for(let x of [ 2.4, 4.8, 7.2, 9.6 ]) {
-        // for(let x of [ 6 ]) {
-          let tween = []
-          for(let i = 0; i < records.length; i++) {
-            const last = lastBuffer[i]
-            const current = records[i]
-            if(last && current) {
-              let tweened = { ...current }
-              for (let prop of chartData.properties) {
-                // console.log(prop)
-                const delta = (current[prop] - last[prop]) / 12
-                tweened[prop] = last[prop] + delta * x
-              }
-              tween.push(tweened)
-            }
-          }
-          const offset = 500 / 12 * x
-          setTimeout(() => buffer.write({ ts: ts - 500 + offset, data: tween }), offset)
-        }
-        setTimeout(() => buffer.write({ ts, data: records }), 500)
-      }
-      lastBuffer = records
+    const { data } = e
+    // console.log(data)
+    if(data.update && data.update.length == maxChunkSize) {
+      stats.loading = true
+    } else {
+      stats.loading = false
     }
+    buffer.write(data.update)
   }
 
-  port.postMessage({
-    command: 'connect',
-    channels: [ 'tczone' ]
-  })
+  port.postMessage({ command: 'readBuffer' })
 }
 
 

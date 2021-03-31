@@ -238,7 +238,7 @@ const draw = (chartData, logStats) => {
     }
   }
 
-  logStats({ totalPoints, max, min, avg })
+  logStats({ totalPoints, max, min, avg, plotFilled: sample.length < buffer.active.length })
 }
 
 export default draw

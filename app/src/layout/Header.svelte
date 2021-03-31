@@ -40,10 +40,16 @@
     align-items: center;
     font-size: 1.8em;
     z-index: 2;
+    margin-bottom: -1px;
 
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 
+    transition: background-color .3s;
+
     &.info {
+      background: var(--blue);
+    }
+    &.running {
       background: var(--green);
     }
     &.warning {

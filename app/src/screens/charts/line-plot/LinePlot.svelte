@@ -41,8 +41,6 @@
 
   let scales = {}
 
-  $: console.log(scales)
-
   $: availableZones = $activeGroup
     ? $zones.filter(x => x.groups && x.groups.includes($activeGroup))
     : $zones

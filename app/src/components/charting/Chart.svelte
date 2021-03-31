@@ -1,6 +1,5 @@
 <script>
-  import CheckBox from 'components/input/CheckBox.svelte'
-  import Input from 'components/input/Input.svelte'
+  import _ from 'data/language'
   import ChartCanvas from './ChartCanvas.svelte'
   import Scale from './Scale.svelte'
 
@@ -57,6 +56,11 @@
       <p><strong>Zones:</strong> {totalZones}</p>
       <p><strong>Lines:</strong> {totalZones * properties.filter(x => !!x).length}</p>
     </div>
+    {#if stats.loading && !stats.plotFilled}
+      <div class='loading'>
+        {$_('Loading data...')}
+      </div>
+    {/if}
   </div>
 
   <div class='scales'>
@@ -70,6 +74,7 @@
     display: flex;
     border: 1px solid #ddd;
     padding: 24px 16px;
+    position: relative;
   }
   .scales {
     display: flex;
@@ -118,6 +123,17 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 32px;
+  }
+
+  .loading {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background:rgba(0,0, 0, .5);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 </style>
 
