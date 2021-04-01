@@ -34,9 +34,11 @@
       saved: true
     }
 
+    $: reportId = $analysis.reportId
+
     const onSubmit = async () => {
       isDisable = true
-      const res = await api.post('/api/report', report)
+      const res = await api.patch(`/report/${reportId}`, report)
       if (res.id) {
         notify('Changes saved.')
       }
