@@ -5,5 +5,5 @@ const analyses = { fault, wiring }
 
 export const setupAnalysis = report => {
   // console.log(a)
-  analyses[report.reportType].setup(report)
+  if(analyses[report.reportType]) analyses[report.reportType].setup(report)
 }
