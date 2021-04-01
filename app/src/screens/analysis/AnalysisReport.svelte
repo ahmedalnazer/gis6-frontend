@@ -2,7 +2,7 @@
     import { Modal, Input } from 'components'
     import _ from 'data/language'
     import { notify } from 'data/'
-    import TestResults from './TestResults.svelte';
+    import TestResults from './TestResults.svelte'
     import Error from './Error.svelte'
     import api from 'data/api'
 
@@ -14,9 +14,9 @@
     const date = new Date()
 
     const formateDate = () => {
-        const dateOptions = { day: '2-digit', month: '2-digit', year: 'numeric' };
-        const timeOptions = { hour12: true, hour: 'numeric', minute:'numeric' };
-        return `${date.toLocaleDateString('en', dateOptions)} ${date.toLocaleTimeString('en', timeOptions)}`
+      const dateOptions = { day: '2-digit', month: '2-digit', year: 'numeric' }
+      const timeOptions = { hour12: true, hour: 'numeric', minute:'numeric' }
+      return `${date.toLocaleDateString('en', dateOptions)} ${date.toLocaleTimeString('en', timeOptions)}`
     }
 
     let report = {
@@ -31,16 +31,15 @@
       endTime: $analysis.endTime.toISOString(),
       zones: $analysis.zones.length,
       zonesLocked: $analysis.zones.filter(x => x.Islocked).length,
-      errors: $analysis.errors.map(x => ({name: x.zone.name, code: x.type})),
-      path: ''
+      saved: true
     }
 
     const onSubmit = async () => {
-        isDisable = true
-        const res = await api.post('/api/report', report)
-        if (res.id) {
-          notify('Changes saved.')
-        }
+      isDisable = true
+      const res = await api.post('/api/report', report)
+      if (res.id) {
+        notify('Changes saved.')
+      }
     }
   
   </script>

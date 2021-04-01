@@ -155,19 +155,19 @@ dbmsg.write = function (obj, pbf) {
 var mdtmsg = exports.mdtmsg = {};
 
 mdtmsg.read = function (pbf, end) {
-    return pbf.readFields(mdtmsg._readField, {mt: 0, progress: 0, text_message: "", msg: null, dmsg: null}, end);
+    return pbf.readFields(mdtmsg._readField, {mt: 0, progress: 0, dbid: 0, parameters: ""}, end);
 };
 mdtmsg._readField = function (tag, obj, pbf) {
     if (tag === 1) obj.mt = pbf.readVarint();
     else if (tag === 2) obj.progress = pbf.readVarint(true);
-    else if (tag === 3) obj.text_message = pbf.readString(), obj.msg = "text_message";
-    else if (tag === 4) obj.dmsg = dbmsg.read(pbf, pbf.readVarint() + pbf.pos), obj.msg = "dmsg";
+    else if (tag === 100) obj.dbid = pbf.readVarint(true);
+    else if (tag === 101) obj.parameters = pbf.readString();
 };
 mdtmsg.write = function (obj, pbf) {
     if (obj.mt) pbf.writeVarintField(1, obj.mt);
     if (obj.progress) pbf.writeVarintField(2, obj.progress);
-    if (obj.text_message) pbf.writeStringField(3, obj.text_message);
-    if (obj.dmsg) pbf.writeMessage(4, dbmsg.write, obj.dmsg);
+    if (obj.dbid) pbf.writeVarintField(100, obj.dbid);
+    if (obj.parameters) pbf.writeStringField(101, obj.parameters);
 };
 
 // tcdata ========================================

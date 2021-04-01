@@ -1,4 +1,5 @@
 import _ from './i18n'
+export { default as getMessage } from './system_messages'
 
 export default _
 
