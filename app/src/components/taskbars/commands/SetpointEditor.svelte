@@ -49,6 +49,7 @@
   }
 
   const resetFields = () => {
+    console.log('reset field')
     changed = {}
     let target = $activeZones[0] || $zones[0] || {}
     formData = { ...initialFormData }
@@ -109,6 +110,8 @@
   }
 
   let formData = { ...initialFormData }
+  let formDataHistory = []
+  $: console.log(formDataHistory)
 
   const fieldMapping = {
     temperature: 'ProcessSp',
@@ -135,17 +138,33 @@
   const commitChanges = async (_zones) => {
     let update = {}
     for(let field of changedFields) {
+
+      console.log(field)
       const f = fieldMapping[field] || field
       update[f] = formData[field]
       if(tenXfields.includes(field)) update[f] = parseInt(update[f]) * 10 
     }
 
+    console.log(update)
+    formDataHistory.push(update)
+
+    console.log(formDataHistory)
     await zones.update(_zones, update)
 
     // await zones.reload()
     applied = true
     notify.success($_("Changes applied"))
     
+  }
+
+  const undoChanges = async () => {
+    let sdsd = formDataHistory.pop()
+    // formData.temperature = 10
+    // formData["ProcessSp"] = 30
+    formData["temperature"] = 130
+    console.log(formData.temperature)
+    console.log(sdsd)
+    console.log('undoChanges from spe')
   }
 
   const close = async () => {
@@ -186,6 +205,7 @@
       trackHistory
       on:change={resetFields}
       onSubmit={commitChanges}
+      onUndo={undoChanges}
       {valid}
       manualReadout={mode == 'manual'}
     >
