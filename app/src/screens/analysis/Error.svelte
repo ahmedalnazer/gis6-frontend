@@ -1,32 +1,61 @@
 <script>
   import { Icon } from "components"
   import { error_types } from "data/analysis/core"
+  import zones, { getAlarms } from 'data/zones'
+
   export let error
 
-  $: details = error_types[error.type]
+  let alarms
+  let zone
+  let error_type
+
+  $: list = error.zones_list && JSON.parse(error.zones_list)
+  $: zone = error.zone || list && $zones.find(x => x.number == list[0])
+
+  $: {
+    if(error.message_content) {
+      let temp = 0
+      let power = 0    
+      for(let a of error.message_content.arguments) {
+        if(a.type == 'temperatureAlarm') temp = a.value
+        if(a.type == 'powerAlarm') power = a.value
+      }
+      alarms = getAlarms(power, temp)
+      for(let [ key, value ] of Object.entries(alarms)) {
+        if(value) error_type = key
+      }
+    }
+  }
+
+  $: console.log(error_type)
+
+  // $: details = error_types[error.type]
+  $: details = error.type ? error_types[error.type] : error_types[error_type] || {}
 </script>
 
-<div class="error">
-  <div class="name">
-    {error.zone.name}
-  </div>
-  <div class="thumb">
-    <img src={details.icon} alt={details.name} />
-  </div>
-  <div class="desciption">
-    <div class="icon">
-      <Icon icon="warning" color="var(--danger)" />
+{#if zone && details.name}
+  <div class="error">
+    <div class="name">
+      {zone.name}
     </div>
-    <div class="details">
-      <div class="error-name">
-        {details.name}
+    <div class="thumb">
+      <img src={details.icon} alt={details.name} />
+    </div>
+    <div class="desciption">
+      <div class="icon">
+        <Icon icon="warning" color="var(--danger)" />
       </div>
-      <div class="description">
-        {details.description}
+      <div class="details">
+        <div class="error-name">
+          {details.name}
+        </div>
+        <div class="description">
+          {details.description}
+        </div>
       </div>
     </div>
   </div>
-</div>
+{/if}
 
 <style>
   .error {

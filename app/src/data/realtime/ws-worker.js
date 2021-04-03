@@ -190,9 +190,6 @@ onconnect = function(e) {
   const connectionId = id()
 
   const port = e.ports[0]
-  // ports[port] = {
-  //   subscriptions: []
-  // }
 
   port.onmessage = async e => {
     console.log(e.data)
@@ -207,8 +204,6 @@ onconnect = function(e) {
     }
 
     if(data.command == 'close') {
-      console.log('closing')
-      console.log(port, getPortData(port))
       ports = ports.filter(x => x.port != port)
     }
 

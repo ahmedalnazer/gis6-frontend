@@ -26,6 +26,28 @@ export const toggleZones = (zones) => {
   selectedZones.set([ ... new Set(list) ])
 }
 
+export const getAlarms = (power, temp) => {
+  let alarms = {}
+  
+  let map = [ 'tc_open', 'tc_short', 'tc_reversed', 'low', 'high', 'tc_high', 'tc_low', 'tc_power' ]
+  for (let i = 0; i < map.length; i++) {
+    alarms[map[i]] = getBit(temp, i)
+  }
+  alarms.com_loss = getBit(temp, 15)
+
+  map = [
+    'open_heater', 'heater_short', 'open_fuse', 'uncontrolled_input', 'no_voltage', 'ground_fault',
+    'over_current', '', 'cross_wired', 'do_not_heat', 'tc_reversed'
+  ]
+  for (let i = 0; i < map.length; i++) {
+    if (map[i]) {
+      alarms[map[i]] = getBit(power, i)
+    }
+  }
+
+  return alarms
+}
+
 
 const zones = derived([ rawZones, realtime ], ([ $raw, $realtime ]) => {
   let sorted = [ ...$raw ].map((x, i) => {
@@ -40,26 +62,14 @@ const zones = derived([ rawZones, realtime ], ([ $raw, $realtime ]) => {
     if (merged.temp_alarm && merged.temp_alarm != 16) {
       merged.hasAlarm = true
       merged.hasTempAlarm = true
-      let map = [ 'tc_open', 'tc_short', 'tc_reversed', 'low', 'high', 'tc_high', 'tc_low', 'tc_power' ]
-      for(let i = 0; i < map.length; i++) {
-        merged.alarms[map[i]] = getBit(merged.temp_alarm, i)
-      }
-      merged.alarms.com_loss = getBit(merged.temp_alarm, 15)
     }
     if (merged.power_alarm) {
       // console.log('POWER ALARM', merged.power_alarm)
       merged.hasAlarm = true
       merged.hasPowerAlarm = true
-      let map = [
-        'open_heater', 'heater_short', 'open_fuse', 'uncontrolled_input', 'no_voltage', 'ground_fault', 
-        'over_current', '', 'cross_wired', 'do_not_heat', 'tc_reversed'
-      ]
-      for(let i = 0; i < map.length; i++) {
-        if(map[i]) {
-          merged.alarms[map[i]] = getBit(merged.power_alarm, i)
-        }
-      }
     }
+
+    merged.alarms = getAlarms(merged.power_alarm, merged.temp_alarm)
     
     if (merged.alarms.cross_wired) {
       merged.alarms.crosswired_with = merged.temp_sp

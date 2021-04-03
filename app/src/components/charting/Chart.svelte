@@ -56,18 +56,17 @@
       <p><strong>Zones:</strong> {totalZones}</p>
       <p><strong>Lines:</strong> {totalZones * properties.filter(x => !!x).length}</p>
     </div>
+    {#if stats.loading && !stats.plotFilled}
+      <div class='loading'>
+        {$_('Loading data...')}
+      </div>
+    {/if}
   </div>
 
   <div class='scales'>
     <Scale property={properties[1]} {stats} color={colors[2]} />
     <Scale property={properties[3]} {stats} color={colors[4]} />
   </div>
-
-  {#if stats.loading}
-    <div class='loading'>
-      {$_('Loading data...')}
-    </div>
-  {/if}
 </div>
 
 <style lang="scss">
@@ -128,10 +127,8 @@
 
   .loading {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    bottom: 0;
+    right: 0;
     background:rgba(0,0, 0, .5);
     color: white;
     display: flex;
