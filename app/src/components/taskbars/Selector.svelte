@@ -19,13 +19,9 @@
 
   export let getUndoAction = _zones => {
     const cached = _zones.map(x => ({ ...x }))
-    // console.log("cached")
-    // console.log(cached)
 
     return async () => {
       for(let z of cached) {
-        // console.log(`id: ${z.id} / ProcessSp: ${z.ProcessSp}`)
-        // console.log()
         await zones.update(z, z, { skipReload: true })
       }
       await zones.reload()
@@ -43,13 +39,8 @@
     if(trackHistory) {
       const curState = { ...applied }
       const undoAction = getUndoAction(zones)
-      // console.log(curState)
 
       const undoFn = () => {
-        // console.log('undoFn')
-        // console.log(applied)
-        // console.log(curState)
-
         applied = curState
         undoAction()
         onUndo()
@@ -58,9 +49,6 @@
       history = history.concat(undoFn)
     }
     onSubmit(zones)
-
-    console.log("history")
-    console.log(history)
   }
 
   const undo = () => {

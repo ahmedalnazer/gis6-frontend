@@ -27,7 +27,7 @@ const getZoneGroup = z => {
   zones.subscribe(x => zlist = x)()
 
   let grpnames = []
-  debugger
+  
   if (z.length > 0 && zlist.length == z.length) {
     grpnames.push('All Zones')
   } else {
