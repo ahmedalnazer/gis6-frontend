@@ -19,7 +19,7 @@ export function smooth(ctx, points, color, width) {
     return true
   }
   ctx.moveTo(points[0].x, points[0].y)
-  for (var i = 1; i < points.length - 2; i++) {
+  for (var i = 0; i < points.length - 2; i++) {
     // ctx.lineTo(points[i].x, points[i].y)
     var xc = (points[i].x + points[i + 1].x) / 2
     var yc = (points[i].y + points[i + 1].y) / 2

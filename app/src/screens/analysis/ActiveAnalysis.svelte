@@ -2,7 +2,7 @@
   import { Progress } from "components"
   import faultAnalysis from "data/analysis/fault"
   import wiringAnalysis from "data/analysis/wiring"
-  import _ from "data/language"
+  import _, { getMessage } from "data/language"
   import Error from "./Error.svelte"
   import TestResults from "./TestResults.svelte"
 
@@ -14,6 +14,16 @@
   }
   
   $: analysis = analyses[type]
+
+  let textBox
+  $: messages = ($analysis.log || []).map(x => $getMessage(x.id, x))
+
+  $: {
+    if(textBox && messages.length) {
+      textBox.scrollTop = textBox.scrollHeight
+    }
+  }
+
 </script>
 
 <div class="analysis">
@@ -23,8 +33,11 @@
     <div class="status">
       <h2>{$_("Test Status")}</h2>
       <div class="status-wrapper">
-        <div class="text">
-          <p>{$analysis.status}</p>
+        <div class="text" bind:this={textBox}>
+          {#each messages as message}
+            <p>{message}</p>
+          {/each}
+          <!-- <p>{$analysis.status}</p> -->
         </div>
         <div class="progress">
           <p>{$analysis.progress_message}</p>
@@ -61,9 +74,13 @@
 
   .text {
     margin-top: 20px;
+    max-height: 100px;
+    overflow: auto;
   }
+
   .text p {
     margin: 0;
+    margin-top: 4px;
     font-size: 20px;
     font-weight: 600;
   }

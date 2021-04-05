@@ -1,32 +1,38 @@
 <script>
-  import { Icon } from "components";
-  import { error_types } from "data/analysis/core";
-  export let error;
+  import { Icon } from "components"
+  import { error_types } from "data/analysis/core"
+  import zones from 'data/zones'
 
-  $: details = error_types[error.type];
+  export let error
+
+  $: zone = error.zone && error.zone.id ? error.zone : $zones.find(x => x.number == error.zone)
+
+  $: details = error_types[error.type]
 </script>
 
-<div class="error">
-  <div class="name">
-    {error.zone.name}
-  </div>
-  <div class="thumb">
-    <img src={details.icon} alt={details.name} />
-  </div>
-  <div class="desciption">
-    <div class="icon">
-      <Icon icon="warning" color="var(--danger)" />
+{#if zone && details.name}
+  <div class="error">
+    <div class="name">
+      {zone.name}
     </div>
-    <div class="details">
-      <div class="error-name">
-        {details.name}
+    <div class="thumb">
+      <img src={details.icon} alt={details.name} />
+    </div>
+    <div class="desciption">
+      <div class="icon">
+        <Icon icon="warning" color="var(--danger)" />
       </div>
-      <div class="description">
-        {details.description}
+      <div class="details">
+        <div class="error-name">
+          {details.name}
+        </div>
+        <div class="description">
+          {details.description}
+        </div>
       </div>
     </div>
   </div>
-</div>
+{/if}
 
 <style>
   .error {

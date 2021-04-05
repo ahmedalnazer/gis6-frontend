@@ -8,6 +8,18 @@
   import globalSettings from 'data/globalSettings'
 
   export let onClose
+  const keypadcontrols1 = {
+    negativeSign: true,
+    rangeMin: 10,
+    rangeMax: 20,
+    decimalPlace: 1,
+  }
+
+  const keypadcontrols2 = {
+    rangeMin: 10,
+    rangeMax: 20,
+    integerOnly: true,
+  }
 
   let boostTemp = $globalSettings.BoostTemperatureSP / 10
   let time = $globalSettings.BoostTimeSP / 60
@@ -30,11 +42,11 @@
 </script>
 
 <Modal title={$_('Boost')} {onClose}>
-  <Selector onSubmit={boost} onDone={onClose}>
+  <Selector onSubmit={boost}>
     <h2>Edit</h2>
     <div class='grid'>
-      <Input type='number' bind:value={boostTemp} label='{$_('Boost Amount')}  (&#176;C)' />
-      <Input type='number' bind:value={time} label='{$_('Boost Time (min)')}' />
+      <Input type='number' keypadcontrols={keypadcontrols1} bind:value={boostTemp} label='{$_('Boost Amount')}  (&#176;C)' />
+      <Input type='number' keypadcontrols={keypadcontrols2} bind:value={time} label='{$_('Boost Time (min)')}' />
       <Input type='number' bind:value={recoveryTime} label='{$_('Recovery Time (min)')}' />
     </div>
 

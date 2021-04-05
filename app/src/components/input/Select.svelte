@@ -1,9 +1,15 @@
 <script>
+  import { createEventDispatcher } from 'svelte'
   import Select from 'svelte-select'
+
+  const dispatch = createEventDispatcher()
+
   export let options = []
   
   export let id = 'id'
   export let value
+  export let changed = false
+  export let trackChange = false
   export let label = ''
   export let display = false
   export let valueLabel = ''
@@ -24,6 +30,10 @@
   const select = e => {
     value = e.detail[id]
     selectedValue = e.detail
+    dispatch('change', e)
+    if(trackChange) {
+      changed = true
+    }
   }
 </script>
 
@@ -36,7 +46,7 @@
       {selectedLabel}
     </div>
   {:else}
-    <div class='select'>
+    <div class='select' class:changed>
       <Select 
         items={options}
         {...$$restProps}
@@ -58,10 +68,12 @@
   .select {
     min-width: 200px;
     position: relative;
+    background: var(--pale);
+    border: 1px solid var(--pale);
     --border: 0;
-    --background: var(--pale);
+    --background: transparent;
     --padding: 16px 8px;
-    --height: 52px;
+    --height: 50px;
   }
   .display {
     min-width: 200px;
@@ -85,5 +97,10 @@
     border-left: 10px solid transparent;
     border-right: 10px solid transparent;
     border-top: 10px solid var(--blue);
+  }
+
+  .changed {
+    background-color: rgba(53, 138, 188, 0.2);
+    border: 1px solid var(--primary);
   }
 </style>

@@ -1,20 +1,14 @@
 <script>
   import Screen from 'layout/Screen.svelte'
   import GroupSelector from 'components/GroupSelector.svelte'
-  // import { Modal, CheckBox } from 'components'
   import { activeGroup } from "data/groups"
   import ZoneTasks from 'components/taskbars/ZoneTasks.svelte'
-  // import ZoneRow from '../easy-screen/ZoneRow.svelte'
-  // import ZoneNamesRow from './ZoneNamesRow.svelte'
-  // import Grouping from 'components/Grouping.svelte'
   import ZoneNamesGrouping from './ZoneNamesGrouping.svelte'
-  // import ZoneNameGroup from './ZoneNamesGroup.svelte'
-  // import ZoneGroup from "../groups/ZoneGroup.svelte"
   import { selectedZones as _selected } from 'data/zones'
   import _ from 'data/language'
   import ManageTypes from './ManageTypes.svelte'
   import ZoneTypesData from './ZoneTypesData.svelte'
-
+  
   $: selectedGroup = $activeGroup
   let sortGroups = true
   let selection = []
@@ -26,22 +20,6 @@
     selection = []
     _selected.set([])
   }
-    
-  // $: {
-  //   if(sortGroups) {
-  //     _selected.set(selectionZones.map(x => x.zone))
-  //   }
-  // }
-
-  // $: allSelected = $_selected.length == displayedZones.length
-
-  // const toggleAll = () => {
-  //   if($_selected.length) {
-  //     _selected.set([])
-  //   } else {
-  //     _selected.set(displayedZones.map(x => x.id))
-  //   }
-  // }
 </script>
 
 <Screen title={$_('Zone Names')} id="zone-names" back='/hot-runner'>

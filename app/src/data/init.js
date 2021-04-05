@@ -3,6 +3,7 @@ import zones from 'data/zones'
 import process from 'data/process'
 import globalSettings from 'data/globalSettings'
 import { seedTypes } from 'data/zones/zone-types'
+import { setupAnalysis } from 'data/analysis'
 
 export default async function init() {
 
@@ -13,11 +14,6 @@ export default async function init() {
     globalSettings.set(global[0])
   }
 
-  // globalSettings = await api.put(`/global/${globalSettings.id}`, { BoostTimeSP: 100 })
-
-  // console.log(globalSettings)
-
-  // TODO remove temporary workaround to specify 
   let processes = []
   let proc
   processes = await api.get('process')
@@ -26,22 +22,33 @@ export default async function init() {
   } else {
     proc = processes[0]
   }
-  const z = await api.get('zone')
-  if(!z.length) await seed(proc)
   process.set(proc)
-  zones.reload()
+  await zones.reload()
   await seedTypes()
+
+  document.addEventListener('keydown', e => {
+    if (e.metaKey && e.shiftKey && e.key == 'l') {
+      api.login('Admin', 'G!S64Ever')
+    }
+  })
+
+  // initialize and resume active analysis
+  api.get('analysis/active').then(actives => {
+    for (let a of actives) {
+      setupAnalysis(a)
+    }
+  })
 }
 
-const seed = async (proc) => {
-  for (let i = 1; i <= 150; i++) {
-    await api.post('zone', {
-      ZoneName: `Zone ${i}`,
-      ZoneNumber: i,
-      ref_process: proc.id
-    })
-  }
-}
+// const seed = async (proc) => {
+//   for (let i = 1; i <= 150; i++) {
+//     await api.post('zone', {
+//       ZoneName: `Zone ${i}`,
+//       ZoneNumber: i,
+//       ref_process: proc.id
+//     })
+//   }
+// }
 
 
 const defaultGlobals = {

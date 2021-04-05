@@ -1,5 +1,6 @@
 import { realtime } from 'data/zones'
 import { sysInfo, mdtMsg } from 'data/globalSettings'
+
 // import './ws-worker.mjs'
 
 const socketTarget = import.meta.env.SNOWPACK_PUBLIC_WS_URL || `ws://localhost:8080`
@@ -30,8 +31,11 @@ worker.port.onmessage = e => {
   }
 }
 
-
-const createSocket = () => {
+/**
+ * Initialize websocket connection
+ * @returns null
+ */
+function createSocket () {
   worker.port.postMessage({
     command: 'start',
     target: socketTarget,
@@ -45,3 +49,14 @@ const createSocket = () => {
 }
 
 export default createSocket
+
+
+export const updateBufferParams = params => {
+  localStorage.setItem('buffer-params', JSON.stringify(params))
+  worker.port.postMessage({ comand: 'bufferParams', params })
+}
+
+const paramString = window.localStorage.getItem('buffer-params') || '{}'
+const params = JSON.parse(paramString)
+
+updateBufferParams(params)

@@ -6,14 +6,14 @@ let buffer = {
 
 export default buffer
 
-buffer.write = function({ ts, data }) {
-  const date = new Date(ts)
-  buffer.entries.push({ data, date, time: ts })
-  buffer.entries = buffer.entries.slice(-7500)
+
+buffer.write = function(data) {
+  // console.log('updating', data)
+  buffer.entries = [ ...buffer.entries, ...data ].slice(-7500)
+  buffer.entries.sort((a, b) => a.time - b.time)
   if(!buffer.paused) {
     buffer.active = [ ...buffer.entries ]
   }
-  // console.log(buffer.entries.length)
 }
 buffer.play = () => buffer.paused = false
 buffer.pause = () => buffer.paused = true

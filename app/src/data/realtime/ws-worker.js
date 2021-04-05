@@ -1,7 +1,6 @@
 import Pbf from 'pbf'
 import { tcdata, minmax, unknown_msg, tczone, sysinfo, mdtmsg } from './decode.proto'
-
-console.log('worker updated')
+import dataBuffer, { bufferCommands } from './buffer'
 
 const messageTypes = { tcdata, minmax, unknown_msg, tczone, sysinfo, mdtmsg }
 
@@ -64,6 +63,7 @@ const initiate = async () => {
   for(let fn of queue) {
     fn()
   }
+  connect()
 }
 
 
@@ -105,6 +105,10 @@ const createSocket = () => new Promise((resolve, reject) => {
 
       // ports[0].port.postMessage(data)
 
+      if(mt == 6) {
+        dataBuffer.write({ ts, data: data.records })
+      }
+
       for(let { port, subscriptions } of ports) {
         if(subscriptions.includes(type)) {
           port.postMessage({ ts, data })
@@ -134,23 +138,12 @@ const send = async msg => {
 }
 
 const connect = async () => {
-  for(let channel of activeChannels.filter(x => !connectedChannels.includes(x))) {
+  let toConnect = activeChannels.filter(x => !connectedChannels.includes(x))
+  connectedChannels = [ ...activeChannels ]
+  for(let channel of toConnect) {
     await send(`+${channel}`)
   }
-  connectedChannels = [ ...activeChannels ]
 }
-
-// onmessage = async e => {
-//   const { data } = e
-//   if (data.command == 'start') {
-//     socketTarget = data.target
-//   }
-//   if (data.command == 'connect') {
-//     for (let channel of data.channels) {
-//       await send(`+${channel}`)
-//     }
-//   }
-// }
 
 
 function getString(array) {
@@ -188,11 +181,15 @@ function getString(array) {
 }
 
 
+const id = () => {
+  return '_' + Math.random().toString(36).substr(2, 9)
+}
+
 onconnect = function(e) {
+
+  const connectionId = id()
+
   const port = e.ports[0]
-  // ports[port] = {
-  //   subscriptions: []
-  // }
 
   port.onmessage = async e => {
     console.log(e.data)
@@ -207,9 +204,9 @@ onconnect = function(e) {
     }
 
     if(data.command == 'close') {
-      console.log('closing')
-      console.log(port, getPortData(port))
       ports = ports.filter(x => x.port != port)
     }
+
+    bufferCommands(port, e, connectionId)
   }
 }

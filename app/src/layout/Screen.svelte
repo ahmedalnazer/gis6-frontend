@@ -4,9 +4,11 @@
   import history, { goBack } from 'router/history'
   import IconBackArrow from 'style/images/icon_backarrow.svelte'
   import { onMount } from 'svelte'
+
   export let dashboard = false
   export let title = ''
   export let group = null
+  export let scroll = true
   let backUrl = ''
   export { backUrl as back }
 
@@ -25,7 +27,7 @@
       },
       plot: {
         name: $_('Line'),
-        title: $_('Line Plot'),
+        title: $_('Line Graph'),
         url: '/charts/line-plot'
       }
     }
@@ -82,16 +84,17 @@
   {#if !dashboard}
     <div class='screen-header'>
       <div class='back' on:click={back}>
-        <IconBackArrow width="45" height="45" />
+        <IconBackArrow width="30" height="30" />
       </div>
       {#if options.length}
         <Select isSearchable={false} selectedItemLabel='title'  bind:value={selectedScreen} options={options} />
       {:else}
         <h1>{title}</h1>
       {/if}
+      <slot name='header' />
     </div>
   {/if}
-  <main class="screen-body">
+  <main class="screen-body" class:scroll>
     <slot />
   </main>
 </div>
@@ -109,15 +112,21 @@
 
 
 <style lang="scss">
+  h1 {
+    font-size: 26px;
+    padding: 0;
+    margin: 0;
+  }
   .screen-header {
     display: flex;
-    padding: 16px 32px;
-    align-items: center;
+    padding: 32px;
+    align-items: flex-start;
     // z-index: 3;   // Commented
   }
 
   .back {
-    margin-right: 32px;
+    margin-right: 16px;
+    margin-left: 4px;
     :global(svg path) {
       fill: var(--primary);
     }
@@ -125,13 +134,15 @@
 
   .screen-body {
     padding: 40px;
-    overflow: auto;
     display: flex;
     flex-direction: column;
+    &.scroll {
+      overflow: auto;
+    }
   }
   
   .screen-header + .screen-body {
-    padding-top: 16px;
+    padding-top: 20px;
   }
 
   .tasks {
@@ -178,14 +189,17 @@
   .screen-header :global(.select) {
     min-width: 200px;
     position: relative;
+    border: 0;
     --border: 0;
     --background: white;
     --padding: 0px 8px;
     --inputFontSize: 26px;
-    // --height: 32px;
+    --height: 32px;
   }
   .screen-header :global(.select .selectedItem) {
     font-size: 26px;
+    line-height: 26px !important;
+    height: auto !important;
     font-weight: 600;
     padding-right: 48px;
   }

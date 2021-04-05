@@ -1,6 +1,6 @@
 import { writable, derived } from 'svelte/store'
 import api from 'data/api'
-import { id } from '../tools'
+import { id } from '../utils/tools'
 
 const getBit = (int, bit) => !!(int & 1 << bit)
 
@@ -8,6 +8,7 @@ const rawZones = writable([])
 export const realtime = writable([])
 
 export const selectedZones = writable([])
+
 export const toggleZones = (zones) => {
   if (!Array.isArray(zones)) {
     zones = [ zones ]
@@ -25,6 +26,28 @@ export const toggleZones = (zones) => {
   selectedZones.set([ ... new Set(list) ])
 }
 
+export const getAlarms = (power, temp) => {
+  let alarms = {}
+  
+  let map = [ 'tc_open', 'tc_short', 'tc_reversed', 'low', 'high', 'tc_high', 'tc_low', 'tc_power' ]
+  for (let i = 0; i < map.length; i++) {
+    alarms[map[i]] = getBit(temp, i)
+  }
+  alarms.com_loss = getBit(temp, 15)
+
+  map = [
+    'open_heater', 'heater_short', 'open_fuse', 'uncontrolled_input', 'no_voltage', 'ground_fault',
+    'over_current', '', 'cross_wired', 'do_not_heat', 'tc_reversed'
+  ]
+  for (let i = 0; i < map.length; i++) {
+    if (map[i]) {
+      alarms[map[i]] = getBit(power, i)
+    }
+  }
+
+  return alarms
+}
+
 
 const zones = derived([ rawZones, realtime ], ([ $raw, $realtime ]) => {
   let sorted = [ ...$raw ].map((x, i) => {
@@ -35,29 +58,20 @@ const zones = derived([ rawZones, realtime ], ([ $raw, $realtime ]) => {
     merged.hasAlarm = false
     merged.hasTempAlarm = false
     merged.hasPowerAlarm = false
-    if (merged.temp_alarm && merged.temp_alarm != 16) {
+
+    if (merged.temperature_alarm && merged.temperature_alarm != 16 && merged.temperature_alarm != 8) {
       merged.hasAlarm = true
       merged.hasTempAlarm = true
-      let map = [ 'tc_open', 'tc_short', 'tc_reversed', 'low', 'high', 'tc_high', 'tc_low', 'tc_power' ]
-      for(let i = 0; i < map.length; i++) {
-        merged.alarms[map[i]] = getBit(merged.temp_alarm, i)
-      }
-      merged.alarms.com_loss = getBit(merged.temp_alarm, 15)
     }
     if (merged.power_alarm) {
       // console.log('POWER ALARM', merged.power_alarm)
       merged.hasAlarm = true
       merged.hasPowerAlarm = true
-      let map = [
-        'open_heater', 'heater_short', 'open_fuse', 'uncontrolled_input', 'no_voltage', 'ground_fault', 
-        'over_current', '', 'cross_wired', 'do_not_heat', 'tc_reversed'
-      ]
-      for(let i = 0; i < map.length; i++) {
-        if(map[i]) {
-          merged.alarms[map[i]] = getBit(merged.power_alarm, i)
-        }
-      }
     }
+
+    // console.log(merged)
+
+    merged.alarms = getAlarms(merged.power_alarm, merged.temperature_alarm)
     
     if (merged.alarms.cross_wired) {
       merged.alarms.crosswired_with = merged.temp_sp
@@ -75,8 +89,19 @@ const zones = derived([ rawZones, realtime ], ([ $raw, $realtime ]) => {
         test_complete: getBit(merged._settings, 7)
       }
     }
+
+    const deviation = Math.max(30, merged.DeviationSp || 0)
+
+    const trackDev = merged.settings.auto && merged.settings.on
+
+    merged.falling = trackDev && merged.actual_temp > merged.temp_sp + deviation
+    merged.rising = trackDev && merged.actual_temp < merged.temp_sp - deviation
+
+    merged.hasWarning = merged.falling || merged.rising
+
     return merged
   })
+  
   var collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' })
   sorted.sort((a, b) => collator.compare(a.name, b.name))
   // console.log(sorted[0] && sorted[0].alarms)
@@ -100,22 +125,13 @@ const decodeZone = z => {
 }
 
 const clean = z => {
-  delete z.name
-  delete z.number
-  delete z.groups
-  delete z.actual_current
-  delete z.actual_temp
-  delete z.actual_percent
-  delete z.power_alarm
-  delete z.settings
-  delete z.temp_alarm
-  delete z.temp_sp
-  delete z.manual_sp
-  delete z._settings
-  delete z.alarms
-  delete z.hasAlarm
-  delete z.hasTempAlarm
-  delete z.hasPowerAlarm
+  const dirty = [ 'name', 'number', 'groups', 'actual_current', 'actual_percent', 'actual_temp', 'power_alarm', 
+    'temp_alarm', 'settings', 'temp_sp', 'manual_sp', '_settings', 'alarms', 'hasAlarm', 'hasTempAlarm', 
+    'hasPowerAlarm', 'ZoneGroups', 'rising', 'falling', 'hasWarning'
+  ]
+  for(let f of dirty) {
+    delete z[f]
+  }
   return z
 }
 
@@ -153,11 +169,16 @@ zones.set = rawZones.set
  */
 zones.update = async (updatedZones, update, options = {}) => {
   if(!Array.isArray(updatedZones)) updatedZones = [ updatedZones ]
+
   const url = `/zones/${options.actions || ''}`
+  
+  let updateData = clean(update)
+  delete updateData.ZoneGroups
+
   const data = {
     ref_process_id: updatedZones[0].ref_process,
-    zones: updatedZones.map(x => x.number),
-    data: clean(update)
+    zones: updatedZones.map(x => x.number || x.ZoneNumber),
+    data: updateData
   }
   await api.post(url, data)
   // await api.put(`zone/${zone.id}`, encodeZone(zone))

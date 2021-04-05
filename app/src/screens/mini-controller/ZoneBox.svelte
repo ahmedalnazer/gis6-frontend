@@ -15,8 +15,6 @@
     ? zoneGroups.map(x => x.color)
     : [ '#00E5FF' ]
 
-  $: deviation = Math.max(30, zone.DeviationSp || 0)
-
   $: settings = zone.settings || {}
 
   $: manual = !settings.auto
@@ -26,10 +24,9 @@
   $: locked = settings.locked
   $: boost = settings.boost
   $: standby = settings.standby
-  $: live =  on && !locked &&  zone.actual_temp !== undefined
 
-  $: falling = !manual && live && zone.actual_temp > setpoint + deviation
-  $: rising = !manual && live && zone.actual_temp < setpoint - deviation
+  $: falling = zone.falling
+  $: rising = zone.rising
 
   $: tempWarning = !boost && !standby && (falling || rising)
 
@@ -48,6 +45,8 @@
     selectedZones.set([ zone.id ])
     activeSetpointEditor.set('setpoint')
   }
+
+  // $: {if(zone.hasTempAlarm || zone.hasPowerAlarm) console.log(zone.alarms)}
 </script>
 
 

@@ -21,16 +21,26 @@
     let openKeyboard = false
     let openKeypad = false
     let enableSave = false
-    export let showManageZoneType = false
 
+    let currentItemSelectedId = 0
+    let currentItemSelectedName = ''
+
+    export let showManageZoneType = false
     export let keypadAnchor = null
 
+    const keypadcontrols1 = {
+      rangeMin: 1,
+      rangeMax: 450,
+      integerOnly: true,
+    }
+    
     $: defaultTypes = $zoneTypes.filter(x => x.isDefault)
     let customTypes = $zoneTypes.filter(x => !x.isDefault)
     $: zoneTypeValues = getZoneTypesDisplayData([ ...$zoneTypes ])
     $: showCustomKB = zoneTypeName == 0
     $: { showCustomKB? showKeyboard(): null }
     $: enableSave =  getEnableSaveValue(selection, zoneTypeName, zoneTypeCustomName, indexStart) 
+    $: setZoneTypeCustomName(zoneTypeName)
 
     const getEnableSaveValue = (selectedItemsValue, zoneTypeNameValue, zoneTypeCustomNameValue, indexStartValue) => {
       let canSave = false
@@ -47,11 +57,12 @@
     }
 
     const getZoneTypesDisplayData = (currZoneTypes) => {
-      let hasCustom = (currZoneTypes || []).filter(x => x.id == 0)
-      let defaultZoneTypes = currZoneTypes.filter(x => x.isDefault && x.isVisible)
-      let customZoneTypes = currZoneTypes.filter(x => !x.isDefault && x.isVisible)
-      customZoneTypes = customZoneTypes.map((x) => { x.name += ' (custom)'; return x})
-      let selectZoneTypes = defaultZoneTypes.concat(customZoneTypes)
+      let zoneTypesCopy = currZoneTypes.map(x => ({ ...x })) // Make a copy of the array
+      let hasCustom = (zoneTypesCopy || []).filter(x => x.id == 0)
+      let defaultZoneTypes = zoneTypesCopy.filter(x => x.isDefault && x.isVisible)
+      zoneTypesCopy = zoneTypesCopy.filter(x => !x.isDefault && x.isVisible)
+      zoneTypesCopy = zoneTypesCopy.map((x) => { x.name += ' (custom)'; return x})
+      let selectZoneTypes = defaultZoneTypes.concat(zoneTypesCopy)
 
       if (! (hasCustom || []).length) {
         selectZoneTypes.push({ id: 0, name: "Custom", isDefault: true, isVisible: true })
@@ -62,11 +73,17 @@
 
     const setGroupName = async (itemSelected, itemStartIndex, itemZoneName) => { 
       indexStartIncr = itemStartIndex
+      itemSelected = itemSelected.sort()
       for(let selectionItem of itemSelected) { 
         let currZone = $zones.filter(x => x.id == selectionItem)
         if (currZone.length) {
+          const currentType = $zoneTypes.find(x => x.name == itemZoneName)
+          if(!currentType) {
+            await zoneTypes.create({ name: itemZoneName, isDefault: false, isVisible: true })
+          }
+
           await api.put(`zone/${currZone[0].id}`, { ...currZone[0], ZoneName: `${itemZoneName} ${indexStartIncr}` })
-          console.log(`${selectionItem} ${currZone[0].id}: ${itemZoneName} ${indexStartIncr} ${currZone[0]}`)
+          // console.log(`${selectionItem} ${currZone[0].id}: ${itemZoneName} ${indexStartIncr} ${currZone[0]}`)
         }
 
         indexStartIncr++
@@ -77,7 +94,11 @@
       // Process if the dropdown value is selected
       let ztname = ''
 
-      if (selection.length && zoneTypeName == 0 && zoneTypeCustomName !== '') {
+      if (selection.length && currentItemSelectedId == 0 && zoneTypeCustomName !== '') {
+        // Custom name edited thru default
+        ztname = zoneTypeCustomName
+      }
+      else if (selection.length && zoneTypeName == 0 && zoneTypeCustomName !== '') {
         // Custom name
         ztname = zoneTypeCustomName
       }
@@ -108,9 +129,35 @@
       openKeypad = true
     }
 
+    const setZoneTypeCustomName = (zoneTypeCustomNameValue) => {
+      // Set the zone type edit value based on the select change
+      if (zoneTypeCustomNameValue) {
+        let selZoneNameChange = $zoneTypes.filter(x => x.id == zoneTypeCustomNameValue)
+        let zoneNameVal = ''
+        if (selZoneNameChange.length > 0) {
+          zoneNameVal = selZoneNameChange[0].name
+          currentItemSelectedName = selZoneNameChange[0].name
+          currentItemSelectedId = selZoneNameChange[0].id
+        }
+        zoneTypeCustomName = zoneNameVal
+      }
+    }
+
     const getKeyboardText = (textobj) => {
-      console.log(textobj.detail.done)
       zoneTypeCustomName = textobj.detail.done
+
+      if (currentItemSelectedName !== zoneTypeCustomName) {
+        // Create as new custome zone
+        let containsZoneName = $zoneTypes.filter(x => x.name == zoneTypeCustomName)
+        if (containsZoneName.length > 0) {
+          // If the zone exist then repoint there
+          currentItemSelectedId = containsZoneName[0].id
+          zoneTypeName = currentItemSelectedId
+        }
+        else {
+          currentItemSelectedId = 0 //Custom
+        }
+      }
     }
 
     const clearZoneTypeCustomName = () => {
@@ -122,7 +169,7 @@
     <h2>{$_('Select zone type and index number')}</h2>
     <div class="zone-type-container">
         <div>
-          <Select isSearchable={true} label={$_("Zone type")} bind:value={zoneTypeName} options={zoneTypeValues || []} />
+          <Select isSearchable={true} listPlacement='top' label={$_("Zone type")} bind:value={zoneTypeName} options={zoneTypeValues || []} />
 
           {#if zoneTypeCustomName !== ''}
           <div class="zone-type-index-desc">
@@ -136,6 +183,7 @@
                 label="{$_('Index start number')}"
                 type="number"
                 bind:value={indexStart}
+                keypadcontrols={keypadcontrols1}
                 style="width:100%;"
             />
             <!-- <input type="text" class="input" /> -->
@@ -166,7 +214,7 @@
 {/if}
 
 {#if openKeypad}
-  <KeyPad anchor={keypadAnchor} value="{indexStart}" bind:onModalOpen={openKeypad} bind:keypadValue on:keypadClosed={(val) => { indexStart = val.detail.closed; openKeypad = false }} />
+  <KeyPad anchor={keypadAnchor} value="{indexStart}" bind:onModalOpen={openKeypad} bind:keypadValue on:keypadClosed={(val) => { indexStart = val.detail.closed; openKeypad = false }} keypadcontrols={keypadcontrols1} />
 {/if}
 
 <style lang="scss">
@@ -182,13 +230,6 @@
       padding-top: 0;
       margin-top: 0;
     }
-  }
-
-  .zone-names-footer {
-    display: grid;
-    grid-template-columns: repeat(1, 1fr);
-    padding: 5px;
-    padding-top: 20px;
   }
 
   .zone-footer-text {
@@ -215,7 +256,7 @@
 
     .zone-type-index-desc {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: 2fr 1fr;
         gap: 16px;
         align-items: center;
         padding: 10px;

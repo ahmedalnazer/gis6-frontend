@@ -1,15 +1,25 @@
 <script>
+  import { createEventDispatcher } from 'svelte'
   export let onClick = false
   export let checked = false
   export let minus = false
   export let label = ''
+  export let changed = false
+  export let trackChange = false
+  export let controlled = false
+
+  const dispatch = createEventDispatcher()
+
 </script>
 
-<div class='input checkbox'>
+<div class='input checkbox' class:changed class:trackChange>
   <label on:click={() => {
     onClick 
       ? onClick()
-      : checked = !checked
+      : !controlled && (checked = minus ? false : !checked)
+    dispatch('change')
+    dispatch('click')
+    if(trackChange) changed = true
   }}>
     <div class='check' class:checked class:minus>
       {#if checked}
@@ -36,10 +46,15 @@
 <style lang="scss">
   .input.checkbox {
     display: inline-flex;
+    height: 52px;
+    border: 1px solid transparent;
+    padding: 16px;
+    padding-left: 0;
   }
   label {
     display: flex !important;
     align-items: center;
+    margin: 0;
   }
 
   .check {
@@ -77,5 +92,14 @@
     background: white;
     left: calc(50% - 6px);
     top: calc(50% - 2px);
+  }
+
+  .input.trackChange, .input.changed {
+    padding-left: 16px;
+  }
+
+  .input.changed {
+    background-color: rgba(53, 138, 188, 0.2);
+    border: 1px solid var(--primary);
   }
 </style>
