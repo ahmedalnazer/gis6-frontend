@@ -182,9 +182,6 @@
       histValsPrev = formDataHistory[formDataHistory.length -1]
     }
 
-    // formDataHistory[formDataHistory.filter(x => x.hasOwnProperty('ProcessSp')).length -1]
-
-
     // Compare with the prev arr and find unique key/values
     // History stacks previous change and current change into the latest history change array.
     for(let [ objKey, objValue ] of Object.entries(histVals)) { 
@@ -224,6 +221,10 @@
               objValue = initialLoadData[dataKey]
               formData[dataKey] = objValue
               changed[dataKey] = false
+              if (dataKey == 'TuningType') {
+                // Fix for select changed binding
+                setTimeout(() => changed.TuningType = false, 300)
+              }
             }
           }            
           else if(tenXfields.includes(dataKey)) {
