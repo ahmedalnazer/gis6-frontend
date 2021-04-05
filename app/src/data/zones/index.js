@@ -59,7 +59,7 @@ const zones = derived([ rawZones, realtime ], ([ $raw, $realtime ]) => {
     merged.hasTempAlarm = false
     merged.hasPowerAlarm = false
 
-    if (merged.temp_alarm && merged.temp_alarm != 16) {
+    if (merged.temperature_alarm && merged.temperature_alarm != 16 && merged.temperature_alarm != 8) {
       merged.hasAlarm = true
       merged.hasTempAlarm = true
     }
@@ -69,7 +69,9 @@ const zones = derived([ rawZones, realtime ], ([ $raw, $realtime ]) => {
       merged.hasPowerAlarm = true
     }
 
-    merged.alarms = getAlarms(merged.power_alarm, merged.temp_alarm)
+    // console.log(merged)
+
+    merged.alarms = getAlarms(merged.power_alarm, merged.temperature_alarm)
     
     if (merged.alarms.cross_wired) {
       merged.alarms.crosswired_with = merged.temp_sp

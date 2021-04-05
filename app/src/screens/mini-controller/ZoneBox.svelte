@@ -45,6 +45,8 @@
     selectedZones.set([ zone.id ])
     activeSetpointEditor.set('setpoint')
   }
+
+  // $: {if(zone.hasTempAlarm || zone.hasPowerAlarm) console.log(zone.alarms)}
 </script>
 
 
