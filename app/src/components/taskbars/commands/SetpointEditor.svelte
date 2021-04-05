@@ -66,6 +66,9 @@
     } else {
       mode = 'auto'
     }
+
+    // Clone the init data. Used in undo.
+    initialLoadData = { ...formData }
   }
 
   const tuningTypes = [
@@ -109,6 +112,8 @@
   }
 
   let formData = { ...initialFormData }
+  let formDataHistory = []
+  let initialLoadData = { ...initialFormData }
 
   const fieldMapping = {
     temperature: 'ProcessSp',
@@ -140,12 +145,107 @@
       if(tenXfields.includes(field)) update[f] = parseInt(update[f]) * 10 
     }
 
+    formDataHistory.push(update)
     await zones.update(_zones, update)
 
     // await zones.reload()
     applied = true
     notify.success($_("Changes applied"))
     
+  }
+
+  // Get the last value
+  const getHistoryValue = keyName => {
+    let keyValue = null
+    let historyData = formDataHistory.filter(x => x.hasOwnProperty(keyName))
+    if (historyData.length > 0) {
+      keyValue = formDataHistory[historyData.length -1]
+      keyValue = keyValue[keyName] 
+    }
+
+    return keyValue
+  }
+
+  // Convert 10x
+  const convertTenX = (dataKey, dataValue) => {
+    let objValue = dataValue
+    if(tenXfields.includes(dataKey)) {
+      objValue = parseInt(objValue) / 10
+    }
+    return objValue
+  }
+
+  const undoChanges = async () => {
+    let histVals = formDataHistory.pop()
+    let histValsPrev = null
+    if (formDataHistory.length > 0) { 
+      histValsPrev = formDataHistory[formDataHistory.length -1]
+    }
+
+    // Compare with the prev arr and find unique key/values
+    // History stacks previous change and current change into the latest history change array.
+    for(let [ objKey, objValue ] of Object.entries(histVals)) { 
+
+      let isCurrentChange = false
+      if (histValsPrev) {
+        // If the change is in the previous array then don't process here
+        // Let the next undo handle it
+        if (!histValsPrev.hasOwnProperty(objKey)) {
+          // If the key is not in the previous array then consider it as current change
+          isCurrentChange = true
+        }
+        else if (histValsPrev.hasOwnProperty(objKey)) {
+          // If there is key but the value is different then consider it for the current undo
+          if (histValsPrev[objKey] !== objValue) {
+            isCurrentChange = true
+          }
+        }
+      }
+      else {
+        isCurrentChange = true
+      }
+
+      if (isCurrentChange) {
+        let ignoreTenXConversion = false
+        let dataKey = ''
+        let dataKeyMapped = Object.entries(fieldMapping).filter(([ key, val ]) => val == objKey).map(([ key, val ]) => key)
+        dataKey = dataKeyMapped.length > 0? dataKeyMapped[0]: objKey
+
+        if (dataKey !== '') {
+
+          objValue = getHistoryValue(objKey)
+
+          // If there is no history value then get it from the initial value
+          if (objValue == null) {
+            if (initialLoadData.hasOwnProperty(dataKey)) {
+              objValue = initialLoadData[dataKey]
+              formData[dataKey] = objValue
+              changed[dataKey] = false
+              if (dataKey == 'TuningType') {
+                // Fix for select changed binding
+                setTimeout(() => changed.TuningType = false, 300)
+              }
+            }
+          }            
+          else if(tenXfields.includes(dataKey)) {
+            formData[dataKey] = convertTenX(dataKey, objValue)
+          }
+          else {
+            formData[dataKey] = objValue
+          } 
+
+          if (dataKey == 'manual' || dataKey == 'MonitorEnable' || dataKey == 'auto') {
+            if(formData.manual) {
+              mode = 'manual'
+            } else if(formData.MonitorEnable) {
+              mode = 'monitor'
+            } else {
+              mode = 'auto'
+            }
+          }
+        }
+      }
+    }
   }
 
   const close = async () => {
@@ -186,6 +286,7 @@
       trackHistory
       on:change={resetFields}
       onSubmit={commitChanges}
+      onUndo={undoChanges}
       {valid}
       manualReadout={mode == 'manual'}
     >
