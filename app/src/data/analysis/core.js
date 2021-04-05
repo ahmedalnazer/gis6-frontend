@@ -3,7 +3,7 @@ import user from 'data/user'
 import notify from 'data/notifications'
 import { writable, derived } from 'svelte/store'
 import { activeGroup } from 'data/groups'
-import zones from 'data/zones'
+import zones, { getAlarms } from 'data/zones'
 import { mdtMsg } from 'data/globalSettings'
 import _, { getMessage } from 'data/language'
 
@@ -117,11 +117,12 @@ export class Analysis {
   }
 
   logError(zone, code) {
-    if(!this.errorMap[zone.number]) {
-      this.errorMap[zone.number] = []
+    zone = zone.number || zone
+    if(!this.errorMap[zone]) {
+      this.errorMap[zone] = []
     }
-    if(!this.errorMap[zone.number].includes(code)) {
-      this.errorMap[zone.number].push(code)
+    if(!this.errorMap[zone].includes(code)) {
+      this.errorMap[zone].push(code)
       this.errors.push({ zone, type: code })
       this.update()
     }
@@ -182,7 +183,29 @@ export class Analysis {
   async checkErrors(skipCheck) {
     if(this.reportId) {
       this.report = await api.get(`/report/${this.reportId}`)
-      this.report_errors = this.report.errors
+      this.raw_report_errors = this.report.errors
+      this.report_errors = []
+      for(let error of this.raw_report_errors) {
+        if (error.message_content) {
+          let temp = 0
+          let power = 0
+          for (let a of error.message_content.arguments) {
+            if (a.type == 'temperatureAlarm') temp = a.value
+            if (a.type == 'powerAlarm') power = a.value
+          }
+          const alarms = getAlarms(power, temp)
+          let list = error.zones_list
+          try {
+            list = JSON.parse(list)
+          } catch(e) {
+            // assume already parsed
+          }
+          const n = list[0]
+          for (let [ key, value ] of Object.entries(alarms)) {
+            if(value) this.report_errors.push({ zone: n, type: key })
+          }
+        }
+      }
       this.startTime = new Date(this.report.startTime)
       this.endTime = new Date(this.report.endTime)
       if(!skipCheck && this.report.endTime && this.status != 'complete') {

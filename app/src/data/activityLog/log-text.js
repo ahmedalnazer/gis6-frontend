@@ -21,45 +21,29 @@ export default function getLogText($_, msgtext, id = 0, params = [], zonesnames)
 
   if (id in messages) {
     msgtext = messages[id]
-  } else if (params) {
-    msgtext = msgtext.replace('$0::', params + ' ')
+  } else if (params && Array.isArray(params)) {
+    msgtext = FormatText(msgtext, params)
+  }
+  else if (zonesnames != '') {
+    msgtext = msgtext.replace('$z', zonesnames + ' ')
   }
 
-  if (zonesnames != '') {
-    msgtext += ' for: ' + zonesnames
-  }
-  return msgtext
-
-  // // list of all available messages
-  // const messages = {
-
-  //   // TBD there may be a message id which will just be spit out in english
-  //   0: params[0],
-
-  //   // static message types (actual text may be coming from the database, TBD)
-  //   1: $_('User logged in'),
-  //   2: $_('User %s logged out', { params })
+  // if (zonesnames != '') {
+  //   msgtext += ' for: ' + zonesnames
   // }
 
-
-  // return messages[id]
-
+  return msgtext
 }
 
-
-
-// export default function getLogText($_, id = 0, params = [], zones = []) {
-//   const formatted = [ 1, 2, 3 ]
-//   if(formatted.includes(id)) {
-//   return formatters[id]($_, params, zones)
-//   }
-//   // list of all available messages
-//   const messages = {
-//   // TBD there may be a message id which will just be spit out in english
-//   0: params[0],
-//   // static message types (actual text may be coming from the database, TBD)
-//   1: $_('User logged in'),
-//   2: $_('User $0 logged out', { params })
-//   }
-//   return messages[id]
-//  }
+const FormatText = (msgtext, params) => {
+  // const params = options.params || []
+  for (let [ i, param ] of params.entries()) {
+    const r = new RegExp(`\\$${i}`)
+    if(msgtext.match(r)) {
+      msgtext = msgtext.replace(r, param)
+    } else {
+      msgtext = msgtext.replace('%s', param)
+    }      
+  }
+  return msgtext
+}

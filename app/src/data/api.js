@@ -23,7 +23,7 @@ class API {
   update = async () => {
     try {
       this.status = await this.get('auth/status')
-      console.log(this.status)
+      // console.log(this.status)
     } catch(e) {
       console.error(e)
       this.status = { user: {}}

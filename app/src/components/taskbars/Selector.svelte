@@ -15,12 +15,13 @@
   export let onSubmit
   export let trackHistory = false
   export let manualReadout = false
+  export let onUndo
 
   export let getUndoAction = _zones => {
     const cached = _zones.map(x => ({ ...x }))
+
     return async () => {
       for(let z of cached) {
-        // console.log(z)
         await zones.update(z, z, { skipReload: true })
       }
       await zones.reload()
@@ -42,6 +43,7 @@
       const undoFn = () => {
         applied = curState
         undoAction()
+        onUndo()
       }
 
       history = history.concat(undoFn)
