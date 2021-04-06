@@ -15,5 +15,6 @@ buffer.write = function(data) {
     buffer.active = [ ...buffer.entries ]
   }
 }
+buffer.reset = () => buffer.entries = []
 buffer.play = () => buffer.paused = false
 buffer.pause = () => buffer.paused = true

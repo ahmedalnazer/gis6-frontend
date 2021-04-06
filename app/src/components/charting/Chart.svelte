@@ -2,6 +2,7 @@
   import _ from 'data/language'
   import ChartCanvas from './ChartCanvas.svelte'
   import Scale from './Scale.svelte'
+  import LineX from './LineX.svelte'
 
   export let type = 'line'
   export let properties = [ 'actual_temp', 'actual_percent', 'actual_current' ]
@@ -9,12 +10,16 @@
   export let zones = []
   export let colors = {}
   export let scales = {}
+  export let playing = true
 
   $: totalZones = zones.length
 
   export let stats = {}
 
   let paused = false
+
+
+  $: paused = !playing
 
   let scale = {
     y: {},
@@ -35,6 +40,8 @@
     hLines.push(i)
   }
 
+  export let setBufferParams
+
 </script>
 
 <div class='chart'>
@@ -49,7 +56,12 @@
         <div class='grid-line' />
       {/each}
     </div>
-    <ChartCanvas bind:stats {...{ properties, paused, type, scale, maxLinePoints, zones, type }} />
+    <div class='v-grid'>
+      {#if type == 'line'}
+        <LineX {...{ stats }} />
+      {/if}
+    </div>
+    <ChartCanvas bind:setBufferParams bind:stats {...{ properties, paused, type, scale, maxLinePoints, zones, type }} />
     <div class='stats'>
       <p><strong>{stats.framerate} fps</strong></p>
       <p><strong>Points:</strong> {stats.totalPoints}</p>
@@ -74,18 +86,22 @@
     display: flex;
     border: 1px solid #ddd;
     padding: 24px 16px;
+    padding-bottom: 48px;
     position: relative;
   }
   .scales {
     display: flex;
   }
-  .h-grid {
+  .h-grid, .v-grid {
     position: absolute;
     z-index: -1;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
+    
+  }
+  .h-grid {
     display: flex;
     flex-direction:column;
     justify-content: space-between;

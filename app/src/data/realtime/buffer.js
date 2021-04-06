@@ -6,6 +6,19 @@ let params = {
 
 let buffer = []
 
+
+const tryPush = (frame) => {
+  const lastFrame = buffer[buffer.length - 1]
+  if(!lastFrame) {
+    buffer.push(frame)
+    return
+  }
+  const minIntvl = 1000 / params.rate
+  if(frame.time - lastFrame.time >= minIntvl) {
+    buffer.push(frame)
+  }
+}
+
 export default buffer
 
 buffer.write = function ({ ts, data }) {
@@ -26,7 +39,7 @@ buffer.write = function ({ ts, data }) {
 let intervals = {}
 let latest = {}
 let earliest = {}
-let start = {}
+let needsReset = {}
 
 export const bufferCommands = (port, e, id) => {
   const { data } = e
@@ -36,9 +49,19 @@ export const bufferCommands = (port, e, id) => {
     // send data in batches, limiting max to avoid OOM when serializing to
     // pass between threads
     const sendChunk = () => {
-      if (!latest[id] && buffer.length) {
+      const resetBuffer = () => {
         latest[id] = buffer[buffer.length - 1] && buffer[buffer.length - 1].time
         earliest[id] = latest[id] + 1
+        needsReset[id] = false
+      }
+      if (!latest[id] && buffer.length) {
+        resetBuffer()
+      }
+
+      if(needsReset[id]) {
+        port.postMessage('reset')
+        resetBuffer()
+        return
       }
       
       if(latest[id]) {
@@ -51,17 +74,24 @@ export const bufferCommands = (port, e, id) => {
           const firstEntry = update[0]
           latest[id] = latestEntry.time
           if(firstEntry.time < earliest[id]) earliest[id] = firstEntry.time
-          port.postMessage({ update })
+          port.postMessage({ update, params })
         }
       }
       // console.log(sizeOf([ ...buffer ]))
     }
 
+
+
     intervals[id] = setInterval(sendChunk, 500)
   }
 
-  if (data.command = 'setBufferParams') {
-    params = data.params
+  if (data.command == 'setBufferParams') {
+    console.log('setting params', data.params)
+    params = { ...params, ...data.params || {}}
+    buffer = buffer.slice(0, 0)
+    for(let key of Object.keys(needsReset)) {
+      needsReset[key] = true
+    }
   }
 
   if (data.command == 'close') {
@@ -107,10 +137,10 @@ const tween = (next, frames) => {
       const offset = 500 / frames * x
       const updatedTS = time - 500 + offset
       const date = new Date(updatedTS)
-      setTimeout(() => buffer.push({ time: updatedTS, date, data: tween }), offset)
+      setTimeout(() => tryPush({ time: updatedTS, date, data: tween }), offset)
     }
   }
-  setTimeout(() => buffer.push(next), 500)
+  setTimeout(() => tryPush(next), 500)
 }
 
 

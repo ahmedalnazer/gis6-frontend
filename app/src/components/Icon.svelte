@@ -548,7 +548,6 @@
 
 {#if icon == 'settings'}
   <svg on:click width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <title>6A5E4157-F187-484D-AC12-9C73AC062006</title>
     <g id="Line-Graph" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
         <g id="Line-Graph---2-parameter" transform="translate(-1020.000000, -325.000000)" style='fill: {color}' fill-rule="nonzero">
             <g id="icon-settings" transform="translate(1020.000000, 325.000000)">
@@ -559,6 +558,29 @@
 </svg>
 {/if}
 
+{#if icon == 'play'}
+<svg on:click xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="17px" height="20px" viewBox="0 0 17 20" version="1.1">
+    <g id="Line-Graph" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Line-Graph---play-button" transform="translate(-675.000000, -325.000000)" style='fill: {color}'>
+            <path d="M675,326.990795 C675,325.891309 675.774533,325.442591 676.741946,325.995398 L690.758054,334.004602 C691.720104,334.554345 691.725467,335.442591 690.758054,335.995398 L676.741946,344.004602 C675.779896,344.554345 675,344.101788 675,343.009205 L675,326.990795 Z" id="icon-play"/>
+        </g>
+    </g>
+</svg>
+{/if}
+
+{#if icon == 'pause'}
+  <svg on:click width="17px" height="20px" viewBox="0 0 17 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <g id="Line-Graph" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Line-Graph---2-parameter" transform="translate(-675.000000, -325.000000)" style='fill: {color}'>
+            <g id="Group-7" transform="translate(631.000000, 325.000000)">
+                <g id="Group-17" transform="translate(44.888889, 0.000000)">
+                    <path d="M6.08307195,0 L6.08307195,20 L6.03961325e-13,20 L6.03961325e-13,0 L6.08307195,0 Z M15.9680639,0 L15.9680639,20 L9.88499192,20 L9.88499192,0 L15.9680639,0 Z" id="icon-pause"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
+{/if}
 <style>
     svg {
         min-width: 8px;
