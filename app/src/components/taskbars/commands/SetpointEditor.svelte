@@ -34,9 +34,13 @@
     }
   }
 
-  // track which fields should be updated
+  // track which fields have/should be updated
   let changed = {}
   let applied = false
+  let appliedChanges = ''
+
+  // pulled up from the Selector component
+  let resetApplied = () => {}
 
   $: changedFields = Object.entries(changed).filter(([ key, val ]) => val).map(([ key, val ]) => key)
   $: changedFieldsTemplate = Object.entries(changed).filter(([ key, val ]) => val).map(([ key, val ]) => key)
@@ -158,8 +162,12 @@
 
     // await zones.reload()
     applied = true
+    appliedChanges = JSON.stringify(changed)
     notify.success($_("Changes applied"))
-    
+  }
+
+  $: {
+    if(appliedChanges != JSON.stringify(changed)) resetApplied()
   }
 
   // Get the last value
@@ -296,6 +304,7 @@
       onSubmit={commitChanges}
       onUndo={undoChanges}
       {valid}
+      bind:resetApplied
       manualReadout={mode == 'manual'}
     >
 
