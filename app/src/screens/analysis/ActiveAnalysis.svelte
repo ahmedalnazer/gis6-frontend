@@ -3,6 +3,7 @@
   import faultAnalysis from "data/analysis/fault"
   import wiringAnalysis from "data/analysis/wiring"
   import _, { getMessage } from "data/language"
+import { text } from "svelte/internal"
   import Error from "./Error.svelte"
   import TestResults from "./TestResults.svelte"
 
@@ -19,8 +20,19 @@
   $: messages = ($analysis.log || []).map(x => $getMessage(x.id, x))
 
   $: {
+    // scroll to the bottom if current scroll is within range of the last couple of messages
     if(textBox && messages.length) {
-      textBox.scrollTop = textBox.scrollHeight
+      const boxPos = textBox.scrollTop + textBox.offsetHeight
+      const stl = textBox.childNodes[textBox.childNodes.length - 2]
+      if(stl) {
+        const stlPos = stl.offsetTop - textBox.offsetTop
+        if(stlPos < boxPos) {
+          textBox.scrollTop = textBox.scrollHeight
+        }
+      } else {
+        textBox.scrollTop = textBox.scrollHeight
+      }
+      
     }
   }
 
@@ -74,15 +86,17 @@
 
   .text {
     margin-top: 20px;
-    max-height: 100px;
+    max-height: 140px;
     overflow: auto;
   }
 
   .text p {
+    position: relative;
     margin: 0;
-    margin-top: 4px;
+    /* margin-top: 4px; */
     font-size: 20px;
     font-weight: 600;
+    line-height: 28px;
   }
 
   h2 {
