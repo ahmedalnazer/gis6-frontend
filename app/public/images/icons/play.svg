@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="17px" height="20px" viewBox="0 0 17 20" version="1.1">
+    <title>68E15749-12AB-4F5D-A6F3-0585D84A6979</title>
+    <g id="Line-Graph" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Line-Graph---play-button" transform="translate(-675.000000, -325.000000)" fill="#358DCA">
+            <path d="M675,326.990795 C675,325.891309 675.774533,325.442591 676.741946,325.995398 L690.758054,334.004602 C691.720104,334.554345 691.725467,335.442591 690.758054,335.995398 L676.741946,344.004602 C675.779896,344.554345 675,344.101788 675,343.009205 L675,326.990795 Z" id="icon-play"/>
+        </g>
+    </g>
+</svg>

@@ -39,21 +39,21 @@ const draw = () => {
   last = t
   requestAnimationFrame(draw)
 }
+
 requestAnimationFrame(draw)
 
-let lastBuffer
 
 const collectStats = () => {
 
   const totalRender = renderTimes.reduce((t, total) => total + t, 0)
   const avgRender = totalRender / renderTimes.length
   const framerate = Math.round(1000 / avgRender)
-  renderTimes = []
+  renderTimes = renderTimes.slice(-50)
 
   postMessage({ ...stats, framerate })
 }
 
-setInterval(collectStats, 300)
+setInterval(collectStats, 30 / 100)
 
 
 
@@ -61,13 +61,18 @@ setInterval(collectStats, 300)
 const initialize = async () => {
   port.onmessage = e => {
     const { data } = e
-    // console.log(data)
-    if(data.update && data.update.length == maxChunkSize) {
-      stats.loading = true
+    if(data == 'reset') {
+      buffer.reset()
     } else {
-      stats.loading = false
+      stats.bufferParams = data.params
+      chartData.bufferParams = data.params
+      if (data.update && data.update.length == maxChunkSize) {
+        stats.loading = true
+      } else {
+        stats.loading = false
+      }
+      buffer.write(data.update)
     }
-    buffer.write(data.update)
   }
 
   port.postMessage({ command: 'readBuffer' })

@@ -28,10 +28,16 @@
     }
   }
 
+  let applied = {}
+
+  export const resetApplied = () => {
+    applied = {}
+  }
+
   export let valid = true
 
   let emptyBody
-  let applied = {}
+  
 
   let history = []
 

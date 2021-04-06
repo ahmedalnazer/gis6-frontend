@@ -15,6 +15,7 @@
 
   let showAdvanced = false
   $: showHideLabel = showAdvanced ? $_("Hide Advanced Settings") : $_("Show Advanced Settings")
+  $: fieldValueChanges(formData, changedFieldsTemplate)
 
   let mode = 'auto'
 
@@ -38,6 +39,7 @@
   let applied = false
 
   $: changedFields = Object.entries(changed).filter(([ key, val ]) => val).map(([ key, val ]) => key)
+  $: changedFieldsTemplate = Object.entries(changed).filter(([ key, val ]) => val).map(([ key, val ]) => key)
 
   $: valid = changedFields.length
 
@@ -136,6 +138,12 @@
     'temperature', 'low', 'high', 'manualSp', 'trim', 'wattAlarm', 'criticalOverTemperature',
     'MonitorHighAlarmSP', 'MonitorLowAlarmSP'
   ]
+
+  const fieldValueChanges = (fldData, changedFieldsTemplate) => {
+    changedFieldsTemplate.forEach(d => {
+      changed[d] = initialLoadData[d] !== formData[d]
+    })
+  }
 
   const commitChanges = async (_zones) => {
     let update = {}

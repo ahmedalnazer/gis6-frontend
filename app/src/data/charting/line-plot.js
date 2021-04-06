@@ -30,7 +30,12 @@ const getSettings = (zone) => {
 
 
 const draw = (chartData, logStats) => {
-  const { canvas, ctx, scale, paused, zones } = chartData
+  const { canvas, ctx, scale, paused, zones, bufferParams } = chartData
+
+  const rate = bufferParams ? bufferParams.rate : 25
+
+  const bufferIntvl = 1000 / rate
+  const delay = Math.max(1000, bufferIntvl * 2)
 
   const _props = chartData.properties
   const properties = _props.filter(x => !!x)
@@ -48,8 +53,8 @@ const draw = (chartData, logStats) => {
 
   if(isNaN(xRange)) xRange = 10
 
-  const now = new Date().getTime() - 1000
-  let xMax = paused ? latest ? latest.time : now : now
+  const now = new Date().getTime() - delay
+  let xMax = paused ? latest ? latest.time - delay * .25 : now : now
   let xMin = xMax - xRange * 1000
   let renderLimit = xMin - 2000
   let dX = xMax - xMin
@@ -154,30 +159,50 @@ const draw = (chartData, logStats) => {
     if(!negatives.includes(prop)) {
       min[prop] = Math.max(min[prop], 1)
     }
+
+    const minAuto = scaleParams.min == 'auto'
+    const maxAuto = scaleParams.max == 'auto'
+
+
+    if (scaleParams) {
+      if (!minAuto) min[prop] = scaleParams.min * 10
+      if (!maxAuto) max[prop] = scaleParams.max * 10
+    }
+
+    const r = max[prop] - min[prop]
+
+    if(scaleParams.max == 'auto' && scaleParams.min != 'auto') {
+      max[prop] += r / 10
+    }
+    if(scaleParams.min == 'auto' && scaleParams.max != 'auto') {
+      min[prop] -= r / 10
+    }
     // if (max[prop] < min[prop] + 10) {
     //   max[prop] = min[prop] + 10
     // }
-    const r = max[prop] - min[prop]
+    
 
     // ensure round numbers are used for the scale
     const even = i => {
-      min[prop] = -i + i * Math.ceil(min[prop] / i)
-      max[prop] = i + i * Math.floor(max[prop] / i)
+      if(minAuto) min[prop] = -i + i * Math.ceil(min[prop] / i)
+      if(maxAuto) max[prop] = i + i * Math.floor(max[prop] / i)
     }
 
-    if(r <= 100) {
-      even(20)
-    } else if (r <= 1000) {
-      even(200)
-    } else if (r <= 10000) {
-      even(2000)
-    } else {
+    let matched = false
+    for(let x of [ 10, 100, 200, 500, 1000, 2000, 5000, 10000 ]) {
+      if(matched) break
+      for(let y of [ 1, 2, 4 ]) {
+        const base = x * y
+        if(r < base) {
+          even(base / 5)
+          matched = true
+          break
+        }
+      }
+    }
+
+    if(!matched) {
       even(20000)
-    }
-
-    if (scaleParams) {
-      if (scaleParams.min != 'auto') min[prop] = scaleParams.min * 10
-      if (scaleParams.max != 'auto') max[prop] = scaleParams.max * 10
     }
     
     autoScale[prop] = canvas.height / (max[prop] - min[prop])
@@ -238,7 +263,7 @@ const draw = (chartData, logStats) => {
     }
   }
 
-  logStats({ totalPoints, max, min, avg, plotFilled: sample.length < buffer.active.length })
+  logStats({ totalPoints, max, min, avg, plotFilled: sample.length < buffer.active.length, xMax, xMin })
 }
 
 export default draw

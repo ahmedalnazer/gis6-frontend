@@ -76,6 +76,9 @@
     }
   })
 
+  let setBufferParams
+  let playing = true
+
   onDestroy(() => {
     unsubActive()
   })
@@ -87,12 +90,13 @@
   </div>
 
   <div slot="header" class='tools'>
+    <Icon icon={playing ? 'pause' : 'play'} color='var(--primary)' on:click={() => playing = !playing} />
     <Icon icon='settings' color='var(--primary)' on:click={() => showSettings = true}/>
   </div>
 
   <div class='wrapper'>
     
-    <Chart type='line' bind:stats zones={rendered} {...{ properties, colors, scales }} />
+    <Chart type='line' bind:stats bind:setBufferParams zones={rendered} {...{ properties, colors, scales, playing }} />
 
     <div class='options'>
       <div class='properties'>
@@ -133,7 +137,7 @@
 </Screen>
 
 {#if showSettings}
-  <Settings onClose={() => showSettings = false} onSubmit={s => scales = s} />
+  <Settings onClose={() => showSettings = false} onSubmit={s => scales = s} {...{ stats, setBufferParams, scales }} />
 {/if}
 
 <style lang="scss">
@@ -150,6 +154,9 @@
     flex: 1;
     align-items: flex-end;
     padding-right: 8px;
+    :global(svg) {
+      margin-left: 16px;
+    }
   }
 
   .properties {
