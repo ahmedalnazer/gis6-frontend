@@ -5,8 +5,12 @@
 
   export let stats = {}
 
-  let canvas, worker, wsWorker, wsPort
+  let canvas, worker, localWsWorker, wsWorker, wsPort
   let offscreen = false
+
+  export const setBufferParams = params => {
+    localWsWorker.port.postMessage({ command: 'setBufferParams', params })
+  }
 
   $: {
     if(canvas && worker) {
@@ -21,6 +25,8 @@
   }
 
   onMount(() => {
+    localWsWorker = new SharedWorker('/workers/ws-worker.js')
+    localWsWorker.port.start()
     wsWorker = new SharedWorker('/workers/ws-worker.js')
     wsPort = wsWorker.port
     wsPort.start()
