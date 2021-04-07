@@ -330,6 +330,7 @@
                 trackChange
                 bind:value={formData.temperature}
                 bind:changed={changed.temperature}
+                keypadcontrols={'setpoint'} 
               />
             {:else}
               <Input
@@ -338,6 +339,7 @@
                 trackChange
                 bind:changed={changed.manualSp}
                 bind:value={formData.manualSp}
+                keypadcontrols={'manualPercent'} 
               />
             {/if}
             <div class='checkboxes'>
@@ -364,6 +366,7 @@
                 trackChange
                 bind:value={formData.MonitorHighAlarmSP}
                 bind:changed={changed.MonitorHighAlarmSP}
+                keypadcontrols={'highWattAlarm'} 
               />
 
               <Input
@@ -372,6 +375,7 @@
                 trackChange
                 bind:value={formData.MonitorLowAlarmSP}
                 bind:changed={changed.MonitorLowAlarmSP}
+                keypadcontrols={'lowWattAlarm'} 
               />
 
               <!-- grid placeholders -->
@@ -416,6 +420,7 @@
                 trackChange
                 bind:value={formData.low}
                 bind:changed={changed.low}
+                keypadcontrols={'deviationLow'} 
               />
 
               <Input
@@ -424,6 +429,7 @@
                 trackChange
                 bind:value={formData.high}
                 bind:changed={changed.high}
+                keypadcontrols={'deviationHigh'} 
               />
 
               <!-- grid placeholders -->
@@ -436,6 +442,7 @@
                   trackChange
                   bind:value={formData.temperature}
                   bind:changed={changed.temperature}
+                  keypadcontrols={'setpoint'} 
                 />
               {:else if mode == 'auto'}
                 <Input
@@ -444,6 +451,7 @@
                   trackChange
                   bind:changed={changed.manualSp}
                   bind:value={formData.manualSp}
+                  keypadcontrols={'manualPercent'} 
                 />
               {/if}
 
@@ -453,6 +461,7 @@
                 trackChange
                 bind:value={formData.trim}
                 bind:changed={changed.trim}
+                keypadcontrols={'trimCelcius'} 
               />
 
               <Input
@@ -461,6 +470,7 @@
                 trackChange
                 bind:value={formData.autoStandby}
                 bind:changed={changed.autoStandby}
+                keypadcontrols={'autoStandby'} 
               />
 
               <Input
@@ -469,6 +479,7 @@
                 trackChange
                 bind:value={formData.tcShortDetectTime}
                 bind:changed={changed.tcShortDetectTime}
+                keypadcontrols={'tcShortDetectTime'} 
               />
 
               <Input
@@ -477,6 +488,7 @@
                 trackChange
                 bind:value={formData.tuningOverride}
                 bind:changed={changed.tuningOverride}
+                keypadcontrols={'tuningOverwrite'} 
               />
 
               <Select
@@ -493,6 +505,7 @@
                 trackChange
                 bind:value={formData.OutputAttenuationSP}
                 bind:changed={changed.OutputAttenuationSP}
+                keypadcontrols={'attenuatedOutput'} 
               />
               
               <!-- // tuning type? attenuated output -->
@@ -503,6 +516,7 @@
                 trackChange
                 bind:value={formData.powerPriority}
                 bind:changed={changed.powerPriority}
+                keypadcontrols={'powerPriority'} 
               />
 
               <Input
@@ -511,6 +525,7 @@
                 trackChange
                 bind:value={formData.WattAlarmLow}
                 bind:changed={changed.WattAlarmLow}
+                keypadcontrols={'lowWattAlarm'} 
               />
 
               <Input
@@ -519,6 +534,7 @@
                 trackChange
                 bind:value={formData.WattAlarmHigh}
                 bind:changed={changed.WattAlarmHigh}
+                keypadcontrols={'highWattAlarm'} 
               />
 
               <Input
@@ -527,6 +543,7 @@
                 trackChange
                 bind:value={formData.criticalOverTemperature}
                 bind:changed={changed.criticalOverTemperature}
+                keypadcontrols={'criticalOverTemperature'} 
               />
             </div>
           </Collapsible>

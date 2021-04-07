@@ -28,11 +28,11 @@
     export let showManageZoneType = false
     export let keypadAnchor = null
 
-    const keypadcontrols1 = {
-      rangeMin: 1,
-      rangeMax: 450,
-      integerOnly: true,
-    }
+    // const keypadcontrols1 = {
+    //   rangeMin: 1,
+    //   rangeMax: 450,
+    //   integerOnly: true,
+    // }
     
     $: defaultTypes = $zoneTypes.filter(x => x.isDefault)
     let customTypes = $zoneTypes.filter(x => !x.isDefault)
@@ -183,7 +183,7 @@
                 label="{$_('Index start number')}"
                 type="number"
                 bind:value={indexStart}
-                keypadcontrols={keypadcontrols1}
+                keypadcontrols={'setpoint'}
                 style="width:100%;"
             />
             <!-- <input type="text" class="input" /> -->
@@ -214,7 +214,8 @@
 {/if}
 
 {#if openKeypad}
-  <KeyPad anchor={keypadAnchor} value="{indexStart}" bind:onModalOpen={openKeypad} bind:keypadValue on:keypadClosed={(val) => { indexStart = val.detail.closed; openKeypad = false }} keypadcontrols={keypadcontrols1} />
+  <!-- <KeyPad anchor={keypadAnchor} value="{indexStart}" bind:onModalOpen={openKeypad} bind:keypadValue on:keypadClosed={(val) => { indexStart = val.detail.closed; openKeypad = false }} keypadcontrols={keypadcontrols1} /> -->
+  <KeyPad anchor={keypadAnchor} value="{indexStart}" bind:onModalOpen={openKeypad} bind:keypadValue on:keypadClosed={(val) => { indexStart = val.detail.closed; openKeypad = false }} keypadcontrols={'manualPercent'} />
 {/if}
 
 <style lang="scss">

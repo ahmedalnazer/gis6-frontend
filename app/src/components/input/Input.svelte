@@ -3,6 +3,7 @@
   import { Collapsible } from 'components'
   import { slide } from 'svelte/transition'
   import KeyPad from './KeyPad.svelte'
+  import { getRanges }  from  'data/keypadSettings'
 
   const dispatch = createEventDispatcher()
 
@@ -17,7 +18,10 @@
   export let trackChange = false
   export let input = null
   export let display = false
-  export let keypadcontrols = {}
+  // export let keypadcontrols = {}
+  export let keypadcontrols = ''
+
+  // console.log('ranges: ', getRanges(keypadcontrols))
 
   let modalOpened = false
 
@@ -70,7 +74,8 @@
 </div>
 
 {#if type == 'number' && modalOpened}
-  <KeyPad anchor={input} {keypadcontrols} bind:onModalOpen={modalOpened} bind:value on:keypadClosed={() => modalOpened = false} />
+  <!-- <KeyPad anchor={input} {keypadcontrols} bind:onModalOpen={modalOpened} bind:value on:keypadClosed={() => modalOpened = false} /> -->
+  <KeyPad anchor={input} keypadcontrols={getRanges(keypadcontrols)} bind:onModalOpen={modalOpened} bind:value on:keypadClosed={() => modalOpened = false} />
 {/if}
 
 <style>
