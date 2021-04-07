@@ -71,7 +71,7 @@
         
         modal.style.visibility = 'visible'
         let placeNumber = getInputField('place-number')
-        if (placeNumber) {
+        if (placeNumber && placeNumber.select) {
           placeNumber.select()
         }
 
