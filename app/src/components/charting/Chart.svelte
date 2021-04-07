@@ -6,7 +6,6 @@
 
   export let type = 'line'
   export let properties = [ 'actual_temp', 'actual_percent', 'actual_current' ]
-  export let maxLinePoints = 80
   export let zones = []
   export let colors = {}
   export let scales = {}
@@ -15,6 +14,7 @@
   $: totalZones = zones.length
 
   export let stats = {}
+  let xScale = {}
 
   let paused = false
 
@@ -42,6 +42,8 @@
 
   export let setBufferParams
 
+  $: chartProps = { properties, paused, type, scale, zones, type }
+
 </script>
 
 <div class='chart'>
@@ -58,21 +60,19 @@
     </div>
     <div class='v-grid'>
       {#if type == 'line'}
-        <LineX {...{ stats }} />
+        <LineX {...{ xScale }} />
       {/if}
     </div>
-    <ChartCanvas bind:setBufferParams bind:stats {...{ properties, paused, type, scale, maxLinePoints, zones, type }} />
+    <ChartCanvas bind:setBufferParams bind:stats bind:xScale {...chartProps} />
     <div class='stats'>
       <p><strong>{stats.framerate} fps</strong></p>
-      <p><strong>Points:</strong> {stats.totalPoints}</p>
+      <p><strong>Points:</strong> {(''+stats.totalPoints).padStart(3, '0')}</p>
       <p><strong>Zones:</strong> {totalZones}</p>
       <p><strong>Lines:</strong> {totalZones * properties.filter(x => !!x).length}</p>
     </div>
-    {#if stats.loading && !stats.plotFilled}
-      <div class='loading'>
-        {$_('Loading data...')}
-      </div>
-    {/if}
+    <div class='loading' class:active={stats.loading !== false && !stats.plotFilled}>
+      {$_('Loading data...')}
+    </div>
   </div>
 
   <div class='scales'>
@@ -150,6 +150,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 4px 16px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .3s;
+  }
+  .loading.active {
+    opacity: 1;
   }
 </style>
 

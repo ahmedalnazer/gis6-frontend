@@ -1,7 +1,7 @@
 <script>
-  export let stats
-  $: start = stats.xMin
-  $: end = stats.xMax
+  export let xScale
+  $: start = xScale.xMin
+  $: end = xScale.xMax
 
   $: range = end - start
 
@@ -26,12 +26,14 @@
     }
   }
 
+  let grid
+
   const getLine = time => {
     const t = new Date(time)
     let h = ''+t.getHours()
     let m = ''+t.getMinutes()
     let s = ''+t.getSeconds()
-    const left = (time - start) / range * 100
+    const left = (time - start) / range * (grid ? grid.offsetWidth : 1)
 
     const transition = 200
 
@@ -59,9 +61,9 @@
   // $: console.log(stats)
 </script>
 
-<div class='x-grid'>
+<div class='x-grid' bind:this={grid}>
   {#each set as line}
-    <div class='line' style='left: {line.left}%; opacity: {line.opacity}'>
+    <div class='line' style='transform: translateX({line.left}px); opacity: {line.opacity}'>
       <div class='stamp'>{line.stamp}</div>
     </div>
   {/each}

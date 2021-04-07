@@ -3,7 +3,6 @@
   import faultAnalysis from "data/analysis/fault"
   import wiringAnalysis from "data/analysis/wiring"
   import _, { getMessage } from "data/language"
-import { text } from "svelte/internal"
   import Error from "./Error.svelte"
   import TestResults from "./TestResults.svelte"
 
