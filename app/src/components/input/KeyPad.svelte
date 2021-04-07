@@ -37,7 +37,7 @@
     let top, left
     openKeypad = true
     const inputDimensions = anchor.getBoundingClientRect()
-
+    
     setTimeout(() => {
       const modal = getInputField('content-wrapper')
       if (modal) {
@@ -70,6 +70,11 @@
         `
         
         modal.style.visibility = 'visible'
+        let placeNumber = getInputField('place-number')
+        if (placeNumber) {
+          placeNumber.select()
+        }
+
       }
     }, 0)
   }

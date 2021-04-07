@@ -21,7 +21,7 @@
   // export let keypadcontrols = {}
   export let keypadcontrols = ''
 
-  console.log('ranges: ', getRanges(keypadcontrols))
+  // console.log('ranges: ', getRanges(keypadcontrols))
 
   let modalOpened = false
 
