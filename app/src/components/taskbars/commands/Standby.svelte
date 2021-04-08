@@ -32,8 +32,8 @@
   <Selector onSubmit={standby}>
     <h2>Edit</h2>
     <div class='grid'>
-      <Input type='number' bind:value={auto} label='{$_('Auto Standby')}  (&#176;C)' />
-      <Input type='number' bind:value={timeout} label='{$_('Standby Timeout')}  (min)' />
+      <Input type='number' keypadcontrols={'autoStandby'} bind:value={auto} label='{$_('Auto Standby')}  (&#176;C)' />
+      <Input type='number' keypadcontrols={'defaultSystem'} bind:value={timeout} label='{$_('Standby Timeout')}  (min)' />
     </div>
   </Selector>
 </Modal>

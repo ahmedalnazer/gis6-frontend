@@ -1,9 +1,10 @@
 <script>
   import { onDestroy, onMount } from 'svelte'
 
-  export let type, properties, scale, paused, maxLinePoints, zones
+  export let type, properties, scale, paused, zones
 
   export let stats = {}
+  export let xScale = {}
 
   let canvas, worker, localWsWorker, wsWorker, wsPort
   let offscreen = false
@@ -20,7 +21,7 @@
         offscreen = canvas.transferControlToOffscreen()
         worker.postMessage({ canvas: offscreen }, [ offscreen ])
       }
-      worker.postMessage({ type, properties, scale, paused, maxLinePoints, zones })
+      worker.postMessage({ type, properties, scale, paused, zones })
     }
   }
 
@@ -39,7 +40,12 @@
     console.log('chart worker created')
     worker.postMessage({ wsPort: wsPort }, [ wsPort ])
     worker.onmessage = e => {
-      stats = e.data
+      if(e.data.type == 'stats') {
+        stats = e.data.value
+      }
+      if(e.data.type == 'xScale') {
+        xScale = e.data.value
+      }
     }
 
     // setTimeout(() => wsPort.postMessage({ command: 'close' }), 1000)

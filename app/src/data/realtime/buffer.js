@@ -1,19 +1,22 @@
-export const maxChunkSize = 200
+export const maxChunkSize = 100
 
 let params = {
-  rate: 25
+  rate: 10
 }
 
 let buffer = []
 
 
+// ensure buffer is never filled faster than the specified rate
 const tryPush = (frame) => {
+  frame.ts = frame.time.getTime()
   const lastFrame = buffer[buffer.length - 1]
   if(!lastFrame) {
     buffer.push(frame)
     return
   }
-  const minIntvl = 1000 / params.rate
+  // min interval is min ms between frames with 5ms padding
+  const minIntvl = 1000 / params.rate + 5
   if(frame.time - lastFrame.time >= minIntvl) {
     buffer.push(frame)
   }
@@ -29,8 +32,8 @@ buffer.write = function ({ ts, data }) {
   const date = new Date(ts)
   const frame = { data, date, time: ts }
 
-  // buffer.push(frame)
-  tween(frame, 12)
+  tryPush(frame)
+  // tween(frame, 12)
 
   buffer = buffer.slice(-7500)
 }
@@ -50,7 +53,7 @@ export const bufferCommands = (port, e, id) => {
     // pass between threads
     const sendChunk = () => {
       const resetBuffer = () => {
-        latest[id] = buffer[buffer.length - 1] && buffer[buffer.length - 1].time
+        latest[id] = buffer[buffer.length - 1] && buffer[buffer.length - 1].ts
         earliest[id] = latest[id] + 1
         needsReset[id] = false
       }
@@ -65,10 +68,9 @@ export const bufferCommands = (port, e, id) => {
       }
       
       if(latest[id]) {
-        const newest = buffer.filter(x => x.time > latest[id])
-        const backFill = buffer.filter(x => x.time < earliest[id]).slice(-(maxChunkSize - newest.length))
+        const newest = buffer.filter(x => x.ts > latest[id])
+        const backFill = buffer.filter(x => x.ts < earliest[id]).slice(-(maxChunkSize - newest.length))
         const update = backFill.concat(newest)
-        // console.log(backFill.length, newest.length)
         if (update.length) {
           const latestEntry = update[update.length - 1]
           const firstEntry = update[0]
@@ -80,18 +82,24 @@ export const bufferCommands = (port, e, id) => {
       // console.log(sizeOf([ ...buffer ]))
     }
 
-
-
-    intervals[id] = setInterval(sendChunk, 500)
+    intervals[id] = setInterval(sendChunk, 200)
   }
 
   if (data.command == 'setBufferParams') {
+    let reset = false
     console.log('setting params', data.params)
-    params = { ...params, ...data.params || {}}
-    buffer = buffer.slice(0, 0)
-    for(let key of Object.keys(needsReset)) {
-      needsReset[key] = true
+    for(let key of Object.keys(data.params)) {
+      if(data.params[key] != params[key]) {
+        reset = true
+      }
     }
+    params = { ...params, ...data.params || {}}
+    if(reset) {
+      buffer = buffer.slice(0, 0)
+      for (let key of Object.keys(needsReset)) {
+        needsReset[key] = true
+      }
+    } 
   }
 
   if (data.command == 'close') {
@@ -137,7 +145,7 @@ const tween = (next, frames) => {
       const offset = 500 / frames * x
       const updatedTS = time - 500 + offset
       const date = new Date(updatedTS)
-      setTimeout(() => tryPush({ time: updatedTS, date, data: tween }), offset)
+      setTimeout(() => tryPush({ time: new Date(updatedTS), ts: updatedTS, date, data: tween }), offset)
     }
   }
   setTimeout(() => tryPush(next), 500)
