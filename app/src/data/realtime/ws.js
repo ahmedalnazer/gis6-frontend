@@ -19,6 +19,8 @@ worker.port.onmessage = e => {
   const { data } = e.data
   const { mt } = data
   if (mt == 6) {
+    const { records } = data
+    console.log(records[0])
     realtime.set(data.records)
   } else if (mt == 3) {
     // console.log('sys message received')
