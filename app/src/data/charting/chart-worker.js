@@ -32,6 +32,7 @@ const draw = () => {
   const t = new Date().getTime()
   if (chartData.ctx) {
     if (renderers[chartData.type]) {
+      postMessage({ type: 'xScale', value: { xMax: stats.xMax, xMin: stats.xMin }})
       renderers[chartData.type](chartData, logStats)
       renderTimes.push(new Date().getTime() - last)
     }
@@ -44,16 +45,18 @@ requestAnimationFrame(draw)
 
 
 const collectStats = () => {
-
   const totalRender = renderTimes.reduce((t, total) => total + t, 0)
   const avgRender = totalRender / renderTimes.length
-  const framerate = Math.round(1000 / avgRender)
+  const framerate = Math.ceil(1000 / avgRender)
   renderTimes = renderTimes.slice(-50)
 
-  postMessage({ ...stats, framerate })
+  stats = { ...stats, framerate }
+  chartData.framerate = framerate
+
+  postMessage({ type: 'stats', value: stats })
 }
 
-setInterval(collectStats, 30 / 100)
+setInterval(collectStats, 3 / 100)
 
 
 

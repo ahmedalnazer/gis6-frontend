@@ -32,15 +32,12 @@ const getSettings = (zone) => {
 const draw = (chartData, logStats) => {
   const { canvas, ctx, scale, paused, zones, bufferParams } = chartData
 
-  const rate = bufferParams ? bufferParams.rate : 25
-
-  const bufferIntvl = 1000 / rate
-  const delay = Math.max(1000, bufferIntvl * 2)
+  const rate = bufferParams ? bufferParams.rate : 10
 
   const _props = chartData.properties
   const properties = _props.filter(x => !!x)
 
-  let maxLinePoints = 80
+  let maxLinePoints = 100
 
   // if(zones.length > 10) maxLinePoints = 60
 
@@ -52,6 +49,8 @@ const draw = (chartData, logStats) => {
   let xRange = scale && scale.x ? parseInt(scale.x) : 10
 
   if(isNaN(xRange)) xRange = 10
+
+  const delay = Math.max(1000, 10 * xRange)
 
   const now = new Date().getTime() - delay
   let xMax = paused ? latest ? latest.time - delay * .25 : now : now
@@ -77,23 +76,6 @@ const draw = (chartData, logStats) => {
 
   const xScale = canvas.width / (xMax - xMin)
 
-  let numIntvls = 0
-  let totalIntvl = 0
-
-  // sample 50 frames to get average interval (mitigate effect of latency)
-  for (let i = 0; i < 50; i++) {
-    let a = sample[i]
-    let b = sample[i + 1]
-    if (a && b) {
-      const intvl = b.time - a.time
-      numIntvls++
-      totalIntvl += intvl
-    }
-  }
-
-  // average samples above to determine interval between plot points (data rate)
-  const intvl = totalIntvl / numIntvls
-
   // determine which points should be filtered based on max points per line
   const minMSInterval = dX / maxLinePoints
 
@@ -104,7 +86,7 @@ const draw = (chartData, logStats) => {
     if(i == 0 || !rendered.length || i == sample.length - 1) {
       rendered.push(sample[i])
     } else {
-      if ((sample[i].time - 1614799160000) %  minMSInterval < intvl) {
+      if ((sample[i].time - 1614799160000) %  minMSInterval < 2000 / rate) {
         rendered.push(sample[i])
       }
     }
@@ -137,17 +119,17 @@ const draw = (chartData, logStats) => {
         let y = point[prop]
         if (prop == 'deviation') {
           const settings = getSettings(point)
-          if (!settings.on) {
-            y = 0
-          } else if (settings.manual) {
+          if (settings.manual) {
             y = point.manual_sp - point.actual_percent
           } else {
             y = point.temp_sp - point.actual_temp
           }
         }
         lines[prop][z - 1].push({ x, y })
-        if (y > max[prop]) max[prop] = y
-        if (y < min[prop]) min[prop] = y
+        if(x < xMax) {
+          if (y > max[prop]) max[prop] = y
+          if (y < min[prop]) min[prop] = y
+        }
       }
     }
   }
