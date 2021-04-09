@@ -1,22 +1,39 @@
 <script>
   export let stats = {}
+  export let position
   export let property, color
+  let div
+
+  const spaces = 20
+  let height = 0
 
   $: mins = stats.min || {}
   $: maxes = stats.max || {}
 
-  
-  $: max = maxes[property] / 10
-  $: min = Math.min(max - .2, mins[property] / 10)
+  $: trueMax = maxes[property] / 10
+  $: trueMin = Math.min(trueMax - .2, mins[property] / 10)
+
+  $: offset = -position.panY / height * (trueMax - trueMin)
+
+  $: max = offset + trueMax
+  $: min = offset + trueMin
 
   $: range = Math.max(.1, max - min)
+
+  $: gap = Math.round(100 * (trueMax - trueMin) / spaces) / 100
+  $: shim = max % gap
+  $: {
+    if(div) top = shim / range * div.offsetHeight
+  }
+  
+
   let intervals = []
 
   $: {
     let values = []
-    const spaces = 20
     for(let i = 1; i < spaces; i++) {
-      values.push(max - i / spaces * range)
+      const v = max - i / spaces * range
+      values.push(v - shim)
     }
     intervals = values
   }
@@ -30,14 +47,15 @@
 
 </script>
 
-<div class='scale' style='color: {color}'>
+<div class='scale' style='color: {color};' bind:offsetHeight={height}>
   {#if property}
-    <span>{getValue(max)}</span>
+    <span>{position.panY > 0 ? '' : getValue(max - shim)}</span>
     {#each intervals as n}
       <span>{getValue(n)}</span>
     {/each}
-    <span>{getValue(min)}</span>
+    <span>{position.panY < 0 ? '' : getValue(min)}</span>
   {/if}
+  <!-- {offset} -->
 </div>
 
 <style>
@@ -47,7 +65,13 @@
     justify-content: space-between;
     /* height: calc(100% + 8px); */
     margin: 0 4px;
-    min-width: 40px;
+    min-width: 48px;
     text-align: right;
+    padding: 8px 0;
+  }
+  span {
+    display: flex;
+    height: 0px;
+    align-items: center;
   }
 </style>

@@ -14,19 +14,61 @@ worker.onerror = e => {
 
 worker.port.start()
 
+let logged = []
+let loggedZones = [ 1 ]
+window.logWS = (messageTypes, zones) => {
+  if(messageTypes == 'help') {
+    console.log(`
+
+params:
+1. array of message types to log (pass [] to disable logging)
+2. number of zones/records for tczone (optional, defaults to [ 1 ])
+
+e.g. this will log all 'tczone' messages for the first two zones:
+
+> logWS([ 'tczone' ], [ 1, 2 ])
+
+Currently supported messages types are 'tczone', 'mdtmsg' and 'sysinfo'.
+Messages are displayed exactly as translated by the protobuf parser.
+
+    `)
+  } else {
+    logged = messageTypes || []
+    if(zones) {
+      loggedZones = zones
+    } else {
+      loggedZones = [ 1 ]
+    }
+  }
+  if(logged.length == 0) return 'WS logging disabled'
+  return `Logging ${logged.join(', ')}`
+}
+
 worker.port.onmessage = e => {
   // console.log(e)
   const { data } = e.data
   const { mt } = data
   if (mt == 6) {
     const { records } = data
-    console.log(records[0])
+
+    if(logged.includes('tczone')) {
+      let logged = []
+      for(let i = 0; i < records.length; i++) {
+        if(loggedZones.includes(i + 1)) {
+          logged.push(records[i])
+        }
+      }
+      console.log(logged.length == 1 ? logged[0] : logged)
+    }
+
     realtime.set(data.records)
   } else if (mt == 3) {
     // console.log('sys message received')
+    if (logged.includes('sysinfo')) console.log(data)
     sysInfo.set(data)
   } else if (mt == 7) {
     // console.log('mdt message received', data)
+    if (logged.includes('mdtmsg')) console.log(data)
     mdtMsg.set(data)
   } else {
     // console.log(mt, JSON.stringify(data, null, 2))

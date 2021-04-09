@@ -30,14 +30,14 @@ const getSettings = (zone) => {
 
 
 const draw = (chartData, logStats) => {
-  const { canvas, ctx, scale, paused, zones, bufferParams } = chartData
+  const { canvas, ctx, scale, paused, zones, bufferParams, position } = chartData
 
   const rate = bufferParams ? bufferParams.rate : 10
 
   const _props = chartData.properties
   const properties = _props.filter(x => !!x)
 
-  let maxLinePoints = 100
+  let maxLinePoints = Math.min(700, Math.max(80, 20000 / (zones.length * properties.length)))
 
   // if(zones.length > 10) maxLinePoints = 60
 
@@ -46,14 +46,20 @@ const draw = (chartData, logStats) => {
   // if(zones.length > 100) maxLinePoints = 10
   
   const latest = buffer.active[buffer.active.length - 1]
-  let xRange = scale && scale.x ? parseInt(scale.x) : 10
+
+
+  const xZoomFactor = (position.zoomX + 105) / 100
+  let xRange = (scale && scale.x ? parseInt(scale.x) : 10) * xZoomFactor
 
   if(isNaN(xRange)) xRange = 10
 
+  let panXRatio = position.panX / canvas.width
+  let timeOffset = xRange * panXRatio * 1000
+
   const delay = Math.max(1000, 10 * xRange)
 
-  const now = new Date().getTime() - delay
-  let xMax = paused ? latest ? latest.time - delay * .25 : now : now
+  const now = new Date().getTime() - delay - timeOffset
+  let xMax = paused ? latest ? latest.time - delay * .25 - timeOffset : now : now
   let xMin = xMax - xRange * 1000
   let renderLimit = xMin - 2000
   let dX = xMax - xMin
@@ -159,6 +165,13 @@ const draw = (chartData, logStats) => {
     if(scaleParams.min == 'auto' && scaleParams.max != 'auto') {
       min[prop] -= r / 10
     }
+
+    const scaleFactor = 8 * (position.zoomY + 105) / 400
+
+    const halfRange = (max[prop] - min[prop]) / 2
+    const midPoint = min[prop] + halfRange
+    min[prop] = midPoint - halfRange * scaleFactor
+    max[prop] = midPoint + halfRange * scaleFactor
     // if (max[prop] < min[prop] + 10) {
     //   max[prop] = min[prop] + 10
     // }
@@ -171,9 +184,9 @@ const draw = (chartData, logStats) => {
     }
 
     let matched = false
-    for(let x of [ 10, 100, 200, 500, 1000, 2000, 5000, 10000 ]) {
+    for(let x of [ 1, 10, 100, 200, 500, 1000, 2000, 5000, 10000 ]) {
       if(matched) break
-      for(let y of [ 1, 2, 4 ]) {
+      for(let y of [ 1, 2, 4, 8 ]) {
         const base = x * y
         if(r < base) {
           even(base / 5)
@@ -200,8 +213,17 @@ const draw = (chartData, logStats) => {
   let totalPoints = 0
 
 
-  // loop through points and determine which ones are critical to geometry
+  const offsetY = -position.panY
+
+  let offsets = {}
+  let offsetTop = 0
+
+  // assign y values and prepare to calculate averages
   for(let prop of properties) {
+    const ratio = offsetY / canvas.height
+    offsets[prop] = ratio * (max[prop] - min[prop])
+    offsets[prop] = offsetY / autoScale[prop]
+
     renderedLines[prop] = []
     yValues[prop] = {
       total: 0,
@@ -216,13 +238,14 @@ const draw = (chartData, logStats) => {
           let point = lines[prop][i][p]
           yValues[prop].total += point.y
           yValues[prop].totalPoints += 1
-          point.y = parseInt(canvas.height - (point.y - min[prop]) * autoScale[prop])
+          point.y = offsetY + parseInt(canvas.height - (point.y - min[prop]) * autoScale[prop])
           renderedLines[prop][i].push(point)
           totalPoints++
         }
       }
     }
   }
+
 
   const lineColors = {
     [_props[0]]: colors[1],
@@ -245,7 +268,14 @@ const draw = (chartData, logStats) => {
     }
   }
 
-  logStats({ totalPoints, max, min, avg, plotFilled: sample.length < buffer.active.length, xMax, xMin })
+  if(totalPoints == 0) {
+    for(let prop of properties) {
+      min[prop] = 0
+      max[prop] = 0
+    }
+  }
+
+  logStats({ totalPoints, max, min, avg, plotFilled: sample.length < buffer.active.length, xMax, xMin, offsets })
 }
 
 export default draw

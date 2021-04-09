@@ -70,7 +70,7 @@
       if(g) {
         selectedZones.set($zones.filter(x => x.groups && x.groups.includes(g)).map(x => x.id))
       } else {
-        selectedZones.set([ $zones[0].id ])
+        selectedZones.set($zones.map(x => x.id))
       }
       initialized = true
     }

@@ -1,10 +1,10 @@
 <script>
   import { onDestroy, onMount } from 'svelte'
 
-  export let type, properties, scale, paused, zones
+  export let type, properties, scale, paused, zones, position
 
   export let stats = {}
-  export let xScale = {}
+  export let scaleData = {}
 
   let canvas, worker, localWsWorker, wsWorker, wsPort
   let offscreen = false
@@ -21,7 +21,7 @@
         offscreen = canvas.transferControlToOffscreen()
         worker.postMessage({ canvas: offscreen }, [ offscreen ])
       }
-      worker.postMessage({ type, properties, scale, paused, zones })
+      worker.postMessage({ type, properties, scale, paused, zones, position })
     }
   }
 
@@ -43,8 +43,8 @@
       if(e.data.type == 'stats') {
         stats = e.data.value
       }
-      if(e.data.type == 'xScale') {
-        xScale = e.data.value
+      if(e.data.type == 'scale') {
+        scaleData = e.data.value
       }
     }
 

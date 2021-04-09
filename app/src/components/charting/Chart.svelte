@@ -3,9 +3,12 @@
   import ChartCanvas from './ChartCanvas.svelte'
   import Scale from './Scale.svelte'
   import LineX from './LineX.svelte'
+  import Gestures from 'data/charting/gestures'
+  import { onDestroy } from 'svelte'
+  
 
   export let type = 'line'
-  export let properties = [ 'actual_temp', 'actual_percent', 'actual_current' ]
+  export let properties = [ 'actual_temp' ]
   export let zones = []
   export let colors = {}
   export let scales = {}
@@ -14,16 +17,62 @@
   $: totalZones = zones.length
 
   export let stats = {}
-  let xScale = {}
+  let scaleData = {}
 
   let paused = false
 
+  const gestures = new Gestures()
+
+  let position = {
+    panX: 0,
+    panY: 0,
+    zoomX: 0,
+    zoomY: 0
+  }
+
+  // let up = true
+  // const dummyPan = setInterval(() => {
+  //   if(position.zoomX < -100 && !up) {
+  //     up = true
+  //   }
+  //   if(position.zoomX > 100 && up) {
+  //     up = false
+  //   }
+  //   position.zoomX = position.zoomX + (up ? 1 : -1)
+  //   position.zoomY = position.zoomX
+  // }, 50)
+
+  // onDestroy(() => clearInterval(dummyPan))
+
+  const elasticConstrain = () => {
+    let outOfBounds = false
+    if(position.panX < 0 && position.panX > -5) {
+      position.panX = 0
+    } else if(position.panX < 0) {
+      position.panX = position.panX + Math.min(Math.abs(position.panX) / 16, 20)
+      outOfBounds = true
+    }
+    gestures.set(position)
+    if(outOfBounds) {
+      setTimeout(elasticConstrain, 30 / 1000)
+    }
+  }
+
+  const unSub = gestures.subscribe(p => position = p)
+  const unSubComplete = gestures.subscribeComplete(elasticConstrain)
+
+  onDestroy(() => {
+    unSub()
+    unSubComplete()
+  })
+
+  // $: console.log(position)
 
   $: paused = !playing
 
   let scale = {
     y: {},
-    x: 10
+    x: 20
   }
 
   $: {
@@ -42,28 +91,49 @@
 
   export let setBufferParams
 
-  $: chartProps = { properties, paused, type, scale, zones, type }
+  let wrapperHeight = 0
+  let top = 0
+
+  $: {
+    const gap = wrapperHeight / 20
+    top = -position.panY % gap
+  }
+
+  $: hiddenLine = top == 0 
+    ? - 1 
+    : position.panY > 0 
+      ? 0
+      : 20 
+
+  $: chartProps = { properties, paused, type, scale, zones, type, position }
 
 </script>
 
-<div class='chart'>
-  <div class='scales'>
-    <Scale property={properties[2]} {stats} color={colors[3]} />
-    <Scale property={properties[0]} {stats} color={colors[1]} />
+<div class='chart' 
+  on:pointerdown={gestures.pointerdown} 
+  on:pointermove={gestures.move}
+  on:mousewheel={gestures.move}
+  on:pointerup={gestures.pointerup}
+  on:pointercancel={gestures.pointerup}
+  draggable='false'
+>
+  <div class='scales' style='transform: translateY({top}px)'>
+    <Scale property={properties[2]} {stats} {position} color={colors[3]} />
+    <Scale property={properties[0]} {stats} {position} color={colors[1]} />
   </div>
 
-  <div class='canvas'>
-    <div class='h-grid'>
+  <div class='canvas' bind:offsetHeight={wrapperHeight}>
+    <div class='h-grid' class:offset={top} style='transform: translateY({top}px)'>
       {#each hLines as l}
-        <div class='grid-line' />
+        <div class='grid-line' class:hidden={hiddenLine == l}/>
       {/each}
     </div>
     <div class='v-grid'>
       {#if type == 'line'}
-        <LineX {...{ xScale }} />
+        <LineX {...{ scaleData, position }} />
       {/if}
     </div>
-    <ChartCanvas bind:setBufferParams bind:stats bind:xScale {...chartProps} />
+    <ChartCanvas bind:setBufferParams bind:stats bind:scaleData {...chartProps} />
     <div class='stats'>
       <p><strong>{stats.framerate} fps</strong></p>
       <p><strong>Points:</strong> {(''+stats.totalPoints).padStart(3, '0')}</p>
@@ -75,9 +145,9 @@
     </div>
   </div>
 
-  <div class='scales'>
-    <Scale property={properties[1]} {stats} color={colors[2]} />
-    <Scale property={properties[3]} {stats} color={colors[4]} />
+  <div class='scales' style='transform: translateY({top}px)'>
+    <Scale property={properties[1]} {stats} {position} color={colors[2]} />
+    <Scale property={properties[3]} {stats} {position} color={colors[4]} />
   </div>
 </div>
 
@@ -88,6 +158,7 @@
     padding: 24px 16px;
     padding-bottom: 48px;
     position: relative;
+    touch-action: none;
   }
   .scales {
     display: flex;
@@ -99,17 +170,17 @@
     left: 0;
     width: 100%;
     height: 100%;
-    
   }
   .h-grid {
     display: flex;
     flex-direction:column;
     justify-content: space-between;
     padding: 8px 0;
-    border-left: 1px solid var(--gray);
-    border-right: 1px solid var(--gray);
     .grid-line {
       border-bottom: 1px solid var(--gray);
+      &.hidden {
+        opacity: 0;
+      }
     }
   }
 

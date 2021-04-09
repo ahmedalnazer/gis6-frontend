@@ -32,7 +32,7 @@ const draw = () => {
   const t = new Date().getTime()
   if (chartData.ctx) {
     if (renderers[chartData.type]) {
-      postMessage({ type: 'xScale', value: { xMax: stats.xMax, xMin: stats.xMin }})
+      postMessage({ type: 'scale', value: { xMax: stats.xMax, xMin: stats.xMin, offsets: stats.offsets }})
       renderers[chartData.type](chartData, logStats)
       renderTimes.push(new Date().getTime() - last)
     }

@@ -1,7 +1,7 @@
 <script>
-  export let xScale
-  $: start = xScale.xMin
-  $: end = xScale.xMax
+  export let scaleData, position
+  $: start = scaleData.xMin
+  $: end = scaleData.xMax
 
   $: range = end - start
 
@@ -76,6 +76,8 @@
     left: 0;
     height: calc(100% + 0px);
     width: 100%;
+    border-left: 1px solid var(--gray);
+    border-right: 1px solid var(--gray);
   }
   .line {
     position: absolute;

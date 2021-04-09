@@ -12,7 +12,7 @@
     fault: faultAnalysis,
     wiring: wiringAnalysis,
   }
-  
+
   $: analysis = analyses[type]
 
   let textBox
