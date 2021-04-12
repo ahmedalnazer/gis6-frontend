@@ -43,7 +43,7 @@
   onMount(() => { })
 </script>
 
-<Screen title={$_("Material Database 2")}>
+<Screen title={$_("Material Database")}>
   <div class="material-form">
     <div class="material-subtitle">
       {$_("Search the material database to prefill the process with setpoints for the material.")}
