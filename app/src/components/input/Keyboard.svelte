@@ -1,14 +1,17 @@
 <script>
   import { createEventDispatcher } from 'svelte'
-  import { Icon } from 'components'
+  import { Collapsible } from 'components'
   import _ from 'data/language'
   import { onDestroy, onMount } from 'svelte'
+  import api from 'data/api'
 
   export let keypadNumber = 0
   export let value = ''
   export let onModalOpen = false
   export let anchor
   export let maxCharacter = 99999
+  export let showDropdown = false
+  export let searchInputType = ''
 
   const dispatch = createEventDispatcher()
 
@@ -16,6 +19,8 @@
   let leftArrow = false, rightArrow = false, arrowPosition = 0, capLock = false
   let styleTag = document.createElement("style")
   let keyboardCapLock = 'OFF'
+  let optionsMaterial = []
+  let open = false
 
   $: reachedMaxChar = value.length >= maxCharacter
 
@@ -79,7 +84,33 @@
     }
   }
 
+  const getSelectOptions = async (text) => {
+    let options = []
+    
+    let type = ''
+    if (searchInputType === 'tradeName') type = 'trade_name'
+    if (searchInputType === 'manufacturer') type = 'manufacturer'
+    if (searchInputType === 'familyAbbreviation') type = 'family_abbreviation'
+
+    const res = await api.get(`/materials/?${type}=${text}`)
+    if (res) {
+      open = true
+      for (let item of res) {
+        options.push({"id": item.id, "name": item.trade_name})
+      }
+    }
+    optionsMaterial = options
+  }
+
+  const selectMaterial = material => {
+    value = material.name
+    openKeypad = false
+    dispatch('done', { done: value, type: searchInputType })
+  }
+
   const getText = e => {
+    if (showDropdown) getSelectOptions(e.target.innerText)
+
     if(!reachedMaxChar) {
       getInputField('place-char').value += e.target.innerText
       value = getInputField('place-char').value
@@ -92,9 +123,11 @@
   const actionKey = (actionKeyType) => {
     if (actionKeyType == 'backspace') {
       value = value.slice(0, -1)
+      if (value.length <= 0) open = false
     }
     else if (actionKeyType == 'delete') {
       value = ''
+      open = false
     }
     else if (actionKeyType == 'cap') {
       if (keyboardCapLock == 'ON') { 
@@ -151,6 +184,24 @@
       <div class="content">
         <div class="text-content">
           <input type="text" id='place-char' bind:value="{value}" />
+          {#if showDropdown}
+            <div class='dropdown-anchor'>
+              <div class='dropdown'>
+                <Collapsible {open}>
+                  <div class='menu'>
+                    {#each optionsMaterial as option}
+                      <div
+                        class='option'
+                        on:click={() => selectMaterial(option)}
+                      >
+                        <span>{option.name}</span>
+                      </div>
+                    {/each}
+                  </div>
+                </Collapsible>
+              </div>
+            </div>
+          {/if}
         </div>
         <div class="char-box">
           <div class="char" on:click={e => getText(e)}><span>{$_('~')}</span></div>
@@ -223,7 +274,7 @@
   </div>
 {/if}
 
-<style>
+<style lang="scss">
   div.modal {
     position: fixed;
     top: 0;
@@ -233,7 +284,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 9;
+    z-index: 1000;
   }
   div.backdrop {
     position: absolute;
@@ -403,5 +454,32 @@
   .clear-button :global(svg) {
     width: 16px;
     margin-bottom: 5px;
+  }
+
+  .dropdown-anchor {
+    width: 40%;
+    margin: 0 auto;
+    margin-bottom: 14px;
+    max-height: 25vh;
+    overflow: auto;
+    border-radius: 4px;
+    background-color: #FFFFFF;
+    box-shadow: 0 2px 5px 0 rgba(54,72,96,0.5);
+  }
+  .menu {
+    padding-top: 16px;
+  }
+  .option {
+    padding: 5px 20px;
+    display: flex;
+    align-items: center;
+    color: #011F3E;
+    font-family: "Open Sans";
+    font-size: 16px;
+    letter-spacing: 0;
+    line-height: 40px;
+  }
+  .option:hover {
+    background-color: #F5F6F9;
   }
 </style>
