@@ -115,10 +115,6 @@
   const validateKeypad = num => {
     if (
       !isNaN(num) &&
-      // keypadcontrols.rangeMin &&
-      // keypadcontrols.rangeMin &&
-      // (num < keypadcontrols.rangeMin ||
-      // num > keypadcontrols.rangeMax)
       keypadcontrols.min &&
       keypadcontrols.max &&
       (num < keypadcontrols.min ||
@@ -203,10 +199,10 @@
             <div class="number" on:click={e => getNumber(e)}><span>2</span></div>
             <div class="number mr-0" on:click={e => getNumber(e)}><span>3</span></div>
             <!-- <div class="number ml-0" class:disableBtn={keypadcontrols.integerOnly} -->
-            <div class="number ml-0" class:disableBtn={keypadcontrols.integer}
+            <div class="number ml-0" class:disableBtn={keypadcontrols.integer || keypadcontrols.precision === 0}
               on:click={e => {
                 // if (keypadcontrols.integerOnly) {
-                if (keypadcontrols.integer) {
+                if (keypadcontrols.integer || keypadcontrols.precision === 0) {
                   return false
                 }
                 getNumber(e)
