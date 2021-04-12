@@ -5,6 +5,7 @@
 
   export let stats = {}
   export let scaleData = {}
+  export let width = 0
 
   let canvas, worker, localWsWorker, wsWorker, wsPort
   let offscreen = false
@@ -57,7 +58,7 @@
   })
 </script>
 
-<canvas bind:this={canvas} />
+<canvas bind:this={canvas} bind:offsetWidth={width} />
 
 <style>
   canvas {

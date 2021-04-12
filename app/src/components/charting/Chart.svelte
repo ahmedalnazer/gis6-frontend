@@ -12,22 +12,38 @@
   export let zones = []
   export let colors = {}
   export let scales = {}
-  export let playing = true
+  export let paused = false
+  export let mode = 'pan'
 
   $: totalZones = zones.length
 
   export let stats = {}
   let scaleData = {}
 
-  let paused = false
-
   const gestures = new Gestures()
 
-  let position = {
+  const defaultPosition = {
     panX: 0,
     panY: 0,
-    zoomX: 0,
-    zoomY: 0
+    zoomX: 1,
+    zoomY: 1
+  }
+
+  let position = { ...defaultPosition }
+
+  export let moved = false
+
+  $: {
+    moved = false
+    for(let key of Object.keys(defaultPosition)) {
+      if(position[key] != defaultPosition[key]) {
+        moved = true
+      }
+    }
+  }
+
+  export const resetPosition = () => {
+    position = { ...defaultPosition }
   }
 
   // let up = true
@@ -44,13 +60,20 @@
 
   // onDestroy(() => clearInterval(dummyPan))
 
+  let canvasWidth = 0
+
   const elasticConstrain = () => {
-    let outOfBounds = false
-    if(position.panX < 0 && position.panX > -5) {
-      position.panX = 0
-    } else if(position.panX < 0) {
-      position.panX = position.panX + Math.min(Math.abs(position.panX) / 16, 20)
-      outOfBounds = true
+    paused = true
+    // let outOfBounds = false
+    let leftBounds = (position.zoomX - 1) * canvasWidth / 2
+    let outOfBounds = leftBounds - position.panX > 0
+    // let outOfBounds = leftBounds >= 0 ? position.panX < leftBounds : position.panX > leftBounds
+    // console.log(position.panX)
+    // console.log(leftBounds)
+    if(outOfBounds && Math.abs(position.panX - leftBounds) < 5) {
+      position.panX = leftBounds
+    } else if(outOfBounds) {
+      position.panX = position.panX + Math.min((leftBounds - position.panX) / 16, 20 * position.zoomX)
     }
     gestures.set(position)
     if(outOfBounds) {
@@ -65,10 +88,6 @@
     unSub()
     unSubComplete()
   })
-
-  // $: console.log(position)
-
-  $: paused = !playing
 
   let scale = {
     y: {},
@@ -96,12 +115,12 @@
 
   $: {
     const gap = wrapperHeight / 20
-    top = -position.panY % gap
+    top = position.panY % gap
   }
 
   $: hiddenLine = top == 0 
     ? - 1 
-    : position.panY > 0 
+    : position.panY < 0 
       ? 0
       : 20 
 
@@ -133,7 +152,7 @@
         <LineX {...{ scaleData, position }} />
       {/if}
     </div>
-    <ChartCanvas bind:setBufferParams bind:stats bind:scaleData {...chartProps} />
+    <ChartCanvas bind:setBufferParams bind:stats bind:scaleData bind:width={canvasWidth} {...chartProps} />
     <div class='stats'>
       <p><strong>{stats.framerate} fps</strong></p>
       <p><strong>Points:</strong> {(''+stats.totalPoints).padStart(3, '0')}</p>

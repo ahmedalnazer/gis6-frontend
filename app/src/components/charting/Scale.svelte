@@ -13,7 +13,7 @@
   $: trueMax = maxes[property] / 10
   $: trueMin = Math.min(trueMax - .2, mins[property] / 10)
 
-  $: offset = -position.panY / height * (trueMax - trueMin)
+  $: offset = position.panY / height * (trueMax - trueMin)
 
   $: max = offset + trueMax
   $: min = offset + trueMin
@@ -49,11 +49,11 @@
 
 <div class='scale' style='color: {color};' bind:offsetHeight={height}>
   {#if property}
-    <span>{position.panY > 0 ? '' : getValue(max - shim)}</span>
+    <span>{position.panY < 0 ? '' : getValue(max - shim)}</span>
     {#each intervals as n}
       <span>{getValue(n)}</span>
     {/each}
-    <span>{position.panY < 0 ? '' : getValue(min)}</span>
+    <span>{position.panY > 0 ? '' : getValue(min)}</span>
   {/if}
   <!-- {offset} -->
 </div>

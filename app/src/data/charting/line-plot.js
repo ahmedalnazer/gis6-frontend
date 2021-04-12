@@ -48,19 +48,30 @@ const draw = (chartData, logStats) => {
   const latest = buffer.active[buffer.active.length - 1]
 
 
-  const xZoomFactor = (position.zoomX + 105) / 100
-  let xRange = (scale && scale.x ? parseInt(scale.x) : 10) * xZoomFactor
+  const xZoomFactor = position.zoomX
+  let sRange = scale && scale.x ? parseInt(scale.x) : 10
 
-  if(isNaN(xRange)) xRange = 10
+  if(isNaN(sRange)) sRange = 10
+  
+  const xRange = sRange * 1000
 
   let panXRatio = position.panX / canvas.width
-  let timeOffset = xRange * panXRatio * 1000
+  let timeOffset = xRange * panXRatio
 
-  const delay = Math.max(1000, 10 * xRange)
+  const delay = Math.max(1000, .01 * xRange)
 
   const now = new Date().getTime() - delay - timeOffset
-  let xMax = paused ? latest ? latest.time - delay * .25 - timeOffset : now : now
-  let xMin = xMax - xRange * 1000
+  let rawXMax = paused ? latest ? latest.time - delay * .25 - timeOffset : now : now
+  let rawXMin = rawXMax - xRange
+
+  let mid = rawXMin + xRange / 2
+  const scaled = xRange * xZoomFactor / 2
+
+  let xMax = mid + scaled
+  let xMin = mid - scaled
+
+  // console.log(mid, scaled, xMin, xMax)
+
   let renderLimit = xMin - 2000
   let dX = xMax - xMin
 
@@ -166,7 +177,7 @@ const draw = (chartData, logStats) => {
       min[prop] -= r / 10
     }
 
-    const scaleFactor = 8 * (position.zoomY + 105) / 400
+    const scaleFactor = position.zoomY
 
     const halfRange = (max[prop] - min[prop]) / 2
     const midPoint = min[prop] + halfRange
@@ -213,17 +224,10 @@ const draw = (chartData, logStats) => {
   let totalPoints = 0
 
 
-  const offsetY = -position.panY
-
-  let offsets = {}
-  let offsetTop = 0
+  const offsetY = position.panY
 
   // assign y values and prepare to calculate averages
   for(let prop of properties) {
-    const ratio = offsetY / canvas.height
-    offsets[prop] = ratio * (max[prop] - min[prop])
-    offsets[prop] = offsetY / autoScale[prop]
-
     renderedLines[prop] = []
     yValues[prop] = {
       total: 0,
@@ -275,7 +279,7 @@ const draw = (chartData, logStats) => {
     }
   }
 
-  logStats({ totalPoints, max, min, avg, plotFilled: sample.length < buffer.active.length, xMax, xMin, offsets })
+  logStats({ totalPoints, max, min, avg, plotFilled: sample.length < buffer.active.length, xMax, xMin })
 }
 
 export default draw

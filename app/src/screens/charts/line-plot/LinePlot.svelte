@@ -76,8 +76,7 @@
     }
   })
 
-  let setBufferParams
-  let playing = true
+  let setBufferParams, paused, resetPosition, moved
 
   onDestroy(() => {
     unsubActive()
@@ -90,13 +89,21 @@
   </div>
 
   <div slot="header" class='tools'>
-    <Icon icon={playing ? 'pause' : 'play'} color='var(--primary)' on:click={() => playing = !playing} />
+    <Icon icon='undo' color={moved ? 'var(--primary)' : 'var(--gray)'} on:click={resetPosition}/>
+    <Icon icon={paused ? 'play' : 'pause'} color='var(--primary)' on:click={() => paused = !paused} />
     <Icon icon='settings' color='var(--primary)' on:click={() => showSettings = true}/>
   </div>
 
   <div class='wrapper'>
     
-    <Chart type='line' bind:stats bind:setBufferParams zones={rendered} {...{ properties, colors, scales, playing }} />
+    <Chart type='line' 
+      bind:stats 
+      bind:moved
+      bind:setBufferParams 
+      bind:paused
+      bind:resetPosition
+      zones={rendered} 
+      {...{ properties, colors, scales }}  />
 
     <div class='options'>
       <div class='properties'>
