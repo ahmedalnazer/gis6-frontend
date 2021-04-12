@@ -9,6 +9,7 @@
   import user, { roles } from 'data/user'
   import _ from 'data/language'
   import LinePlotCard from './cards/LinePlotCard.svelte'
+  import MaterialDatabaseCard from './cards/MaterialDatabaseCard.svelte'
   import GroupManagement from './cards/GroupManagement.svelte'
 
   // USER_TYPE_CHOICES = ((1, "admin"), (2, "operator"), (3, "process_engineer"), (4, "setup"), (5, "plant_manager") )
@@ -47,6 +48,11 @@
       id: 7,
       roles: [ 'all' ],
       component: LinePlotCard
+    },
+    {
+      id: 8,
+      roles: [ 1, 3 ],
+      component: MaterialDatabaseCard
     }
   ]
 

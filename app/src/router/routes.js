@@ -11,6 +11,7 @@ import OrderFillin from 'screens/dashboard/OrderFillin.svelte'
 import HotRunner from 'screens/dashboard/HotRunner.svelte'
 import FaultAnalysis from 'screens/analysis/FaultAnalysis.svelte'
 import WiringAnalysis from 'screens/analysis/WiringAnalysis.svelte'
+import MaterialDatabase from 'screens/materialdatabase/MaterialDatabase.svelte'
 import LinePlot from 'screens/charts/line-plot/LinePlot.svelte'
 import ZoneNames from 'screens/zone-names/ZoneNames.svelte'
 import ActivityLog from 'screens/activity-log/ActivityLog.svelte'
@@ -40,7 +41,8 @@ const routes = {
   '/analysis/wiring': WiringAnalysis,
   '/zone-names': ZoneNames,
   '/charts/line-plot': LinePlot,
-  '/activity-log': ActivityLog
+  '/activity-log': ActivityLog,
+  '/material/material-db': MaterialDatabase
 }
 
 export default routes
