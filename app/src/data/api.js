@@ -49,7 +49,9 @@ class API {
 
   // TODO: finalize and document
   logout = async () => {
-    await this.post('auth/logout', { refresh_token: this.refresh })
+    let u
+    user.subscribe(current => u = current)()
+    await this.post('auth/logout', { refresh_token: this.refresh, user: u.id })
     this.status.user = {}
     user.set(null)
     history.push('/')
