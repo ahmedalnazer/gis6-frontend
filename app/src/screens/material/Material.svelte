@@ -83,10 +83,10 @@
     </div>
 
     <div class="modal-buttons">
-      <div class="button" on:click={() => onReset}>
+      <div class="button reset" on:click={() => onReset}>
         {$_("Reset")}
       </div>
-      <div class="button active" on:click={() => onSubmit}>
+      <div class="button search active" on:click={() => onSubmit}>
         {$_("Search")}
       </div>
     </div>
@@ -118,50 +118,59 @@
   }
 
   .grid-container {
-  display: grid;
-  grid-template-columns: 3fr 1fr;
-  grid-template-rows: 1fr 1fr;
-  gap: 0px 0px;
-  grid-template-areas:
-    "trade-name ."
-    "grid-parent .";
-}
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 40px 20px;
+    grid-template-areas:
+      "trade-name ."
+      "grid-parent .";
+    :global(input) {
+      width: 100%;
+    }
+  }
 
-.trade-name { grid-area: trade-name; }
+  .trade-name { grid-area: trade-name; }
 
-.grid-parent {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr;
-  gap: 0px 0px;
-  grid-template-areas:
-    "manufacturer family-abbreviation";
-  grid-area: grid-parent;
-}
+  .grid-parent {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr;
+    gap: 10px 15px;
+    grid-template-areas:
+      "manufacturer family-abbreviation";
+    grid-area: grid-parent;
+  }
 
-.manufacturer {
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: 1fr;
-  gap: 0px 0px;
-  grid-template-areas:
-    ".";
-  grid-area: manufacturer;
-}
+  .manufacturer {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+    gap: 0px 0px;
+    grid-template-areas:
+      ".";
+    grid-area: manufacturer;
+  }
 
-.family-abbreviation {
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: 1fr;
-  gap: 0px 0px;
-  grid-template-areas:
-    ".";
-  grid-area: family-abbreviation;
-}
-
+  .family-abbreviation {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+    gap: 0px 0px;
+    grid-template-areas:
+      ".";
+    grid-area: family-abbreviation;
+  }
 
   .modal-buttons {
     justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr;
+    gap: 0 50%;
+    grid-template-areas:
+      "reset search";
+    grid-area: modal-buttons;
     .button {
       margin: 0;
     }
