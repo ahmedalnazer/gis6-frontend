@@ -1,7 +1,10 @@
 import App from "./App.svelte"
+import "./shims.js"
+
 var app = new App({
   target: document.body,
 })
+
 export default app
 // Hot Module Replacement (HMR) - Remove this snippet to remove HMR.
 // Learn more: https://www.snowpack.dev/#hot-module-replacement

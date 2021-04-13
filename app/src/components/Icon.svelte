@@ -1,6 +1,7 @@
 <script>
     export let icon = ""
     export let color = "#364860"
+    export let size = 16
 </script>
 
 {#if icon == "lock"}
@@ -98,20 +99,8 @@
 {/if}
 
 {#if icon == "undo"}
-    <svg
-        on:click
-        viewBox="0 0 24 24"
-        version="1.1"
-        xmlns="http://www.w3.org/2000/svg"
-        xmlns:xlink="http://www.w3.org/1999/xlink"
-    >
-        <g
-            id="Standards"
-            stroke="none"
-            stroke-width="1"
-            fill="none"
-            fill-rule="evenodd"
-        >
+    <svg on:click viewBox="0 0 24 24" version="1.1" width={size} height={size} xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <g id="Standards" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" >
             <g
                 id="Style-Guide"
                 class="icon-fill"

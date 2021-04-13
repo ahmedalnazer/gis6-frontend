@@ -13,6 +13,7 @@
     "@smui/button": "^2.0.0-beta.0",
     "@smui/card": "^2.0.0-beta.0",
     "axios": "^0.21.1",
+    "dotenv": "^8.2.0",
     "history": "^5.0.0",
     "moment": "^2.29.1",
     "pbf": "^3.2.1",

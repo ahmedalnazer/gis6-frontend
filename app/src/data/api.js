@@ -9,6 +9,23 @@ if(apiTarget) {
   console.warn(`Overriding default API integration, targeting "${apiTarget}"`)
 }
 
+
+// "fuzzy" url conversion
+const getUrl = url => {
+  // make initial slash optional
+  if (url.startsWith('/')) url = url.slice(1)
+
+  // add trailing slash to avoid 400 errors
+  if (!url.endsWith('/') && !url.includes("?")) url = url + '/'
+
+  // prefix all routes with api
+  if (url.startsWith('api/')) url = url.replace('api/', '')
+
+  return url
+}
+
+
+
 let disconnectLock
 
 /**
@@ -49,7 +66,9 @@ class API {
 
   // TODO: finalize and document
   logout = async () => {
-    await this.post('auth/logout', { refresh_token: this.refresh })
+    let u
+    user.subscribe(current => u = current)()
+    await this.post('auth/logout', { refresh_token: this.refresh, user: u.id })
     this.status.user = {}
     user.set(null)
     history.push('/')
@@ -68,8 +87,7 @@ class API {
    */
   request = (url, data, { method }) => {
 
-    // make initial slash optional
-    if (url.startsWith('/')) url = url.slice(1)
+    url = getUrl(url)
 
     return new Promise(async (resolve, reject) => {
 
@@ -78,12 +96,6 @@ class API {
       if(stub) {
         return resolve(stub)
       }
-
-      // if(!url.endsWith('/')) url = url + '/'
-      if(!url.endsWith('/') && !url.includes("?")) url = url + '/'
-
-      // prefix all routes with api
-      if(url.startsWith('api/')) url = url.replace('api/', '')
 
       let opts = {
         headers: {
