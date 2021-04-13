@@ -3,16 +3,16 @@ import { sysInfo, mdtMsg } from 'data/globalSettings'
 
 // import './ws-worker.mjs'
 
-const socketTarget = import.meta.env.SNOWPACK_PUBLIC_WS_URL || `ws://localhost:8080`
+const socketTarget = import.meta.env.SNOWPACK_PUBLIC_WS_URL || `ws://${window.location.hostname}:8080`
 
-const worker = new SharedWorker('/workers/ws-worker.js')
+const worker = new Worker('/workers/ws-worker.js')
 
-worker.onerror = e => {
-  console.error('WS WORKER ERROR!!')
-  console.error(e)
-}
+// worker.onerror = e => {
+//   console.error('WS WORKER ERROR!!')
+//   console.error(e)
+// }
 
-worker.port.start()
+// worker.port.start()
 
 let logged = []
 let loggedZones = [ 1 ]
@@ -44,8 +44,9 @@ Messages are displayed exactly as translated by the protobuf parser.
   return `Logging ${logged.join(', ')}`
 }
 
-worker.port.onmessage = e => {
-  // console.log(e)
+worker.onmessage = e => {
+  // console.log(e.data)
+  if(!e || !e.data || !e.data.data) return
   const { data } = e.data
   const { mt } = data
   if (mt == 6) {
@@ -80,13 +81,13 @@ worker.port.onmessage = e => {
  * @returns null
  */
 function createSocket () {
-  worker.port.postMessage({
+  worker.postMessage({
     command: 'start',
     target: socketTarget,
   })
 
   // connect to necessary channels
-  worker.port.postMessage({
+  worker.postMessage({
     command: 'connect',
     channels: [ 'tczone', 'sysinfo', 'mdtmsg' ]
   })
@@ -94,10 +95,15 @@ function createSocket () {
 
 export default createSocket
 
+export const connectWS = () => {
+  const connection = new MessageChannel()
+  worker.postMessage({ port: connection.port1 }, [ connection.port1 ])
+  return { worker, port: connection.port2 }
+}
 
 export const updateBufferParams = params => {
   localStorage.setItem('buffer-params', JSON.stringify(params))
-  worker.port.postMessage({ comand: 'bufferParams', params })
+  worker.postMessage({ comand: 'bufferParams', params })
 }
 
 const paramString = window.localStorage.getItem('buffer-params') || '{}'

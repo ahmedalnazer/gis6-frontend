@@ -13,7 +13,6 @@ let activeChannels = []
 const updateActive = async () => {
   activeChannels = []
   for(let p of ports) {
-    console.log(p.subscriptions)
     activeChannels = activeChannels.concat(p.subscriptions)
   }
   activeChannels = [ ... new Set(activeChannels) ]
@@ -22,7 +21,6 @@ const updateActive = async () => {
       await send(`-${c}`)
     }
   }
-  console.log(ports)
   await connect()
 }
 
@@ -66,6 +64,22 @@ const initiate = async () => {
   connect()
 }
 
+(function () {
+  File.prototype.arrayBuffer = File.prototype.arrayBuffer || myArrayBuffer
+  Blob.prototype.arrayBuffer = Blob.prototype.arrayBuffer || myArrayBuffer
+
+  function myArrayBuffer() {
+    // this: File or Blob
+    return new Promise((resolve) => {
+      let fr = new FileReader()
+      fr.onload = () => {
+        resolve(fr.result)
+      }
+      fr.readAsArrayBuffer(this)
+    })
+  }
+})()
+
 
 const createSocket = () => new Promise((resolve, reject) => {
   if(ready) resolve()
@@ -73,7 +87,7 @@ const createSocket = () => new Promise((resolve, reject) => {
     socket = new WebSocket(socketTarget)
     
     socket.addEventListener('open', e => {
-      console.log('connecting')
+      console.log('Socket connection established')
       initiate()
       // connect()
     })
@@ -82,7 +96,9 @@ const createSocket = () => new Promise((resolve, reject) => {
       // console.log(e)
       const ts = new Date()
 
-      const buffer = await e.data.arrayBuffer()
+      const blob = e.data
+      // console.log(e.data)
+      const buffer = await blob.arrayBuffer()
       const pbf = new Pbf(buffer)
 
       const { mt } = unknown_msg.read(pbf)
@@ -97,11 +113,13 @@ const createSocket = () => new Promise((resolve, reject) => {
 
       const data = messageTypes[type].read(new Pbf(buffer))
 
-      for(let key of Object.keys(data)) {
-        if(data[key] && data[key].constructor === Uint8Array) {
-          data[key] = getString(data[key])
-        }
-      }
+      // DEPRECATED: no Uint8Arrays currently being passed
+
+      // for(let key of Object.keys(data)) {
+      //   if(data[key] && data[key].constructor === Uint8Array) {
+      //     data[key] = getString(data[key])
+      //   }
+      // }
 
       // ports[0].port.postMessage(data)
 
@@ -111,19 +129,23 @@ const createSocket = () => new Promise((resolve, reject) => {
 
       for(let { port, subscriptions } of ports) {
         if(subscriptions.includes(type)) {
-          port.postMessage({ ts, data })
+          if(port) {
+            port.postMessage({ ts, data })
+          } else {
+            postMessage({ ts, data })
+          }
+          
         }
       }
       // postMessage(data)
     })
 
     socket.addEventListener('close', e => {
-      console.log('Socket connection lost!')
+      console.log('Socket connection broken! Retrying in 1s...')
       ready = false
       socket = null
       connectedChannels = []
       setTimeout(() => {
-        console.log('retrying')
         createSocket()
       }, 1000)
     })
@@ -146,67 +168,105 @@ const connect = async () => {
 }
 
 
-function getString(array) {
-  var out, i, len, c
-  var char2, char3
+// DEPRECATED: no Uint8Arrays currently being passed
 
-  out = ""
-  len = array.length
-  i = 0
-  while (i < len) {
-    c = array[i++]
-    if (i > 0 && c === 0) break
-    switch (c >> 4) {
-    case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
-      // 0xxxxxxx
-      out += String.fromCharCode(c)
-      break
-    case 12: case 13:
-      // 110x xxxx   10xx xxxx
-      char2 = array[i++]
-      out += String.fromCharCode((c & 0x1F) << 6 | char2 & 0x3F)
-      break
-    case 14:
-      // 1110 xxxx  10xx xxxx  10xx xxxx
-      char2 = array[i++]
-      char3 = array[i++]
-      out += String.fromCharCode((c & 0x0F) << 12 |
-          (char2 & 0x3F) << 6 |
-          (char3 & 0x3F) << 0)
-      break
-    }
-  }
+// function getString(array) {
+//   var out, i, len, c
+//   var char2, char3
 
-  return out
-}
+//   out = ""
+//   len = array.length
+//   i = 0
+//   while (i < len) {
+//     c = array[i++]
+//     if (i > 0 && c === 0) break
+//     switch (c >> 4) {
+//     case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
+//       // 0xxxxxxx
+//       out += String.fromCharCode(c)
+//       break
+//     case 12: case 13:
+//       // 110x xxxx   10xx xxxx
+//       char2 = array[i++]
+//       out += String.fromCharCode((c & 0x1F) << 6 | char2 & 0x3F)
+//       break
+//     case 14:
+//       // 1110 xxxx  10xx xxxx  10xx xxxx
+//       char2 = array[i++]
+//       char3 = array[i++]
+//       out += String.fromCharCode((c & 0x0F) << 12 |
+//           (char2 & 0x3F) << 6 |
+//           (char3 & 0x3F) << 0)
+//       break
+//     }
+//   }
+
+//   return out
+// }
 
 
 const id = () => {
   return '_' + Math.random().toString(36).substr(2, 9)
 }
 
-onconnect = function(e) {
+let ids = {}
 
-  const connectionId = id()
 
-  const port = e.ports[0]
 
-  port.onmessage = async e => {
-    console.log(e.data)
-    const { data } = e
+const processCommand = e => {
+  const { data } = e
+  if (data.command == 'start') {
+    socketTarget = data.target
+  }
 
-    if(data.command == 'start') {
-      socketTarget = data.target
-    }
+  if (data.command == 'connect') {
+    addPortSubscriptions(data.port, data.channels)
+  }
 
-    if(data.command == 'connect') {
-      addPortSubscriptions(port, data.channels)
-    }
-
-    if(data.command == 'close') {
+  if (data.command == 'close') {
+    if (data.port) {
       ports = ports.filter(x => x.port != port)
     }
-
-    bufferCommands(port, e, connectionId)
   }
 }
+
+onmessage = e => {
+  const { data } = e
+  if(data.port) {
+    const port = data.port
+    const connectionId = id()
+    port.onmessage = function(e) {
+      processCommand(e)
+      bufferCommands(port, e, connectionId)
+    }
+  } else {
+    processCommand(e)
+    bufferCommands(null, e, 'main')
+  }
+}
+
+// onconnect = function(e) {
+
+//   const connectionId = id()
+
+//   const port = e.ports[0]
+
+//   port.onmessage = async e => {
+//     console.log(e.data)
+//     const { data } = e
+
+//     if(data.command == 'start') {
+//       socketTarget = data.target
+//     }
+
+//     if(data.command == 'connect') {
+//       addPortSubscriptions(port, data.channels)
+//     }
+
+//     if(data.command == 'close') {
+//       ports = ports.filter(x => x.port != port)
+//     }
+
+//     bufferCommands(port, e, connectionId)
+//   }
+// }

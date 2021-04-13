@@ -25,7 +25,8 @@ module.exports = {
     "indent": [ "error", 2 ],
     "object-curly-spacing": [ "error", "always", { "objectsInObjects": false } ],
     "array-bracket-spacing": [ "error", "always", { "arraysInArrays": false } ],
-    "computed-property-spacing": [ "error", "never" ]
+    "computed-property-spacing": [ "error", "never" ],
+    "complexity": [ "warn", { "max": 13 } ]
   },
   settings: {
     "svelte3/compiler": require('./app/node_modules/svelte/compiler'),

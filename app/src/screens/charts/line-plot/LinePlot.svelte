@@ -7,7 +7,7 @@
   import ZoneTasks from "components/taskbars/ZoneTasks.svelte"
   import Settings from './LinePlotSettings.svelte'
   import _ from 'data/language'
-  import { colors } from 'data/charting/line-plot'
+  import { colors } from 'data/charting/line-utils'
   import zones, { activeZones, selectedZones, toggleZones } from 'data/zones'
   import { activeGroup } from "data/groups"
 

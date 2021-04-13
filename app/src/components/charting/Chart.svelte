@@ -13,7 +13,7 @@
   export let colors = {}
   export let scales = {}
   export let paused = false
-  export let mode = 'pan'
+  // export let mode = 'pan'
 
   $: totalZones = zones.length
 
@@ -154,7 +154,7 @@
     </div>
     <ChartCanvas bind:setBufferParams bind:stats bind:scaleData bind:width={canvasWidth} {...chartProps} />
     <div class='stats'>
-      <p><strong>{stats.framerate} fps</strong></p>
+      <p><strong>{stats.framerate} fps</strong> {#if !stats.offscreen}<span style='color: red'>⛔️</span>{/if}</p>
       <p><strong>Points:</strong> {(''+stats.totalPoints).padStart(3, '0')}</p>
       <p><strong>Zones:</strong> {totalZones}</p>
       <p><strong>Lines:</strong> {totalZones * properties.filter(x => !!x).length}</p>

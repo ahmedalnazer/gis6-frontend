@@ -1,5 +1,5 @@
 <script>
-  export let scaleData, position
+  export let scaleData
   $: start = scaleData.xMin
   $: end = scaleData.xMax
 

@@ -111,7 +111,7 @@ export default class Gestures {
           cacheZoom()
         }
         zoomChangeX = Math.max(1, Math.abs(this._zoomX) / 100) * xChange / 2
-        zoomChangeY = Math.max(1, Math.abs(this._zoomY) / 100) * yChange / 2
+        zoomChangeY = Math.max(1, Math.abs(this._zoomY) / 100) * yChange / 1.5
       }
 
     } else if(this.pointers.length == 1) {
