@@ -11,6 +11,7 @@
   export let anchor
   export let maxCharacter = 99999
   export let showDropdown = false
+  export let dropdownSetting = {}
   export let searchInputType = ''
 
   const dispatch = createEventDispatcher()
@@ -86,17 +87,38 @@
 
   const getSelectOptions = async (text) => {
     let options = []
-    
-    let type = ''
-    if (searchInputType === 'tradeName') type = 'trade_name'
-    if (searchInputType === 'manufacturer') type = 'manufacturer'
-    if (searchInputType === 'familyAbbreviation') type = 'family_abbreviation'
+    // let type = ''
+    let qry = ''
+    // {"tradeName":"87510 Gray 260","manufacturer":"25SP","familyAbbreviation":""}
 
-    const res = await api.get(`/materials/?${type}=${text}`)
+    if (searchInputType === 'tradeName') {
+      // type = 'trade_name'
+      qry = `trade_name=${text}${dropdownSetting.manufacturer?`&manufacturer=${dropdownSetting.manufacturer}`:''}${dropdownSetting.familyAbbreviation?`&family_abbreviation=${dropdownSetting.familyAbbreviation}`:''}`
+    }
+    if (searchInputType === 'manufacturer') {
+      // type = 'manufacturer'
+      qry = `manufacturer=${text}${dropdownSetting.tradeName?`&trade_name=${dropdownSetting.tradeName}`:''}${dropdownSetting.familyAbbreviation?`&family_abbreviation=${dropdownSetting.familyAbbreviation}`:''}`
+    }
+
+    if (searchInputType === 'familyAbbreviation') {
+      // type = 'family_abbreviation'
+      qry = `family_abbreviation=${text}${dropdownSetting.tradeName?`&trade_name=${dropdownSetting.tradeName}`:''}${dropdownSetting.manufacturer?`&manufacturer=${dropdownSetting.manufacturer}`:''}`
+    }
+
+    // const res = await api.get(`/materials/?${type}=${text}`)
+    const res = await api.get(`/materials/?${qry}`)
     if (res) {
       open = true
       for (let item of res) {
-        options.push({"id": item.id, "name": item.trade_name})
+        if (searchInputType === 'manufacturer') {
+          options.push({"id": item.id, "name": item.manufacturer})
+        }
+        else if (searchInputType === 'familyAbbreviation') {
+          options.push({"id": item.id, "name": item.family_abbreviation})
+        }
+        else {
+          options.push({"id": item.id, "name": item.trade_name})
+        }
       }
     }
     optionsMaterial = options
@@ -109,11 +131,11 @@
   }
 
   const getText = e => {
-    if (showDropdown) getSelectOptions(e.target.innerText)
-
     if(!reachedMaxChar) {
       getInputField('place-char').value += e.target.innerText
       value = getInputField('place-char').value
+      console.log(`Txt ${value}`)
+      if (showDropdown) getSelectOptions(value)
       if (anchor && anchor.dispatchEvent) {
         anchor.dispatchEvent(new Event('change'))
       }
