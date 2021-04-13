@@ -16,6 +16,7 @@
     familyAbbreviation: ''
   }
   let searchInputType = ''
+  let confirmStart = false
 
   const showKeyboard = type => {
     openKeyboard = true
@@ -109,8 +110,8 @@
         {#each materialSearchResults as searchResult}
           <div class="material-grid-item item">
               <div>{searchResult.trade_name}</div>
-              <div>{`${searchResult.melt_temperature} (${searchResult.min_melt_temperature} - ${searchResult.max_melt_temperature})`}</div>
-              <div>{$_("Apply Setpoint")}</div>
+              <div>{`${searchResult.melt_temperature} (${searchResult.min_melt_temperature} - ${searchResult.max_melt_temperature})`} &#176;C</div>
+              <div class="apply-setpoint" on:click={() => { confirmStart = true }}>{$_("Apply Setpoint")}</div>
           </div>
         {/each}
 
@@ -122,6 +123,34 @@
       </div>
     </div>
 </Screen>
+
+{#if confirmStart}
+  <Modal
+      title={$_("Confirm setpoint change to 350")}
+      onClose={() => confirmStart = false}
+  >
+  <div class="modal-text">
+    <p>
+      Applying the temperature setpoint value to the current process will reset the setpoint for all zones to 350
+    </p>
+    <!-- <div class="modal-grid">
+      
+d
+    </div> -->
+    <div class="modal-buttons">
+      <!-- <div
+        class="button cancel-button"
+        on:click={() => confirmStart = false}
+      >
+        {$_("No, cancel test")}
+      </div> -->
+      <div class="button confirm-button active_">
+        {$_("Apply Setpoint")}
+      </div>
+    </div>
+  </div>
+  </Modal>
+  {/if}
 
 {#if openKeyboard}
   <Keyboard
@@ -237,5 +266,10 @@
     border: 1px solid #c2c2c2;
     padding: 20px 20px 20px 20px;
     margin-bottom: -1px;
+  }
+
+  .apply-setpoint {
+    cursor: pointer;
+    color: var(--primary)
   }
 </style>
