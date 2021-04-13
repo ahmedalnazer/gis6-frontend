@@ -2,6 +2,24 @@ import renderLine from './line-plot'
 import buffer from './buffer'
 import { maxChunkSize } from '../realtime/buffer'
 
+let requestAnimFrame
+try {
+  requestAnimFrame = requestAnimationFrame
+} catch(e) {
+  try {
+    requestAnimFrame = webkitRequestAnimationFrame
+  } catch(e) {
+    try {
+      requestAnimFrame = mozRequestAnimationFrame
+    } catch(e) {
+      requestAnimFrame = function (/* function */ callback, /* DOMElement */ element) {
+        setTimeout(callback, 1000 / 60)
+      }
+    }
+  }
+}
+
+
 
 const renderers = {
   'line': renderLine
@@ -15,6 +33,9 @@ let chartData = {
   scale: {
     x: 10,
     y: 'auto'
+  },
+  bufferParams: {
+    rate: 10
   }
 }
 
@@ -30,19 +51,20 @@ let renderTimes = []
 let last = 0
 const draw = () => {
   const t = new Date().getTime()
-  if (chartData.ctx) {
-    if (renderers[chartData.type]) {
-      postMessage({ type: 'xScale', value: { xMax: stats.xMax, xMin: stats.xMin }})
-      renderers[chartData.type](chartData, logStats)
-      renderTimes.push(new Date().getTime() - last)
-    }
+  if (renderers[chartData.type]) {
+    postMessage({ type: 'scale', value: { xMax: stats.xMax, xMin: stats.xMin, offsets: stats.offsets }})
+    renderers[chartData.type](chartData, logStats, submitLines)
+    renderTimes.push(new Date().getTime() - last)
   }
   last = t
-  requestAnimationFrame(draw)
+  requestAnimFrame(draw)
 }
 
-requestAnimationFrame(draw)
+requestAnimFrame(draw)
 
+const submitLines = lines => {
+  postMessage({ type: 'lines', lines })
+}
 
 const collectStats = () => {
   const totalRender = renderTimes.reduce((t, total) => total + t, 0)
@@ -96,7 +118,7 @@ onmessage = e => {
     } else {
       buffer.play()
     }
-    if (e.data.canvas) {
+    if (e.data.canvas && e.data.canvas.getContext) {
       chartData.ctx = chartData.canvas.getContext("2d")
     }
   }

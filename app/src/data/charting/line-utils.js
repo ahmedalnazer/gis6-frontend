@@ -1,3 +1,10 @@
+export const colors = {
+  1: '#A103FF',
+  2: '#FF9C03',
+  3: '#03CFFF',
+  4: '#2E03FF'
+}
+
 
 export function smooth(ctx, points, color, width) {
   ctx.strokeStyle = color
@@ -28,4 +35,26 @@ export function smooth(ctx, points, color, width) {
   }
   ctx.quadraticCurveTo(points[i].x, points[i].y, points[i + 1].x, points[i + 1].y)
   ctx.stroke()
+}
+
+export const drawLines = (props, canvas, renderedLines) => {
+  const ctx = canvas.getContext("2d")
+  const lineColors = {
+    [props[0]]: colors[1],
+    [props[1]]: colors[2],
+    [props[2]]: colors[3],
+    [props[3]]: colors[4]
+  }
+
+  // clear canvas for new frame
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+  for (let prop of props) {
+    if(renderedLines[prop]) {
+      for (let i = 0; i < renderedLines[prop].length; i++) {
+        const line = renderedLines[prop][i]
+        smooth(ctx, line, lineColors[prop], 1)
+      }
+    }
+  }
 }

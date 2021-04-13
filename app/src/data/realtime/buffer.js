@@ -46,6 +46,14 @@ let needsReset = {}
 
 export const bufferCommands = (port, e, id) => {
   const { data } = e
+
+  const post = (data) => {
+    if(port) {
+      port.postMessage(data) 
+    } else {
+      postMessage
+    }
+  }
   
   if (data.command == 'readBuffer') {
 
@@ -62,7 +70,7 @@ export const bufferCommands = (port, e, id) => {
       }
 
       if(needsReset[id]) {
-        port.postMessage('reset')
+        post('reset')
         resetBuffer()
         return
       }
@@ -76,7 +84,7 @@ export const bufferCommands = (port, e, id) => {
           const firstEntry = update[0]
           latest[id] = latestEntry.time
           if(firstEntry.time < earliest[id]) earliest[id] = firstEntry.time
-          port.postMessage({ update, params })
+          post({ update, params })
         }
       }
       // console.log(sizeOf([ ...buffer ]))

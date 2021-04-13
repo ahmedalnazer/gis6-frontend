@@ -1,50 +1,56 @@
 <script>
   import { onDestroy, onMount } from 'svelte'
+  import { connectWS, updateBufferParams } from 'data/realtime/ws.js'
+  import { drawLines, smooth } from 'data/charting/line-utils'
 
-  export let type, properties, scale, paused, zones
+  export let type, properties, scale, paused, zones, position
 
   export let stats = {}
-  export let xScale = {}
+  export let scaleData = {}
+  export let width = 0
 
-  let canvas, worker, localWsWorker, wsWorker, wsPort
+  let canvas, worker
   let offscreen = false
+  let scaled = false
 
-  export const setBufferParams = params => {
-    localWsWorker.port.postMessage({ command: 'setBufferParams', params })
-  }
+  export const setBufferParams = params => updateBufferParams(params)
 
   $: {
     if(canvas && worker) {
-      if(!offscreen) {
+      if(!scaled) {
         canvas.width = canvas.offsetWidth * 1
         canvas.height = canvas.width * 6.1 / 7.8
+        scaled = true
+      }
+      
+      if(!offscreen && canvas.transferControlToOffscreen) {        
         offscreen = canvas.transferControlToOffscreen()
         worker.postMessage({ canvas: offscreen }, [ offscreen ])
       }
-      worker.postMessage({ type, properties, scale, paused, zones })
+
+      let chartData = { type, properties, scale, paused, zones, position }
+      if(!offscreen) chartData.canvas = { width: canvas.width, height: canvas.height }
+      worker.postMessage(chartData)
     }
   }
 
   onMount(() => {
-    localWsWorker = new SharedWorker('/workers/ws-worker.js')
-    localWsWorker.port.start()
-    wsWorker = new SharedWorker('/workers/ws-worker.js')
-    wsPort = wsWorker.port
-    wsPort.start()
+    const connection = connectWS()
+    const wsWorker = connection.worker
+    const { port } = connection
 
-    wsWorker.onerror = e => {
-      console.error('wsWorker ERROR!!')
-      console.error(e)
-    }
     worker = new Worker('/workers/chart-worker.js')
     console.log('chart worker created')
-    worker.postMessage({ wsPort: wsPort }, [ wsPort ])
+    worker.postMessage({ wsPort: port }, [ port ])
     worker.onmessage = e => {
-      if(e.data.type == 'stats') {
-        stats = e.data.value
+      if(e.data.type == 'lines') {
+        drawLines(properties, canvas, e.data.lines)
       }
-      if(e.data.type == 'xScale') {
-        xScale = e.data.value
+      if(e.data.type == 'stats') {
+        stats = { ...e.data.value, offscreen }
+      }
+      if(e.data.type == 'scale') {
+        scaleData = e.data.value
       }
     }
 
@@ -57,7 +63,7 @@
   })
 </script>
 
-<canvas bind:this={canvas} />
+<canvas bind:this={canvas} bind:offsetWidth={width} />
 
 <style>
   canvas {

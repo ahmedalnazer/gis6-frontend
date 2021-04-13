@@ -6,7 +6,8 @@
   "main": "index.js",
   "scripts": {
     "test": "node_modules/.bin/cypress run --browser chrome --headless",
-    "show_tests": "node_modules/.bin/cypress open"
+    "show_tests": "node_modules/.bin/cypress open",
+    "lint": "eslint app/src"
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",

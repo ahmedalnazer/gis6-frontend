@@ -2,7 +2,7 @@
   import { Modal, Input } from 'components'
   import LineParams from './LineParams.svelte'
   import _ from 'data/language'
-  import { colors } from 'data/charting/line-plot'
+  import { colors } from 'data/charting/line-utils'
   import confirm from 'data/confirm'
   
   export let onClose, onSubmit, stats, setBufferParams

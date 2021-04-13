@@ -7,7 +7,7 @@
   import ZoneTasks from "components/taskbars/ZoneTasks.svelte"
   import Settings from './LinePlotSettings.svelte'
   import _ from 'data/language'
-  import { colors } from 'data/charting/line-plot'
+  import { colors } from 'data/charting/line-utils'
   import zones, { activeZones, selectedZones, toggleZones } from 'data/zones'
   import { activeGroup } from "data/groups"
 
@@ -70,14 +70,13 @@
       if(g) {
         selectedZones.set($zones.filter(x => x.groups && x.groups.includes(g)).map(x => x.id))
       } else {
-        selectedZones.set([ $zones[0].id ])
+        selectedZones.set($zones.map(x => x.id))
       }
       initialized = true
     }
   })
 
-  let setBufferParams
-  let playing = true
+  let setBufferParams, paused, resetPosition, moved
 
   onDestroy(() => {
     unsubActive()
@@ -90,13 +89,21 @@
   </div>
 
   <div slot="header" class='tools'>
-    <Icon icon={playing ? 'pause' : 'play'} color='var(--primary)' on:click={() => playing = !playing} />
+    <Icon icon='undo' color={moved ? 'var(--primary)' : 'var(--gray)'} on:click={resetPosition}/>
+    <Icon icon={paused ? 'play' : 'pause'} color='var(--primary)' on:click={() => paused = !paused} />
     <Icon icon='settings' color='var(--primary)' on:click={() => showSettings = true}/>
   </div>
 
   <div class='wrapper'>
     
-    <Chart type='line' bind:stats bind:setBufferParams zones={rendered} {...{ properties, colors, scales, playing }} />
+    <Chart type='line' 
+      bind:stats 
+      bind:moved
+      bind:setBufferParams 
+      bind:paused
+      bind:resetPosition
+      zones={rendered} 
+      {...{ properties, colors, scales }}  />
 
     <div class='options'>
       <div class='properties'>
