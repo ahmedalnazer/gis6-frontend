@@ -4,7 +4,11 @@
   import Screen from "layout/Screen.svelte"
   import { Modal, Input } from "components"
   import Keyboard from 'components/input/Keyboard.svelte'
+  import api from 'data/api'
 
+  $: isDisable = materialSearch.tradeName || materialSearch.manufacturer || materialSearch.familyAbbreviation
+
+  let materialSearchResults = []
   let openKeyboard = false
   let materialSearch = {
     tradeName: '',
@@ -25,22 +29,24 @@
     openKeyboard = false
   }
 
-  const close = () => {
-    console.log('close material')
-  }
+  // const close = () => {
+  //   console.log('close material')
+  // }
 
   const onSubmit = async () => {
-    console.log('Search')
-    // isDisable = true
-    // const res = await api.patch(`/report/${reportId}`, report)
+    // console.log('Search')
+    // console.log('http://172.16.41.219:8000/api/materials/?family_abbreviation=PP&trade_name=011115-563-1&manufacturer=Flint%20Hills%20Resources%20(Formerly%20Huntsman)')
+    // materialSearchResults = await api.get('/api/materials/?family_abbreviation=PP&trade_name=011115-563-1&manufacturer=Flint%20Hills%20Resources%20(Formerly%20Huntsman)')
+    materialSearchResults = await api.get(`/api/materials/?family_abbreviation=${materialSearch.familyAbbreviation}&trade_name=${materialSearch.tradeName}&manufacturer=${materialSearch.manufacturer}`)
   }
 
   const onReset = async () => {
-  console.log('Reset')
+    console.log('Reset')
     // isDisable = true
     // const res = await api.patch(`/report/${reportId}`, report)
   }
   onMount(() => { })
+
 </script>
 
 <Screen title={$_("Material Database")}>
@@ -81,14 +87,37 @@
     </div>
 
     <div class="form-buttons">
-      <div class="button reset" on:click={() => onReset}>
+      <div class="button reset" on:click={() => onReset()} class:disabled={!isDisable}>
         {$_("Reset")}
       </div>
-      <div class="button search active" on:click={() => onSubmit}>
+      <div class="button search active" on:click={() => onSubmit()} class:disabled={!isDisable}>
         {$_("Search")}
       </div>
     </div>
   </div>
+  <div class="material-container">
+    <div class="material-grid-body">
+        <div class="material-grid header">
+            <div>Trade Name</div>
+            <div>Melt Temp (Min-Max)</div>
+            <div>&nbsp;</div>
+        </div>
+
+        {#each materialSearchResults as searchResult}
+          <div class="material-grid-item item">
+              <div>{searchResult.trade_name}</div>
+              <div></div>
+              <div></div>
+          </div>
+        {/each}
+
+        {#if materialSearchResults.length <= 0}
+            <div class="item mute">
+                <div class="no-record muted">{$_("No records found")}</div>
+            </div>
+        {/if}
+      </div>
+    </div>
 </Screen>
 
 {#if openKeyboard}
@@ -178,5 +207,31 @@
     .button {
       margin: 0;
     }
+  }
+
+  .material-container {
+    padding: 5px 30px 5px 30px;
+  }
+
+  .material-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .header {
+    // border-top: 1px solid #70777F;
+    padding: 13px 20px 20px 20px;
+    box-sizing: border-box;
+  }
+
+  .material-grid-item {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .item {
+    border: 1px solid #c2c2c2;
+    padding: 20px 20px 20px 20px;
+    margin-bottom: -1px;
   }
 </style>
