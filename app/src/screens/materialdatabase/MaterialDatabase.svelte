@@ -34,7 +34,6 @@
   // }
 
   const onSubmit = async () => {
-    // console.log('Search')
     // console.log('http://172.16.41.219:8000/api/materials/?family_abbreviation=PP&trade_name=011115-563-1&manufacturer=Flint%20Hills%20Resources%20(Formerly%20Huntsman)')
     // materialSearchResults = await api.get('/api/materials/?family_abbreviation=PP&trade_name=011115-563-1&manufacturer=Flint%20Hills%20Resources%20(Formerly%20Huntsman)')
     materialSearchResults = await api.get(`/api/materials/?family_abbreviation=${materialSearch.familyAbbreviation}&trade_name=${materialSearch.tradeName}&manufacturer=${materialSearch.manufacturer}`)
@@ -42,6 +41,10 @@
 
   const onReset = async () => {
     console.log('Reset')
+    materialSearchResults = []
+    materialSearch.tradeName = ''
+    materialSearch.manufacturer = ''
+    materialSearch.familyAbbreviation = ''
     // isDisable = true
     // const res = await api.patch(`/report/${reportId}`, report)
   }
@@ -106,8 +109,8 @@
         {#each materialSearchResults as searchResult}
           <div class="material-grid-item item">
               <div>{searchResult.trade_name}</div>
-              <div></div>
-              <div></div>
+              <div>{`${searchResult.melt_temperature} (${searchResult.min_melt_temperature} - ${searchResult.max_melt_temperature})`}</div>
+              <div>{$_("Apply Setpoint")}</div>
           </div>
         {/each}
 
@@ -121,13 +124,14 @@
 </Screen>
 
 {#if openKeyboard}
-    <Keyboard
+  <Keyboard
     showDropdown={true}
     searchInputType={searchInputType}
+    dropdownSetting={materialSearch}
     bind:onModalOpen={openKeyboard}
     on:keypadClosed={() => openKeyboard = false}
     on:done={(kcontent) => getKeyboardText(kcontent)} maxCharacter=12
-    />
+  />
 {/if}
 
 <style lang="scss">
