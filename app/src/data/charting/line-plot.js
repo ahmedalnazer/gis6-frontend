@@ -118,13 +118,24 @@ const getYParameters = (prop, min, max, scaleParams, position) => {
  * @param {Function} submitLines 
  */
 const draw = (chartData, logStats, submitLines) => {
-  const { canvas, ctx, scale, paused, zones, bufferParams, position } = chartData
+  const { canvas, ctx, scale, paused, bufferParams, position } = chartData
+
+  let { zones, jank } = chartData
+
+  zones = zones.filter(x => !!x)
+
+  // render multiple copies of each line for stress testing
+  if(jank) {
+    zones = zones.concat(zones).concat(zones).concat(zones)
+    zones = zones.concat(zones).concat(zones).concat(zones)
+  }
+
   const { rate } = bufferParams
 
   const _props = chartData.properties
   const properties = _props.filter(x => !!x)
 
-  let maxLinePoints = Math.min(700, Math.max(80, 20000 / (zones.length * properties.length)))
+  let maxLinePoints = Math.min(700, Math.max(80, 20000 / (zones.length * properties.length))) * (chartData.resolution / 4)
   
   const { xMin, xMax, dX, xScale } = getXParameters(position, canvas, scale, paused)
 
@@ -216,6 +227,11 @@ const draw = (chartData, logStats, submitLines) => {
     }
 
     avg[prop] = yValues[prop].total / yValues[prop].totalPoints
+
+    if(yValues[prop].totalPoints == 0) {
+      min[prop] = 0
+      max[prop] = 0
+    }
   }
 
 
