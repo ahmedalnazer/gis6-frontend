@@ -5,6 +5,7 @@
   import LineX from './LineX.svelte'
   import Gestures from 'data/charting/gestures'
   import { onDestroy } from 'svelte'
+  import CheckBox from 'components/input/CheckBox.svelte'
   
 
   export let type = 'line'
@@ -14,6 +15,9 @@
   export let scales = {}
   export let paused = false
   // export let mode = 'pan'
+
+  // for testing purposes, if true will trigger "stress test mode"
+  let jank = false
 
   $: totalZones = zones.length
 
@@ -46,30 +50,12 @@
     position = { ...defaultPosition }
   }
 
-  // let up = true
-  // const dummyPan = setInterval(() => {
-  //   if(position.zoomX < -100 && !up) {
-  //     up = true
-  //   }
-  //   if(position.zoomX > 100 && up) {
-  //     up = false
-  //   }
-  //   position.zoomX = position.zoomX + (up ? 1 : -1)
-  //   position.zoomY = position.zoomX
-  // }, 50)
-
-  // onDestroy(() => clearInterval(dummyPan))
-
   let canvasWidth = 0
 
   const elasticConstrain = () => {
     paused = true
-    // let outOfBounds = false
     let leftBounds = (position.zoomX - 1) * canvasWidth / 2
     let outOfBounds = leftBounds - position.panX > 0
-    // let outOfBounds = leftBounds >= 0 ? position.panX < leftBounds : position.panX > leftBounds
-    // console.log(position.panX)
-    // console.log(leftBounds)
     if(outOfBounds && Math.abs(position.panX - leftBounds) < 5) {
       position.panX = leftBounds
     } else if(outOfBounds) {
@@ -124,7 +110,7 @@
       ? 0
       : 20 
 
-  $: chartProps = { properties, paused, type, scale, zones, type, position }
+  $: chartProps = { properties, paused, type, scale, zones, type, position, jank }
 
 </script>
 
@@ -153,11 +139,13 @@
       {/if}
     </div>
     <ChartCanvas bind:setBufferParams bind:stats bind:scaleData bind:width={canvasWidth} {...chartProps} />
-    <div class='stats'>
+    <div class='stats' on:pointerdown|stopPropagation on:pointerup|stopPropagation>
       <p><strong>{stats.framerate} fps</strong> {#if !stats.offscreen}<span style='color: red'>⛔️</span>{/if}</p>
       <p><strong>Points:</strong> {(''+stats.totalPoints).padStart(3, '0')}</p>
       <p><strong>Zones:</strong> {totalZones}</p>
       <p><strong>Lines:</strong> {totalZones * properties.filter(x => !!x).length}</p>
+      <p><strong>Resolution:</strong> {stats.resolution * 25}%</p>
+      <p><CheckBox bind:checked={jank} label='Stress'/></p>
     </div>
     <div class='loading' class:active={stats.loading !== false && !stats.plotFilled}>
       {$_('Loading data...')}
@@ -168,6 +156,12 @@
     <Scale property={properties[1]} {stats} {position} color={colors[2]} />
     <Scale property={properties[3]} {stats} {position} color={colors[4]} />
   </div>
+
+  {#if stats.resolution < 3}
+    <div class='res-warning'>
+      {$_('High data volume detected, using low plot resolution')}
+    </div>
+  {/if}
 </div>
 
 <style lang="scss">
@@ -218,6 +212,11 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 8px;
+      :global(.checkbox) {
+        margin: 0;
+        padding: 0;
+        height: auto;
+      }
       p {
         margin: 0;
         padding: 0;
@@ -247,6 +246,16 @@
   }
   .loading.active {
     opacity: 1;
+  }
+
+  .res-warning {
+    position: absolute;
+    right: 0;
+    width: 100%;
+    text-align: center;
+    bottom: -18px;
+    font-size: .8em;
+    opacity: .5;
   }
 </style>
 
