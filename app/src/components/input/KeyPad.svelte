@@ -17,15 +17,12 @@
   let leftArrow = false, rightArrow = false, arrowPosition = 0
   let styleTag = document.createElement("style")
   let disabledButton = false
-  // let disableNegativeBtn = !keypadcontrols.negativeSign
   let disableNegativeBtn = !keypadcontrols.negative
   let notInRange = false
-  // let toDecimal = keypadcontrols.decimalPlace
-  let toDecimal = keypadcontrols.precision
   let keypadNewValue = value
-  let stopToDecimal = false
   let showNegativeSign = true
   let removeOldValue = true
+  let currentPrecision = 1
 
   $: {
     keypadNumber = parseFloat(_keypadNumber)
@@ -95,9 +92,11 @@
       removeOldValue = false
     }
 
-    if (stopToDecimal) {
+    if (currentPrecision > keypadcontrols.precision) {
+      notify.error($_("Restricted to the correct precision"))
       return false
     }
+
     getInputField('place-number').value += e.target.innerText
     keypadNewValue = parseFloat(getInputField('place-number').value)
     validateKeypad(keypadNewValue)
@@ -105,18 +104,19 @@
     anchor.dispatchEvent(new Event('change'))
   }
 
-  const decimalCount = value => {
-    if (Math.floor(value) !== value) {
-      return value.toString().split(".")[1].length || 0;
+  const validatePrecision = () => {
+    const value = parseFloat(getInputField('place-number').value)
+    if (Math.floor(value) !== value && keypadcontrols.precision > 0) {
+      const afterDeciaml = value.toString().split(".")[1]
+      if (afterDeciaml && afterDeciaml.length) {
+        currentPrecision++
+      }
     }
-    return 0;
   }
 
   const validateKeypad = num => {
     if (
       !isNaN(num) &&
-      keypadcontrols.min &&
-      keypadcontrols.max &&
       (num < keypadcontrols.min ||
       num > keypadcontrols.max)
     ) {
@@ -127,17 +127,10 @@
       notInRange = false
     }
 
-    if (toDecimal && toDecimal === decimalCount(num)) {
-      stopToDecimal = true
-    }
+    validatePrecision()
   }
 
   const closeKeypadModal = () => {
-    // if (stopToDecimal) {
-    //   notify.error($_("Restricted to the correct precision"))
-    //   return false
-    // }
-
     if (notInRange) {
       notify.error($_("Not in range"))
     }
@@ -151,7 +144,7 @@
     getInputField('place-number').value = ''
     disabledButton = false
     notInRange = false
-    stopToDecimal = false
+    currentPrecision = 1
     keypadNewValue = value
   }
 
