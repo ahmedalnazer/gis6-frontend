@@ -156,6 +156,12 @@
     <Scale property={properties[1]} {stats} {position} color={colors[2]} />
     <Scale property={properties[3]} {stats} {position} color={colors[4]} />
   </div>
+
+  {#if stats.resolution < 3}
+    <div class='res-warning'>
+      {$_('High data volume detected, using low plot resolution')}
+    </div>
+  {/if}
 </div>
 
 <style lang="scss">
@@ -240,6 +246,16 @@
   }
   .loading.active {
     opacity: 1;
+  }
+
+  .res-warning {
+    position: absolute;
+    right: 0;
+    width: 100%;
+    text-align: center;
+    bottom: -18px;
+    font-size: .8em;
+    opacity: .5;
   }
 </style>
 
