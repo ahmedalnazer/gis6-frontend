@@ -56,7 +56,7 @@
     </div>
 
     <div class='time'>
-      <Input label={$_('Updates per Second')} type='number' bind:value={bufferRate}/>
+      <Input label={$_('Max Updates per Second')} type='number' bind:value={bufferRate}/>
       <div class='ttf'>
         <label>{$_('Time to Fill (HH:MM:SS)')}</label>
         <p>{ttf_text}</p>
