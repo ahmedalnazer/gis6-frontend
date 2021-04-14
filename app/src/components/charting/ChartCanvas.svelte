@@ -3,7 +3,7 @@
   import { connectWS, updateBufferParams } from 'data/realtime/ws.js'
   import { drawLines, smooth } from 'data/charting/line-utils'
 
-  export let type, properties, scale, paused, zones, position
+  export let type, properties, scale, paused, zones, position, jank
 
   export let stats = {}
   export let scaleData = {}
@@ -28,7 +28,7 @@
         worker.postMessage({ canvas: offscreen }, [ offscreen ])
       }
 
-      let chartData = { type, properties, scale, paused, zones, position }
+      let chartData = { type, properties, scale, paused, zones, position, jank }
       if(!offscreen) chartData.canvas = { width: canvas.width, height: canvas.height }
       worker.postMessage(chartData)
     }

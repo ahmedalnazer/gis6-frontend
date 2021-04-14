@@ -20,6 +20,37 @@ try {
 }
 
 
+let refreshRate = 60
+
+// get refresh rate for current display
+const getRefreshRate = async (frames = 60) => {
+  return new Promise((resolve, reject) => {
+    let last
+    const times = []
+    const getTime = n => {
+      const now = new Date().getTime()
+      if(last) times.push(now - last)
+      last = now
+
+      if(n == 0) {
+        const total = times.reduce((total, t) => total + t, 0)
+        const avg = total / times.length
+        resolve(1000 / avg)
+      } else {
+        requestAnimFrame(() => getTime(n - 1))
+      }
+    }
+    getTime(frames)
+  })
+}
+
+getRefreshRate(1000).then(rate => {
+  if(rate < 45) {
+    refreshRate = 30
+  }
+  console.log(refreshRate)
+})
+
 
 const renderers = {
   'line': renderLine
@@ -36,7 +67,9 @@ let chartData = {
   },
   bufferParams: {
     rate: 10
-  }
+  },
+  // current datapoint density setting (1 - 4)
+  resolution: 4
 }
 
 let port
@@ -45,8 +78,19 @@ let port
 let stats = {}
 const logStats = s => stats = { ...stats, ...s }
 
-
+// most recent set of render times (to determine frame rate)
 let renderTimes = []
+
+// framerate snapshots to monitor system strain
+let performanceHistory = []
+
+// track most recent 
+let lastResolutionChange = new Date().getTime()
+
+// track number of times max Resolution recommended
+let maxResCount = 0
+
+
 
 let last = 0
 const draw = () => {
@@ -67,10 +111,47 @@ const submitLines = lines => {
 }
 
 const collectStats = () => {
+  const now = new Date().getTime()
+
   const totalRender = renderTimes.reduce((t, total) => total + t, 0)
   const avgRender = totalRender / renderTimes.length
   const framerate = Math.ceil(1000 / avgRender)
-  renderTimes = renderTimes.slice(-50)
+  performanceHistory.push(framerate)
+
+  // keep last 10s of framerate data for performance monitoring
+  performanceHistory = performanceHistory.slice(-30)
+
+  // truncate frame data to keep a rolling average
+  renderTimes = renderTimes.slice(-60)
+
+  // if enough time has passed, calculate recommended resolution
+  if(now - lastResolutionChange > 1000) {
+    lastResolutionChange = now
+
+    const recommended = Math.ceil((framerate - 15) * 4 / (refreshRate - 15))
+
+    if(recommended > 3 && chartData.resolution == 3) {
+      if(maxResCount > 3) {
+        chartData.resolution = 4
+      } else {
+        maxResCount += 1
+      }
+    } else {
+      maxResCount = 0
+
+      // ensure we're aiming for recommended +/- 1
+      if (recommended - 1 > chartData.resolution) {
+        chartData.resolution += 1
+      } else if (recommended + 1 < chartData.resolution) {
+        chartData.resolution -= 1
+      }
+    }
+
+    // clamp at 1 - 4
+    chartData.resolution = Math.max(1, Math.min(chartData.resolution, 4))
+
+    stats.resolution = chartData.resolution
+  }
 
   stats = { ...stats, framerate }
   chartData.framerate = framerate
