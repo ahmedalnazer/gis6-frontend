@@ -13,6 +13,7 @@
   export let showDropdown = false
   export let dropdownSetting = {}
   export let searchInputType = ''
+  export let title = ''
 
   const dispatch = createEventDispatcher()
 
@@ -95,6 +96,7 @@
       // type = 'trade_name'
       qry = `trade_name=${text}${dropdownSetting.manufacturer?`&manufacturer=${dropdownSetting.manufacturer}`:''}${dropdownSetting.familyAbbreviation?`&family_abbreviation=${dropdownSetting.familyAbbreviation}`:''}`
     }
+
     if (searchInputType === 'manufacturer') {
       // type = 'manufacturer'
       qry = `manufacturer=${text}${dropdownSetting.tradeName?`&trade_name=${dropdownSetting.tradeName}`:''}${dropdownSetting.familyAbbreviation?`&family_abbreviation=${dropdownSetting.familyAbbreviation}`:''}`
@@ -106,18 +108,22 @@
     }
 
     // const res = await api.get(`/materials/?${type}=${text}`)
-    const res = await api.get(`/materials/?${qry}`)
+    const res = await api.get(`/materials/typeahead/?${qry}`)
     if (res) {
       open = true
+
       for (let item of res) {
         if (searchInputType === 'manufacturer') {
-          options.push({"id": item.id, "name": item.manufacturer})
+          const found = options.some(el => el.name === item.manufacturer)
+          if (!found) options.push({"id": item.id, "name": item.manufacturer})
         }
         else if (searchInputType === 'familyAbbreviation') {
-          options.push({"id": item.id, "name": item.family_abbreviation})
+          const found = options.some(el => el.name === item.family_abbreviation)
+          if (!found) options.push({"id": item.id, "name": item.family_abbreviation})
         }
         else {
-          options.push({"id": item.id, "name": item.trade_name})
+          const found = options.some(el => el.name === item.trade_name)
+          if (!found) options.push({"id": item.id, "name": item.trade_name})
         }
       }
     }
@@ -207,6 +213,9 @@
     >
       <div class="content">
         <div class="text-content">
+          {#if title}
+            <label>{title}</label>
+          {/if}
           <input type="text" id='place-char' bind:value="{value}" />
           {#if showDropdown}
             <div class='dropdown-anchor'>
@@ -360,9 +369,14 @@
     clear: both;
   }
   .text-content {
-  }
-  .text-content input {
+    width: 40%;
     margin: 0 auto;
+    label {
+      text-align: left;
+    }
+    input {
+      width: 100%;
+    }
   }
 
   div.content {
@@ -487,8 +501,6 @@
   }
 
   .dropdown-anchor {
-    width: 40%;
-    margin: 0 auto;
     margin-bottom: 14px;
     // max-height: 25vh;
     max-height: 260px;

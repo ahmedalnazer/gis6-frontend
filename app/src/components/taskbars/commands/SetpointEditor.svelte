@@ -6,7 +6,7 @@
   import notify from "data/notifications"
   import confirm from "data/confirm"
   import { Input, Switch } from "components"
-  import { activeSetpointEditor } from 'data/setpoint'
+  import { activeSetpointEditor, openSetpointEditorVai } from 'data/setpoint'
   import Collapsible from "../../widgets/Collapsible.svelte"
   import zones, { activeZones } from "data/zones"
   import ZoneTab from './ZoneTab.svelte'
@@ -38,6 +38,14 @@
   let changed = {}
   let applied = false
   let appliedChanges = ''
+
+  $: if ($openSetpointEditorVai.source === "materialdb") {
+    showAdvanced = true
+    formData.low = $openSetpointEditorVai.data.selectedMinTemperature
+    formData.high = $openSetpointEditorVai.data.selectedMaxTemperature
+    changed.low = $openSetpointEditorVai.data.selectedMinTemperature
+    changed.high = $openSetpointEditorVai.data.selectedMaxTemperature
+  }
 
   // pulled up from the Selector component
   let resetApplied = () => {}
@@ -274,6 +282,7 @@
       }
     )) {
       activeSetpointEditor.set('')
+      openSetpointEditorVai.set({})
     }
   }
 
@@ -315,11 +324,14 @@
           <label>{$_('Zone Operation')}</label>
           <div class='tabs'>
             <ZoneTab {mode} {setMode} label='auto'> {$_('Auto')} </ZoneTab>
-            <ZoneTab {mode} {setMode} label='manual'> {$_('Manual')} </ZoneTab>
-            <ZoneTab {mode} {setMode} label='monitor'> {$_('Monitor')} </ZoneTab>
+            {#if $openSetpointEditorVai.source != "materialdb"}
+              <ZoneTab {mode} {setMode} label='manual'> {$_('Manual')} </ZoneTab>
+              <ZoneTab {mode} {setMode} label='monitor'> {$_('Monitor')} </ZoneTab>
+            {/if}
           </div>
         </div>
 
+        {#if $openSetpointEditorVai.source != "materialdb"}
         <div class='standard grid'>
           {#if [ 'auto', 'manual' ].includes(mode)}
 
@@ -398,6 +410,7 @@
 
           {/if}
         </div>
+        {/if}
 
         <!-- <Switch
           changed={changed.on}
@@ -435,6 +448,7 @@
               <!-- grid placeholders -->
               <div /><div />
 
+              {#if $openSetpointEditorVai.source != "materialdb"}
               {#if mode == 'manual'}
                 <Input
                   label='{$_("Temperature Setpoint")} (&#176;C)'
@@ -545,6 +559,7 @@
                 bind:changed={changed.criticalOverTemperature}
                 keypadcontrols={'criticalOverTemperature'} 
               />
+              {/if}
             </div>
           </Collapsible>
         {/if}

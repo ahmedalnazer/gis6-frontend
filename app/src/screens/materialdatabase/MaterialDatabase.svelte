@@ -25,10 +25,12 @@
   let selectedTemperature = ''
   let selectedMinTemperature = ''
   let selectedMaxTemperature = ''
+  let title = ''
 
-  const showKeyboard = type => {
+  const showKeyboard = (type, lable) => {
     openKeyboard = true
     searchInputType = type
+    title = lable
   }
 
   const getKeyboardText = textobj => {
@@ -99,6 +101,10 @@
 
   onMount(() => { })
 
+  const openConfirmation = () => {
+    console.log("openConfirmation")
+  }
+
 </script>
 
 <Screen title={$_("Material Database")}>
@@ -109,32 +115,38 @@
     <div class="grid-container">
       <div class="trade-name">
         <Input
+          type="text"
+          trackChange
           class="search-fields"
           label="{$_('Trade Name')}"
           placeholder="{$_('Enter material trade name')}"
           bind:value={materialSearch.tradeName}
-          on:focus={e => showKeyboard("tradeName")}
+          on:focus={e => showKeyboard("tradeName", "Trade Name")}
           bind:changed={changedTradeName}
         />
       </div>
       <div class="grid-parent">
         <div class="manufacturer">
           <Input
+            type="text"
+            trackChange
             class="search-fields"
             label="{$_('Manufacturer')}"
             placeholder="{$_('Enter name')}"
             bind:value={materialSearch.manufacturer}
-            on:focus={e => showKeyboard("manufacturer")}
+            on:focus={e => showKeyboard("manufacturer", "Manufacturer")}
             bind:changed={changedManufacturer}
           />
         </div>
         <div class="family-abbreviation">
           <Input
+            type="text"
+            trackChange
             class="search-fields"
             label="{$_('Family Abbreviation')}"
             placeholder="{$_('Enter abbreviation')}"
             bind:value={materialSearch.familyAbbreviation}
-            on:focus={e => showKeyboard("familyAbbreviation")} 
+            on:focus={e => showKeyboard("familyAbbreviation", "Family Abbreviation")} 
             bind:changed={changedFamilyAbbreviation}
           />
         </div>
@@ -205,6 +217,7 @@
     showDropdown={true}
     searchInputType={searchInputType}
     dropdownSetting={materialSearch}
+    title={title}
     bind:onModalOpen={openKeyboard}
     on:keypadClosed={() => openKeyboard = false}
     on:done={(kcontent) => getKeyboardText(kcontent)} maxCharacter=12
