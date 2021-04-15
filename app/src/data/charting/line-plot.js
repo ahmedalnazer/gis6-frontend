@@ -59,7 +59,7 @@ const getXParameters = (position, canvas, scale, paused) => {
 const getYParameters = (prop, min, max, scaleParams, position) => {
   // console.log(min, max)
   if (!negatives.includes(prop)) {
-    min = Math.max(min, 1)
+    min = Math.max(min, 0)
   }
 
   const minAuto = scaleParams.min == 'auto'
@@ -85,15 +85,16 @@ const getYParameters = (prop, min, max, scaleParams, position) => {
   min = midPoint - halfRange * scaleFactor
   max = midPoint + halfRange * scaleFactor
 
-
   // ensure round numbers are used for the scale
   const even = i => {
     if (minAuto) min = -i + i * Math.ceil(min / i)
     if (maxAuto) max = i + i * Math.floor(max / i)
   }
 
+  
+
   let matched = false
-  for (let x of [ 1, 10, 100, 200, 500, 1000, 2000, 5000, 10000 ]) {
+  for (let x of [ 10, 100, 200, 500, 1000, 2000, 5000, 10000 ]) {
     if (matched) break
     for (let y of [ 1, 2, 4, 8 ]) {
       const base = x * y
