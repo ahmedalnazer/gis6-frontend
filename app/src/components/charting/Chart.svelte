@@ -1,30 +1,30 @@
+<script context="module">
+  import { writable } from 'svelte/store'
+  const marks = writable([])
+</script>
+
 <script>
   import _ from 'data/language'
   import ChartCanvas from './ChartCanvas.svelte'
   import Scale from './Scale.svelte'
   import LineX from './LineX.svelte'
   import Gestures from 'data/charting/gestures'
-  import { onDestroy } from 'svelte'
   import CheckBox from 'components/input/CheckBox.svelte'
-  
 
   export let type = 'line'
   export let properties = [ 'actual_temp' ]
   export let zones = []
   export let colors = {}
   export let scales = {}
-  export let paused = false
-  // export let mode = 'pan'
-
-  // for testing purposes, if true will trigger "stress test mode"
-  let jank = false
-
-  $: totalZones = zones.length
-
   export let stats = {}
-  let scaleData = {}
+  export let paused = false
+  export let mode = 'pan'
+  export let moved = false
 
-  const gestures = new Gestures()
+  export const mark = () => {
+    const t = new Date().getTime() - 1000
+    marks.update(m => m.concat([ t ]))
+  }
 
   const defaultPosition = {
     panX: 0,
@@ -34,8 +34,21 @@
   }
 
   let position = { ...defaultPosition }
+  export const resetPosition = () => position = { ...defaultPosition }
 
-  export let moved = false
+  export const resetMarkers = () => markers = []
+
+  let scale = {
+    y: {},
+    x: 20
+  }
+  let scaleData = {}
+  let canvasWidth = 0
+
+  // for testing purposes, if true will trigger "stress test mode"
+  let jank = false
+
+  const gestures = new Gestures()
 
   $: {
     moved = false
@@ -46,11 +59,7 @@
     }
   }
 
-  export const resetPosition = () => {
-    position = { ...defaultPosition }
-  }
-
-  let canvasWidth = 0
+  $: totalZones = zones.length  
 
   const elasticConstrain = () => {
     paused = true
@@ -67,18 +76,8 @@
     }
   }
 
-  const unSub = gestures.subscribe(p => position = p)
-  const unSubComplete = gestures.subscribeComplete(elasticConstrain)
-
-  onDestroy(() => {
-    unSub()
-    unSubComplete()
-  })
-
-  let scale = {
-    y: {},
-    x: 20
-  }
+  gestures.subscribe(p => position = p)
+  gestures.subscribeComplete(elasticConstrain)
 
   $: {
     let y = {}
@@ -102,13 +101,12 @@
   $: {
     const gap = wrapperHeight / 20
     top = position.panY % gap
+    if(position.panY < 0) top = top + gap
   }
 
   $: hiddenLine = top == 0 
     ? - 1 
-    : position.panY < 0 
-      ? 0
-      : 20 
+    : 20
 
   $: chartProps = { properties, paused, type, scale, zones, type, position, jank }
 
@@ -128,6 +126,7 @@
   </div>
 
   <div class='canvas' bind:offsetHeight={wrapperHeight}>
+
     <div class='h-grid' class:offset={top} style='transform: translateY({top}px)'>
       {#each hLines as l}
         <div class='grid-line' class:hidden={hiddenLine == l}/>
@@ -135,10 +134,12 @@
     </div>
     <div class='v-grid'>
       {#if type == 'line'}
-        <LineX {...{ scaleData, position }} />
+        <LineX {...{ scaleData, marks }} />
       {/if}
     </div>
+
     <ChartCanvas bind:setBufferParams bind:stats bind:scaleData bind:width={canvasWidth} {...chartProps} />
+
     <div class='stats' on:pointerdown|stopPropagation on:pointerup|stopPropagation>
       <p><strong>{stats.framerate} fps</strong> {#if !stats.offscreen}<span style='color: red'>⛔️</span>{/if}</p>
       <p><strong>Points:</strong> {(''+stats.totalPoints).padStart(3, '0')}</p>
@@ -147,6 +148,7 @@
       <p><strong>Resolution:</strong> {stats.resolution * 25}%</p>
       <p><CheckBox bind:checked={jank} label='Stress'/></p>
     </div>
+    
     <div class='loading' class:active={stats.loading !== false && !stats.plotFilled}>
       {$_('Loading data...')}
     </div>
@@ -168,7 +170,7 @@
   .chart {
     display: flex;
     border: 1px solid #ddd;
-    padding: 24px 16px;
+    padding: 32px 16px;
     padding-bottom: 48px;
     position: relative;
     touch-action: none;
@@ -188,7 +190,7 @@
     display: flex;
     flex-direction:column;
     justify-content: space-between;
-    padding: 8px 0;
+    height: calc(100%);
     .grid-line {
       border-bottom: 1px solid var(--gray);
       &.hidden {
@@ -199,7 +201,6 @@
 
   .canvas {
     position: relative;
-    padding: 8px 0;
     flex: 1;
     .stats {
       opacity: .5;

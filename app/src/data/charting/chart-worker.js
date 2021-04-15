@@ -45,10 +45,10 @@ const getRefreshRate = async (frames = 60) => {
 }
 
 getRefreshRate(1000).then(rate => {
-  if(rate < 45) {
+  if(rate < 40) {
     refreshRate = 30
   }
-  console.log(refreshRate)
+  // console.log(refreshRate)
 })
 
 
