@@ -167,6 +167,8 @@
     else if (actionKeyType == 'space') {
       value = value + ' '
     }
+
+    if (showDropdown) getSelectOptions(value)
   }
 
   const closeKeypadModal = () => {
@@ -219,6 +221,12 @@
                         <span>{option.name}</span>
                       </div>
                     {/each}
+
+                    {#if optionsMaterial.length <= 0}
+                      <div class='option'>
+                        <span class='muted'>No Data</span>
+                      </div>
+                    {/if}
                   </div>
                 </Collapsible>
               </div>
@@ -482,7 +490,8 @@
     width: 40%;
     margin: 0 auto;
     margin-bottom: 14px;
-    max-height: 25vh;
+    // max-height: 25vh;
+    max-height: 260px;
     overflow: auto;
     border-radius: 4px;
     background-color: #FFFFFF;
