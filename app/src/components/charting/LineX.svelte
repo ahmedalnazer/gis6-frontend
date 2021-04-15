@@ -1,5 +1,7 @@
 <script>
   export let scaleData
+  export let marks
+
   $: start = scaleData.xMin
   $: end = scaleData.xMax
 
@@ -17,7 +19,7 @@
       const base = Math.pow(10, i)
       for(let f of factors) {
         let intvl = f * base
-        if(range / intvl < 12) {
+        if(range / intvl <= 10) {
           interval = intvl
           found = true
           break
@@ -28,12 +30,14 @@
 
   let grid
 
+  $: pixelRatio = range / (grid ? grid.offsetWidth : 1)
+
   const getLine = time => {
     const t = new Date(time)
     let h = ''+t.getHours()
     let m = ''+t.getMinutes()
     let s = ''+t.getSeconds()
-    const left = (time - start) / range * (grid ? grid.offsetWidth : 1)
+    const left = (time - start) / pixelRatio
 
     const transition = 200
 
@@ -58,23 +62,31 @@
     set = updatedSet
     // console.log(set)
   }
-  // $: console.log(stats)
+
+  $: displayedMarks = $marks
+    .filter(x => x > start && x < end)
+    .map(x => (x - start) / pixelRatio)
 </script>
 
-<div class='x-grid' bind:this={grid}>
+<div class='x-grid origin' bind:this={grid}>
   {#each set as line}
     <div class='line' style='transform: translateX({line.left}px); opacity: {line.opacity}'>
       <div class='stamp'>{line.stamp}</div>
     </div>
   {/each}
+  {#each displayedMarks as mark}
+    <div class='origin mark' style='transform: translateX({mark}px)' />
+  {/each}
 </div>
 
 <style>
-  .x-grid {
+  .origin {
     position: absolute;
     top: 0;
     left: 0;
-    height: calc(100% + 0px);
+    height: 100%;
+  }
+  .x-grid {
     width: 100%;
     border-left: 1px solid var(--gray);
     border-right: 1px solid var(--gray);
@@ -95,5 +107,11 @@
     text-align: center;
     font-weight: 400;
     font-size: 14px;
+  }
+  .mark {
+    /* border-right: 4px dashed var(--gray); */
+    width: 2px;
+    background-image: linear-gradient(0deg, var(--darkGray), var(--darkGray) 66%, transparent 66%, transparent 100%);
+    background-size: 1px 20px;
   }
 </style>

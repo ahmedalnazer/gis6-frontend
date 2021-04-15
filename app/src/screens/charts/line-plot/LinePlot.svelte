@@ -28,6 +28,8 @@
   }
   $: properties = [ params[1], params[2], params[3], params[4] ]
 
+  let mode = 'pan'
+
   $: getOptions = value => {
     let ops = [ { id: '', name: $_('None') } ]
     const selected = propertyOptions.find(x => x.id == value)
@@ -77,6 +79,7 @@
   })
 
   let setBufferParams, paused, resetPosition, moved
+  let mark
 
   onDestroy(() => {
     unsubActive()
@@ -88,10 +91,17 @@
     <ZoneTasks />
   </div>
 
-  <div slot="header" class='tools'>
-    <Icon icon='undo' color={moved ? 'var(--primary)' : 'var(--gray)'} on:click={resetPosition}/>
-    <Icon icon={paused ? 'play' : 'pause'} color='var(--primary)' on:click={() => paused = !paused} />
-    <Icon icon='settings' color='var(--primary)' on:click={() => showSettings = true}/>
+  <div slot="header" class="tools" >
+    <div class='set'>
+      <Icon icon='mark-time' color='var(--primary)' on:click={mark} />
+      <Icon icon={paused ? 'play' : 'pause'} color='var(--primary)' on:click={() => paused = !paused} />
+    </div>
+    <div class='set'>
+      <Icon icon='undo' color={moved ? 'var(--primary)' : 'var(--gray)'} on:click={resetPosition}/>
+    </div>
+    <div class='set'>
+      <Icon icon='settings' color='var(--primary)' on:click={() => showSettings = true}/>
+    </div>  
   </div>
 
   <div class='wrapper'>
@@ -102,8 +112,10 @@
       bind:setBufferParams 
       bind:paused
       bind:resetPosition
+      bind:mark
       zones={rendered} 
-      {...{ properties, colors, scales }}  />
+      {...{ properties, colors, scales }}  
+    />
 
     <div class='options'>
       <div class='properties'>
@@ -162,7 +174,22 @@
     align-items: flex-end;
     padding-right: 8px;
     :global(svg) {
-      margin-left: 16px;
+      height: 20px;
+      width: 20px;
+      margin: 8px;
+    }
+    .set {
+      margin-left: 40px;
+      display: flex;
+    }
+    .tool {
+      margin-right: 16px;
+      :global(svg) {
+        padding: 0;
+      }
+    }
+    .tool.active {
+      background: var(--gray);
     }
   }
 
