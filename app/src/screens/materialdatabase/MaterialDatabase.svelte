@@ -5,8 +5,9 @@
   import { Modal, Input } from "components"
   import Keyboard from 'components/input/Keyboard.svelte'
   import api from 'data/api'
-
-  $: isDisable = materialSearch.tradeName || materialSearch.manufacturer || materialSearch.familyAbbreviation
+  import { activeSetpointEditor, openSetpointEditorVai } from 'data/setpoint'
+  
+  $: enableSearch = materialSearch.tradeName || materialSearch.manufacturer || materialSearch.familyAbbreviation
 
   let materialSearchResults = []
   let openKeyboard = false
@@ -17,6 +18,9 @@
   }
   let searchInputType = ''
   let confirmStart = false
+  let selectedTemperature = ''
+  let selectedMinTemperature = ''
+  let selectedMaxTemperature = ''
 
   const showKeyboard = type => {
     openKeyboard = true
@@ -30,25 +34,41 @@
     openKeyboard = false
   }
 
-  // const close = () => {
-  //   console.log('close material')
-  // }
-
   const onSubmit = async () => {
     // console.log('http://172.16.41.219:8000/api/materials/?family_abbreviation=PP&trade_name=011115-563-1&manufacturer=Flint%20Hills%20Resources%20(Formerly%20Huntsman)')
     // materialSearchResults = await api.get('/api/materials/?family_abbreviation=PP&trade_name=011115-563-1&manufacturer=Flint%20Hills%20Resources%20(Formerly%20Huntsman)')
     materialSearchResults = await api.get(`/api/materials/?family_abbreviation=${materialSearch.familyAbbreviation}&trade_name=${materialSearch.tradeName}&manufacturer=${materialSearch.manufacturer}`)
+    enableSearch = false
   }
 
   const onReset = async () => {
-    console.log('Reset')
     materialSearchResults = []
     materialSearch.tradeName = ''
     materialSearch.manufacturer = ''
     materialSearch.familyAbbreviation = ''
-    // isDisable = true
-    // const res = await api.patch(`/report/${reportId}`, report)
   }
+
+  const confirmStartAction = (spData) => {
+    confirmStart = true
+    selectedTemperature = Math.round(spData.melt_temperature)
+    selectedMinTemperature = Math.round(spData.min_melt_temperature)
+    selectedMaxTemperature = Math.round(spData.max_melt_temperature)
+    // <div>{`${searchResult.melt_temperature} (${searchResult.} - ${searchResult.})`} &#176;C</div>
+  }
+
+  const applySetpoint = () => {
+    confirmStart = false
+    activeSetpointEditor.set('setpoint')
+    openSetpointEditorVai.set({
+      source: 'materialdb',
+      data: {
+        selectedTemperature,
+        selectedMinTemperature,
+        selectedMaxTemperature
+      }
+    })
+  }
+
   onMount(() => { })
 
 </script>
@@ -91,10 +111,10 @@
     </div>
 
     <div class="form-buttons">
-      <div class="button reset" on:click={() => onReset()} class:disabled={!isDisable}>
+      <div class="button reset" on:click={() => onReset()} class:disabled={!enableSearch}>
         {$_("Reset")}
       </div>
-      <div class="button search active" on:click={() => onSubmit()} class:disabled={!isDisable}>
+      <div class="button search active" on:click={() => onSubmit()} class:disabled={!enableSearch}>
         {$_("Search")}
       </div>
     </div>
@@ -102,16 +122,16 @@
   <div class="material-container">
     <div class="material-grid-body">
         <div class="material-grid header">
-            <div>Trade Name</div>
-            <div>Melt Temp (Min-Max)</div>
-            <div>&nbsp;</div>
+            <div class="material-grid-header">Trade Name</div>
+            <div class="material-grid-header">Melt Temp (Min-Max)</div>
+            <div class="material-grid-header">&nbsp;</div>
         </div>
 
         {#each materialSearchResults as searchResult}
           <div class="material-grid-item item">
               <div>{searchResult.trade_name}</div>
-              <div>{`${searchResult.melt_temperature} (${searchResult.min_melt_temperature} - ${searchResult.max_melt_temperature})`} &#176;C</div>
-              <div class="apply-setpoint" on:click={() => { confirmStart = true }}>{$_("Apply Setpoint")}</div>
+              <div>{`${Math.round(searchResult.melt_temperature)} \xB0C (${Math.round(searchResult.min_melt_temperature)} - ${Math.round(searchResult.max_melt_temperature)} \xB0C)`}</div>
+              <div class="apply-setpoint" on:click={() => { confirmStartAction(searchResult) }}>{$_("Apply Setpoint")}</div>
           </div>
         {/each}
 
@@ -123,28 +143,21 @@
       </div>
     </div>
 </Screen>
-
+<!-- ${selectedTemperature} -->
 {#if confirmStart}
   <Modal
-      title={$_("Confirm setpoint change to 350")}
+      title={`${$_("Confirm setpoint change to")} ${selectedTemperature} \xB0C`}
       onClose={() => confirmStart = false}
   >
   <div class="modal-text">
     <p>
-      Applying the temperature setpoint value to the current process will reset the setpoint for all zones to 350
+      {$_("Applying the temperature setpoint value to the current process will reset the setpoint for all zones to")} {`${selectedTemperature} \xB0C`}
     </p>
-    <!-- <div class="modal-grid">
-      
-d
-    </div> -->
+
+    <!-- <div class="modal-grid"></div> -->
+
     <div class="modal-buttons">
-      <!-- <div
-        class="button cancel-button"
-        on:click={() => confirmStart = false}
-      >
-        {$_("No, cancel test")}
-      </div> -->
-      <div class="button confirm-button active_">
+      <div class="button confirm-button active_" on:click={() => applySetpoint()}>
         {$_("Apply Setpoint")}
       </div>
     </div>
@@ -271,5 +284,15 @@ d
   .apply-setpoint {
     cursor: pointer;
     color: var(--primary)
+  }
+
+  .material-grid-header {
+    height: 22px;
+  color: #011F3E;
+  font-family: "Open Sans";
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 22px;
   }
 </style>
