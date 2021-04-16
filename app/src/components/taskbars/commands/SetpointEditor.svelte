@@ -41,10 +41,12 @@
 
   $: if ($openSetpointEditorVai.source === "materialdb") {
     showAdvanced = true
-    formData.low = $openSetpointEditorVai.data.selectedMinTemperature
-    formData.high = $openSetpointEditorVai.data.selectedMaxTemperature
-    changed.low = $openSetpointEditorVai.data.selectedMinTemperature
-    changed.high = $openSetpointEditorVai.data.selectedMaxTemperature
+    formData.temperature = $openSetpointEditorVai.data.meltTemp
+    formData.low = $openSetpointEditorVai.data.minMeltTemp
+    formData.high = $openSetpointEditorVai.data.maxMeltTemp
+    changed.temperature = $openSetpointEditorVai.data.meltTemp
+    changed.low = $openSetpointEditorVai.data.minMeltTemp
+    changed.high = $openSetpointEditorVai.data.maxMeltTemp
   }
 
   // pulled up from the Selector component
@@ -331,7 +333,6 @@
           </div>
         </div>
 
-        {#if $openSetpointEditorVai.source != "materialdb"}
         <div class='standard grid'>
           {#if [ 'auto', 'manual' ].includes(mode)}
 
@@ -354,6 +355,8 @@
                 keypadcontrols={'manualPercent'} 
               />
             {/if}
+
+            {#if $openSetpointEditorVai.source != "materialdb"}
             <div class='checkboxes'>
               <CheckBox 
                 label={$_('Lock')}
@@ -369,6 +372,7 @@
                 bind:changed={changed.sealed}
               />
             </div>
+            {/if}
 
           {:else}
 
@@ -410,7 +414,6 @@
 
           {/if}
         </div>
-        {/if}
 
         <!-- <Switch
           changed={changed.on}

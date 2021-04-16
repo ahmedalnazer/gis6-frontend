@@ -22,9 +22,9 @@
   }
   let searchInputType = ''
   let confirmStart = false
-  let selectedTemperature = ''
-  let selectedMinTemperature = ''
-  let selectedMaxTemperature = ''
+  let meltTemp = ''
+  let minMeltTemp = ''
+  let maxMeltTemp = ''
   let title = ''
 
   const showKeyboard = (type, lable) => {
@@ -81,9 +81,9 @@
 
   const confirmStartAction = (spData) => {
     confirmStart = true
-    selectedTemperature = Math.round(spData.melt_temperature)
-    selectedMinTemperature = Math.round(spData.min_melt_temperature)
-    selectedMaxTemperature = Math.round(spData.max_melt_temperature)
+    meltTemp = Math.round(spData.melt_temperature)
+    minMeltTemp = Math.round(spData.min_melt_temperature)
+    maxMeltTemp = Math.round(spData.max_melt_temperature)
   }
 
   const applySetpoint = () => {
@@ -92,9 +92,9 @@
     openSetpointEditorVai.set({
       source: 'materialdb',
       data: {
-        meltTemp: selectedTemperature,
-        minMeltTemp: selectedMinTemperature,
-        maxMeltTemp: selectedMaxTemperature
+        meltTemp,
+        minMeltTemp: meltTemp - minMeltTemp,
+        maxMeltTemp: maxMeltTemp - meltTemp
       }
     })
   }
@@ -195,12 +195,12 @@
 
 {#if confirmStart}
   <Modal
-      title={`${$_("Confirm setpoint change to")} ${selectedTemperature} \xB0C`}
+      title={`${$_("Confirm setpoint change to")} ${meltTemp} \xB0C`}
       onClose={() => confirmStart = false}
   >
   <div class="modal-text">
     <p>
-      {$_("Applying the temperature setpoint value to the current process will reset the setpoint for all zones to")} {`${selectedTemperature} \xB0C`}
+      {$_("Applying the temperature setpoint value to the current process will reset the setpoint for all zones to")} {`${meltTemp} \xB0C`}
     </p>
 
     <div class="modal-buttons">
