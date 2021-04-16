@@ -4,8 +4,9 @@
   import _ from 'data/language'
   import { colors } from 'data/charting/line-utils'
   import confirm from 'data/confirm'
+  import { updateBufferParams } from 'data/realtime/ws.js'
   
-  export let onClose, onSubmit, stats, setBufferParams
+  export let onClose, onSubmit, stats
 
   let _scales = {}
   export { _scales as scales }
@@ -37,10 +38,10 @@
   const submit = async () => {
     onSubmit(scales)
     if(bufferRate != currentRate) {
-      if(!await confirm($_('This will reset your current buffer, are you sure you want to proceed?'))) {
-        return
+      if(await confirm($_('This will reset your current buffer, are you sure you want to proceed?'))) {
+        updateBufferParams({ rate: bufferRate })
       }
-      setBufferParams({ rate: bufferRate })
+      
     }
     onClose()
   }

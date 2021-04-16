@@ -34,7 +34,13 @@
   }
 
   let position = { ...defaultPosition }
-  export const resetPosition = () => position = { ...defaultPosition }
+  
+  const gestures = new Gestures()
+
+  export const resetPosition = () => {
+    position = { ...defaultPosition }
+    gestures.set(position)
+  }
 
   export const resetMarkers = () => markers = []
 
@@ -44,11 +50,10 @@
   }
   let scaleData = {}
   let canvasWidth = 0
+  let canvasHeight = 0
 
   // for testing purposes, if true will trigger "stress test mode"
   let jank = false
-
-  const gestures = new Gestures()
 
   $: {
     moved = false
@@ -93,8 +98,6 @@
     hLines.push(i)
   }
 
-  export let setBufferParams
-
   let wrapperHeight = 0
   let top = 0
 
@@ -104,9 +107,30 @@
     if(position.panY < 0) top = top + gap
   }
 
-  $: hiddenLine = top == 0 
-    ? - 1 
-    : 20
+  $: hiddenLine = top == 0 ? - 1 : 20
+
+  let inspectionBase = [ 0, 0 ]
+  let inspectionPoint = [ 0, 0 ]
+  let inspectionStats = {}
+
+
+  $: center = [ canvasWidth / 2, canvasHeight / 2 ]
+  $: zoomXOffset = center[0] + center[0] / position.zoomX
+
+  const setInspectionPoint = e => {
+    if(mode == 'inspect') {
+      inspectionBase = [ 
+        e.offsetX - position.panX / position.zoomX, 
+        e.offsetY - position.panY ]
+    }
+  }
+
+  $: {
+    const x = inspectionBase[0] + position.panX / position.zoomX
+    inspectionPoint = [ x - zoomXOffset, inspectionBase[1] + position.panY ]
+  }
+
+  $: console.log(mode, inspectionBase, inspectionPoint)
 
   $: chartProps = { properties, paused, type, scale, zones, type, position, jank }
 
@@ -125,7 +149,7 @@
     <Scale property={properties[0]} {stats} {position} color={colors[1]} />
   </div>
 
-  <div class='canvas' bind:offsetHeight={wrapperHeight}>
+  <div class='canvas' bind:offsetHeight={wrapperHeight} on:click={setInspectionPoint}>
 
     <div class='h-grid' class:offset={top} style='transform: translateY({top}px)'>
       {#each hLines as l}
@@ -138,7 +162,7 @@
       {/if}
     </div>
 
-    <ChartCanvas bind:setBufferParams bind:stats bind:scaleData bind:width={canvasWidth} {...chartProps} />
+    <ChartCanvas bind:stats bind:scaleData bind:width={canvasWidth} bind:height={canvasHeight} {...chartProps} />
 
     <div class='stats' on:pointerdown|stopPropagation on:pointerup|stopPropagation>
       <p><strong>{stats.framerate} fps</strong> {#if !stats.offscreen}<span style='color: red'>⛔️</span>{/if}</p>
@@ -152,6 +176,12 @@
     <div class='loading' class:active={stats.loading !== false && !stats.plotFilled}>
       {$_('Loading data...')}
     </div>
+
+    {#if mode == 'inspect'}
+      <div class='inspection-box' style='left:{inspectionPoint[0]}px;top:{inspectionPoint[1]}px'>
+
+      </div>
+    {/if}
   </div>
 
   <div class='scales' style='transform: translateY({top}px)'>
@@ -247,6 +277,13 @@
   }
   .loading.active {
     opacity: 1;
+  }
+
+  .inspection-box {
+    position: absolute;
+    padding: 16px;
+    background: white;
+    box-shadow: var(--shadow);
   }
 
   .res-warning {

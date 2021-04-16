@@ -103,7 +103,7 @@ export const connectWS = () => {
 
 export const updateBufferParams = params => {
   localStorage.setItem('buffer-params', JSON.stringify(params))
-  worker.postMessage({ comand: 'bufferParams', params })
+  worker.postMessage({ command: 'setBufferParams', params })
 }
 
 const paramString = window.localStorage.getItem('buffer-params') || '{}'

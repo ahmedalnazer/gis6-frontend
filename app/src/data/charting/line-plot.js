@@ -25,6 +25,7 @@ const getSettings = (zone) => {
 // get the x axis bounds
 const getXParameters = (position, canvas, scale, paused) => {
   const latest = buffer.active[buffer.active.length - 1]
+  if(!latest) return { valid: false }
 
   const xZoomFactor = position.zoomX
   // let sRange = scale && scale.x ? parseInt(scale.x) : 10
@@ -50,7 +51,7 @@ const getXParameters = (position, canvas, scale, paused) => {
   const dX = xMax - xMin
   const xScale = canvas.width / (xMax - xMin)
 
-  return { xMin, xMax, xRange, dX, xScale }
+  return { xMin, xMax, xRange, dX, xScale, valid: true }
 }
 
 
@@ -138,7 +139,8 @@ const draw = (chartData, logStats, submitLines) => {
 
   let maxLinePoints = Math.min(700, Math.max(80, 20000 / (zones.length * properties.length))) * (chartData.resolution / 4)
   
-  const { xMin, xMax, dX, xScale } = getXParameters(position, canvas, scale, paused)
+  const { xMin, xMax, dX, xScale, valid } = getXParameters(position, canvas, scale, paused)
+  if(!valid) return
 
   const renderLimit = xMin - 2000
   const sample = buffer.active.filter(x => x.time >= renderLimit)

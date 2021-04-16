@@ -78,8 +78,18 @@
     }
   })
 
-  let setBufferParams, paused, resetPosition, moved
+  let paused, resetPosition, moved
   let mark
+
+  $: {
+    if(!paused) mode = 'pan'
+  }
+
+  const setMode = m => {
+    if(mode == m) m = 'pan'
+    paused = m != 'pan'
+    mode = m
+  }
 
   onDestroy(() => {
     unsubActive()
@@ -97,7 +107,12 @@
       <Icon icon={paused ? 'play' : 'pause'} color='var(--primary)' on:click={() => paused = !paused} />
     </div>
     <div class='set'>
-      <Icon icon='undo' color={moved ? 'var(--primary)' : 'var(--gray)'} on:click={resetPosition}/>
+      <div class='reset'>
+        <Icon icon='undo' color={moved ? 'var(--primary)' : 'var(--gray)'} on:click={resetPosition}/>
+      </div>
+      <div class='tool' class:active={mode == 'inspect'}>
+        <Icon icon='view' color='var(--primary)' on:click={() => setMode('inspect')}/>
+      </div>
     </div>
     <div class='set'>
       <Icon icon='settings' color='var(--primary)' on:click={() => showSettings = true}/>
@@ -109,12 +124,11 @@
     <Chart type='line' 
       bind:stats 
       bind:moved
-      bind:setBufferParams 
       bind:paused
       bind:resetPosition
       bind:mark
       zones={rendered} 
-      {...{ properties, colors, scales }}  
+      {...{ properties, colors, scales, mode }}  
     />
 
     <div class='options'>
@@ -156,7 +170,7 @@
 </Screen>
 
 {#if showSettings}
-  <Settings onClose={() => showSettings = false} onSubmit={s => scales = s} {...{ stats, setBufferParams, scales }} />
+  <Settings onClose={() => showSettings = false} onSubmit={s => scales = s} {...{ stats, scales }} />
 {/if}
 
 <style lang="scss">
@@ -184,13 +198,24 @@
     }
     .tool {
       margin-right: 16px;
+      display: flex;
+      align-items: center;
+      padding: 8px;
       :global(svg) {
+        height: 24px;
+        width: 24px;
         padding: 0;
+        margin: 0;
       }
     }
     .tool.active {
       background: var(--gray);
+      border-radius: 50%;
     }
+  }
+
+  .reset {
+    transform: rotate(135deg) scaleX(-1);
   }
 
   .properties {
