@@ -6,7 +6,7 @@
   import notify from "data/notifications"
   import confirm from "data/confirm"
   import { Input, Switch } from "components"
-  import { activeSetpointEditor } from 'data/setpoint'
+  import { activeSetpointEditor, openSetpointEditorVai } from 'data/setpoint'
   import Collapsible from "../../widgets/Collapsible.svelte"
   import zones, { activeZones } from "data/zones"
   import ZoneTab from './ZoneTab.svelte'
@@ -38,6 +38,17 @@
   let changed = {}
   let applied = false
   let appliedChanges = ''
+
+  $: if ($openSetpointEditorVai.source === "materialdb") {
+    showAdvanced = true
+    mode = 'auto'
+    formData.temperature = $openSetpointEditorVai.data.meltTemp
+    formData.low = $openSetpointEditorVai.data.minMeltTemp
+    formData.high = $openSetpointEditorVai.data.maxMeltTemp
+    changed.temperature = $openSetpointEditorVai.data.meltTemp
+    changed.low = $openSetpointEditorVai.data.minMeltTemp
+    changed.high = $openSetpointEditorVai.data.maxMeltTemp
+  }
 
   // pulled up from the Selector component
   let resetApplied = () => {}
@@ -274,6 +285,7 @@
       }
     )) {
       activeSetpointEditor.set('')
+      openSetpointEditorVai.set({})
     }
   }
 
@@ -315,8 +327,10 @@
           <label>{$_('Zone Operation')}</label>
           <div class='tabs'>
             <ZoneTab {mode} {setMode} label='auto'> {$_('Auto')} </ZoneTab>
-            <ZoneTab {mode} {setMode} label='manual'> {$_('Manual')} </ZoneTab>
-            <ZoneTab {mode} {setMode} label='monitor'> {$_('Monitor')} </ZoneTab>
+            {#if $openSetpointEditorVai.source != "materialdb"}
+              <ZoneTab {mode} {setMode} label='manual'> {$_('Manual')} </ZoneTab>
+              <ZoneTab {mode} {setMode} label='monitor'> {$_('Monitor')} </ZoneTab>
+            {/if}
           </div>
         </div>
 
@@ -342,6 +356,8 @@
                 keypadcontrols={'manualPercent'} 
               />
             {/if}
+
+            {#if $openSetpointEditorVai.source != "materialdb"}
             <div class='checkboxes'>
               <CheckBox 
                 label={$_('Lock')}
@@ -357,6 +373,7 @@
                 bind:changed={changed.sealed}
               />
             </div>
+            {/if}
 
           {:else}
 
@@ -435,6 +452,7 @@
               <!-- grid placeholders -->
               <div /><div />
 
+              {#if $openSetpointEditorVai.source != "materialdb"}
               {#if mode == 'manual'}
                 <Input
                   label='{$_("Temperature Setpoint")} (&#176;C)'
@@ -545,6 +563,7 @@
                 bind:changed={changed.criticalOverTemperature}
                 keypadcontrols={'criticalOverTemperature'} 
               />
+              {/if}
             </div>
           </Collapsible>
         {/if}
