@@ -41,6 +41,7 @@
 
   $: if ($openSetpointEditorVai.source === "materialdb") {
     showAdvanced = true
+    mode = 'auto'
     formData.temperature = $openSetpointEditorVai.data.meltTemp
     formData.low = $openSetpointEditorVai.data.minMeltTemp
     formData.high = $openSetpointEditorVai.data.maxMeltTemp
