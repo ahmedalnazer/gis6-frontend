@@ -22,13 +22,15 @@
   }
   let searchInputType = ''
   let confirmStart = false
-  let selectedTemperature = ''
-  let selectedMinTemperature = ''
-  let selectedMaxTemperature = ''
+  let meltTemp = ''
+  let minMeltTemp = ''
+  let maxMeltTemp = ''
+  let title = ''
 
-  const showKeyboard = type => {
+  const showKeyboard = (type, lable) => {
     openKeyboard = true
     searchInputType = type
+    title = lable
   }
 
   const getKeyboardText = textobj => {
@@ -79,9 +81,9 @@
 
   const confirmStartAction = (spData) => {
     confirmStart = true
-    selectedTemperature = Math.round(spData.melt_temperature)
-    selectedMinTemperature = Math.round(spData.min_melt_temperature)
-    selectedMaxTemperature = Math.round(spData.max_melt_temperature)
+    meltTemp = Math.round(spData.melt_temperature)
+    minMeltTemp = Math.round(spData.min_melt_temperature)
+    maxMeltTemp = Math.round(spData.max_melt_temperature)
   }
 
   const applySetpoint = () => {
@@ -90,14 +92,18 @@
     openSetpointEditorVai.set({
       source: 'materialdb',
       data: {
-        meltTemp: selectedTemperature,
-        minMeltTemp: selectedMinTemperature,
-        maxMeltTemp: selectedMaxTemperature
+        meltTemp,
+        minMeltTemp: meltTemp - minMeltTemp,
+        maxMeltTemp: maxMeltTemp - meltTemp
       }
     })
   }
 
   onMount(() => { })
+
+  const openConfirmation = () => {
+    console.log("openConfirmation")
+  }
 
 </script>
 
@@ -109,32 +115,38 @@
     <div class="grid-container">
       <div class="trade-name">
         <Input
+          type="text"
+          trackChange
           class="search-fields"
           label="{$_('Trade Name')}"
           placeholder="{$_('Enter material trade name')}"
           bind:value={materialSearch.tradeName}
-          on:focus={e => showKeyboard("tradeName")}
+          on:focus={e => showKeyboard("tradeName", "Trade Name")}
           bind:changed={changedTradeName}
         />
       </div>
       <div class="grid-parent">
         <div class="manufacturer">
           <Input
+            type="text"
+            trackChange
             class="search-fields"
             label="{$_('Manufacturer')}"
             placeholder="{$_('Enter name')}"
             bind:value={materialSearch.manufacturer}
-            on:focus={e => showKeyboard("manufacturer")}
+            on:focus={e => showKeyboard("manufacturer", "Manufacturer")}
             bind:changed={changedManufacturer}
           />
         </div>
         <div class="family-abbreviation">
           <Input
+            type="text"
+            trackChange
             class="search-fields"
             label="{$_('Family Abbreviation')}"
             placeholder="{$_('Enter abbreviation')}"
             bind:value={materialSearch.familyAbbreviation}
-            on:focus={e => showKeyboard("familyAbbreviation")} 
+            on:focus={e => showKeyboard("familyAbbreviation", "Family Abbreviation")} 
             bind:changed={changedFamilyAbbreviation}
           />
         </div>
@@ -183,12 +195,12 @@
 
 {#if confirmStart}
   <Modal
-      title={`${$_("Confirm setpoint change to")} ${selectedTemperature} \xB0C`}
+      title={`${$_("Confirm setpoint change to")} ${meltTemp} \xB0C`}
       onClose={() => confirmStart = false}
   >
   <div class="modal-text">
     <p>
-      {$_("Applying the temperature setpoint value to the current process will reset the setpoint for all zones to")} {`${selectedTemperature} \xB0C`}
+      {$_("Applying the temperature setpoint value to the current process will reset the setpoint for all zones to")} {`${meltTemp} \xB0C`}
     </p>
 
     <div class="modal-buttons">
@@ -205,6 +217,7 @@
     showDropdown={true}
     searchInputType={searchInputType}
     dropdownSetting={materialSearch}
+    title={title}
     bind:onModalOpen={openKeyboard}
     on:keypadClosed={() => openKeyboard = false}
     on:done={(kcontent) => getKeyboardText(kcontent)} maxCharacter=12

@@ -11,6 +11,7 @@
   import { notify } from 'data'
   import Icon from 'components/Icon.svelte'
   import ZoneReadout from './ZoneReadout.svelte'
+  import { openSetpointEditorVai } from 'data/setpoint'
 
   export let onSubmit
   export let trackHistory = false
@@ -100,6 +101,7 @@
 </script>
 
 <div class="zone-select-wrapper">
+  {#if $openSetpointEditorVai.source != "materialdb"}
   <div class="zone-dropdown">
     <h2>{$_('Select')}</h2>
     <div class='selection'>
@@ -107,6 +109,7 @@
       <ZoneReadout zone={$activeZones[0]} manual={manualReadout} />
     </div>
   </div>
+  {/if}
 
   <div class="body">
     <slot>
@@ -124,6 +127,7 @@
       {/if}
     </h2>
     <div class="buttons">
+      {#if $openSetpointEditorVai.source != "materialdb"}
       <div 
         class="button ignore-task-styles" 
         class:applied={applied.selected && $activeZones.length} 
@@ -136,6 +140,7 @@
           {$_("Selected Zones")}
         {/if}
       </div>
+      {/if}
       <div 
         class="button ignore-task-styles" 
         class:applied={applied.all}
