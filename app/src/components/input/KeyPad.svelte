@@ -92,7 +92,7 @@
       removeOldValue = false
     }
 
-    if (currentPrecision > keypadcontrols.precision) {
+    if (keypadcontrols.precision && currentPrecision > keypadcontrols.precision) {
       notify.error($_("Restricted to the correct precision"))
       return false
     }
