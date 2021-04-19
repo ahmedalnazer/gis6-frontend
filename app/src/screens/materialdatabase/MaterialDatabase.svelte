@@ -68,7 +68,8 @@
   }
 
   const onSubmit = async () => {
-    materialSearchResults = await api.get(`/api/materials/?family_abbreviation=${materialSearch.familyAbbreviation}&trade_name=${materialSearch.tradeName}&manufacturer=${materialSearch.manufacturer}`)
+    const params = `family_abbreviation=${encodeURIComponent(materialSearch.familyAbbreviation)}&trade_name=${encodeURIComponent(materialSearch.tradeName)}&manufacturer=${encodeURIComponent(materialSearch.manufacturer)}`
+    materialSearchResults = await api.get(`/api/materials/?${params}`)
     materialSearchResults = sortMaterialData(materialSearchResults)
     enableReset = true
     enableSearch = false

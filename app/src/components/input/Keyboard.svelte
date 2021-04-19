@@ -95,17 +95,17 @@
 
     if (searchInputType === 'tradeName') {
       // type = 'trade_name'
-      qry = `trade_name=${text}${dropdownSetting.manufacturer?`&manufacturer=${dropdownSetting.manufacturer}`:''}${dropdownSetting.familyAbbreviation?`&family_abbreviation=${dropdownSetting.familyAbbreviation}`:''}`
+      qry = `trade_name=${text}${dropdownSetting.manufacturer?`&manufacturer=${encodeURIComponent(dropdownSetting.manufacturer)}`:''}${dropdownSetting.familyAbbreviation?`&family_abbreviation=${encodeURIComponent(dropdownSetting.familyAbbreviation)}`:''}`
     }
 
     if (searchInputType === 'manufacturer') {
       // type = 'manufacturer'
-      qry = `manufacturer=${text}${dropdownSetting.tradeName?`&trade_name=${dropdownSetting.tradeName}`:''}${dropdownSetting.familyAbbreviation?`&family_abbreviation=${dropdownSetting.familyAbbreviation}`:''}`
+      qry = `manufacturer=${text}${dropdownSetting.tradeName?`&trade_name=${encodeURIComponent(dropdownSetting.tradeName)}`:''}${dropdownSetting.familyAbbreviation?`&family_abbreviation=${encodeURIComponent(dropdownSetting.familyAbbreviation)}`:''}`
     }
 
     if (searchInputType === 'familyAbbreviation') {
       // type = 'family_abbreviation'
-      qry = `family_abbreviation=${text}${dropdownSetting.tradeName?`&trade_name=${dropdownSetting.tradeName}`:''}${dropdownSetting.manufacturer?`&manufacturer=${dropdownSetting.manufacturer}`:''}`
+      qry = `family_abbreviation=${text}${dropdownSetting.tradeName?`&trade_name=${encodeURIComponent(dropdownSetting.tradeName)}`:''}${dropdownSetting.manufacturer?`&manufacturer=${encodeURIComponent(dropdownSetting.manufacturer)}`:''}`
     }
 
     // const res = await api.get(`/materials/?${type}=${text}`)
