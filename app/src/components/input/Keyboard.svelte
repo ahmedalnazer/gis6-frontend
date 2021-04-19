@@ -1,6 +1,6 @@
 <script>
   import { createEventDispatcher } from 'svelte'
-  import { Collapsible } from 'components'
+  import { Collapsible, Icon } from 'components'
   import _ from 'data/language'
   import { onDestroy, onMount } from 'svelte'
   import api from 'data/api'
@@ -213,9 +213,14 @@
     >
       <div class="content">
         <div class="text-content">
-          {#if title}
-            <label>{title}</label>
-          {/if}
+          <header>
+            {#if title}
+              <label>{title}</label>
+            {/if}
+            <div class='close' on:click={() => closeKeypadModal()}>
+              <Icon icon='close' />
+            </div>
+          </header>
           <input type="text" id='place-char' bind:value="{value}" />
           {#if showDropdown}
             <div class='dropdown-anchor'>
@@ -371,8 +376,16 @@
   .text-content {
     width: 40%;
     margin: 0 auto;
-    label {
-      text-align: left;
+    header {
+      label {
+        text-align: left;
+      }
+      .close {
+        position: absolute;
+        right: 2%;
+        width: 24px;
+        top: 4%;
+      }
     }
     input {
       width: 100%;
