@@ -8,6 +8,7 @@
   import { activeSetpointEditor, openSetpointEditorVai } from 'data/setpoint'
   
   $: enableSearch = materialSearch.tradeName || materialSearch.manufacturer || materialSearch.familyAbbreviation
+  $: enableReset = materialSearch.tradeName || materialSearch.manufacturer || materialSearch.familyAbbreviation
   $: changedTradeName = materialSearch.tradeName.length > 0
   $: changedManufacturer = materialSearch.manufacturer.length > 0
   $: changedFamilyAbbreviation = materialSearch.familyAbbreviation.length > 0
@@ -70,6 +71,7 @@
     materialSearchResults = await api.get(`/api/materials/?family_abbreviation=${materialSearch.familyAbbreviation}&trade_name=${materialSearch.tradeName}&manufacturer=${materialSearch.manufacturer}`)
     materialSearchResults = sortMaterialData(materialSearchResults)
     enableSearch = false
+    enableReset = true
   }
 
   const onReset = async () => {
@@ -154,7 +156,7 @@
     </div>
 
     <div class="form-buttons">
-      <div class="button reset" on:click={() => onReset()} class:disabled={!enableSearch}>
+      <div class="button reset" on:click={() => onReset()} class:disabled={!enableReset}>
         {$_("Reset")}
       </div>
       <div class="button search active" on:click={() => onSubmit()} class:disabled={!enableSearch}>
@@ -180,7 +182,7 @@
           <div class="material-grid-item item">
               <div class="item-text-trade-name">{searchResult.trade_name}</div>
               <div class="item-text-melt">{`${Math.round(searchResult.melt_temperature)} \xB0C (${Math.round(searchResult.min_melt_temperature)} - ${Math.round(searchResult.max_melt_temperature)} \xB0C)`}</div>
-              <div class="apply-setpoint" on:click={() => { confirmStartAction(searchResult) }}>{$_("Apply Setpoint")}</div>
+              <div class="apply-setpoint" on:click={() => { confirmStartAction(searchResult) }}>{$_("Open Setpoint Editor")}</div>
           </div>
         {/each}
 
