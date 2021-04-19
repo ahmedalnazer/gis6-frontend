@@ -23,6 +23,7 @@
   let keyboardCapLock = 'OFF'
   let optionsMaterial = []
   let open = false
+  let enableDone = false
 
   $: reachedMaxChar = value.length >= maxCharacter
 
@@ -133,6 +134,7 @@
   const selectMaterial = material => {
     value = material.name
     openKeypad = false
+    enableDone = true
     dispatch('done', { done: value, type: searchInputType })
   }
 
@@ -142,6 +144,7 @@
       value = getInputField('place-char').value
       console.log(`Txt ${value}`)
       if (showDropdown) getSelectOptions(value)
+      if (!showDropdown) enableDone = true
       if (anchor && anchor.dispatchEvent) {
         anchor.dispatchEvent(new Event('change'))
       }
@@ -311,7 +314,11 @@
           <div class="splchar" on:click={e => actionKey('space')}><span>{$_('Space')}</span></div>
         </div>
         <div class="char-box-">
-          <button on:click={(e) => { closeKeypadModal(); doneKeypadModal() }} class="button ignore-task-styles active keypad-ok-btn">Done</button>
+          <button
+            class="button ignore-task-styles active keypad-ok-btn"
+            class:disabled={!enableDone}
+            on:click={(e) => { closeKeypadModal(); doneKeypadModal() }}
+          >Done</button>
         </div>
       </div>
     </div>

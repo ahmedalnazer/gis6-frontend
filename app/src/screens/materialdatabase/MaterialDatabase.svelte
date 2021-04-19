@@ -70,6 +70,7 @@
   const onSubmit = async () => {
     materialSearchResults = await api.get(`/api/materials/?family_abbreviation=${materialSearch.familyAbbreviation}&trade_name=${materialSearch.tradeName}&manufacturer=${materialSearch.manufacturer}`)
     materialSearchResults = sortMaterialData(materialSearchResults)
+    enableReset = true
     enableSearch = false
     enableReset = true
   }
