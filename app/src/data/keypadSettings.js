@@ -1,22 +1,5 @@
 import { writable } from 'svelte/store'
 
-// const valueTypes_old = {
-//   manualPercent: {
-//     min: 0,
-//     max: 500,
-//     negative: true,
-//     integer: false,
-//     precision: 2,
-//   },
-//   setpoint: {
-//     min: 100,
-//     max: 400,
-//     negative: false,
-//     integer: true,
-//     precision: 1,
-//   }
-// }
-
 const valueTypes = {
   defaultPercent: {
     description: 'Default Percentage',
@@ -45,7 +28,7 @@ const valueTypes = {
     max: 500,
     negative: false,
     integer: false,
-    precision: 0.1,
+    precision: 1,
     valid_entries: []
   },
   deviationLow: {
@@ -75,7 +58,7 @@ const valueTypes = {
     max: 100,
     negative: false,
     integer: false,
-    precision: 0.1,
+    precision: 1,
     valid_entries: []
   },
   trim: {
@@ -105,7 +88,7 @@ const valueTypes = {
     max: 54,
     negative: false,
     integer: false,
-    precision: 0.1,
+    precision: 1,
     valid_entries: []
   },
   tuningOverwrite: {
@@ -125,7 +108,7 @@ const valueTypes = {
     max: 4,
     negative: false,
     integer: false,
-    precision: 0.1,
+    precision: 1,
     valid_entries: []
   },
   attenuatedOutput: {
@@ -135,7 +118,7 @@ const valueTypes = {
     max: 100,
     negative: false,
     integer: false,
-    precision: 0.1,
+    precision: 1,
     valid_entries: []
   },
   powerPriority: {

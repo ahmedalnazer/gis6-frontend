@@ -1,6 +1,6 @@
 <script>
   import { createEventDispatcher } from 'svelte'
-  import { Collapsible } from 'components'
+  import { Collapsible, Icon } from 'components'
   import _ from 'data/language'
   import { onDestroy, onMount } from 'svelte'
   import api from 'data/api'
@@ -13,6 +13,7 @@
   export let showDropdown = false
   export let dropdownSetting = {}
   export let searchInputType = ''
+  export let title = ''
 
   const dispatch = createEventDispatcher()
 
@@ -22,6 +23,7 @@
   let keyboardCapLock = 'OFF'
   let optionsMaterial = []
   let open = false
+  let enableDone = false
 
   $: reachedMaxChar = value.length >= maxCharacter
 
@@ -93,31 +95,36 @@
 
     if (searchInputType === 'tradeName') {
       // type = 'trade_name'
-      qry = `trade_name=${text}${dropdownSetting.manufacturer?`&manufacturer=${dropdownSetting.manufacturer}`:''}${dropdownSetting.familyAbbreviation?`&family_abbreviation=${dropdownSetting.familyAbbreviation}`:''}`
+      qry = `trade_name=${text}${dropdownSetting.manufacturer?`&manufacturer=${encodeURIComponent(dropdownSetting.manufacturer)}`:''}${dropdownSetting.familyAbbreviation?`&family_abbreviation=${encodeURIComponent(dropdownSetting.familyAbbreviation)}`:''}`
     }
+
     if (searchInputType === 'manufacturer') {
       // type = 'manufacturer'
-      qry = `manufacturer=${text}${dropdownSetting.tradeName?`&trade_name=${dropdownSetting.tradeName}`:''}${dropdownSetting.familyAbbreviation?`&family_abbreviation=${dropdownSetting.familyAbbreviation}`:''}`
+      qry = `manufacturer=${text}${dropdownSetting.tradeName?`&trade_name=${encodeURIComponent(dropdownSetting.tradeName)}`:''}${dropdownSetting.familyAbbreviation?`&family_abbreviation=${encodeURIComponent(dropdownSetting.familyAbbreviation)}`:''}`
     }
 
     if (searchInputType === 'familyAbbreviation') {
       // type = 'family_abbreviation'
-      qry = `family_abbreviation=${text}${dropdownSetting.tradeName?`&trade_name=${dropdownSetting.tradeName}`:''}${dropdownSetting.manufacturer?`&manufacturer=${dropdownSetting.manufacturer}`:''}`
+      qry = `family_abbreviation=${text}${dropdownSetting.tradeName?`&trade_name=${encodeURIComponent(dropdownSetting.tradeName)}`:''}${dropdownSetting.manufacturer?`&manufacturer=${encodeURIComponent(dropdownSetting.manufacturer)}`:''}`
     }
 
     // const res = await api.get(`/materials/?${type}=${text}`)
-    const res = await api.get(`/materials/?${qry}`)
+    const res = await api.get(`/materials/typeahead/?${qry}`)
     if (res) {
       open = true
+
       for (let item of res) {
         if (searchInputType === 'manufacturer') {
-          options.push({"id": item.id, "name": item.manufacturer})
+          const found = options.some(el => el.name === item.manufacturer)
+          if (!found) options.push({"id": item.id, "name": item.manufacturer})
         }
         else if (searchInputType === 'familyAbbreviation') {
-          options.push({"id": item.id, "name": item.family_abbreviation})
+          const found = options.some(el => el.name === item.family_abbreviation)
+          if (!found) options.push({"id": item.id, "name": item.family_abbreviation})
         }
         else {
-          options.push({"id": item.id, "name": item.trade_name})
+          const found = options.some(el => el.name === item.trade_name)
+          if (!found) options.push({"id": item.id, "name": item.trade_name})
         }
       }
     }
@@ -127,6 +134,7 @@
   const selectMaterial = material => {
     value = material.name
     openKeypad = false
+    enableDone = true
     dispatch('done', { done: value, type: searchInputType })
   }
 
@@ -136,6 +144,7 @@
       value = getInputField('place-char').value
       console.log(`Txt ${value}`)
       if (showDropdown) getSelectOptions(value)
+      if (!showDropdown) enableDone = true
       if (anchor && anchor.dispatchEvent) {
         anchor.dispatchEvent(new Event('change'))
       }
@@ -207,6 +216,14 @@
     >
       <div class="content">
         <div class="text-content">
+          <header>
+            {#if title}
+              <label>{title}</label>
+            {/if}
+            <div class='close' on:click={() => closeKeypadModal()}>
+              <Icon icon='close' />
+            </div>
+          </header>
           <input type="text" id='place-char' bind:value="{value}" />
           {#if showDropdown}
             <div class='dropdown-anchor'>
@@ -297,7 +314,11 @@
           <div class="splchar" on:click={e => actionKey('space')}><span>{$_('Space')}</span></div>
         </div>
         <div class="char-box-">
-          <button on:click={(e) => { closeKeypadModal(); doneKeypadModal() }} class="button ignore-task-styles active keypad-ok-btn">Done</button>
+          <button
+            class="button ignore-task-styles active keypad-ok-btn"
+            class:disabled={!enableDone}
+            on:click={(e) => { closeKeypadModal(); doneKeypadModal() }}
+          >Done</button>
         </div>
       </div>
     </div>
@@ -360,9 +381,22 @@
     clear: both;
   }
   .text-content {
-  }
-  .text-content input {
+    width: 40%;
     margin: 0 auto;
+    header {
+      label {
+        text-align: left;
+      }
+      .close {
+        position: absolute;
+        right: 2%;
+        width: 24px;
+        top: 4%;
+      }
+    }
+    input {
+      width: 100%;
+    }
   }
 
   div.content {
@@ -487,8 +521,6 @@
   }
 
   .dropdown-anchor {
-    width: 40%;
-    margin: 0 auto;
     margin-bottom: 14px;
     // max-height: 25vh;
     max-height: 260px;
