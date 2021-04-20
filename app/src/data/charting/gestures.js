@@ -24,6 +24,9 @@ export default class Gestures {
   set = obj => {
     for(let [ key, val ] of Object.entries(obj)) {
       this[key] = val
+      if(key.includes('zoom')) {
+        this[`_${key}`] = this[key] * 100 - 95
+      }
     }
   }
 

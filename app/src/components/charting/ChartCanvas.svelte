@@ -1,19 +1,20 @@
 <script>
   import { onDestroy, onMount } from 'svelte'
-  import { connectWS, updateBufferParams } from 'data/realtime/ws.js'
-  import { drawLines, smooth } from 'data/charting/line-utils'
+  import { connectWS } from 'data/realtime/ws.js'
+  import { drawLines } from 'data/charting/line-utils'
 
   export let type, properties, scale, paused, zones, position, jank
 
   export let stats = {}
   export let scaleData = {}
   export let width = 0
+  export let height = 0
+  export let mode = 'pan'
+  export let inspectedPoint = [ 0, 0 ]
 
   let canvas, worker
   let offscreen = false
   let scaled = false
-
-  export const setBufferParams = params => updateBufferParams(params)
 
   $: {
     if(canvas && worker) {
@@ -28,7 +29,7 @@
         worker.postMessage({ canvas: offscreen }, [ offscreen ])
       }
 
-      let chartData = { type, properties, scale, paused, zones, position, jank }
+      let chartData = { type, properties, scale, paused, zones, position, jank, mode, inspectedPoint }
       if(!offscreen) chartData.canvas = { width: canvas.width, height: canvas.height }
       worker.postMessage(chartData)
     }
@@ -63,7 +64,7 @@
   })
 </script>
 
-<canvas bind:this={canvas} bind:offsetWidth={width} />
+<canvas bind:this={canvas} bind:offsetWidth={width} bind:offsetHeight={height} />
 
 <style>
   canvas {

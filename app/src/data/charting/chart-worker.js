@@ -96,7 +96,7 @@ let last = 0
 const draw = () => {
   const t = new Date().getTime()
   if (renderers[chartData.type]) {
-    postMessage({ type: 'scale', value: { xMax: stats.xMax, xMin: stats.xMin, offsets: stats.offsets }})
+    postMessage({ type: 'scale', value: { xMax: stats.xMax, xMin: stats.xMin, offsets: stats.offsets, inspection: stats.inspectionDetails }})
     renderers[chartData.type](chartData, logStats, submitLines)
     renderTimes.push(new Date().getTime() - last)
   }
@@ -159,7 +159,7 @@ const collectStats = () => {
   postMessage({ type: 'stats', value: stats })
 }
 
-setInterval(collectStats, 3 / 100)
+setInterval(collectStats, 1000 / 3)
 
 
 
