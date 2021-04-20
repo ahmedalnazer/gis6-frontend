@@ -10,9 +10,12 @@
   import LineX from './LineX.svelte'
   import Gestures from 'data/charting/gestures'
   import CheckBox from 'components/input/CheckBox.svelte'
+  import InspectionBox from './InspectionBox.svelte'
+
 
   export let type = 'line'
   export let properties = [ 'actual_temp' ]
+  export let propertyOptions
   export let zones = []
   export let colors = {}
   export let scales = {}
@@ -34,7 +37,13 @@
   }
 
   let position = { ...defaultPosition }
-  export const resetPosition = () => position = { ...defaultPosition }
+  
+  const gestures = new Gestures()
+
+  export const resetPosition = () => {
+    position = { ...defaultPosition }
+    gestures.set(position)
+  }
 
   export const resetMarkers = () => markers = []
 
@@ -44,11 +53,10 @@
   }
   let scaleData = {}
   let canvasWidth = 0
+  let canvasHeight = 0
 
   // for testing purposes, if true will trigger "stress test mode"
   let jank = false
-
-  const gestures = new Gestures()
 
   $: {
     moved = false
@@ -93,8 +101,6 @@
     hLines.push(i)
   }
 
-  export let setBufferParams
-
   let wrapperHeight = 0
   let top = 0
 
@@ -104,11 +110,54 @@
     if(position.panY < 0) top = top + gap
   }
 
-  $: hiddenLine = top == 0 
-    ? - 1 
-    : 20
+  $: hiddenLine = top == 0 ? - 1 : 20
 
-  $: chartProps = { properties, paused, type, scale, zones, type, position, jank }
+  let inspectionBase = [ 0, 0 ]
+  let inspectionPoint = [ 0, 0 ]
+
+  $: center = [ canvasWidth / 2, canvasHeight / 2 ]
+
+  let xMax, xMin
+  $: {
+    xMax = scaleData.xMax || 0
+    xMin = scaleData.xMin || 0
+  }
+  $: timeRange = xMax - xMin
+
+  const getTS = x => {
+    const offset = x / canvasWidth
+    return xMin + offset * timeRange
+  }
+
+  let canvasWrapper
+
+  const setInspectionPoint = (e, offset = [ 0, 0 ]) => {
+    // console.log(offset)
+    const { top, left, bottom, right } = canvasWrapper.getBoundingClientRect()
+    const x = Math.max(0, Math.min(right - left, (e.inspectX || e.clientX) - left - offset[0]))
+    const y = Math.max(0, Math.min(bottom - top, (e.inspectY || e.clientY) - top - offset[1]))
+    const selectedTime = getTS(x)
+    if(mode == 'inspect') {
+      inspectionBase = [ 
+        selectedTime, 
+        (position.panY - y) * position.zoomY
+      ]
+    }
+    // inspectionZoom = position.zoomY
+  }
+
+  $: {
+    const x = canvasWidth * (inspectionBase[0] - xMin) / timeRange
+    const y = position.panY - inspectionBase[1] / position.zoomY
+    inspectionPoint = [ x, y ]
+  }
+
+  $: inspect = scaleData.inspection || {}
+
+  $: chartProps = { 
+    properties, paused, type, scale, zones, type, position, jank, mode,
+    inspectedPoint: inspectionBase
+  }
 
 </script>
 
@@ -125,7 +174,7 @@
     <Scale property={properties[0]} {stats} {position} color={colors[1]} />
   </div>
 
-  <div class='canvas' bind:offsetHeight={wrapperHeight}>
+  <div class='canvas' bind:this={canvasWrapper} bind:offsetHeight={wrapperHeight} on:click={setInspectionPoint} >
 
     <div class='h-grid' class:offset={top} style='transform: translateY({top}px)'>
       {#each hLines as l}
@@ -138,20 +187,24 @@
       {/if}
     </div>
 
-    <ChartCanvas bind:setBufferParams bind:stats bind:scaleData bind:width={canvasWidth} {...chartProps} />
+    <ChartCanvas bind:stats bind:scaleData bind:width={canvasWidth} bind:height={canvasHeight} {...chartProps} />
 
-    <div class='stats' on:pointerdown|stopPropagation on:pointerup|stopPropagation>
+    <!-- <div class='stats' on:pointerdown|stopPropagation on:pointerup|stopPropagation>
       <p><strong>{stats.framerate} fps</strong> {#if !stats.offscreen}<span style='color: red'>⛔️</span>{/if}</p>
       <p><strong>Points:</strong> {(''+stats.totalPoints).padStart(3, '0')}</p>
       <p><strong>Zones:</strong> {totalZones}</p>
       <p><strong>Lines:</strong> {totalZones * properties.filter(x => !!x).length}</p>
       <p><strong>Resolution:</strong> {stats.resolution * 25}%</p>
       <p><CheckBox bind:checked={jank} label='Stress'/></p>
-    </div>
+    </div> -->
     
     <div class='loading' class:active={stats.loading !== false && !stats.plotFilled}>
       {$_('Loading data...')}
     </div>
+
+    {#if mode == 'inspect'}
+      <InspectionBox {...{ inspect, properties, propertyOptions, getTS, canvasWidth, wrapperHeight, setInspectionPoint, canvasWrapper }} />
+    {/if}
   </div>
 
   <div class='scales' style='transform: translateY({top}px)'>

@@ -10,15 +10,24 @@
   import { colors } from 'data/charting/line-utils'
   import zones, { activeZones, selectedZones, toggleZones } from 'data/zones'
   import { activeGroup } from "data/groups"
+  import { default as _convert } from 'data/language/units'
 
   let propertyOptions = [
-    { id: 'actual_temp', name: $_('Actual Temperature') },
-    { id: 'deviation', name: $_('Deviation') },
-    { id: 'actual_current', name: $_('Heater Current') },
-    { id: 'manual_sp', name: $_('Manual % Setpoint') },
-    { id: 'actual_percent', name: $_('Percent Output') },
-    { id: 'temp_sp', name: $_('Temperature Setpoint') },
+    { id: 'actual_temp', name: $_('Actual Temperature'), type: 'temperature' },
+    { id: 'deviation', name: $_('Deviation'), type: 'temperature' },
+    { id: 'actual_current', name: $_('Heater Current'), type: 'current' },
+    { id: 'manual_sp', name: $_('Manual % Setpoint'), type: 'percent' },
+    { id: 'actual_percent', name: $_('Percent Output'), type: 'percent' },
+    { id: 'temp_sp', name: $_('Temperature Setpoint'), type: 'temperature' },
   ]
+
+  const convert = (type, value) => {
+    const op = propertyOptions.find(x => x.id == type)
+    if(op) {
+      return $_convert({ type: op.type, value })
+    }
+    return ''
+  }
 
   let params = {
     1: 'actual_temp',
@@ -78,8 +87,23 @@
     }
   })
 
-  let setBufferParams, paused, resetPosition, moved
+  let paused, resetPosition, moved
   let mark
+
+  const reset = () => {
+    resetPosition()
+    setMode('pan')
+  }
+
+  $: {
+    if(!paused) mode = 'pan'
+  }
+
+  const setMode = m => {
+    if(mode == m) m = 'pan'
+    paused = m != 'pan'
+    mode = m
+  }
 
   onDestroy(() => {
     unsubActive()
@@ -97,7 +121,12 @@
       <Icon icon={paused ? 'play' : 'pause'} color='var(--primary)' on:click={() => paused = !paused} />
     </div>
     <div class='set'>
-      <Icon icon='undo' color={moved ? 'var(--primary)' : 'var(--gray)'} on:click={resetPosition}/>
+      <div class='reset'>
+        <Icon icon='undo' color={moved ? 'var(--primary)' : 'var(--gray)'} on:click={reset} />
+      </div>
+      <div class='tool' class:active={mode == 'inspect'}>
+        <Icon icon='view' color='var(--primary)' on:click={() => setMode('inspect')}/>
+      </div>
     </div>
     <div class='set'>
       <Icon icon='settings' color='var(--primary)' on:click={() => showSettings = true}/>
@@ -109,12 +138,11 @@
     <Chart type='line' 
       bind:stats 
       bind:moved
-      bind:setBufferParams 
       bind:paused
       bind:resetPosition
       bind:mark
       zones={rendered} 
-      {...{ properties, colors, scales }}  
+      {...{ properties, propertyOptions, colors, scales, mode }}  
     />
 
     <div class='options'>
@@ -125,8 +153,8 @@
             {#if params[n] && stats.avg}
               <div class='average' style='opacity: {isNaN(stats.avg[params[n]]) ? 0 : 1}'>
                 <div class='color' style='background:{colors[n]}' />
-                Average
-                <span style='color:{colors[n]}'>{(stats.avg[params[n]] / 10).toFixed(1)}</span>
+                {$_('Average')}
+                <span style='color:{colors[n]}'>{convert(params[n], stats.avg[params[n]])}</span>
               </div>
             {/if}
           </div>
@@ -156,7 +184,7 @@
 </Screen>
 
 {#if showSettings}
-  <Settings onClose={() => showSettings = false} onSubmit={s => scales = s} {...{ stats, setBufferParams, scales }} />
+  <Settings onClose={() => showSettings = false} onSubmit={s => scales = s} {...{ stats, scales }} />
 {/if}
 
 <style lang="scss">
@@ -184,13 +212,24 @@
     }
     .tool {
       margin-right: 16px;
+      display: flex;
+      align-items: center;
+      padding: 8px;
       :global(svg) {
+        height: 24px;
+        width: 24px;
         padding: 0;
+        margin: 0;
       }
     }
     .tool.active {
       background: var(--gray);
+      border-radius: 50%;
     }
+  }
+
+  .reset {
+    transform: rotate(135deg) scaleX(-1);
   }
 
   .properties {
