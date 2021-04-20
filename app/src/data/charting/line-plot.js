@@ -29,7 +29,7 @@ const draw = (chartData, logStats, submitLines) => {
 
   let maxLinePoints = Math.min(700, Math.max(80, 20000 / (zones.length * properties.length))) * (chartData.resolution / 4)
   
-  const { xMin, xMax, dX, xScale, valid } = getXParameters(position, canvas, scale, paused)
+  const { xMin, xMax, dX, xScale, valid, xRange } = getXParameters(position, canvas, scale, paused)
   if(!valid) return
 
   const renderLimit = xMin - 2000
@@ -128,7 +128,7 @@ const draw = (chartData, logStats, submitLines) => {
   }
 
 
-  let inspectionDetails = getInspectionDetails(mode, zones, inspectedPoint, renderedLines, canvas)
+  let inspectionDetails = getInspectionDetails(mode, zones, inspectedPoint, renderedLines, canvas, xRange, xMin, position)
   inspectionDetails.frame = getFrame(rendered, inspectionDetails.pointIndex, inspectionDetails.zone)
 
   const selected = [ inspectionDetails.index ]

@@ -2,13 +2,25 @@
   import zones from 'data/zones'
   import { colors } from 'data/charting/line-utils'
   import _ from 'data/language'
+  import convert from 'data/language/units'
+import { tick } from 'svelte'
+
+
   export let inspect
   export let properties
   export let propertyOptions
   export let getTS
   export let canvasWidth
   export let setInspectionPoint
-  export let setOffset
+  export let canvasWrapper
+  export let wrapperHeight
+
+
+  let boxWidth, boxHeight
+  let offset = [ 0, 0 ]
+  let dragLeft = 0
+  let dragTop = 0
+  let dragging = false
 
   $: point = inspect && inspect.point || { x: -1, y: -1 }
 
@@ -20,6 +32,7 @@
   }).filter(x => !!x)
 
   let stamp = ''
+
   $: {
     if(inspect && inspect.point) {
       const t = new Date(getTS(inspect.point.x))
@@ -30,78 +43,108 @@
     }
   }
 
-  let boxWidth
-  $: left = point.x > canvasWidth - boxWidth + 120
-
-  const move = e => {
-    // e.inspextX = e.clientX - e.offsetX
-    // e.inspectY = e.clientY - e.offsetY
-    setInspectionPoint(e)
-  }
 
   const down = e => {
     e.stopPropagation()
-    const m = left ? -1 : 1
-    setOffset([ e.offsetX * m, e.offsetY * m ])
+    const x = showLeft ? e.offsetX - boxWidth : e.offsetX
+    const y = showUp ? e.offsetY : e.offsetY
+    offset = [ x, y ]
+    dragLeft = point.x
+    dragTop = point.y
+    dragging = true
+    canvasWrapper.addEventListener('pointermove', move)
+    canvasWrapper.addEventListener('pointerup', up)
+  }
+
+  const move = e => {
+    if(dragging) {
+      e.stopPropagation()
+      const { top, left, right, bottom } = canvasWrapper.getBoundingClientRect()
+      dragLeft = Math.min(Math.max(0, e.clientX - left), right - left)
+      dragTop = Math.min(bottom - top, Math.max(0, e.clientY - top))
+      setInspectionPoint(e, offset)
+    }
   }
 
   const up = e => {
-    setOffset([ 0, 0 ])
+    // e.stopPropagation()
+    canvasWrapper.removeEventListener('pointermove', move)
+    dragging = false
   }
+
+  $: left = dragging ? dragLeft - offset[0] : point.x
+  $: top = dragging ? dragTop - offset[1] : point.y
+
+  $: showLeft = left > canvasWidth - boxWidth + 120
+  $: showUp = top > wrapperHeight - boxHeight
+
+  $: onScreen = left > 0 && left <= canvasWidth + 10 && top > 0 && top <= wrapperHeight + 10
   
 </script>
 
-{#if selectedZone && point.x > 0 && point.y > 0}
-  <div class='inspection-box' class:left style='left:{inspect.point.x}px;top:{inspect.point.y}px'>
-    <div class='arrow'>◀</div>
+{#if dragging || selectedZone && onScreen}
+  <div class='x-line' style='left:{inspect.point.x}px' />
+  <div class='inspection-box' class:showLeft class:showUp style='left:{left}px;top:{top}px'>
+    <div class='arrow'>◄</div>
     <div 
       class='body' 
       bind:offsetWidth={boxWidth} 
-      on:pointerdown={down} 
-      on:pointermove={move}
+      bind:offsetHeight={boxHeight} 
+      on:pointerdown={down}
       on:pointerup={up}
       on:pointercancel={up}
+      on:mouseup={up}
+      on:click|stopPropagation={up}
     >
-      <h3>{selectedZone.name}</h3>
-      <div class='properties'>
-        {#each inspectedProps as prop}
-          {#if prop}
-            <div class='color' style='background:{prop.color}' />
-            <div class='prop-name'>
-              {prop.name}
-            </div>
-            <div class='value'>
-              {prop.id == 'deviation' ? inspect.frame.temp_sp - inspect.frame.actual_temp : inspect.frame[prop.id]}
-            </div>
-          {/if}
-        {/each}
-        <div />
-        <div class='time-label'>
-          {$_('Time')}
+      {#if selectedZone}
+        <h3>{selectedZone.name}</h3>
+        <div class='properties'>
+          {#each inspectedProps as prop}
+            {#if prop}
+              <div class='color' style='background:{prop.color}' />
+              <div class='prop-name'>
+                {prop.name}
+              </div>
+              <div class='value'>
+                {$convert({
+                  type: prop.type, 
+                  value: prop.id == 'deviation' ? inspect.frame.temp_sp - inspect.frame.actual_temp : inspect.frame[prop.id]
+                })}
+              </div>
+            {/if}
+          {/each}
+          <div />
+          <div class='time-label'>
+            {$_('Time')}
+          </div>
+          <div class='value'>{stamp}</div>
         </div>
-        <div class='value'>{stamp}</div>
-      </div>
-      <!-- <pre>
-        {JSON.stringify(inspect, null, 2)}
-      </pre> -->
+        <!-- <pre>
+          {JSON.stringify(inspect, null, 2)}
+        </pre> -->
+      {:else}
+        <h3>{$_('No Zone Selected')}</h3>
+      {/if}
     </div>
     
   </div>
-  <div class='x-line' style='left:{inspect.point.x}px' />
 {/if}
 
 <style lang="scss">
   .inspection-box {
     position: absolute;
+    z-index: 2;
+    user-select: none;
 
     .arrow {
       position: absolute;
-      top: -16px;
+      top: -25px;
       font-size: 32px;
       left: 0;
       text-shadow: -4px 4px 4px rgba(0, 0, 0, .2);
       color: white;
       z-index: 2;
+      transform: scaleY(2);
     }
 
     .body {
@@ -109,20 +152,27 @@
       box-shadow: var(--shadow);
       position: absolute;
       top: -48px;
-      left: 24px;
+      left: 18px;
       border-radius: 4px;
       padding: 20px;
     }
 
-    &.left {
+    &.showLeft {
       .arrow {
-        transform: scaleX(-1);
+        transform: scaleY(2) scaleX(-1);
         left: auto;
         right: 0;
       }
       .body {
         left: auto;
-        right: 24px;
+        right: 18px;
+      }
+    }
+
+    &.showUp {
+      .body {
+        top: auto;
+        bottom: -48px;
       }
     }
   }

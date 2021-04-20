@@ -1,9 +1,12 @@
 let n = 0
 
-export const getInspectionDetails = (mode, zones, inspectPoint, rendered, canvas) => {
+export const getInspectionDetails = (mode, zones, inspectPoint, rendered, canvas, xMin, timeRange, position) => {
   n += 1
 
-  const [ x, y ] = inspectPoint
+  const [ xBase, yBase ] = inspectPoint
+
+  const x = canvas.width * (xBase - xMin) / timeRange
+  const y = position.panY - yBase / position.zoomY
 
   let data = {
     zone: -1,
@@ -25,7 +28,7 @@ export const getInspectionDetails = (mode, zones, inspectPoint, rendered, canvas
       if(!stamp1) {
         let last
         for (let point of line) {
-          if(point.x > x && last) {
+          if(point.time > xBase && last) {
             stamp1 = last.x
             stamp2 = point.x
             data.pointIndex = line.indexOf(point)
@@ -41,9 +44,9 @@ export const getInspectionDetails = (mode, zones, inspectPoint, rendered, canvas
       if(p1 && p2) {
         // const totalYOffset = Math.abs(y - p1.y) + Math.abs(p2.y - y)
         
-        const d = distance(p1, p2, { x, y })
+        const d = minDistance(p1, p2, { x, y })
         // log(d)
-        if(d < 100 && (d < selectedDistance || selectedDistance === undefined)) {
+        if(d < selectedDistance || selectedDistance === undefined) {
           data.index = lines.indexOf(line)
           data.zone = zones[data.index]
           data.point = closest(p1, p2, { x, y })
@@ -65,8 +68,9 @@ const closest = (p1, p2, target) => {
 }
 
 // calculate distance of inspection point from line segment
-const distance = (l1, l2, p) => {
-  const n = Math.abs((l2.x - l1.x) * (l1.y - p.y) - (l1.x - p.x) * (l2.y - l1.y))
-  const d = Math.sqrt(Math.pow(l2.x - l1.x, 2) + Math.pow(l2.y - l1.y, 2))
-  return n / d
+const minDistance = (l1, l2, p) => {
+  return Math.min(Math.hypot(l1.x - p.x, l1.y - p.y), Math.hypot(l2.x - p.x, l1.y - p.y))
+  // const n = Math.abs((l2.x - l1.x) * (l1.y - p.y) - (l1.x - p.x) * (l2.y - l1.y))
+  // const d = Math.sqrt(Math.pow(l2.x - l1.x, 2) + Math.pow(l2.y - l1.y, 2))
+  // return n / d
 }

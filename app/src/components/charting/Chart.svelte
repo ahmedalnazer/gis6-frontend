@@ -131,17 +131,16 @@
 
   let canvasWrapper
 
-
-  let offset = [ 0, 0 ]
-  const setOffset = o => offset = o
-
-  const setInspectionPoint = e => {
-    const { top, left } = canvasWrapper.getBoundingClientRect()
-    const selectedTime = getTS((e.inspectX || e.clientX) - left - offset[0])
+  const setInspectionPoint = (e, offset = [ 0, 0 ]) => {
+    // console.log(offset)
+    const { top, left, bottom, right } = canvasWrapper.getBoundingClientRect()
+    const x = Math.max(0, Math.min(right - left, (e.inspectX || e.clientX) - left - offset[0]))
+    const y = Math.max(0, Math.min(bottom - top, (e.inspectY || e.clientY) - top - offset[1]))
+    const selectedTime = getTS(x)
     if(mode == 'inspect') {
       inspectionBase = [ 
         selectedTime, 
-        (center[0] + position.panY - ((e.inspectY || e.clientY) - top - offset[1])) * position.zoomY
+        (position.panY - y) * position.zoomY
       ]
     }
     // inspectionZoom = position.zoomY
@@ -149,8 +148,7 @@
 
   $: {
     const x = canvasWidth * (inspectionBase[0] - xMin) / timeRange
-    const yOffset = position.panY
-    const y = center[0] + yOffset - inspectionBase[1] / position.zoomY
+    const y = position.panY - inspectionBase[1] / position.zoomY
     inspectionPoint = [ x, y ]
   }
 
@@ -158,7 +156,7 @@
 
   $: chartProps = { 
     properties, paused, type, scale, zones, type, position, jank, mode,
-    inspectedPoint: inspectionPoint
+    inspectedPoint: inspectionBase
   }
 
 </script>
@@ -176,7 +174,7 @@
     <Scale property={properties[0]} {stats} {position} color={colors[1]} />
   </div>
 
-  <div class='canvas' bind:this={canvasWrapper} bind:offsetHeight={wrapperHeight} on:click={setInspectionPoint}>
+  <div class='canvas' bind:this={canvasWrapper} bind:offsetHeight={wrapperHeight} on:click={setInspectionPoint} >
 
     <div class='h-grid' class:offset={top} style='transform: translateY({top}px)'>
       {#each hLines as l}
@@ -191,21 +189,21 @@
 
     <ChartCanvas bind:stats bind:scaleData bind:width={canvasWidth} bind:height={canvasHeight} {...chartProps} />
 
-    <div class='stats' on:pointerdown|stopPropagation on:pointerup|stopPropagation>
+    <!-- <div class='stats' on:pointerdown|stopPropagation on:pointerup|stopPropagation>
       <p><strong>{stats.framerate} fps</strong> {#if !stats.offscreen}<span style='color: red'>⛔️</span>{/if}</p>
       <p><strong>Points:</strong> {(''+stats.totalPoints).padStart(3, '0')}</p>
       <p><strong>Zones:</strong> {totalZones}</p>
       <p><strong>Lines:</strong> {totalZones * properties.filter(x => !!x).length}</p>
       <p><strong>Resolution:</strong> {stats.resolution * 25}%</p>
       <p><CheckBox bind:checked={jank} label='Stress'/></p>
-    </div>
+    </div> -->
     
     <div class='loading' class:active={stats.loading !== false && !stats.plotFilled}>
       {$_('Loading data...')}
     </div>
 
-    {#if mode == 'inspect' && inspect.point}
-      <InspectionBox {...{ inspect, properties, propertyOptions, getTS, canvasWidth, setInspectionPoint, setOffset }} />
+    {#if mode == 'inspect'}
+      <InspectionBox {...{ inspect, properties, propertyOptions, getTS, canvasWidth, wrapperHeight, setInspectionPoint, canvasWrapper }} />
     {/if}
   </div>
 
