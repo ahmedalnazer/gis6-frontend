@@ -1,116 +1,6 @@
 import buffer from './buffer'
 import { drawLines } from './line-utils'
-
-// properties which allow negative values
-const negatives = [ 'deviation' ]
-
-const getBit = (int, bit) => !!(int & 1 << bit)
-
-const getSettings = (zone) => {
-  let settings = {
-    locked: getBit(zone.settings, 0),
-    sealed: getBit(zone.settings, 1),
-    on: getBit(zone.settings, 2),
-    auto: getBit(zone.settings, 3),
-    standby: getBit(zone.settings, 4),
-    boost: getBit(zone.settings, 5),
-    testing: getBit(zone.settings, 6),
-    test_complete: getBit(zone.settings, 7)
-  }
-  return settings
-}
-
-
-
-// get the x axis bounds
-const getXParameters = (position, canvas, scale, paused) => {
-  const latest = buffer.active[buffer.active.length - 1]
-  if(!latest) return { valid: false }
-
-  const xZoomFactor = position.zoomX
-  // let sRange = scale && scale.x ? parseInt(scale.x) : 10
-  let sRange = parseInt(scale.x)
-
-  const xRange = sRange * 1000
-
-  let panXRatio = position.panX / canvas.width
-  let timeOffset = xRange * panXRatio
-
-  const delay = Math.max(1000, .01 * xRange)
-
-  const now = new Date().getTime() - delay - timeOffset
-  let rawXMax = paused ? latest.time - delay * .25 - timeOffset : now
-  let rawXMin = rawXMax - xRange
-
-  let mid = rawXMin + xRange / 2
-  const scaled = xRange * xZoomFactor / 2
-
-  const xMax = mid + scaled
-  const xMin = mid - scaled
-
-  const dX = xMax - xMin
-  const xScale = canvas.width / (xMax - xMin)
-
-  return { xMin, xMax, xRange, dX, xScale, valid: true }
-}
-
-
-
-// get the y axis bounds
-const getYParameters = (prop, min, max, scaleParams, position) => {
-  // console.log(min, max)
-  if (!negatives.includes(prop)) {
-    min = Math.max(min, 0)
-  }
-
-  const minAuto = scaleParams.min == 'auto'
-  const maxAuto = scaleParams.max == 'auto'
-
-
-  if (!minAuto) min = scaleParams.min * 10
-  if (!maxAuto) max = scaleParams.max * 10
-
-  const r = max - min
-
-  if (scaleParams.max == 'auto' && scaleParams.min != 'auto') {
-    max += r / 10
-  }
-  if (scaleParams.min == 'auto' && scaleParams.max != 'auto') {
-    min -= r / 10
-  }
-
-  const scaleFactor = position.zoomY
-
-  const halfRange = (max - min) / 2
-  const midPoint = min + halfRange
-  min = midPoint - halfRange * scaleFactor
-  max = midPoint + halfRange * scaleFactor
-
-  // ensure round numbers are used for the scale
-  const even = i => {
-    if (minAuto) min = -i + i * Math.ceil(min / i)
-    if (maxAuto) max = i + i * Math.floor(max / i)
-  }
-
-  
-
-  let matched = false
-  for (let x of [ 10, 100, 200, 500, 1000, 2000, 5000, 10000 ]) {
-    if (matched) break
-    for (let y of [ 1, 2, 4, 8 ]) {
-      const base = x * y
-      if (r < base) {
-        even(base / 5)
-        matched = true
-        break
-      }
-    }
-  }
-
-  if (!matched) even(20000)
-
-  return { minY: min, maxY: max }
-}
+import { getInspectionDetails } from './inspection'
 
 
 /**
@@ -120,7 +10,7 @@ const getYParameters = (prop, min, max, scaleParams, position) => {
  * @param {Function} submitLines 
  */
 const draw = (chartData, logStats, submitLines) => {
-  const { canvas, ctx, scale, paused, bufferParams, position } = chartData
+  const { canvas, ctx, scale, paused, bufferParams, position, mode, inspectedPoint } = chartData
 
   let { zones, jank } = chartData
 
@@ -191,7 +81,7 @@ const draw = (chartData, logStats, submitLines) => {
             y = point.temp_sp - point.actual_temp
           }
         }
-        lines[prop][z - 1].push({ x, y })
+        lines[prop][z - 1].push({ x, y, time: frame.time })
         max[prop] = Math.max(max[prop], y)
         min[prop] = Math.min(min[prop], y)
       }
@@ -238,13 +128,145 @@ const draw = (chartData, logStats, submitLines) => {
   }
 
 
+  let inspectionDetails = getInspectionDetails(mode, zones, inspectedPoint, renderedLines, canvas)
+  inspectionDetails.frame = getFrame(rendered, inspectionDetails.pointIndex, inspectionDetails.zone)
+
+  const selected = [ inspectionDetails.index ]
+
   if(canvas && ctx) {
-    drawLines(_props, canvas, renderedLines)
+    drawLines(_props, canvas, { renderedLines, selected })
   } else {
-    submitLines(renderedLines)
+    submitLines({ renderedLines, selected })
   }
 
-  logStats({ totalPoints, max, min, avg, plotFilled: sample.length < buffer.active.length, xMax, xMin })
+  const plotFilled = sample.length < buffer.active.length
+
+  logStats({ totalPoints, max, min, avg, plotFilled, inspectionDetails, xMax, xMin })
 }
 
 export default draw
+
+
+
+// properties which allow negative values
+const negatives = [ 'deviation' ]
+
+const getBit = (int, bit) => !!(int & 1 << bit)
+
+const getSettings = (zone) => {
+  let settings = {
+    locked: getBit(zone.settings, 0),
+    sealed: getBit(zone.settings, 1),
+    on: getBit(zone.settings, 2),
+    auto: getBit(zone.settings, 3),
+    standby: getBit(zone.settings, 4),
+    boost: getBit(zone.settings, 5),
+    testing: getBit(zone.settings, 6),
+    test_complete: getBit(zone.settings, 7)
+  }
+  return settings
+}
+
+const getFrame = (rendered, idx, zone) => {
+  // console.log(idx, zone, rendered.length)
+  const frame = rendered[idx]
+  // console.log(frame)
+  if(!frame) return {}
+  return frame.data[zone - 1]
+}
+
+// get the x axis bounds
+const getXParameters = (position, canvas, scale, paused) => {
+  const latest = buffer.active[buffer.active.length - 1]
+  if (!latest) return { valid: false }
+
+  const xZoomFactor = position.zoomX
+  // let sRange = scale && scale.x ? parseInt(scale.x) : 10
+  let sRange = parseInt(scale.x)
+
+  const xRange = sRange * 1000
+
+  let panXRatio = position.panX / canvas.width
+  let timeOffset = xRange * panXRatio
+
+  const delay = Math.max(1000, .01 * xRange)
+
+  const now = new Date().getTime() - delay - timeOffset
+  let rawXMax = paused ? latest.time - delay * .25 - timeOffset : now
+  let rawXMin = rawXMax - xRange
+
+  let mid = rawXMin + xRange / 2
+  const scaled = xRange * xZoomFactor / 2
+
+  const xMax = mid + scaled
+  const xMin = mid - scaled
+
+  const dX = xMax - xMin
+  const xScale = canvas.width / (xMax - xMin)
+
+  return { xMin, xMax, xRange, dX, xScale, valid: true }
+}
+
+
+
+// get the y axis bounds
+const getYParameters = (prop, min, max, scaleParams, position) => {
+  // console.log(min, max)
+  if (!negatives.includes(prop)) {
+    min = Math.max(min, 0)
+  }
+
+  const minAuto = scaleParams.min == 'auto'
+  const maxAuto = scaleParams.max == 'auto'
+
+
+  if (!minAuto) min = scaleParams.min * 10
+  if (!maxAuto) max = scaleParams.max * 10
+
+  const r = max - min
+
+  if (scaleParams.max == 'auto' && scaleParams.min != 'auto') {
+    max += r / 10
+  }
+  if (scaleParams.min == 'auto' && scaleParams.max != 'auto') {
+    min -= r / 10
+  }
+
+  const scaleFactor = position.zoomY
+
+  const halfRange = (max - min) / 2
+  const midPoint = min + halfRange
+  min = midPoint - halfRange * scaleFactor
+  max = midPoint + halfRange * scaleFactor
+
+  const scaledMin = min
+  const scaledMax = max
+
+  // ensure round numbers are used for the scale
+  const even = i => {
+    if (minAuto) min = -i + i * Math.ceil(min / i)
+    if (maxAuto) max = i + i * Math.floor(max / i)
+  }
+
+
+
+  let matched = false
+  for (let x of [ 10, 100, 200, 500, 1000, 2000, 5000, 10000 ]) {
+    if (matched) break
+    for (let y of [ 1, 2, 4, 8 ]) {
+      const base = x * y
+      if (r < base) {
+        even(base / 5)
+        matched = true
+        break
+      }
+    }
+  }
+
+  if (!matched) even(20000)
+
+  const maxOffset = scaledMax - max / (max - min)
+  const minOffset = scaledMin - min / (max - min)
+
+  return { minY: min, maxY: max, maxOffset, minOffset }
+}

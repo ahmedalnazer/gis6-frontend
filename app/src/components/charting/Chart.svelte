@@ -10,9 +10,12 @@
   import LineX from './LineX.svelte'
   import Gestures from 'data/charting/gestures'
   import CheckBox from 'components/input/CheckBox.svelte'
+  import InspectionBox from './InspectionBox.svelte'
+
 
   export let type = 'line'
   export let properties = [ 'actual_temp' ]
+  export let propertyOptions
   export let zones = []
   export let colors = {}
   export let scales = {}
@@ -111,28 +114,52 @@
 
   let inspectionBase = [ 0, 0 ]
   let inspectionPoint = [ 0, 0 ]
-  let inspectionStats = {}
-
 
   $: center = [ canvasWidth / 2, canvasHeight / 2 ]
-  $: zoomXOffset = center[0] + center[0] / position.zoomX
+
+  let xMax, xMin
+  $: {
+    xMax = scaleData.xMax || 0
+    xMin = scaleData.xMin || 0
+  }
+  $: timeRange = xMax - xMin
+
+  const getTS = x => {
+    const offset = x / canvasWidth
+    return xMin + offset * timeRange
+  }
+
+  let canvasWrapper
+
+
+  let offset = [ 0, 0 ]
+  const setOffset = o => offset = o
 
   const setInspectionPoint = e => {
+    const { top, left } = canvasWrapper.getBoundingClientRect()
+    const selectedTime = getTS((e.inspectX || e.clientX) - left - offset[0])
     if(mode == 'inspect') {
       inspectionBase = [ 
-        e.offsetX - position.panX / position.zoomX, 
-        e.offsetY - position.panY ]
+        selectedTime, 
+        (center[0] + position.panY - ((e.inspectY || e.clientY) - top - offset[1])) * position.zoomY
+      ]
     }
+    // inspectionZoom = position.zoomY
   }
 
   $: {
-    const x = inspectionBase[0] + position.panX / position.zoomX
-    inspectionPoint = [ x - zoomXOffset, inspectionBase[1] + position.panY ]
+    const x = canvasWidth * (inspectionBase[0] - xMin) / timeRange
+    const yOffset = position.panY
+    const y = center[0] + yOffset - inspectionBase[1] / position.zoomY
+    inspectionPoint = [ x, y ]
   }
 
-  $: console.log(mode, inspectionBase, inspectionPoint)
+  $: inspect = scaleData.inspection || {}
 
-  $: chartProps = { properties, paused, type, scale, zones, type, position, jank }
+  $: chartProps = { 
+    properties, paused, type, scale, zones, type, position, jank, mode,
+    inspectedPoint: inspectionPoint
+  }
 
 </script>
 
@@ -149,7 +176,7 @@
     <Scale property={properties[0]} {stats} {position} color={colors[1]} />
   </div>
 
-  <div class='canvas' bind:offsetHeight={wrapperHeight} on:click={setInspectionPoint}>
+  <div class='canvas' bind:this={canvasWrapper} bind:offsetHeight={wrapperHeight} on:click={setInspectionPoint}>
 
     <div class='h-grid' class:offset={top} style='transform: translateY({top}px)'>
       {#each hLines as l}
@@ -177,10 +204,8 @@
       {$_('Loading data...')}
     </div>
 
-    {#if mode == 'inspect'}
-      <div class='inspection-box' style='left:{inspectionPoint[0]}px;top:{inspectionPoint[1]}px'>
-
-      </div>
+    {#if mode == 'inspect' && inspect.point}
+      <InspectionBox {...{ inspect, properties, propertyOptions, getTS, canvasWidth, setInspectionPoint, setOffset }} />
     {/if}
   </div>
 
@@ -277,13 +302,6 @@
   }
   .loading.active {
     opacity: 1;
-  }
-
-  .inspection-box {
-    position: absolute;
-    padding: 16px;
-    background: white;
-    box-shadow: var(--shadow);
   }
 
   .res-warning {

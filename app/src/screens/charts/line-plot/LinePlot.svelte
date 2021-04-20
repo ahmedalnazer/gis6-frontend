@@ -128,7 +128,7 @@
       bind:resetPosition
       bind:mark
       zones={rendered} 
-      {...{ properties, colors, scales, mode }}  
+      {...{ properties, propertyOptions, colors, scales, mode }}  
     />
 
     <div class='options'>
