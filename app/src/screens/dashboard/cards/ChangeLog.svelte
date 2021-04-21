@@ -1,9 +1,19 @@
 <script>
   import _ from "data/language"
-  import Card from './Card'
+  import Card from './Card.svelte'
+  import { activeActivityLog } from 'data/activitylog.js'
 </script>
 
-<Card link='/change-log'>
-  <h2>{$_('View Change Log')}</h2>
-  <p class='muted'>Modified 10/8/2020 12:45 PM</p>
+<Card>
+  <div class="change-log-card" on:click={() => { $activeActivityLog = "activitylog" }}>
+    <h2>{$_('Recent Activity Log')}</h2>
+    <p class='muted'>Modified 3/16/2021 10:45 PM</p>
+  </div>  
 </Card>
+
+<style lang="scss">
+  .change-log-card {
+    height: 100%;
+    cursor: pointer;
+  }
+</style>

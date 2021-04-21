@@ -1,143 +1,144 @@
 <script>
-    import { onMount, beforeUpdate, afterUpdate, onDestroy } from "svelte";
-    import Card from "@smui/card";
-    import language from "data/language/current";
-    import ProgressBar from "@okrad/svelte-progressbar";
-    import time from "data/time";
-    import api from "data/api";
+    import { onMount, beforeUpdate, afterUpdate, onDestroy } from "svelte"
+    // import Card from "@smui/card";
+    import Card from './cards/Card.svelte'
+    import language from "data/language/current"
+    import ProgressBar from "@okrad/svelte-progressbar"
+    import time from "data/utils/time"
+    import api from "data/api"
 
-    let goodpartfrom = 0;
-    let goodparttotal = 0;
-    let badpartcount = 0;
-    let timeleft = "00.00";
-    let intvl;
+    let goodpartfrom = 0
+    let goodparttotal = 0
+    let badpartcount = 0
+    let timeleft = "00.00"
+    let intvl
 
-    let longPollingInterval = 5000;
-    let progressStatus = 0;
-    let orderId = 0;
-    let orderStatus = "";
+    let longPollingInterval = 5000
+    let progressStatus = 0
+    let orderId = 0
+    let orderStatus = ""
 
-    const dateOptions = { year: "numeric", month: "short", day: "numeric" };
+    const dateOptions = { year: "numeric", month: "short", day: "numeric" }
 
     export let series = [
-        {
-            perc: 0,
-            color: "#2196f3",
-        },
-    ];
+      {
+        perc: 0,
+        color: "#2196f3",
+      },
+    ]
 
     const pad = (num) => {
-        return ("0" + num).slice(-2);
-    };
+      return ("0" + num).slice(-2)
+    }
 
     const getTimeRemainingFormatted = (timeInSeconds) => {
-        let minutes = Math.floor(timeInSeconds / 60);
-        let seconds = timeInSeconds % 60;
-        let hours = Math.floor(minutes / 60);
-        minutes = minutes % 60;
+      let minutes = Math.floor(timeInSeconds / 60)
+      let seconds = timeInSeconds % 60
+      let hours = Math.floor(minutes / 60)
+      minutes = minutes % 60
 
-        // let timewithsecond = `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+      // let timewithsecond = `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
 
-        if (seconds >= 30) {
-            minutes += 1;
-        }
-        return `${pad(hours)}:${pad(minutes)}`;
-    };
+      if (seconds >= 30) {
+        minutes += 1
+      }
+      return `${pad(hours)}:${pad(minutes)}`
+    }
 
     const getOrderCardData = async (isInit) => {
-        const data = await api.get(`system`);
+      const data = await api.get(`system`)
 
-        if (isInit && orderId == 0) {
-            // const orderEndpoint = "/order/2000/lastcompleted/";
-            const orderEndpoint = "/order";
-            let lastcompletedorder = await api.get(orderEndpoint, {limit:1, status: 'n'});
-            if (lastcompletedorder.length) {
-                orderId = lastcompletedorder[0].id
-            }
+      if (isInit && orderId == 0) {
+        // const orderEndpoint = "/order/2000/lastcompleted/";
+        const orderEndpoint = "/order"
+        let lastcompletedorder = await api.get(orderEndpoint, { limit:1, status: 'n' })
+        if (lastcompletedorder.length) {
+          orderId = lastcompletedorder[0].id
         }
+      }
 
-        if (data.order_id == orderId) {
-            // For the first load show only few fields
-            if (isInit) {
-                goodparttotal = data.target;
-                timeleft = getTimeRemainingFormatted(data.time_remain);
-            } else {
-                goodpartfrom = data.good_parts;
-                goodparttotal = data.target;
-                badpartcount = 0;
-                progressStatus = Math.round(
-                    (goodpartfrom * 100) / goodparttotal + 0.01,
-                    0
-                );
-                timeleft = getTimeRemainingFormatted(data.time_remain);
+      if (data.order_id == orderId) {
+        // For the first load show only few fields
+        if (isInit) {
+          goodparttotal = data.target
+          timeleft = getTimeRemainingFormatted(data.time_remain)
+        } else {
+          goodpartfrom = data.good_parts
+          goodparttotal = data.target
+          badpartcount = 0
+          progressStatus = Math.round(
+            goodpartfrom * 100 / goodparttotal + 0.01,
+            0
+          )
+          timeleft = getTimeRemainingFormatted(data.time_remain)
 
-                series = [progressStatus];
+          series = [ progressStatus ]
 
-                if (progressStatus == 100) {
-                    clearInterval(intvl);
-                    orderStatus = "COMPLETE_ORDER";
-                }
-            }
+          if (progressStatus == 100) {
+            clearInterval(intvl)
+            orderStatus = "COMPLETE_ORDER"
+          }
         }
+      }
 
-        // TODO: Remove the commented code after task is done
-        // fetch(`${apiEndpointUrl}/system`)
-        //     .then((response) => response.json())
-        //     .then((data) => {
-        //         if (data.order_id == orderId) {
-        //             goodpartfrom = data.good_cycles;
-        //             goodparttotal = data.target;
-        //             badpartcount = 0;
-        //             progressStatus = Math.round(
-        //                 (goodpartfrom * 100) / goodparttotal + 0.01,
-        //                 0
-        //             );
+      // TODO: Remove the commented code after task is done
+      // fetch(`${apiEndpointUrl}/system`)
+      //     .then((response) => response.json())
+      //     .then((data) => {
+      //         if (data.order_id == orderId) {
+      //             goodpartfrom = data.good_cycles;
+      //             goodparttotal = data.target;
+      //             badpartcount = 0;
+      //             progressStatus = Math.round(
+      //                 (goodpartfrom * 100) / goodparttotal + 0.01,
+      //                 0
+      //             );
 
-        //             series = [progressStatus];
-        //         }
-        //     });
-    };
+      //             series = [progressStatus];
+      //         }
+      //     });
+    }
 
     const startOrder = async () => {
-        const data = await api.put(`order/${orderId}/start/`);
+      const data = await api.put(`order/${orderId}/start/`)
 
-        intvl = setInterval(function () {
-            // Use long polling
-            getOrderCardData(false);
-        }, longPollingInterval);
+      intvl = setInterval(function () {
+        // Use long polling
+        getOrderCardData(false)
+      }, longPollingInterval)
 
-        orderStatus = "ORDER_STARTED";
-    };
+      orderStatus = "ORDER_STARTED"
+    }
 
     const pauseOrder = async () => {
-        await api.put(`order/${orderId}/pause/`);
-        orderStatus = "PAUSED_ORDER";
-    };
+      await api.put(`order/${orderId}/pause/`)
+      orderStatus = "PAUSED_ORDER"
+    }
 
     const resumeOrder = async () => {
-        await api.put(`order/${orderId}/resume/`);
-        orderStatus = "RESUME_ORDER";
-    };
+      await api.put(`order/${orderId}/resume/`)
+      orderStatus = "RESUME_ORDER"
+    }
 
     onMount(() => {
-        getOrderCardData(true);
-    });
+      getOrderCardData(true)
+    })
 
     const orderActionClick = (currentOrderStatus) => {
-        if (orderStatus == "") {
-            startOrder();
-        } else if (orderStatus == "ORDER_STARTED") {
-            pauseOrder();
-        } else if (orderStatus == "PAUSED_ORDER") {
-            resumeOrder();
-        } else if (orderStatus == "RESUME_ORDER") {
-            orderStatus = "COMPLETE_ORDER";
-        }
-    };
+      if (orderStatus == "") {
+        startOrder()
+      } else if (orderStatus == "ORDER_STARTED") {
+        pauseOrder()
+      } else if (orderStatus == "PAUSED_ORDER") {
+        resumeOrder()
+      } else if (orderStatus == "RESUME_ORDER") {
+        orderStatus = "COMPLETE_ORDER"
+      }
+    }
 
-    const manageOrderClick = () => {};
+    const manageOrderClick = () => {}
 
-    onDestroy(() => clearInterval(intvl));
+    onDestroy(() => clearInterval(intvl))
 </script>
 
 <Card>

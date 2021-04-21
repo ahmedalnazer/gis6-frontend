@@ -3,6 +3,13 @@
   import { Icon } from 'components'
   export let onClose
   export let title
+  import history from 'router/history'
+
+  let route = $history
+
+  $: {
+    if($history != route) onClose()
+  }
 </script>
 
 
@@ -11,7 +18,7 @@
     <div class='modal-header'>
       <div class='header-wrapper'>
         {#if title}
-          <h2>{title}</h2>
+          <h2 class="modal-title">{title}</h2>
         {/if}
         <slot name='header' />
       </div>
@@ -29,7 +36,7 @@
   .modal {
     position: fixed;
     z-index:999;
-    top: 284px;
+    top: 292px;
     left: 0;
     bottom: 120px;
     width: 100%;
@@ -45,6 +52,7 @@
       justify-content: center;
       :global(.button) {
         margin: 32px;
+        cursor: pointer;
       }
     }
   }
@@ -58,7 +66,11 @@
     margin-top: 0;
 
     .modal-body, .modal-header {
-      padding: 32px;
+      padding: 40px;
+    }
+
+    .modal-body {
+      padding-top: 20px;
     }
 
     .modal-header {
@@ -76,6 +88,12 @@
         margin: 0;
       }
     }
+  }
+
+  .modal-title {
+    font-size: 26px;
+    font-weight: bold;
+    line-height: 36px;
   }
 </style>
 

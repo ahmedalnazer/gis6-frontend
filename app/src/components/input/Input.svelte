@@ -2,7 +2,8 @@
   import { createEventDispatcher } from 'svelte'
   import { Collapsible } from 'components'
   import { slide } from 'svelte/transition'
-  import KeyPad from './KeyPad'
+  import KeyPad from './KeyPad.svelte'
+  import { getRanges }  from  'data/keypadSettings'
 
   const dispatch = createEventDispatcher()
 
@@ -14,41 +15,49 @@
   export let type = ''
   export let inputClass = ''
   export let changed = false
+  export let trackChange = false
   export let input = null
+  export let display = false
+  // export let keypadcontrols = {}
+  export let keypadcontrols = ''
 
-  let modalOpned = false
+  // console.log('ranges: ', getRanges(keypadcontrols))
 
-  const onCloseKeypad = (event) => {
-    modalOpned = false
-    changed = value && event.detail.closed
-  }
+  let modalOpened = false
 
-  const handleInput = e => {
-    value = e.target.value
-  }
+  const handleInput = e => value = e.target.value
 
 </script>
 
-<div class='input text {$$restProps.class || ''}' style={modalOpned ? 'z-index: 11;' : ''}>
+<div class='input text {$$restProps.class || ''}' style={modalOpened ? 'z-index: 11;' : ''}>
   {#if label}
     <label>{label}</label>
   {/if}
-  <input {type} 
-    on:change 
-    on:input={handleInput} 
-    class:changed
-    {value} 
-    {...$$restProps} 
-    class={inputClass} 
-    autocomplete='new-password'
-    bind:this={input}
-    on:focus={e => {
-      dispatch('focus', e)
-     if(type == 'number') {
-       modalOpned = true
-     } 
-    }}
-  />
+  {#if display}
+    <div class='display'>
+      {value}
+    </div>
+  {:else}
+    <input {type} 
+      on:change={e => {
+        dispatch('change', e)
+        if(trackChange) changed = true
+      }}
+      on:input={handleInput} 
+      class:changed
+      {value} 
+      {...$$restProps} 
+      class={inputClass} 
+      autocomplete='new-password'
+      bind:this={input}
+      on:focus={e => {
+        dispatch('focus', e)
+      if(type == 'number') {
+        modalOpened = true
+      } 
+      }}
+    />
+  {/if}
   {#if note}
     <p class='muted input-note'>{note}</p>
   {/if}
@@ -64,13 +73,18 @@
   </Collapsible>
 </div>
 
-{#if type == 'number' && modalOpned}
-  <KeyPad anchor={input} bind:onModalOpen={modalOpned} bind:value on:keypadClosed={onCloseKeypad} />
+{#if type == 'number' && modalOpened}
+  <!-- <KeyPad anchor={input} {keypadcontrols} bind:onModalOpen={modalOpened} bind:value on:keypadClosed={() => modalOpened = false} /> -->
+  <KeyPad anchor={input} keypadcontrols={getRanges(keypadcontrols)} bind:onModalOpen={modalOpened} bind:value on:keypadClosed={() => modalOpened = false} />
 {/if}
 
 <style>
   input {
     border: 1px solid var(--pale)
+  }
+  .display {
+    padding: 16px;
+    padding-left: 0;
   }
   .info, .error {
     font-size: 14px;

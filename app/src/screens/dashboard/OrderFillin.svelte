@@ -1,46 +1,47 @@
 <script>
-    import { onMount, beforeUpdate, afterUpdate, onDestroy } from "svelte";
-    import Card from "@smui/card";
-    import { Input, Select } from "components";
-    import Switch from "svelte-switch";
-    import _ from "data/language";
-    import api from "data/api";
-    let processValue;
+    import { onMount, beforeUpdate, afterUpdate, onDestroy } from "svelte"
+    // import Card from "@smui/card";
+    import { Input, Select } from "components"
+    import Card from './cards/Card.svelte'
+    import Switch from "svelte-switch"
+    import _ from "data/language"
+    import api from "data/api"
+    let processValue
 
     const getOrderObject = () => {
-        // return {
-        //     id: 0,
-        //     name: "",
-        //     cycles: 0,
-        //     targetParts: 0,
-        //     status: "n",
-        //     goodParts: 0,
-        //     badParts: 0,
-        //     goodCycles: 0,
-        //     badCycles: 0,
-        //     startTime: null,
-        //     endTime: null,
-        // };
+      // return {
+      //     id: 0,
+      //     name: "",
+      //     cycles: 0,
+      //     targetParts: 0,
+      //     status: "n",
+      //     goodParts: 0,
+      //     badParts: 0,
+      //     goodCycles: 0,
+      //     badCycles: 0,
+      //     startTime: null,
+      //     endTime: null,
+      // };
 
-        return {
-            name: "parts",
-            targetParts: 10,
-            process_id: 1,
-        };
-    };
+      return {
+        name: "parts",
+        targetParts: 10,
+        process_id: 1,
+      }
+    }
 
     const handleOrderFill = async (order) => {
-        let orderdata = getOrderObject();
-        const data = await api.post(`order`, orderdata);
+      let orderdata = getOrderObject()
+      const data = await api.post(`order`, orderdata)
 
-        if (data) {
-            //TODO: Change this logic after new backend is developed
-            let lastcompletedorder = await api.get(`/order/2000/lastcompleted/`);
-            if (lastcompletedorder) {
-                localStorage.setItem("lastcompletedorder",  lastcompletedorder.id)
-            }
+      if (data) {
+        //TODO: Change this logic after new backend is developed
+        let lastcompletedorder = await api.get(`/order/2000/lastcompleted/`)
+        if (lastcompletedorder) {
+          localStorage.setItem("lastcompletedorder",  lastcompletedorder.id)
         }
-    };
+      }
+    }
 </script>
 
 <Card>

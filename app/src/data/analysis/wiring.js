@@ -1,9 +1,5 @@
-import { writable, derived } from 'svelte/store'
+import getAnalysis from './core'
 
-const wiringAnalysis = writable({
-  errors: [],
-  progress: 0,
-  status: 'inactive'
-})
+const wiringAnalysis = getAnalysis('wiring')
 
 export default wiringAnalysis

@@ -1,11 +1,8 @@
 <script>
-  import { Icon } from 'components'
-  import Screen from "layout/Screen"
+  import Screen from "layout/Screen.svelte"
   import _ from "data/language"
-  import ZoneTasks from "components/taskbars/ZoneTasks"
+  import ZoneTasks from "components/taskbars/ZoneTasks.svelte"
   import Analysis from './Analysis.svelte'
-  import wiringAnalysis from 'data/analysis/wiring'
-
 </script>
 
 <Screen title={$_('Wiring Analysis')}>
@@ -15,7 +12,7 @@
 
   <div class='wiring-analysis'>
     <Analysis
-      analysis={wiringAnalysis}
+      type='wiring'
       description={$_(` This test will turn on each zone, determine if the zone is heating, determine if any other 
       zones are also heating, and then turn off the zone before moving onto the next one. Typically the 
       analysis takes two minutes per zone. While the test is running, you may view other parts of the 
@@ -24,8 +21,3 @@
     />  
   </div>
 </Screen>
-
-
-<style lang="scss">
-
-</style>

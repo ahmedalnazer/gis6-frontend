@@ -1,28 +1,29 @@
 <script>
   import { tick } from "svelte"
-  import Screen from "layout/Screen"
-  import groups, { activeGroup, group_order, setGroupOrder } from "data/groups"
+  import Screen from "layout/Screen.svelte"
+  import groups, { sortGroups as _sortGroups, activeGroup, group_order, setGroupOrder } from "data/groups"
   import zones, { selectedZones as _selected, toggleZones } from "data/zones"
   import _ from "data/language"
-  import ZoneGroup from "./ZoneGroup"
+  import ZoneGroup from "./ZoneGroup.svelte"
   import { Modal, CheckBox } from "components"
-  import GroupForm from "./GroupForm"
-  import ZoneTasks from "components/taskbars/ZoneTasks"
+  import GroupForm from "./GroupForm.svelte"
+  import ZoneTasks from "components/taskbars/ZoneTasks.svelte"
   import { startSelection } from "./selectZones"
-  import ZoneButton from "./ZoneButton"
-  import ModifyZones from "./ModifyZones"
+  import ZoneButton from "./ZoneButton.svelte"
+  import ModifyZones from "./ModifyZones.svelte"
   import GroupSelector from "components/GroupSelector.svelte"
   import Sortable from "sortablejs"
   import { activeSetpointEditor } from 'data/setpoint'
+  import zoneTypes from "data/zones/zone-types"
 
   $: selectedGroup = $activeGroup
-  let sortGroups = true
+  $: selectedGroupObj = $groups.filter(x => x.id == selectedGroup)[0]
 
   $: displayedGroups = selectedGroup
     ? [ selectedGroup ]
     : $groups.concat([ { id: "unassigned", name: "Unassigned" } ])
-  // $: console.log(`disp grps: ${displayedGroups}`);
-  // $: selectedGroup,     console.log(selectedGroup)
+
+  $: sortGroups = $_sortGroups
 
   let creating = false
   let adding = false
@@ -36,21 +37,11 @@
   const createGroup = async () => {
     creating = false
     let newGrp = { name: newName, color: newColor }
+    if(!$zoneTypes.find(x => x.name == newName)) {
+      zoneTypes.create({ name: newName, isVisible: true })
+    }
     const g = await groups.create(newGrp, { skipReload: true })
     await groups.reload()
-
-    let selGrp = displayedGroups.filter(x => x.name == newName)
-    let _zones = $zones.filter(x => $_selected.includes(x.id))
-
-    // for (let z of _zones) {
-    //   if (selGrp.length && selGrp[0].id) {
-    //     z.groups = (z.groups || []).concat(selGrp[0].id)
-    //     z.groups = [ ...new Set(z.groups) ]
-    //     await zones.update(z, { skipReload: true })
-    //   }
-    // }
-
-    // await zones.reload()
 
     await groups.addZones(g, $_selected)
 
@@ -167,11 +158,13 @@
 
   <div
     class="selection-area"
-    on:touchstart={(e) => startSelection(e, boxSelect)}>
+    on:touchstart={(e) => startSelection(e, boxSelect)}
+    on:mousedown={(e) => startSelection(e, boxSelect)}
+  >
     <GroupSelector />
     <div class="tools">
       {#if !selectedGroup}
-        <CheckBox label={$_("Show Groups")} bind:checked={sortGroups} />
+        <CheckBox label={$_("Show Groups")} checked={sortGroups} onClick={_sortGroups.toggle} />
       {/if}
 
       {#if $_selected.length}
@@ -193,6 +186,9 @@
       {:else if selectedGroup}
         <span class="link" on:click={() => editing = true}
           >{$_("Edit Group")}</span
+        >
+        <span class="link" on:click={() => deleting = selectedGroupObj}
+          >{$_("Delete Group")}</span
         >
       {/if}
     </div>
@@ -229,7 +225,7 @@
               {zone}
               active={$_selected.includes(zone.id)}
               on:click={() => toggleZones(zone.id)}
-              on:dblclick={() => {toggleZones(zone.id); toggleSetPoint('setpoint');}}
+              on:dblclick={() => {toggleZones(zone.id); toggleSetPoint('setpoint')}}
           />
           {/each}
         </div>
@@ -274,21 +270,25 @@
 
 {#if deleting}
   <Modal title={$_("Delete Group")} onClose={() => deleting = null}>
-    <div class="modal">
+    <div class="modal-text">
       <p>
+        {$_("Continue and delete the group ")} "{deleting.name}"?
+      </p>
+      <!-- <p>
         Are you sure you want to delete the {deleting.name} group? This is a permanent
         action and cannot be undone.
-      </p>
+      </p> -->
 
       <div class="modal-buttons">
-        <div class="button" on:click={() => deleting = null}>Cancel</div>
+        <div class="button" on:click={() => deleting = null}>No, take me back</div>
         <div
           class="button active"
           on:click={() => {
             groups.delete(deleting)
             deleting = null
+            activeGroup.set(null)
           }}
-        >Yes, delete group</div>
+        >Yes, delete the group</div>
       </div>
     </div>
   </Modal>
@@ -353,10 +353,24 @@
     cursor: pointer;
   }
 
-  .modal {
-    text-align: center;
+  // .modal {
+  //   text-align: center;
+  // }
+
+  .modal-text p {
+    text-align: left;
+    line-height: 27px;
+    font-weight: 600;
+    font-size: 20px;
+    padding-top: 31px;
+    padding-bottom: 107px;
   }
 
-  // .divHeaderSortableList{ }
+  .modal-buttons {
+    justify-content: space-between;
+    .button {
+      margin: 0;
+    }
+  }
 
 </style>

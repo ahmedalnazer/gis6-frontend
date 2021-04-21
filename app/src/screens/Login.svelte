@@ -27,7 +27,7 @@
       options={$users}
       placeholder={$_('Select...')}
       id='username'
-      getLabel={u => u.username}
+      getLabel={u => u && u.username}
     />
 
     <label>{$_('Password')}</label>

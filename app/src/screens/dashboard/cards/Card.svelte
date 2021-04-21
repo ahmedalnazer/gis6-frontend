@@ -26,6 +26,7 @@
     padding: 0;
     margin: 0;
     margin-bottom: 10px;
+    font-size: 20px;
   }
   a :global(p) {
     font-size: 14px;

@@ -1,5 +1,5 @@
 <script>
-  import Card from './Card'
+  import Card from './Card.svelte'
 </script>
 
 <Card link='/group-management'>

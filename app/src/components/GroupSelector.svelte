@@ -5,6 +5,7 @@
   import Sortable from 'sortablejs'
 
   // $: console.log($groups)
+  // $: namelen = $groups.map(element => element.name.length).reduce((a, b) => a + b, 0)
 
   let selector, sortable
 
@@ -27,14 +28,19 @@
 </script>
 
 <div class="group-selector">
-  <div
+  <!-- <div
     class="tab"
     on:click={() => activeGroup.set(null)}
     class:active={!$activeGroup}>
     {$_('All Zones')}
-  </div>
-
+  </div> -->
   <div class='sortable-list' bind:this={selector}>
+    <div
+      class="tab"
+      on:click={() => activeGroup.set(null)}
+      class:active={!$activeGroup}>
+      {$_('All Zones')}
+    </div>
     {#each $groups as group (group.id)}
       {#if group.id != 'unassigned'}
         <div
@@ -57,13 +63,19 @@
     overflow: auto;
     .sortable-list {
       display: flex;
+      flex-wrap: wrap;
+      cursor: pointer;
     }
     .tab {
-      padding: 16px 32px;
+      padding: 16px 2px 16px 2px;
+      font-size: 85%;
+      min-width: 160px;
       white-space: nowrap;
       border: 1px solid var(--darkBlue);
       color: var(--darkBlue);
       background: white;
+      text-align: center;
+      // margin: 1px;
       &.active {
         background: var(--darkBlue);
         color: white;

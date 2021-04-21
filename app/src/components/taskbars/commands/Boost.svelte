@@ -1,42 +1,59 @@
 <script>
-  import Selector from '../Selector'
+  import Selector from '../Selector.svelte'
   import { Modal, Input } from 'components'
   import _ from 'data/language'
   import { notify } from 'data/'
   import activeBoost from 'data/zones/boost'
   import activeStandby from 'data/zones/standby'
-  export let onClose
+  import globalSettings from 'data/globalSettings'
 
-  let auto = 104
-  let timeout = 0
-  let time = 0
-  let manualBoost
-  let recoveryTime
+  export let onClose
+  // const keypadcontrols1 = {
+  //   negativeSign: true,
+  //   rangeMin: 10,
+  //   rangeMax: 20,
+  //   decimalPlace: 1,
+  // }
+
+  // const keypadcontrols2 = {
+  //   rangeMin: 10,
+  //   rangeMax: 20,
+  //   integerOnly: true,
+  // }
+
+  let boostTemp = $globalSettings.BoostTemperatureSP / 10
+  let time = $globalSettings.BoostTimeSP / 60
+  let manualBoost = $globalSettings.ManualBoostSP / 10
+  let recoveryTime = $globalSettings.BoostRecoveryTimeSP / 10
 
   const boost = zones => {
-    console.log(zones)
-    // set zones off
-    activeBoost.set(true)
+    activeBoost.start(zones, {
+      BoostTemperatureSP: boostTemp * 10,
+      BoostTimeSP: time * 60,
+      ManualBoostSP: manualBoost * 10,
+      BoostRecoveryTimeSP: recoveryTime * 10
+    })
+
     if($activeStandby) {
-      notify('Standby cancelled')
-      activeStandby.set(false)
+      notify('Standby canceled')
     }
     notify.success($_('Boost applied'))
   }
 </script>
 
 <Modal title={$_('Boost')} {onClose}>
-  <Selector onSubmit={boost} onDone={onClose}>
+  <Selector onSubmit={boost}>
     <h2>Edit</h2>
     <div class='grid'>
-      <Input type='number' bind:value={auto} label='{$_('Auto Standby')}  (&#176;C)' />
-      <Input type='number' bind:value={timeout} label='{$_('Standby Timeout (min)')}' />
-      <Input type='number' bind:value={time} label='{$_('Time (sec)')}' />
+      <!-- <Input type='number' keypadcontrols={keypadcontrols1} bind:value={boostTemp} label='{$_('Boost Amount')}  (&#176;C)' />
+      <Input type='number' keypadcontrols={keypadcontrols2} bind:value={time} label='{$_('Boost Time (min)')}' /> -->
+      <Input type='number' keypadcontrols={'boostTemperature'} bind:value={boostTemp} label='{$_('Boost Amount')}  (&#176;C)' />
+      <Input type='number' keypadcontrols={'manualPercent'} bind:value={time} label='{$_('Boost Time (min)')}' />
+      <Input type='number' keypadcontrols={'boostTemperature'} bind:value={recoveryTime} label='{$_('Recovery Time (min)')}' />
     </div>
 
     <div class='grid'>
-      <Input type='number' bind:value={manualBoost} label='{$_('Manual Boost')}' />
-      <Input type='number' bind:value={recoveryTime} label='{$_('Recovery Time (min)')}' />
+      <Input type='number' keypadcontrols={'defaultPercent'} bind:value={manualBoost} label='{$_('Manual Boost (%)')}' />
     </div>
   </Selector>
 </Modal>

@@ -56,6 +56,17 @@ The development server offers HMR, detailed error messages and other useful deve
 Build to static files which can be served by Nginx in production
 
 
+### `cd app; npm run devWorkers`
+
+Run rollup in watch mode for developing web workers (see `rollup.config.js`)
+
+
+### `cd app; npm run buildWorkers`
+
+Build web workers to the public directory for use in production - should be run before using `npm run build` to build the main app
+
+
+
 ### `npm test`
 
 Run cypress tests in headless mode.<br />

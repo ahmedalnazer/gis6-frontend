@@ -1,21 +1,30 @@
 <script>
   import { currentConfirm } from 'data/confirm'
-  import Modal from './Modal'
+  import _ from 'data/language'
+  import Modal from './Modal.svelte'
 
   const confirm = () => {
-    $currentConfirm.fn()
+    $currentConfirm.resolve(true)
     currentConfirm.set(null)
   }
 
+  const cancel = () => {
+    $currentConfirm.resolve(false)
+    currentConfirm.set(null)
+  }
+
+  $: ops = $currentConfirm || {}
+  $: yes = ops.yes || $_('Continue')
+  $: no = ops.no || $_('Cancel')
 </script>
 
 {#if $currentConfirm}
-  <Modal onClose={() => currentConfirm.set(null)}>
+  <Modal onClose={cancel} title={ops.title}>
     <div class='confirmation-modal'>
       <h3>{$currentConfirm.text}</h3>
       <div class='options'>
-        <div class='btn cancel' on:click={() => currentConfirm.set(null)}>Cancel</div>
-        <div class='btn confirm' on:click={confirm}>Continue</div>
+        <div class='button cancel' on:click={cancel}>{no}</div>
+        <div class='button active confirm' on:click={confirm}>{yes}</div>
       </div>
     </div>
   </Modal>
@@ -25,20 +34,15 @@
 <style lang="scss">
   h3 {
     font-size: 20px;
-    color: #333;
-    padding:16px;
-    width: 600px;
-    max-width: 90vw;
   }
   .options {
+    margin-top: auto;
     display: flex;
-    justify-content: flex-end;
-    .btn {
-      cursor: pointer;
-    }
-    .btn.cancel {
-      background: #ccc;
-      color: #777;
-    }
+    justify-content: space-between;
+  }
+  .confirmation-modal {
+    min-height: 216px;
+    display: flex;
+    flex-direction: column;
   }
 </style>

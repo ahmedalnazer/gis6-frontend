@@ -7,21 +7,38 @@
   import groups from 'data/groups'
   import _ from 'data/language'
   import zones, { selectedZones, activeZones } from 'data/zones'
-  import ZoneDropdown from 'components/ZoneDropdown'
+  import ZoneDropdown from 'components/ZoneDropdown.svelte'
   import { notify } from 'data'
   import Icon from 'components/Icon.svelte'
+  import ZoneReadout from './ZoneReadout.svelte'
+  import { openSetpointEditorVai } from 'data/setpoint'
 
   export let onSubmit
-  export let onDone
   export let trackHistory = false
-  export let getUndoAction = zones => {
-    return () => {
-      // reset zones to current state
+  export let manualReadout = false
+  export let onUndo
+
+  export let getUndoAction = _zones => {
+    const cached = _zones.map(x => ({ ...x }))
+
+    return async () => {
+      for(let z of cached) {
+        await zones.update(z, z, { skipReload: true })
+      }
+      await zones.reload()
     }
   }
 
-  let emptyBody
   let applied = {}
+
+  export const resetApplied = () => {
+    applied = {}
+  }
+
+  export let valid = true
+
+  let emptyBody
+  
 
   let history = []
 
@@ -33,6 +50,7 @@
       const undoFn = () => {
         applied = curState
         undoAction()
+        onUndo()
       }
 
       history = history.concat(undoFn)
@@ -72,7 +90,7 @@
   onMount(() => {
     selectorMounted = key
     if($activeZones.length == 0 && $zones.length) {
-      selectedZones.set([$zones[0].id])
+      selectedZones.set([ $zones[0].id ])
       dummySelection = true
     }
   })
@@ -83,10 +101,15 @@
 </script>
 
 <div class="zone-select-wrapper">
+  {#if $openSetpointEditorVai.source != "materialdb"}
   <div class="zone-dropdown">
     <h2>{$_('Select')}</h2>
-    <ZoneDropdown />
+    <div class='selection'>
+      <ZoneDropdown on:change />
+      <ZoneReadout zone={$activeZones[0]} manual={manualReadout} />
+    </div>
   </div>
+  {/if}
 
   <div class="body">
     <slot>
@@ -104,10 +127,11 @@
       {/if}
     </h2>
     <div class="buttons">
+      {#if $openSetpointEditorVai.source != "materialdb"}
       <div 
         class="button ignore-task-styles" 
         class:applied={applied.selected && $activeZones.length} 
-        class:disabled={!$activeZones.length}
+        class:disabled={!$activeZones.length || !valid}
         on:click={applySelected}
       >
         <Icon icon='check' color='var(--primary)' /> {#if $activeZones.length == 1}
@@ -116,9 +140,11 @@
           {$_("Selected Zones")}
         {/if}
       </div>
+      {/if}
       <div 
         class="button ignore-task-styles" 
         class:applied={applied.all}
+        class:disabled={!valid}
         on:click={applyAll}
       >
         <Icon icon='check' color='var(--primary)' /> {$_("All Zones")}
@@ -127,19 +153,21 @@
         <div
           class="button ignore-task-styles"
           class:applied={applied[group.id]}
+          class:disabled={!valid}
           on:click={() => applyGroup(group)}
         >
-          <Icon icon='check' color='var(--primary)' /> {group.name}
+          <span><Icon icon='check' color='var(--primary)' /></span> 
+          <span>{group.name}</span>
         </div>
       {/each}
     </div>
   </div>
 
-  <div class="done">
+  <!-- <div class="done">
     <button class="button ignore-task-styles active" on:click={e => onDone()}>
       {$_("Done")}
     </button>
-  </div>
+  </div> -->
 </div>
 
 {#if emptyBody}
@@ -155,11 +183,14 @@
     margin-top: 0;
     padding-top: 0;
     font-size: 22px;
-    margin-bottom: 32px;
+    margin-bottom: 16px;
   }
-  .zone-dropdown,
-  .body,
-  .groups {
+  .selection {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .zone-dropdown, .body, .groups {
     padding: 32px 0;
   }
   .zone-dropdown,
@@ -175,7 +206,7 @@
   }
   .buttons {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     grid-gap: 24px;
     grid-row-gap: 32px;
     margin-bottom: 32px;

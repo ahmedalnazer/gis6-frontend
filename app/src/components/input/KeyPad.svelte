@@ -1,20 +1,29 @@
 <script>
-  import { createEventDispatcher } from 'svelte';
+  import { createEventDispatcher } from 'svelte'
   import { Icon } from 'components'
   import _ from 'data/language'
   import { onDestroy, onMount } from 'svelte'
+  import notify from "data/notifications"
 
-  const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher()
 
   export let keypadNumber = 0
   export let value = 0
+  export let keypadcontrols = {}
   
   let _keypadNumber = ''
   export let onModalOpen = false
   export let anchor
   let leftArrow = false, rightArrow = false, arrowPosition = 0
-  let styleTag = document.createElement("style");
-  
+  let styleTag = document.createElement("style")
+  let disabledButton = false
+  let disableNegativeBtn = !keypadcontrols.negative
+  let notInRange = false
+  let keypadNewValue = value
+  let showNegativeSign = true
+  let removeOldValue = true
+  let currentPrecision = 1
+
   $: {
     keypadNumber = parseFloat(_keypadNumber)
   }
@@ -25,13 +34,13 @@
     let top, left
     openKeypad = true
     const inputDimensions = anchor.getBoundingClientRect()
-
+    
     setTimeout(() => {
       const modal = getInputField('content-wrapper')
       if (modal) {
         const modalDimensions = modal.getBoundingClientRect()
         
-        if ((window.innerWidth - inputDimensions.right - 20) > modalDimensions.width) {
+        if (window.innerWidth - inputDimensions.right - 20 > modalDimensions.width) {
           left = inputDimensions.right + 20
           leftArrow = true
         } else {
@@ -39,7 +48,7 @@
           rightArrow = true
         }       
 
-        if ((window.innerHeight - inputDimensions.top - 20) > modalDimensions.height) {
+        if (window.innerHeight - inputDimensions.top - 20 > modalDimensions.height) {
           top = inputDimensions.top - 20
           arrowPosition = 'top: 26px; bottom: unset;'
         } else {
@@ -58,6 +67,11 @@
         `
         
         modal.style.visibility = 'visible'
+        let placeNumber = getInputField('place-number')
+        if (placeNumber && placeNumber.select) {
+          placeNumber.select()
+        }
+
       }
     }, 0)
   }
@@ -66,19 +80,72 @@
     return document.getElementById(field)
   }
 
+  const toggleNumberSign = () => {
+    keypadNewValue = keypadNewValue * -1
+    getInputField('place-number').value = keypadNewValue
+    showNegativeSign = !showNegativeSign
+  }
+
   const getNumber = e => {
+    if (removeOldValue) {
+      getInputField('place-number').value = ''
+      removeOldValue = false
+    }
+
+    if (keypadcontrols.precision && currentPrecision > keypadcontrols.precision) {
+      notify.error($_("Restricted to the correct precision"))
+      return false
+    }
+
     getInputField('place-number').value += e.target.innerText
-    value = parseFloat(getInputField('place-number').value)
+    keypadNewValue = parseFloat(getInputField('place-number').value)
+    validateKeypad(keypadNewValue)
+
     anchor.dispatchEvent(new Event('change'))
   }
 
+  const validatePrecision = () => {
+    const value = parseFloat(getInputField('place-number').value)
+    if (Math.floor(value) !== value && keypadcontrols.precision > 0) {
+      const afterDeciaml = value.toString().split(".")[1]
+      if (afterDeciaml && afterDeciaml.length) {
+        currentPrecision++
+      }
+    }
+  }
+
+  const validateKeypad = num => {
+    if (
+      !isNaN(num) &&
+      (num < keypadcontrols.min ||
+      num > keypadcontrols.max)
+    ) {
+      disabledButton = true
+      notInRange = true
+    } else {
+      disabledButton = false
+      notInRange = false
+    }
+
+    validatePrecision()
+  }
+
   const closeKeypadModal = () => {
+    if (notInRange) {
+      notify.error($_("Not in range"))
+    }
+
     openKeypad = false
-    dispatch('keypadClosed', { closed: value });
+    value = parseFloat(keypadNewValue)
+    dispatch('keypadClosed', { closed: value })
   }
 
   const clearNumber = () => {
     getInputField('place-number').value = ''
+    disabledButton = false
+    notInRange = false
+    currentPrecision = 1
+    keypadNewValue = value
   }
 
   onMount(() => {
@@ -101,34 +168,69 @@
       class:leftArrow
       class:rightArrow
     >
-      <div class="content">
-        <input type="text" id='place-number' />
+      <div class="content" class:notInRange>
+        <!-- {#if keypadcontrols.rangeMax && keypadcontrols.rangeMin} -->
+        {#if keypadcontrols.max !== undefined && keypadcontrols.min !== undefined}
+          <div class="range">
+            <!-- <span class="min">Min: {keypadcontrols.rangeMin}</span>
+            <span class="max">Max: {keypadcontrols.rangeMax}</span> -->
+            <span class="min">Min: {keypadcontrols.min}</span>
+            <span class="max">Max: {keypadcontrols.max}</span>
+          </div>
+        {/if}
+
+        <input type="text" id='place-number' bind:value="{value}" />
+
         <div class="number-box">
-            <div class="number ml-0"><span on:click={e => getNumber(e)}>7</span></div>
-            <div class="number"><span on:click={e => getNumber(e)}>8</span></div>
-            <div class="number mr-0"><span on:click={e => getNumber(e)}>9</span></div>
-            <div class="number ml-0"><span on:click={e => getNumber(e)}>4</span></div>
-            <div class="number"><span on:click={e => getNumber(e)}>5</span></div>
-            <div class="number mr-0"><span on:click={e => getNumber(e)}>6</span></div>
-            <div class="number ml-0"><span on:click={e => getNumber(e)}>1</span></div>
-            <div class="number"><span on:click={e => getNumber(e)}>2</span></div>
-            <div class="number mr-0"><span on:click={e => getNumber(e)}>3</span></div>
-            <div class="number ml-0"><span on:click={e => getNumber(e)}>.</span></div>
-            <div class="number"><span on:click={e => getNumber(e)}>0</span></div>
+            <div class="number ml-0" on:click={e => getNumber(e)}><span>7</span></div>
+            <div class="number" on:click={e => getNumber(e)}><span>8</span></div>
+            <div class="number mr-0" on:click={e => getNumber(e)}><span>9</span></div>
+            <div class="number ml-0" on:click={e => getNumber(e)}><span>4</span></div>
+            <div class="number" on:click={e => getNumber(e)}><span>5</span></div>
+            <div class="number mr-0" on:click={e => getNumber(e)}><span>6</span></div>
+            <div class="number ml-0" on:click={e => getNumber(e)}><span>1</span></div>
+            <div class="number" on:click={e => getNumber(e)}><span>2</span></div>
+            <div class="number mr-0" on:click={e => getNumber(e)}><span>3</span></div>
+            <!-- <div class="number ml-0" class:disableBtn={keypadcontrols.integerOnly} -->
+            <div class="number ml-0" class:disableBtn={keypadcontrols.integer || keypadcontrols.precision === 0}
+              on:click={e => {
+                // if (keypadcontrols.integerOnly) {
+                if (keypadcontrols.integer || keypadcontrols.precision === 0) {
+                  return false
+                }
+                getNumber(e)
+              }}
+            ><span>.</span></div>
+            <div class="number" on:click={e => getNumber(e)}><span>0</span></div>
             <div class="number mr-0" on:click={() => clearNumber()}>
               <label class='clear-button'>
                 <Icon icon='close' color='var(--primary)' />
                 <label class="clear">{$_('Clear')}</label>
               </label>
             </div>
-        </div>
-        <button on:click={() => closeKeypadModal()} class="keypad-ok-btn">OK</button>
+          </div>
+          
+          <div class="keypad-footer">
+            <div class="negative" class:disableBtn={disableNegativeBtn}>
+              <span 
+                on:click={e => {
+                if (disableNegativeBtn) {
+                  return false
+                }
+                toggleNumberSign(e)
+              }}
+              >{#if showNegativeSign}-{:else}+{/if}</span>
+            </div>
+            <div class="keypad-btn">
+              <button class:disabledButton disabled={disabledButton} on:click={() => closeKeypadModal()}  class="keypad-ok-btn">OK</button>
+            </div>
+          </div>
       </div>
     </div>
   </div>
 {/if}
 
-<style>
+<style lang="scss">
   div.modal {
     position: fixed;
     top: 0;
@@ -222,7 +324,7 @@
     margin-bottom: 14px;
     padding: 9px 20px;
   }
-  input[type=text]#place-number{
+  input[type=text]#place-number {
     color: #364860;
     font-family: "Open Sans";
     font-size: 30px;
@@ -230,23 +332,7 @@
     line-height: 41px;
     text-align: right;
   }
-  .keypad-ok-btn {
-    border-radius: 2px;
-    background-color: #358DCA;
-    box-shadow: 0 2px 0 0 #364860;
 
-    color: #FFFFFF;
-    font-family: "Open Sans";
-    font-size: 16px;
-    font-weight: 600;
-    letter-spacing: 0;
-    line-height: 18px;
-    text-align: center;
-
-    padding: 10px 54px;
-    border-color: #358DCA;
-    margin-top: 30px;
-  }
   .number label {
     color: #358DCA;
     font-family: "Open Sans";
@@ -264,5 +350,76 @@
   .clear-button :global(svg) {
     width: 16px;
     margin-bottom: 5px;
+  }
+  .range {
+    color: #364860;
+    font-family: "Open Sans";
+    margin-bottom: 14px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  .notInRange {
+    .min, .max {
+      color: red;
+    }
+    input[type=text]#place-number {
+      border: 1px solid red;
+    }
+  }
+
+  .disableBtn {
+    background-color: var(--darkGray) !important;
+  }
+
+  .keypad-footer {
+    display: flex;
+    flex-wrap: wrap;
+    .negative {
+      height: 60px;
+      width: 63px;
+      border-radius: 4px;
+      background-color: #FFFFFF;
+      box-shadow: 0 2px 5px 0 rgb(54 72 96 / 50%);
+      flex-grow: 1;
+      margin: 7px 7px 7px 0;
+      padding: 14px;
+      span {
+        color: #358DCA;
+        font-family: "Open Sans";
+        font-size: 36px;
+        letter-spacing: 0;
+        justify-content: center;
+        align-items: center;
+        display: flex;
+      }
+    }
+    .keypad-btn {
+      flex-grow: 2;
+      margin: 7px 0 7px 7px;
+      .disabledButton {
+        background-color: var(--darkGray) !important;
+        border-color: var(--darkGray) !important;
+      }
+      .keypad-ok-btn {
+        border-radius: 2px;
+        background-color: #358DCA;
+        box-shadow: 0 2px 0 0 #364860;
+
+        color: #FFFFFF;
+        font-family: "Open Sans";
+        font-size: 20px;
+        font-weight: 600;
+        letter-spacing: 0;
+        line-height: 18px;
+        text-align: center;
+
+        padding: 10px 50px;
+        border-color: #358DCA;
+        width: 100%;
+        height: 100%;
+      }
+    }
   }
 </style>

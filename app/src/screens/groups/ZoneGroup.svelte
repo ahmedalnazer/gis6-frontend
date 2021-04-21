@@ -2,7 +2,7 @@
   import DragHeading from 'components/DragHeading.svelte'
   import _ from 'data/language'
   import _zones from 'data/zones'
-  import ZoneButton from './ZoneButton'
+  import ZoneButton from './ZoneButton.svelte'
   import groups from 'data/groups'
   import { activeSetpointEditor } from 'data/setpoint'
   import { Collapsible, Icon } from 'components'
@@ -42,12 +42,12 @@
       <span>{group.name}</span>
 
       <Icon icon='chevron' />
-      {#if group.id != 'unassigned'}
+      <!-- {#if group.id != 'unassigned'}
         <Icon icon='close' on:click={e => {
           e.stopPropagation()
           onDelete()
         }} />
-      {/if}
+      {/if} -->
     </div></DragHeading>
     {#if zones.length == 0}
         <p class='muted'>{$_('No zones have been assigned to this group')}</p>

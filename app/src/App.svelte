@@ -1,15 +1,17 @@
 <script>
   import { onMount } from 'svelte'
-  import Router from './router/Router'
-  import Notifications from 'components/utilities/Notifications'
-  import Confirm from 'components/utilities/Confirm'
-  import SplashScreen from "screens/SplashScreen"
-  import Header from 'layout/Header'
-  import Footer from 'layout/Footer'
-  import Login from 'screens/Login'
+  import Router from './router/Router.svelte'
+  import Notifications from 'components/utilities/Notifications.svelte'
+  import Confirm from 'components/utilities/Confirm.svelte'
+  import SplashScreen from "screens/SplashScreen.svelte"
+  import ActivityLog from "screens/activity-log/ActivityLog.svelte"
+  import Header from 'layout/Header.svelte'
+  import Footer from 'layout/Footer.svelte'
+  import Login from 'screens/Login.svelte'
   import { loggingIn } from 'data/user/actions'
-  import SetpointEditor from 'components/SetpointEditor'
+  import SetpointEditor from 'components/taskbars/commands/SetpointEditor.svelte'
   import createSocket from 'data/realtime/ws'
+  import init from 'data/init'
 
 
   let showSplashScreen = true
@@ -20,7 +22,7 @@
     let showSplashScreenStore = localStorage.getItem("showSplashScreen")
     if (showSplashScreenStore === null) { showSplashScreen = true }
     else { showSplashScreen = showSplashScreenStore !== "false" }
-
+    init()
     createSocket()
   })
 </script>
@@ -41,3 +43,4 @@
 <SetpointEditor />
 <Notifications />
 <Confirm />
+<ActivityLog />

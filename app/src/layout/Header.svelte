@@ -1,13 +1,15 @@
 <script>
-  import status from "data/status";
-  import UpdateIcon from "./../style/images/UpdateIcon.svelte";
-  import Icon from "components/Icon.svelte";
-  import _ from "data/language";
+  import status from "data/status"
+  import UpdateIcon from "./../style/images/UpdateIcon.svelte"
+  import Icon from "components/Icon.svelte"
+  import _ from "data/language"
+  import history from 'router/history'
+  import { activeActivityLog } from 'data/activitylog.js'
 </script>
 
 <header class={$status.level}>
-  <div class="logo">
-    <div class="homelogo" on:click={() => { window.location.href = '/'}}>
+  <div class="logo">    
+    <div class="homelogo" on:click={() => { history.push('/') /*window.location.href = '/'*/ }} title="Home">
       <Icon icon="homelogo" color="#FFFFFF" />
       <div class="homelogo-text">{$_("Barnes GIS6")}</div>
     </div>
@@ -26,8 +28,8 @@
     </div>
   </div>
 
-  <div class="icon">
-    <img src="/images/icons/icon-history.svg" alt="History" />
+  <div class="icon" on:click={() => { $activeActivityLog = "activitylog" }}>
+    <img src="/images/icons/icon-history.svg" alt="History" title="History" />
   </div>
 </header>
 
@@ -38,10 +40,16 @@
     align-items: center;
     font-size: 1.8em;
     z-index: 2;
+    margin-bottom: -1px;
 
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 
+    transition: background-color .3s;
+
     &.info {
+      background: var(--blue);
+    }
+    &.running {
       background: var(--green);
     }
     &.warning {
@@ -78,6 +86,7 @@
 
   .icon {
     padding: 32px;
+    cursor: pointer;
   }
 
   .homelogo-text {

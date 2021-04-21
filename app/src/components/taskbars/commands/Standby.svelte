@@ -1,34 +1,39 @@
 <script>
-  import Selector from '../Selector'
+  import Selector from '../Selector.svelte'
   import { Modal, Input } from 'components'
   import _ from 'data/language'
   import { notify } from 'data/'
   import activeStandby from 'data/zones/standby'
   import activeBoost from 'data/zones/boost'
+  import zones, { activeZones } from 'data/zones'
+  import globalSettings from 'data/globalSettings'
 
   export let onClose
-
-  let auto = 104
-  let timeout = 0
+// $: console.log($activeZones[0].StandbySp, $zones[0].StandbySp)
+  let auto = (($activeZones[0] ? $activeZones[0].StandbySp : $zones[0].StandbySp) || 1000) / 10
+  let timeout = $globalSettings.StandbyTimeoutSP / 10
 
   const standby = zones => {
-    console.log(zones)
-    // set zones off
-    activeStandby.set(true)
-    if($activeBoost) {
-      notify('Boost cancelled')
-      activeBoost.set(false)
+    if($activeStandby) {
+      activeStandby.cancel()
+    } else {
+      activeStandby.start(zones, auto * 10, {
+        StandbyTimeoutSP: timeout * 10,
+      })
+      if($activeBoost) {
+        notify('Boost canceled')
+      }
     }
     notify.success($_('Standby applied'))
   }
 </script>
 
 <Modal title={$_('Standby')} {onClose}>
-  <Selector onSubmit={standby} onDone={onClose}>
+  <Selector onSubmit={standby}>
     <h2>Edit</h2>
     <div class='grid'>
-      <Input type='number' bind:value={auto} label='{$_('Auto Standby')}  (&#176;C)' />
-      <Input type='number' bind:value={timeout} label='{$_('Standby Timeout')}  (&#176;C)' />
+      <Input type='number' keypadcontrols={'autoStandby'} bind:value={auto} label='{$_('Auto Standby')}  (&#176;C)' />
+      <Input type='number' keypadcontrols={'defaultSystem'} bind:value={timeout} label='{$_('Standby Timeout')}  (min)' />
     </div>
   </Selector>
 </Modal>

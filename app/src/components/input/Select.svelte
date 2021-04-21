@@ -1,10 +1,23 @@
 <script>
+  import { createEventDispatcher } from 'svelte'
   import Select from 'svelte-select'
+
+  const dispatch = createEventDispatcher()
+
   export let options = []
-  export let getLabel = l => l.name
+  
   export let id = 'id'
   export let value
+  export let changed = false
+  export let trackChange = false
   export let label = ''
+  export let display = false
+  export let valueLabel = ''
+  export let selectedLabel = ''
+  export let selectedItemLabel = ''
+
+  export let getLabel = l =>  l && l[valueLabel || 'name']
+  export let getSelectionLabel = l => l && l[selectedItemLabel || valueLabel || 'name'] || getLabel(l)
 
   let selectedValue
 
@@ -12,9 +25,15 @@
     selectedValue = options.find(x => x[id] == value)
   }
 
+  $: selectedLabel = getLabel(selectedValue)
+
   const select = e => {
     value = e.detail[id]
     selectedValue = e.detail
+    dispatch('change', e)
+    if(trackChange) {
+      changed = true
+    }
   }
 </script>
 
@@ -22,31 +41,44 @@
   {#if label}
     <label>{label}</label>
   {/if}
-  <div class='select'>
-    <Select 
-      items={options}
-      {...$$restProps}
-      {selectedValue}
-      on:select={select}
-      optionIdentifier={id}
-      getOptionLabel={$$restProps.getOptionLabel || getLabel}
-      getSelectionLabel={$$restProps.getSelectionLabel || getLabel}
-      isClearable={false}
-    />
-    <div class='arrow'>
-      <div class='down' />
+  {#if display}
+    <div class='display'>
+      {selectedLabel}
     </div>
-  </div>
+  {:else}
+    <div class='select' class:changed>
+      <Select 
+        items={options}
+        {...$$restProps}
+        {selectedValue}
+        on:select={select}
+        optionIdentifier={id}
+        getOptionLabel={$$restProps.getOptionLabel || getLabel}
+        getSelectionLabel={getSelectionLabel}
+        isClearable={false}
+      />
+      <div class='arrow'>
+        <div class='down' />
+      </div>
+    </div>
+  {/if}
 </div>
 
 <style>
   .select {
     min-width: 200px;
     position: relative;
+    background: var(--pale);
+    border: 1px solid var(--pale);
     --border: 0;
-    --background: var(--pale);
+    --background: transparent;
     --padding: 16px 8px;
-    --height: 52px;
+    --height: 50px;
+  }
+  .display {
+    min-width: 200px;
+    padding: 16px;
+    padding-left: 0;
   }
   .arrow {
     position: absolute;
@@ -65,5 +97,10 @@
     border-left: 10px solid transparent;
     border-right: 10px solid transparent;
     border-top: 10px solid var(--blue);
+  }
+
+  .changed {
+    background-color: rgba(53, 138, 188, 0.2);
+    border: 1px solid var(--primary);
   }
 </style>
