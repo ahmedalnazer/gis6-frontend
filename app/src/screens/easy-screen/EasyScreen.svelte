@@ -4,17 +4,19 @@
   import { selectedZones as _selected } from "data/zones"
   import _ from "data/language"
   import ZoneGroup from "./ZoneGroup.svelte"
-  import { CheckBox } from "components"
+  import { Modal, CheckBox } from "components"
   import ZoneTasks from "components/taskbars/ZoneTasks.svelte"
   import ZoneRow from "./ZoneRow.svelte"
   import GroupSelector from "components/GroupSelector.svelte"
   import Grouping from 'components/Grouping.svelte'
+  import { Icon } from 'components'
 
   $: selectedGroup = $activeGroup
 
   // selection when sorted by groups
   let selection = {}
   let displayedZones = []
+  let showLegend = false
 
   const clearSelection = () => {
     for (let key of Object.keys(selection)) {
@@ -58,6 +60,7 @@
       {#if $_selected.length}
         <a on:click={clearSelection} class='clear'>{$_('Clear Selection')}</a>
       {/if}
+      <a on:click={() => showLegend = !showLegend}>{$_('Icon Legend')}</a>
     </div>
 
   </div>
@@ -78,6 +81,21 @@
     <GroupSelector />
   </div>
 </Screen>
+
+{#if showLegend}
+  <Modal onClose={() => showLegend = false}>
+    <div class='icon-legend'>
+      <div><div class='circle' /> {$_('Off')}</div>
+      <div><Icon icon='monitor' /> {$_('Boost')}</div>
+      <div><Icon icon='automatic' /> {$_('Automatic')}</div>
+      <div><Icon icon='lock' /> {$_('Locked')}</div>
+      <div><Icon icon='sealed' />{$_('Sealed')}</div>
+      <div><div class='stacked'><Icon icon='down' /><Icon icon='down' /></div> {$_('Standby')}</div>
+      <div><Icon icon='down' /> {$_('Temperature above setpoint')}</div>
+      <div><Icon icon='manual' /> {$_('Manual')}</div>
+    </div>
+  </Modal>
+{/if}
 
 
 <style lang="scss">
@@ -102,11 +120,6 @@
     margin-bottom: -40px;
     margin-left: -40px;
     margin-right: -40px;
-  }
-
-  .stacked {
-    display: flex;
-    flex-direction: column;
   }
 
   .grouping {
@@ -142,12 +155,61 @@
     div:first-of-type {
       justify-content: flex-start;
     }
+    div:last-of-type {
+      padding-left: 20%;
+      justify-content: flex-start;
+    }
   }
 
   #easy-screen :global(.screen-body) {
     padding-top: 2px;
   }
   
+  .icon-legend {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1.3fr .7fr;
+    > div {
+      display: flex;
+      align-items: center;
+      padding: 20px 0;
+      padding-left: 12px;
+      font-size: 16px;
+      > :first-child {
+        margin-right: 12px;
+        margin-left: 12px;
+      }
+    }
+    :global(svg) {
+      width: 20px;
+      margin-right: 12px;
+    }
+    .circle {
+      width: 20px;
+      height: 20px;
+      background: var(--blue);
+      border-radius: 50%;
+    }
+    .sealed-circle {
+      border: 3.2px solid var(--blue);
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      // margin-left: auto;
+      position: relative;
+    }
+    .sealed-line {
+      height: 18px;
+      width: 3.2px;
+      background: var(--blue);
+    }
+    .stacked {
+      display: flex;
+      flex-direction: column;
+    }
+  }
 
   // .divHeaderSortableList{ }
 

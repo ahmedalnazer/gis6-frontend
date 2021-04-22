@@ -81,38 +81,41 @@
     {/if}
   </div>
   <div class='table-body-item settings' on:click|stopPropagation={setPoint}>
-    <Icon icon='edit' color='var(--primary)' />
-    {#if monitor}
-      {#if monitorHA}<span>{$_('High')}&nbsp;</span>{Math.round((monitorHSP || 0) / 10)}&deg;<span class='temp-type'>C</span>{/if}
-      {#if monitorHA && monitorLA}&nbsp;-&nbsp;{/if}
-      {#if monitorLA}<span>{$_('Low')}&nbsp;</span>{Math.round((monitorLSP || 0) / 10)}&deg;<span class='temp-type'>C</span>{/if}
-      {#if monitorHA || monitorLA}&nbsp;|&nbsp;{/if}
-    {:else}
-      {#if auto}
-        {setpoint / 10 || '-'}&deg;<span class='temp-type'>F</span>
+    <div class="settings-indicator">
+      {#if monitor}
+        {#if monitorHA}<span>{$_('High')}&nbsp;</span>{Math.round((monitorHSP || 0) / 10)}&deg;<span class='temp-type'>C</span>{/if}
+        {#if monitorHA && monitorLA}&nbsp;-&nbsp;{/if}
+        {#if monitorLA}<span>{$_('Low')}&nbsp;</span>{Math.round((monitorLSP || 0) / 10)}&deg;<span class='temp-type'>C</span>{/if}
+        {#if monitorHA || monitorLA}&nbsp;|&nbsp;{/if}
       {:else}
-        {((zone.actual_percent || 0) / 10).toFixed(1)}%
+        {#if auto}
+          {setpoint / 10 || '-'}&deg;<span class='temp-type'>F</span>
+        {:else}
+          {((zone.actual_percent || 0) / 10).toFixed(1)}%
+        {/if}
       {/if}
-    {/if}
-    {#if boost || standby}
-      <div class='animated' class:boost class:standby>
-        <Icon icon='boost' color='var(--warning)' />
-        <Icon icon='boost' color='var(--warning)' />
-        <div class='gradient-overlay' />
-      </div>
-    {/if}
+      {#if boost || standby}
+        <div class='animated' class:boost class:standby>
+          <Icon icon='boost' color='var(--warning)' />
+          <Icon icon='boost' color='var(--warning)' />
+          <div class='gradient-overlay' />
+        </div>
+      {/if}
 
-    {#if monitor}
-      <span>{$_('Monitor')}</span>
-    {:else}
-      {#if auto}
-        <span>{$_(' | Auto')}</span>
+      {#if monitor}
+        <span>{$_('Monitor')}</span>
       {:else}
-        <span>{$_(' | Manual')}</span>
-       {/if}
-    {/if}
-    {#if settings.locked}<span>{$_(' | Locked')}</span>{/if}
-    {#if settings.sealed}<span>{$_(' | Sealed')}</span>{/if}
+        {#if auto}
+          <span>{$_(' | Auto')}</span>
+        {:else}
+          <span>{$_(' | Manual')}</span>
+        {/if}
+      {/if}
+      {#if settings.locked}<span>{$_(' | Locked')}</span>{/if}
+      {#if settings.sealed}<span>{$_(' | Sealed')}</span>{/if}
+    </div>
+
+    <Icon icon='edit' color='var(--primary)' />
   </div>
 </div>
 
@@ -208,6 +211,8 @@
   .settings {
     color: #358DCA;
     font-weight: 600;
+    justify-content: space-between;
+    padding-left: 20%;
   }
 
   .settings :global(svg) {
