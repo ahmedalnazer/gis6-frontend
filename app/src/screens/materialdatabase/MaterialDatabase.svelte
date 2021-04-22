@@ -204,7 +204,7 @@
   >
   <div class="modal-text">
     <p>
-      {$_("Applying the temperature setpoint value to the current process will reset the setpoint for all zones to")} {`${meltTemp} \xB0C`}
+      {$_("Every effort has been made to provide a material database that is current and accurate. Nevertheless, inadvertent errors in information may occur. The information contained in this database has been supplied to Barnes from a variety of sources, and is subject to change at any time without notice. Barnes gives no assurance or warranty that information in this database is current and accurate, and takes no responsibility for issues arising from changed information which may affect the currency or accuracy of information in this database.")}
     </p>
 
     <div class="modal-buttons">
@@ -370,8 +370,9 @@
   .modal-text {
     color: #011F3E;
     font-size: 18px;
-    letter-spacing: 0;
+    letter-spacing: 0px;
     line-height: 24px;
+    padding-top: 20px;
   }
 
   // :global(.modal-body) {
