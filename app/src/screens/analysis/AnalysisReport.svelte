@@ -5,11 +5,17 @@
     import TestResults from './TestResults.svelte'
     import Error from './Error.svelte'
     import api from 'data/api'
+    import Keyboard from 'components/input/Keyboard.svelte'
 
     export let onClose
     export let analysis
 
     let isDisable = false
+    let openKeyboard = false
+    let title = ''
+    let inputField = ''
+    let inputFieldValue = ''
+    let changed = {}
 
     const date = new Date()
 
@@ -21,7 +27,8 @@
 
     let report = {
       reportType: $analysis.type,
-      user: $analysis.user,
+      user: $analysis.user.username,
+      user_id: $analysis.user.id,
       mold: $analysis.mold,
       group: $analysis.groupName,
       maxStartingTemp: $analysis.maxTemp,
@@ -43,6 +50,21 @@
         notify('Changes saved.')
       }
     }
+
+    const showKeyboard = (type, lable, value) => {
+      openKeyboard = true
+      inputField = type
+      title = lable
+      inputFieldValue = value
+    }
+
+    const getKeyboardText = textobj => {
+      if (textobj.detail.field === "name") report.name = textobj.detail.done
+      if (textobj.detail.field === "comment") report.comment = textobj.detail.done
+      openKeyboard = false
+      isDisable = false
+      changed[textobj.detail.field] = true
+    }
   
   </script>
   
@@ -51,8 +73,20 @@
         <div class="report-description">{$_('This report is saved to the reports folder on the home page.')}</div>
         <form on:submit|preventDefault={() => onSubmit()}>
             <div class='grid-two'>
-                <Input type='text' bind:value={report.name} label='{$_('Report name')}' />
-                <Input type='text' bind:value={report.comment} label='{$_('Comments')}' />
+                <Input
+                  type='text'
+                  bind:value={report.name}
+                  label='{$_('Report name')}'
+                  on:focus={e => showKeyboard("name", "Report name", report.name)}
+                  bind:changed={changed.name}
+                />
+                <Input
+                  type='text'
+                  bind:value={report.comment}
+                  label='{$_('Comments')}'
+                  on:focus={e => showKeyboard("comment", "Comments", report.comment)}
+                  bind:changed={changed.comment}
+                />
             </div>
         
             <div class="grid-parent">
@@ -108,78 +142,89 @@
         </div>
     </Modal>
   </div>
+
+  {#if openKeyboard}
+    <Keyboard
+      value={inputFieldValue}
+      title={title}
+      inputFieldFor={inputField}
+      bind:onModalOpen={openKeyboard}
+      on:keypadClosed={() => openKeyboard = false}
+      on:done={(kcontent) => getKeyboardText(kcontent)}
+    />
+  {/if}
   
   <style lang="scss">
     .report-modal {
-        :global(.modal-body) {
-            padding-top: 24px !important;
-        }
+      :global(.modal-body) {
+        padding-top: 24px !important;
+      }
     }
     .report-description {
-        color: #011F3E;
-        font-family: "Open Sans";
-        font-size: 16px;
-        letter-spacing: 0;
-        line-height: 22px;
-        margin-bottom: 24px;
+      color: #011F3E;
+      font-family: "Open Sans";
+      font-size: 16px;
+      letter-spacing: 0;
+      line-height: 22px;
+      margin-bottom: 24px;
     }
     .grid-two {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 16px;
-        margin-bottom: 30px;
-        :global(.input) {
-            :global(input) {
-                width: 100%;
-            }
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-bottom: 30px;
+      :global(.input) {
+        :global(input) {
+          width: 100%;
         }
+      }
     }
     .grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 16px;
-        margin-bottom: 30px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 30px;
     }
     .grid-parent {
-        display: grid;
-        grid-template-columns: 3fr 1fr;
-        gap: 16px;
-        margin-bottom: 30px;
-        border-bottom: 1px solid var(--gray);
+      display: grid;
+      grid-template-columns: 3fr 1fr;
+      gap: 16px;
+      margin-bottom: 30px;
+      border-bottom: 1px solid var(--gray);
     }
     .btn-verticle {
-        display: flex;
-        align-items: center;
-        .save-button {
-            box-sizing: border-box;
-            border: 2px solid #358DCA;
-            border-radius: 1px;
-            background-color: #FFFFFF;
-            box-shadow: 2px 2px 5px 0 rgba(54,72,96,0.5);
-            margin-left: auto;
-            color: #358DCA;
-            font-family: "Open Sans";
-            font-size: 20px;
-            font-weight: 600;
-            letter-spacing: 0;
-            line-height: 18px;
-            text-align: center;
-            padding: 15px 76px;
-        }
-        .btnDisable {
-          color: #A2A4A8 !important;
-          border: 2px solid #A2A4A8 !important;
-        }
+      display: flex;
+      align-items: center;
+      .save-button {
+        box-sizing: border-box;
+        border: 2px solid #358DCA;
+        border-radius: 1px;
+        background-color: #FFFFFF;
+        box-shadow: 2px 2px 5px 0 rgba(54,72,96,0.5);
+        margin-left: auto;
+        color: #358DCA;
+        font-family: "Open Sans";
+        font-size: 20px;
+        font-weight: 600;
+        letter-spacing: 0;
+        line-height: 18px;
+        text-align: center;
+        padding: 15px 76px;
+      }
+      .btnDisable {
+        color: #A2A4A8 !important;
+        border: 2px solid #A2A4A8 !important;
+      }
     }
     .errors {
-        overflow: auto;
-        .table-header {
-            display: grid;
-            grid-template-columns: 150px 100px 1fr;
-            position: sticky;
-            font-weight: 700;
-            border-bottom: 1px solid #A2A4A8;
-            padding: 0px 40px 10px 40px;
-        }
+      overflow: auto;
+      .table-header {
+        display: grid;
+        grid-template-columns: 150px 100px 1fr;
+        position: sticky;
+        font-weight: 700;
+        border-bottom: 1px solid #A2A4A8;
+        padding: 0px 40px 10px 40px;
+      }
     }
   </style>

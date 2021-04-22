@@ -21,7 +21,7 @@
     manufacturer: '',
     familyAbbreviation: ''
   }
-  let searchInputType = ''
+  let inputField = ''
   let confirmStart = false
   let meltTemp = ''
   let minMeltTemp = ''
@@ -30,14 +30,14 @@
 
   const showKeyboard = (type, lable) => {
     openKeyboard = true
-    searchInputType = type
+    inputField = type
     title = lable
   }
 
   const getKeyboardText = textobj => {
-    if (textobj.detail.type === "tradeName") materialSearch.tradeName = textobj.detail.done
-    if (textobj.detail.type === "manufacturer") materialSearch.manufacturer = textobj.detail.done
-    if (textobj.detail.type === "familyAbbreviation") materialSearch.familyAbbreviation = textobj.detail.done
+    if (textobj.detail.field === "tradeName") materialSearch.tradeName = textobj.detail.done
+    if (textobj.detail.field === "manufacturer") materialSearch.manufacturer = textobj.detail.done
+    if (textobj.detail.field === "familyAbbreviation") materialSearch.familyAbbreviation = textobj.detail.done
     openKeyboard = false
   }
  
@@ -219,7 +219,7 @@
 {#if openKeyboard}
   <Keyboard
     showDropdown={true}
-    searchInputType={searchInputType}
+    inputFieldFor={inputField}
     dropdownSetting={materialSearch}
     title={title}
     bind:onModalOpen={openKeyboard}

@@ -12,7 +12,7 @@
   export let maxCharacter = 99999
   export let showDropdown = false
   export let dropdownSetting = {}
-  export let searchInputType = ''
+  export let inputFieldFor = ''
   export let title = ''
 
   const dispatch = createEventDispatcher()
@@ -93,17 +93,17 @@
     let qry = ''
     // {"tradeName":"87510 Gray 260","manufacturer":"25SP","familyAbbreviation":""}
 
-    if (searchInputType === 'tradeName') {
+    if (inputFieldFor === 'tradeName') {
       // type = 'trade_name'
       qry = `trade_name=${text}${dropdownSetting.manufacturer?`&manufacturer=${encodeURIComponent(dropdownSetting.manufacturer)}`:''}${dropdownSetting.familyAbbreviation?`&family_abbreviation=${encodeURIComponent(dropdownSetting.familyAbbreviation)}`:''}`
     }
 
-    if (searchInputType === 'manufacturer') {
+    if (inputFieldFor === 'manufacturer') {
       // type = 'manufacturer'
       qry = `manufacturer=${text}${dropdownSetting.tradeName?`&trade_name=${encodeURIComponent(dropdownSetting.tradeName)}`:''}${dropdownSetting.familyAbbreviation?`&family_abbreviation=${encodeURIComponent(dropdownSetting.familyAbbreviation)}`:''}`
     }
 
-    if (searchInputType === 'familyAbbreviation') {
+    if (inputFieldFor === 'familyAbbreviation') {
       // type = 'family_abbreviation'
       qry = `family_abbreviation=${text}${dropdownSetting.tradeName?`&trade_name=${encodeURIComponent(dropdownSetting.tradeName)}`:''}${dropdownSetting.manufacturer?`&manufacturer=${encodeURIComponent(dropdownSetting.manufacturer)}`:''}`
     }
@@ -114,11 +114,11 @@
       open = true
 
       for (let item of res) {
-        if (searchInputType === 'manufacturer') {
+        if (inputFieldFor === 'manufacturer') {
           const found = options.some(el => el.name === item.manufacturer)
           if (!found) options.push({"id": item.id, "name": item.manufacturer})
         }
-        else if (searchInputType === 'familyAbbreviation') {
+        else if (inputFieldFor === 'familyAbbreviation') {
           const found = options.some(el => el.name === item.family_abbreviation)
           if (!found) options.push({"id": item.id, "name": item.family_abbreviation})
         }
@@ -135,7 +135,7 @@
     value = material.name
     openKeypad = false
     enableDone = true
-    dispatch('done', { done: value, type: searchInputType })
+    dispatch('done', { done: value, field: inputFieldFor })
   }
 
   const getText = e => {
@@ -187,7 +187,7 @@
 
   const doneKeypadModal = () => {
     openKeypad = false
-    dispatch('done', { done: value })
+    dispatch('done', { done: value, field: inputFieldFor })
   }
 
   const clearNumber = () => {
@@ -335,7 +335,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 9;
+    z-index: 9999;
   }
   div.backdrop {
     position: absolute;
