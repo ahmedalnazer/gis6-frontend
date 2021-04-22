@@ -83,16 +83,17 @@
 </Screen>
 
 {#if showLegend}
-  <Modal onClose={() => showLegend = false}>
+  <Modal title={$_('Icon Legend')} onClose={() => showLegend = false}>
     <div class='icon-legend'>
-      <div><div class='circle' /> {$_('Off')}</div>
-      <div><Icon icon='monitor' /> {$_('Boost')}</div>
-      <div><Icon icon='automatic' /> {$_('Automatic')}</div>
+      <div><Icon icon='zone-operation-auto' /> {$_('Automatic')}</div>
+      <div><Icon icon='zone-operation-manual' /> {$_('Manual')}</div>
+      <div><Icon icon='zone-operation-monitor' /> {$_('Monitor')}</div>
+      <div><div class='stacked'><Icon icon='down' /><Icon icon='down' /></div> {$_('Standby')}</div>
       <div><Icon icon='lock' /> {$_('Locked')}</div>
       <div><Icon icon='sealed' />{$_('Sealed')}</div>
-      <div><div class='stacked'><Icon icon='down' /><Icon icon='down' /></div> {$_('Standby')}</div>
       <div><Icon icon='down' /> {$_('Temperature above setpoint')}</div>
-      <div><Icon icon='manual' /> {$_('Manual')}</div>
+      <div><div class='stacked'><Icon icon='up' /><Icon icon='up' /></div> {$_('Boost')}</div>
+      <div><Icon icon='off' /> {$_('Off')}</div>
     </div>
   </Modal>
 {/if}

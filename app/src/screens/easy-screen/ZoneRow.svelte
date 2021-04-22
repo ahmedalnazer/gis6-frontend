@@ -103,12 +103,12 @@
       {/if}
 
       {#if monitor}
-        <span>{$_('Monitor')}</span>
+        <span><Icon icon='zone-operation-monitor' /></span>
       {:else}
         {#if auto}
-          <span>{$_(' | Auto')}</span>
+          <span><Icon icon='zone-operation-auto' /></span>
         {:else}
-          <span>{$_(' | Manual')}</span>
+          <span><Icon icon='zone-operation-manual' /></span>
         {/if}
       {/if}
       {#if settings.locked}<span>{$_(' | Locked')}</span>{/if}
