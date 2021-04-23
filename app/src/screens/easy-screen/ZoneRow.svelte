@@ -81,43 +81,43 @@
     {/if}
   </div>
   <div class='table-body-item settings' on:click|stopPropagation={setPoint}>
-    <Icon icon='edit' color='var(--primary)' />
-    {#if monitor}
-      {#if monitorHA}<span>{$_('High')}&nbsp;</span>{Math.round((monitorHSP || 0) / 10)}&deg;<span class='temp-type'>C</span>{/if}
-      {#if monitorHA && monitorLA}&nbsp;-&nbsp;{/if}
-      {#if monitorLA}<span>{$_('Low')}&nbsp;</span>{Math.round((monitorLSP || 0) / 10)}&deg;<span class='temp-type'>C</span>{/if}
-      {#if monitorHA || monitorLA}&nbsp;|&nbsp;{/if}
-    {:else}
-      {#if auto}
-        {setpoint / 10 || '-'}&deg;<span class='temp-type'>F</span>
+    <div class="settings-indicator">
+      {#if monitor}
+        <span><Icon icon='zone-operation-monitor' /></span>
+        {#if monitorHA}<span>{$_('High')}&nbsp;</span>{Math.round((monitorHSP || 0) / 10)}&deg;<span class='temp-type'>C</span>{/if}
+        {#if monitorHA && monitorLA}&nbsp;-&nbsp;{/if}
+        {#if monitorLA}<span>{$_('Low')}&nbsp;</span>{Math.round((monitorLSP || 0) / 10)}&deg;<span class='temp-type'>C</span>{/if}
       {:else}
-        {((zone.actual_percent || 0) / 10).toFixed(1)}%
+        {#if auto}
+          <span class="pr-20">{setpoint / 10 || '-'}&deg;<span class='temp-type'>F</span></span>
+          <span><Icon icon='zone-operation-auto' /></span>
+        {:else}
+          <span class="pr-20">{((zone.actual_percent || 0) / 10).toFixed(1)}%</span>
+          <span><Icon icon='zone-operation-manual' /></span>
+        {/if}
       {/if}
-    {/if}
-    {#if boost || standby}
-      <div class='animated' class:boost class:standby>
-        <Icon icon='boost' color='var(--warning)' />
-        <Icon icon='boost' color='var(--warning)' />
-        <div class='gradient-overlay' />
-      </div>
-    {/if}
 
-    {#if monitor}
-      <span>{$_('Monitor')}</span>
-    {:else}
-      {#if auto}
-        <span>{$_(' | Auto')}</span>
-      {:else}
-        <span>{$_(' | Manual')}</span>
-       {/if}
-    {/if}
-    {#if settings.locked}<span>{$_(' | Locked')}</span>{/if}
-    {#if settings.sealed}<span>{$_(' | Sealed')}</span>{/if}
+      {#if boost || standby}
+        <div class='animated' class:boost class:standby>
+          <Icon icon='boost' color='var(--warning)' />
+          <Icon icon='boost' color='var(--warning)' />
+          <div class='gradient-overlay' />
+        </div>
+      {/if}
+
+      {#if settings.locked}<span><Icon icon='lock' /></span>{/if}
+      {#if settings.sealed}<span><Icon icon='sealed' /></span>{/if}
+    </div>
+
+    <Icon icon='edit' color='var(--primary)' />
   </div>
 </div>
 
 
 <style lang="scss">
+  .pr-20 {
+    padding-right: 15px;
+  }
   .group-colors {
     display: flex;
   }
@@ -208,12 +208,14 @@
   .settings {
     color: #358DCA;
     font-weight: 600;
+    justify-content: space-between;
+    padding-left: 20%;
   }
 
   .settings :global(svg) {
-    margin-right: 8px;
-    height: 14px;
-    width: 14px;
+    margin-right: 20px;
+    height: 20px;
+    width: 20px;
     color: #358DCA;
   }
 
