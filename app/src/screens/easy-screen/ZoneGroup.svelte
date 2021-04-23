@@ -120,6 +120,10 @@
     div:first-of-type {
       justify-content: flex-start;
     }
+    div:last-of-type {
+      padding-left: 20%;
+      justify-content: flex-start;
+    }
   }
 
   .zone-group :global(.drag-header) {
