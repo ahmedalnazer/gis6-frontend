@@ -134,7 +134,7 @@
         <Icon icon='reset' color={moved ? 'var(--primary)' : 'var(--gray)'} on:click={reset} />
       </div>
       <div class='tool' class:active={mode == 'pan' && paused}>
-        <Icon icon='move' color='var(--primary)' on:click={startPan}/>
+        <Icon icon='pinch' color='var(--primary)' on:click={startPan}/>
       </div>
       <div class='tool view' class:active={mode == 'inspect'}>
         <Icon icon='view' color='var(--primary)' on:click={() => setMode('inspect')}/>
