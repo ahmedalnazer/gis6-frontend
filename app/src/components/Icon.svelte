@@ -577,6 +577,21 @@
 {/if}
 
 
+{#if icon == 'move'}
+    <svg on:click width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <g id="Line-Graph" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+            <g id="Line-Graph---2-parameter" transform="translate(-870.000000, -325.000000)" style='fill:{color}' fill-rule="nonzero">
+                <g id="Group-12" transform="translate(756.000000, 313.000000)">
+                    <g id="icon-drag" transform="translate(114.000000, 12.000000)">
+                        <path d="M19.8818898,9.72440945 L16.6811024,7.11811024 C16.4291339,6.86614173 16,7.04330709 16,7.4015748 L16,9.00393701 L11,9.00393701 L11,4.00393701 L12.6023622,4.00393701 C12.9566929,4.00393701 13.1338583,3.57480315 12.8858268,3.32283465 L10.2874016,0.118110236 C10.1299213,-0.0393700787 9.87795276,-0.0393700787 9.72440945,0.118110236 L7.11811024,3.31889764 C6.86614173,3.57086614 7.04330709,4 7.4015748,4 L9.00393701,4 L9.00393701,9 L4.00393701,9 L4.00393701,7.3976378 C4.00393701,7.04330709 3.57480315,6.86614173 3.32283465,7.11417323 L0.118110236,9.71259843 C-0.0393700787,9.87007874 -0.0393700787,10.1220472 0.118110236,10.2755906 L3.31889764,12.8818898 C3.57086614,13.1338583 4,12.9566929 4,12.5984252 L4,10.996063 L9,10.996063 L9,15.996063 L7.3976378,15.996063 C7.04330709,15.996063 6.86614173,16.4251969 7.11417323,16.6771654 L9.70866142,19.8779528 C9.86614173,20.0354331 10.1181102,20.0354331 10.2716535,19.8779528 L12.8779528,16.6771654 C13.1299213,16.4251969 12.9527559,15.996063 12.5944882,15.996063 L10.992126,15.996063 L10.992126,10.996063 L15.992126,10.996063 L15.992126,12.5984252 C15.992126,12.9527559 16.4212598,13.1299213 16.6732283,12.8818898 L19.8740157,10.2874016 C20.0393701,10.1299213 20.0393701,9.87795276 19.8818898,9.72440945 Z" id="Path"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </svg>
+{/if}
+
+
 {#if icon =='mark-time'}
   <svg on:click width="13px" height="20px" viewBox="0 0 13 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
       <g id="Line-Graph" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -597,7 +612,7 @@
 {#if icon == 'view'}
   <svg on:click width="25px" height="14px" viewBox="0 0 25 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
       <g id="Line-Graph" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-          <g id="Line-Graph---2-parameter" transform="translate(-922.000000, -328.000000)" style='fill:{color}' fill-rule="nonzero">
+          <g id="Line-Graph---2-parameter" transform="translate(-922.000000, -328.000000)" style='fill: {color}' fill-rule="nonzero">
               <g id="Group-12" transform="translate(756.000000, 313.000000)">
                   <g id="Group" transform="translate(166.000000, 15.000000)">
                       <path d="M12.4405322,10.1111111 C14.1594367,10.1111111 15.5516433,8.71107222 15.5516433,7 C15.5516433,5.28109556 14.1594367,3.88888889 12.4405322,3.88888889 C10.7294133,3.88888889 9.32942111,5.28109556 9.32942111,7 C9.32942111,8.71107222 10.7294133,10.1111111 12.4405322,10.1111111 Z" id="Path"></path>
@@ -608,6 +623,22 @@
       </g>
   </svg>
 {/if}
+
+
+{#if icon == 'reset'}
+  <svg on:click width="16px" height="20px" viewBox="0 0 16 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <g id="Line-Graph" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Line-Graph---2-parameter" transform="translate(-770.000000, -325.000000)" style='fill: {color}' fill-rule="nonzero">
+            <g id="Group-12" transform="translate(756.000000, 313.000000)">
+                <g id="Group" transform="translate(14.000000, 12.000000)">
+                    <path d="M0,8 L0,9 L2,9 L2,8 C2,4.691 4.691,2 8,2 C11.309,2 14,4.691 14,8 C14,11.309 11.309,14 8,14 L7,14 L7,10 L2,15 L7,20 L7,16 L8,16 C12.411,16 16,12.411 16,8 C16,3.589 12.411,0 8,0 C3.589,0 0,3.589 0,8 Z" id="Path"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+  </svg>
+{/if}
+
 
 {#if icon == 'zone-operation-auto'}
   <svg width="30px" height="30px" viewBox="0 0 30 30" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">

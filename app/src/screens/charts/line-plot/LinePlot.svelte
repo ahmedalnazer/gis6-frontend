@@ -105,6 +105,11 @@
     mode = m
   }
 
+  const startPan = () => {
+    setMode('pan')
+    paused = true
+  }
+
   onDestroy(() => {
     unsubActive()
   })
@@ -117,32 +122,44 @@
 
   <div slot="header" class="tools" >
     <div class='set'>
-      <Icon icon='mark-time' color='var(--primary)' on:click={mark} />
-      <Icon icon={paused ? 'play' : 'pause'} color='var(--primary)' on:click={() => paused = !paused} />
+      <div class='tool'>
+        <Icon icon='mark-time' color='var(--primary)' on:click={mark} />
+      </div>
+      <div class='tool'>
+        <Icon icon={paused ? 'play' : 'pause'} color='var(--primary)' on:click={() => paused = !paused} />
+      </div>
     </div>
     <div class='set'>
-      <div class='reset'>
-        <Icon icon='undo' color={moved ? 'var(--primary)' : 'var(--gray)'} on:click={reset} />
+      <div class='tool'>
+        <Icon icon='reset' color={moved ? 'var(--primary)' : 'var(--gray)'} on:click={reset} />
       </div>
-      <div class='tool' class:active={mode == 'inspect'}>
+      <div class='tool' class:active={mode == 'pan' && paused}>
+        <Icon icon='move' color='var(--primary)' on:click={startPan}/>
+      </div>
+      <div class='tool view' class:active={mode == 'inspect'}>
         <Icon icon='view' color='var(--primary)' on:click={() => setMode('inspect')}/>
       </div>
     </div>
     <div class='set'>
-      <Icon icon='settings' color='var(--primary)' on:click={() => showSettings = true}/>
-    </div>  
+      <div class='tool'>
+        <Icon icon='settings' color='var(--primary)' on:click={() => showSettings = true}/>
+      </div>
+    </div>
   </div>
 
   <div class='wrapper'>
-    
-    <Chart type='line' 
-      bind:stats 
+
+    <Chart type='line'
+      bind:stats
       bind:moved
       bind:paused
       bind:resetPosition
       bind:mark
-      zones={rendered} 
-      {...{ properties, propertyOptions, colors, scales, mode }}  
+      on:gesture={() => {
+        if(mode != 'inspect') startPan()
+      }}
+      zones={rendered}
+      {...{ properties, propertyOptions, colors, scales, mode }}
     />
 
     <div class='options'>
@@ -207,7 +224,7 @@
       margin: 8px;
     }
     .set {
-      margin-left: 40px;
+      margin-left: 64px;
       display: flex;
     }
     .tool {
@@ -216,10 +233,15 @@
       align-items: center;
       padding: 8px;
       :global(svg) {
-        height: 24px;
-        width: 24px;
+        height: 20px;
+        width: 20px;
         padding: 0;
         margin: 0;
+      }
+      &.view {
+        :global(svg) {
+          width: 25px;
+        }
       }
     }
     .tool.active {
@@ -230,6 +252,7 @@
 
   .reset {
     transform: rotate(135deg) scaleX(-1);
+    margin-right: 20px;
   }
 
   .properties {

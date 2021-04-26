@@ -4,6 +4,7 @@
 </script>
 
 <script>
+  import { createEventDispatcher } from 'svelte'
   import _ from 'data/language'
   import ChartCanvas from './ChartCanvas.svelte'
   import Scale from './Scale.svelte'
@@ -11,6 +12,8 @@
   import Gestures from 'data/charting/gestures'
   import CheckBox from 'components/input/CheckBox.svelte'
   import InspectionBox from './InspectionBox.svelte'
+
+  const dispatch = createEventDispatcher()
 
 
   export let type = 'line'
@@ -37,7 +40,7 @@
   }
 
   let position = { ...defaultPosition }
-  
+
   const gestures = new Gestures()
 
   export const resetPosition = () => {
@@ -67,7 +70,7 @@
     }
   }
 
-  $: totalZones = zones.length  
+  $: totalZones = zones.length
 
   const elasticConstrain = () => {
     paused = true
@@ -85,6 +88,7 @@
   }
 
   gestures.subscribe(p => position = p)
+  gestures.subscribeStart(() => dispatch('gesture'))
   gestures.subscribeComplete(elasticConstrain)
 
   $: {
@@ -138,9 +142,9 @@
     const y = Math.max(0, Math.min(bottom - top, (e.inspectY || e.clientY) - top - offset[1]))
     const selectedTime = getTS(x)
     if(mode == 'inspect') {
-      inspectionBase = [ 
-        selectedTime, 
-        (position.panY - y) * position.zoomY
+      inspectionBase = [
+        selectedTime,
+        (y - position.panY) * position.zoomY
       ]
     }
     // inspectionZoom = position.zoomY
@@ -148,21 +152,21 @@
 
   $: {
     const x = canvasWidth * (inspectionBase[0] - xMin) / timeRange
-    const y = position.panY - inspectionBase[1] / position.zoomY
+    const y = position.panY + inspectionBase[1] / position.zoomY
     inspectionPoint = [ x, y ]
   }
 
   $: inspect = scaleData.inspection || {}
 
-  $: chartProps = { 
+  $: chartProps = {
     properties, paused, type, scale, zones, type, position, jank, mode,
-    inspectedPoint: inspectionBase
+    inspectedPoint: [ inspectionBase[0], inspectionPoint[1] ]
   }
 
 </script>
 
-<div class='chart' 
-  on:pointerdown={gestures.pointerdown} 
+<div class='chart'
+  on:pointerdown={gestures.pointerdown}
   on:pointermove={gestures.move}
   on:mousewheel={gestures.move}
   on:pointerup={gestures.pointerup}
@@ -197,7 +201,7 @@
       <p><strong>Resolution:</strong> {stats.resolution * 25}%</p>
       <p><CheckBox bind:checked={jank} label='Stress'/></p>
     </div> -->
-    
+
     <div class='loading' class:active={stats.loading !== false && !stats.plotFilled}>
       {$_('Loading data...')}
     </div>
@@ -329,7 +333,7 @@
 </div> -->
 
 
-<!-- <h4>Stats:</h4> 
+<!-- <h4>Stats:</h4>
 <pre>
   {JSON.stringify(stats, null, 2)}
 </pre> -->
