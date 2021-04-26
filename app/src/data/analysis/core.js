@@ -48,7 +48,7 @@ export class Analysis {
   }
 
   get current_status() {
-    const published = [ 
+    const published = [
       'zones', 'errors', 'status', 'progress', 'progress_message', 'startTime', 'endTime',
       'groupName', 'groupId', 'maxTemp', 'user', 'mold', 'canceling', 'log', 'reportId'
     ]
@@ -107,13 +107,13 @@ export class Analysis {
     this.zones = _zones
     this.status = 'All zones off'
     this.completion_message = completion_message
-    
+
     activeGroup.set(this.groupId)
-   
+
 
     await this.setup()
 
-    
+
   }
 
   logError(zone, code) {
@@ -136,7 +136,7 @@ export class Analysis {
     // dedupe based on id/param match
     if(id == this.lastInfo.id && info.parameters == this.lastInfo.params) {
       return
-    } 
+    }
 
     // read parameters and zone list out of "parameters" string
     const parseParams = parameters => {
@@ -150,7 +150,7 @@ export class Analysis {
       const zones = JSON.parse(parts[1])
       return { params, zones }
     }
-    
+
     const { params, zones } = parseParams(info.parameters)
 
     // secondary deduping based on actual message text
@@ -185,7 +185,7 @@ export class Analysis {
       this.report = await api.get(`/report/${this.reportId}`)
       this.raw_report_errors = this.report.errors
       this.report_errors = []
-      for(let error of this.raw_report_errors) {
+      for(let error of this.raw_report_errors || []) {
         if (error.message_content) {
           let temp = 0
           let power = 0
@@ -248,7 +248,7 @@ export class Analysis {
       this.unsubZones()
     } catch(e) {
       // assume already unsubscribed
-    }    
+    }
   }
 
   async complete() {
@@ -323,7 +323,7 @@ export default function getAnalysis(type, report) {
       },
       report.group,
       null,
-      report.maxStartingTemp, 
+      report.maxStartingTemp,
       null, report.mold
     )
     active[type].setup(report)
@@ -356,7 +356,7 @@ export const error_types = {
   },
   tc_short: {
     name: 'Thermocouple Short',
-    description: `The T/C is pinched or the controller thinks it is pinched. 
+    description: `The T/C is pinched or the controller thinks it is pinched.
     (>98% output must see 20F(11C) rise in 5 minutes.`,
     icon: '/images/icons/analysis/thermocouple_short.jfif'
   },

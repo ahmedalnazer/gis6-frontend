@@ -2,7 +2,7 @@ export default class Gestures {
   constructor() {
     this.panX = 0
     this.panY = 0
-    
+
     this._zoomX = 0
     this._zoomY = 0
     this.zoomX = 1
@@ -10,6 +10,7 @@ export default class Gestures {
 
     this.listeners = []
     this.completeListeners = []
+    this.startListeners = []
 
     this.pointers = []
 
@@ -37,6 +38,13 @@ export default class Gestures {
     }
   }
 
+  subscribeStart = (fn) => {
+    this.startListeners.push(fn)
+    return () => {
+      this.startListeners = this.startListeners.filter(x => x != fn)
+    }
+  }
+
   subscribeComplete = (fn) => {
     this.completeListeners.push(fn)
     return () => {
@@ -45,6 +53,9 @@ export default class Gestures {
   }
 
   pointerdown = (e)  => {
+    for(let s of this.startListeners) {
+      s()
+    }
     this.prevX = e.clientX
     this.prevY = e.clientY
     this.pointers.push(e)
@@ -70,7 +81,7 @@ export default class Gestures {
     }
 
     if(e.deltaY || e.deltaY === 0) {
-      
+
       if (this.zoomOriginX == null) {
         this.zoomOriginX = e.clientX
         this.zoomOriginY = e.clientY

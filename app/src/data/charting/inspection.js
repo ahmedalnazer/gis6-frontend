@@ -1,12 +1,18 @@
 let n = 0
 
-export const getInspectionDetails = (mode, zones, inspectPoint, rendered, canvas, xMin, timeRange, position) => {
+// rate limited logging
+const log = (...args) => {
+  if(n % 60 == 0) {
+    console.log(...args)
+    n = 0
+  }
+}
+
+
+export const getInspectionDetails = (mode, zones, inspectPoint, rendered) => {
   n += 1
 
-  const [ xBase, yBase ] = inspectPoint
-
-  const x = canvas.width * (xBase - xMin) / timeRange
-  const y = position.panY - yBase / position.zoomY
+  const [ time, y ] = inspectPoint
 
   let data = {
     zone: -1,
@@ -19,58 +25,122 @@ export const getInspectionDetails = (mode, zones, inspectPoint, rendered, canvas
 
   let selectedDistance
 
-  let stamp1, stamp2
+  let stamps = []
 
   for(let [ property, lines ] of Object.entries(rendered)) {
     for(let line of lines) {
 
       // find closest x values on either side of inspected x
-      if(!stamp1) {
-        let last
-        for (let point of line) {
-          if(point.time > xBase && last) {
-            stamp1 = last.x
-            stamp2 = point.x
-            data.pointIndex = line.indexOf(point)
+      if(!stamps[0]) {
+        let minGap = 99999999999
+        let closest
+        for(let point of line) {
+          const xOffset = Math.abs(point.time - time)
+          if(xOffset < minGap) {
+            closest = point
+            minGap = xOffset
+          } else {
             break
           }
-          last = { ...point }
         }
+        const idx = line.indexOf(closest)
+        for(let o of [ 1, 2, 3, 4 ]) {
+          if(idx - o >= 0) {
+            stamps.push(line[idx - o].x)
+          }
+          if(idx + o <= line.length - 1) {
+            stamps.push(line[idx + o].x)
+          }
+        }
+        // stamps.sort()
       }
-      
-      const p1 = line.find(p => p.x == stamp1)
-      const p2 = line.find(p => p.x == stamp2)
 
-      if(p1 && p2) {
-        // const totalYOffset = Math.abs(y - p1.y) + Math.abs(p2.y - y)
-        
-        const d = minDistance(p1, p2, { x, y })
-        // log(d)
-        if(d < selectedDistance || selectedDistance === undefined) {
+      // find points for this line with x values matching the set determined above
+      const points = stamps.map(stamp => line.find(p => p.x == stamp)).filter(x => !!x)
+
+      if(points[0]) {
+        // get min distance from points/segments and closest point
+        const { distance, closest } = minDistance(points, { time, y })
+
+        if(distance < selectedDistance || selectedDistance === undefined) {
           data.index = lines.indexOf(line)
           data.zone = zones[data.index]
-          data.point = closest(p1, p2, { x, y })
+          data.point = closest
+          data.pointIndex = line.indexOf(closest)
           data.property = property
-          selectedDistance = d
+          selectedDistance = distance
         }
       }
     }
   }
-  // log(selectedZone)
 
   return data
 }
 
-const closest = (p1, p2, target) => {
-  const dX1 = Math.abs(p1.x - target.x)
-  const dX2 = Math.abs(p2.x - target.x)
-  return dX1 > dX2 ? p2 : p1
+
+// simple distance calculation between two points
+const getDistance = (p1, p2) => {
+  const a = p1.time - p2.time
+  const b = p1.y - p2.y
+  return Math.sqrt(a * a + b * b)
 }
 
-// calculate distance of inspection point from line segment
-const minDistance = (l1, l2, p) => {
-  return Math.min(Math.hypot(l1.x - p.x, l1.y - p.y), Math.hypot(l2.x - p.x, l1.y - p.y))
-  // const n = Math.abs((l2.x - l1.x) * (l1.y - p.y) - (l1.x - p.x) * (l2.y - l1.y))
-  // const d = Math.sqrt(Math.pow(l2.x - l1.x, 2) + Math.pow(l2.y - l1.y, 2))
-  // return n / d
+
+// get shortest distance between a line segment and a point
+function getSegmentDistance(l1, l2, p) {
+  const x = p.time
+  const y = p.y
+  const x1 = l1.time
+  const y1 = l1.y
+  const x2 = l2.time
+  const y2 = l2.y
+
+  var A = x - x1
+  var B = y - y1
+  var C = x2 - x1
+  var D = y2 - y1
+
+  var dot = A * C + B * D
+  var len_sq = C * C + D * D
+  var param = -1
+  if (len_sq != 0) //in case of 0 length line
+    param = dot / len_sq
+
+  var xx, yy
+
+  if (param < 0) {
+    xx = x1
+    yy = y1
+  }
+  else if (param > 1) {
+    xx = x2
+    yy = y2
+  }
+  else {
+    xx = x1 + param * C
+    yy = y1 + param * D
+  }
+
+  var dx = x - xx
+  var dy = y - yy
+  return Math.sqrt(dx * dx + dy * dy)
+}
+
+// calculate distance of inspection point from points and/or line segments
+const minDistance = (points, target) => {
+  let closest
+  let pointDistance = null
+  let lineDistance = 999999999
+  for(let i = 0; i < points.length; i++) {
+    const point = points[i]
+    const d = getDistance(point, target)
+    if(pointDistance === null || d < pointDistance) {
+      closest = point
+      pointDistance = d
+    }
+    if(i > 0) {
+      lineDistance = Math.min(lineDistance, getSegmentDistance(points[i], points[i - 1], target))
+    }
+  }
+  return { closest, distance: Math.min(lineDistance, pointDistance) }
 }

@@ -5,9 +5,9 @@ import { getInspectionDetails } from './inspection'
 
 /**
  * Generate canvas frame based on current buffer/config
- * @param {Object} chartData 
- * @param {Function} logStats 
- * @param {Function} submitLines 
+ * @param {Object} chartData
+ * @param {Function} logStats
+ * @param {Function} submitLines
  */
 const draw = (chartData, logStats, submitLines) => {
   const { canvas, ctx, scale, paused, bufferParams, position, mode, inspectedPoint } = chartData
@@ -28,7 +28,7 @@ const draw = (chartData, logStats, submitLines) => {
   const properties = _props.filter(x => !!x)
 
   let maxLinePoints = Math.min(700, Math.max(80, 20000 / (zones.length * properties.length))) * (chartData.resolution / 4)
-  
+
   const { xMin, xMax, dX, xScale, valid, xRange } = getXParameters(position, canvas, scale, paused)
   if(!valid) return
 
@@ -81,7 +81,7 @@ const draw = (chartData, logStats, submitLines) => {
             y = point.temp_sp - point.actual_temp
           }
         }
-        lines[prop][z - 1].push({ x, y, time: frame.time })
+        lines[prop][z - 1].push({ x, y, time: frame.ts })
         max[prop] = Math.max(max[prop], y)
         min[prop] = Math.min(min[prop], y)
       }
@@ -107,7 +107,7 @@ const draw = (chartData, logStats, submitLines) => {
     // calculate y pixel values based on established scale
     for(let line of lines[prop].filter(x => !!x)) {
       let renderedLine = []
-      
+
       for (let point of line) {
         yValues[prop].total += point.y
         yValues[prop].totalPoints += 1
@@ -115,7 +115,7 @@ const draw = (chartData, logStats, submitLines) => {
         renderedLine.push(point)
         totalPoints++
       }
-      
+
       renderedLines[prop].push(renderedLine)
     }
 
@@ -128,7 +128,7 @@ const draw = (chartData, logStats, submitLines) => {
   }
 
 
-  let inspectionDetails = getInspectionDetails(mode, zones, inspectedPoint, renderedLines, canvas, xRange, xMin, position)
+  let inspectionDetails = getInspectionDetails(mode, zones, inspectedPoint, renderedLines)
   inspectionDetails.frame = getFrame(rendered, inspectionDetails.pointIndex, inspectionDetails.zone)
 
   const selected = [ inspectionDetails.index ]
