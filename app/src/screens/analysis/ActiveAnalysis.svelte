@@ -1,5 +1,5 @@
 <script>
-  import { onMount } from 'svelte'
+  import { onMount, tick } from 'svelte'
   import { Progress } from "components"
   import faultAnalysis from "data/analysis/fault"
   import wiringAnalysis from "data/analysis/wiring"
@@ -23,33 +23,36 @@
   let renderedTotal = 0
 
   $: {
-    if(textBox && messages.length > renderedTotal) checkScroll()
+    if(messages.length > renderedTotal) checkScroll()
   }
 
   // scroll to the bottom if current scroll is within range of the last couple of messages
-  const checkScroll = () => {
-    renderedTotal = messages.length
-    const boxPos = textBox.getBoundingClientRect().bottom
+  const checkScroll = async () => {
+    await tick()
+    if(textBox) {
+      renderedTotal = messages.length
+      const boxPos = textBox.getBoundingClientRect().bottom
 
-    // second to last log entry
-    const s2last = textBox.childNodes[textBox.childNodes.length - 2]
+      // second to last log entry
+      const s2last = textBox.childNodes[textBox.childNodes.length - 2]
 
-    // additional padding to ensure scrolling happens more often.
-    const padding = 10
+      // additional padding to ensure scrolling happens more often.
+      const padding = 10
 
-    if(s2last) {
-      const { top, bottom } = s2last.getBoundingClientRect()
-      if(boxPos + padding > top) {
+      if(s2last) {
+        const { top, bottom } = s2last.getBoundingClientRect()
+        if(boxPos + padding > top) {
+          textBox.scrollTop = textBox.scrollHeight
+        }
+      } else {
         textBox.scrollTop = textBox.scrollHeight
       }
-    } else {
-      textBox.scrollTop = textBox.scrollHeight
     }
   }
 
   onMount(() => {
     // jump to the end if analysis already in progress
-    textBox.scrollTop = textBox.scrollHeight
+    if(textBox) textBox.scrollTop = textBox.scrollHeight
   })
 
 </script>

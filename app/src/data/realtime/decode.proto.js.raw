@@ -33,6 +33,41 @@ var mtype = exports.mtype = {
     "mt_mdtmsg": {
         "value": 7,
         "options": {}
+    },
+    "mt_healthstatus": {
+        "value": 8,
+        "options": {}
+    }
+};
+
+var PbProcessStatus = exports.PbProcessStatus = {
+    "ProcessStatusUnknown": {
+        "value": 0,
+        "options": {}
+    },
+    "ProcessStatusPending": {
+        "value": 1,
+        "options": {}
+    },
+    "ProcessStatusStarted": {
+        "value": 2,
+        "options": {}
+    },
+    "ProcessStatusCancelled": {
+        "value": 3,
+        "options": {}
+    },
+    "ProcessStatusCompleted": {
+        "value": 4,
+        "options": {}
+    },
+    "ProcessStatusFailed": {
+        "value": 5,
+        "options": {}
+    },
+    "ProcessStatusMax": {
+        "value": 6,
+        "options": {}
     }
 };
 
@@ -254,4 +289,20 @@ tczone.write = function (obj, pbf) {
     if (obj.mt) pbf.writeVarintField(1, obj.mt);
     if (obj.zones) pbf.writeVarintField(2, obj.zones);
     if (obj.records) for (var i = 0; i < obj.records.length; i++) pbf.writeMessage(3, tczone_record.write, obj.records[i]);
+};
+
+// healthstatus ========================================
+
+var healthstatus = exports.healthstatus = {};
+
+healthstatus.read = function (pbf, end) {
+    return pbf.readFields(healthstatus._readField, {mt: 0, status: []}, end);
+};
+healthstatus._readField = function (tag, obj, pbf) {
+    if (tag === 1) obj.mt = pbf.readVarint();
+    else if (tag === 2) pbf.readPackedVarint(obj.status, true);
+};
+healthstatus.write = function (obj, pbf) {
+    if (obj.mt) pbf.writeVarintField(1, obj.mt);
+    if (obj.status) pbf.writePackedVarint(2, obj.status);
 };

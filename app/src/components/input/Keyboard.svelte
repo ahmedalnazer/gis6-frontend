@@ -483,7 +483,7 @@
     font-size: 30px;
     letter-spacing: 0;
     line-height: 41px;
-    text-align: right;
+    text-align: left;
   }
   .keypad-ok-btn {
     /* border-radius: 2px;

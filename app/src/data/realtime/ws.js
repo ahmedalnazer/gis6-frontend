@@ -1,4 +1,5 @@
 import { realtime } from 'data/zones'
+import { rawHealth } from 'data/health'
 import { sysInfo, mdtMsg } from 'data/globalSettings'
 
 // import './ws-worker.mjs'
@@ -28,7 +29,7 @@ e.g. this will log all 'tczone' messages for the first two zones:
 
 > logWS([ 'tczone' ], [ 1, 2 ])
 
-Currently supported messages types are 'tczone', 'mdtmsg' and 'sysinfo'.
+Currently supported messages types are 'tczone', 'mdtmsg', 'healthstatus' and 'sysinfo'.
 Messages are displayed exactly as translated by the protobuf parser.
 
     `)
@@ -71,6 +72,9 @@ worker.onmessage = e => {
     // console.log('mdt message received', data)
     if (logged.includes('mdtmsg')) console.log(data)
     mdtMsg.set(data)
+  } else if (mt == 8) {
+    if (logged.includes('healthstatus')) console.log(data)
+    rawHealth.set(data)
   } else {
     // console.log(mt, JSON.stringify(data, null, 2))
   }
@@ -89,7 +93,7 @@ function createSocket () {
   // connect to necessary channels
   worker.postMessage({
     command: 'connect',
-    channels: [ 'tczone', 'sysinfo', 'mdtmsg' ]
+    channels: [ 'tczone', 'sysinfo', 'mdtmsg', 'healthstatus' ]
   })
 }
 
