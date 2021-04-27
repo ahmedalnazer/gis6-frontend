@@ -62,14 +62,16 @@
   <div class="table-body-item zone-name">
     <CheckBox checked={active} /> {zone.name}
   </div>
-  <div class="table-body-item temp" class:off={!on} class:error={tempError} class:warning={tempWarning}>
+
+  <div class="table-body-item temp" class:off={!on} class:error={tempError || powerError} class:warning={tempWarning || powerWarning}>
     {#if auto}
       {Math.round((zone.actual_temp || 0) / 10)}&deg;
     {:else}
       {((zone.actual_current || 0) / 10).toFixed(1)} A
     {/if}
   </div>
-  <div class="table-body-item temp" class:off={!on} class:error={powerError} class:warning={powerWarning}>
+
+  <div class="table-body-item temp" class:off={!on} class:error={powerError || tempError} class:warning={powerWarning || tempWarning}>
     {#if on}
       {#if monitor}
         -
@@ -80,6 +82,7 @@
       <div class='circle' />
     {/if}
   </div>
+  
   <div class='table-body-item settings' on:click|stopPropagation={setPoint}>
     <div class="settings-indicator">
       {#if monitor}
