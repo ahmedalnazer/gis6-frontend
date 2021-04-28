@@ -54,13 +54,6 @@ const getReportState = r => {
 const getReportErrors = r => {
   if(!r || !r.errors) return []
 
-  // TODO: deprecate this in favor of reading from the report
-  if([ 1, 2 ].includes(r.state)) {
-    let e
-    runtimeErrors.subscribe(er => e = er)()
-    return e
-  }
-
   let errors = []
   for(let error of r.errors || []) {
     if (error.message_content) {
@@ -79,7 +72,8 @@ const getReportErrors = r => {
       }
       const n = list[0]
       for (let [ key, value ] of Object.entries(alarms)) {
-        if(value) errors.push({ zone: n, type: key })
+        const existing = errors.find(x => x.zone == n && x.type == key)
+        if(value && error_types[key] && !existing) errors.push({ zone: n, type: key })
       }
     }
   }
@@ -98,25 +92,28 @@ const getProgressMessage = report => {
 }
 
 
+// Report for currently running analysis
 const activeAnalysis = writable({})
 
-
+// Reports for completed analysis by type (fault/wiring)
 const completedReports = writable({})
+
+// current message log (reset when starting an analysis)
 const messages = writable([])
+
+// current analysis progress (reset when starting an analysis)
 const progress = writable(0)
+
+// whether current analysis has been canceled (waiting for MD feedback)
 const canceling = writable(false)
 
-// TODO: deprecate this in favor of reading from the report
-const runtimeErrors = writable([])
 
-
+// compile current states into coherent functions/readout for front end
 const analysis = derived(
   [ health, activeAnalysis, user, mold, messages, progress, canceling ],
   ([ $health, $activeAnalysis, $user, $mold, $messages, $progress, $canceling ]) => {
 
     let data = {
-
-      // alias for backwards compatibility
       type: $activeAnalysis.reportType,
       progress_message: getProgressMessage($activeAnalysis),
       available: $health.moldDoctor && $health.moldDoctor.ok,
@@ -127,10 +124,22 @@ const analysis = derived(
       canceling: $canceling
     }
 
+    /**
+     * Start (or resume) an analysis.
+     * @param {Object} options - configuration options
+     * @param {Object} options.report [report]  -  (optional) report to resume, other options are ignored if this is provided
+     * @param {('wiring'|'fault')} options.type = type of analysis to start
+     * @param {Number} options.maxTemp = max starting temp
+     * @param {Array} options.zones = array of zone objects
+     * @param {string} options.group = name of the selected group
+     *
+     * @returns {Promise}
+     */
     const start = async ({ report, type, maxTemp, zones, group }) => {
       // reset progress and messages
       progress.set(0)
       messages.set([])
+      canceling.set(false)
 
       if(!report) {
         await api.post(`/analysis/${type}`, {
@@ -142,14 +151,16 @@ const analysis = derived(
           zonesLocked: zones.filter(x => x.islocked).length,
           zones_locked_list: zones.filter(x => x.islocked).map(x => x.number),
           user_id: $user ? $user.id : 0,
+          user: $user ? $user.username : 'None',
           group,
           mold: $mold && $mold.name
         })
+
         const active = await api.get('/analysis/active')
-        // console.log(active)
+
+        // pull report that was just created
         for (let r of active) {
           r = cleanReport(r)
-          console.log(r.reportType, type)
           if (r.reportType == type) {
             monitorReport(cleanReport(r.id))
           }
@@ -157,10 +168,11 @@ const analysis = derived(
       } else {
         monitorReport(cleanReport(report.id))
       }
-
-
     }
 
+    /**
+     * Cancel the currently active analysis
+     */
     const cancel = async () => {
       await api.post(`/analysis/cancel`, { report_id: $activeAnalysis.id, user_id: $user ? $user.id : 0 })
       canceling.set(true)
@@ -171,14 +183,16 @@ const analysis = derived(
 )
 
 
-export const resumeAnalysis = report => {
-  let a
-  analysis.subscribe(an => a = an)()
-  a.start({ report })
-}
+/**
+ * Poll report with given id until complete
+ * @param {Number} id
+ * @returns
+ */
+const monitorReport = async id => {
 
+  // schedule another poll as needed
+  const keepWatching = () => setTimeout(() => monitorReport(id), 500)
 
-const monitorReport = async (id) => {
   try {
     const r = cleanReport(await api.get(`/report/${id}`))
 
@@ -189,26 +203,27 @@ const monitorReport = async (id) => {
 
     activeAnalysis.set(r)
     if(!r.endTime) {
-      watchedZones = r.zones_list
-      setTimeout(() => monitorReport(id), 500)
-      canceling.set(false)
+      // if report is still in progress, continue to poll
+      keepWatching()
     } else {
-
-      resetErrors()
+      // otherwise notify the user that the analysis is complete
       if(r.state != 4) {
         if(getReportState(r) != 'failed') {
+          // success notice
           notify.success(r.reportType == 'fault'
             ? $_('Fault analysis complete')
             : $_('Wiring analysis complete')
           )
         } else {
+          // failure notice
           notify.error(r.reportType == 'fault'
-            ? $_('Fault analysis failed')
-            : $_('Wiring analysis failed')
+            ? $_('Fault analysis did not complete, please re-start the analysis')
+            : $_('Wiring analysis did not complete, please re-start the analysis')
           )
         }
         completedReports.update(cur => ({ ...cur, [r.reportType]: r }))
       } else {
+        // confirm cancellation
         notify(r.reportType == 'fault'
           ? $_('Fault analysis canceled')
           : $_('Wiring analysis canceled')
@@ -216,7 +231,10 @@ const monitorReport = async (id) => {
       }
     }
   } catch(e) {
-    setTimeout(() => monitorReport(id), 500)
+    console.error(e)
+    // for robustness, if anything goes wrong, continue trying to check the report
+    // could result in indefinite polling, may consider alternate error handling
+    keepWatching()
   }
 }
 
@@ -249,70 +267,73 @@ mdtMsg.subscribe(info => {
   lastInfo = { id, params: info.parameters }
   messages.update(m => [ ...m, { id, params, zones } ])
   if(info) progress.set(info.progress / 10)
-  // console.log(`${this.progress}%: ${msg}`)
 })
 
 
+/**
+ *
+ * @param {('wiring'|'fault')} type - 'fault' or 'wiring'
+ * @returns
+ */
 export default function getAnalysis(type) {
   return derived([ analysis, completedReports ], ([ $analysis, $completedReports ]) => {
+
     const report = $completedReports[type]
+
+    /**
+     * Start an analysis.
+     * @param {Object} options - configuration options
+     * @param {Number} options.maxTemp = max starting temp
+     * @param {Array} options.zones = array of zone objects
+     * @param {string} options.group = name of the selected group
+     *
+     * @returns {Promise}
+     */
+    const start = async ({ maxTemp, zones, group }) => {
+      await $analysis.start({ type, maxTemp, zones, group })
+    }
+
+
+    /**
+     * Reset a completed analysis (of the given `type`)
+     */
+    const reset = async () => {
+      // delete current completed report of `type` if it hasn't been marked as saved
+      if(report && !report.saved) await api.delete(`/report/${report.id}`)
+
+      // reset active analysis if it's the specified `type`
+      if($analysis.type == type) activeAnalysis.set({})
+
+      // reset completed report by `type`
+      completedReports.update(cur => ({ ...cur, [type]: null }))
+    }
+
     let data = {
+      start,
+      reset,
       status: getReportState(report),
       errors: getReportErrors(report),
-      start: ({ maxTemp, zones, group }) => $analysis.start({ type, maxTemp, zones, group }),
-      report: $completedReports[type],
-      reset: async () => {
-        if(report && !report.saved) {
-          await api.delete(`/report/${report.id}`)
-        }
-        if($analysis.type == type) {
-          activeAnalysis.set({})
-        }
-        completedReports.update(cur => ({ ...cur, [type]: null }))
-      }
+      report: $completedReports[type]
     }
+
+    // if specified `type` is the same as the active analysis, provide active analysis data
     if($analysis.type == type) {
       data = { ...data, ...$analysis, start: data.start }
     }
+
     return data
   })
 }
 
-
-// hopefully deprecating soon
-let errorMap = {}
-let watchedZones = []
-
-const logError = (zone, code) => {
-  zone = zone.number || zone
-  if(!errorMap[zone]) {
-    errorMap[zone] = []
-  }
-  if(!errorMap[zone].includes(code)) {
-    errorMap[zone].push(code)
-    runtimeErrors.update(errs => errs.concat([ { zone, type: code } ]))
-  }
+/**
+ * Resume an analysis that's marked as "active" in the database
+ * @param {Object} report - report object from the database
+ */
+export const resumeAnalysis = report => {
+  let a
+  analysis.subscribe(an => a = an)()
+  a.start({ report })
 }
-
-const resetErrors = () => {
-  errorMap = {}
-  watchedZones = []
-  runtimeErrors.set([])
-}
-
-
-zones.subscribe(zones => {
-  const relevant = zones.filter(x => (watchedZones || []).includes(x.number) && ! x.settings.locked)
-  const errors = relevant.filter(x => x.hasAlarm)
-  for (let z of errors) {
-    for (let key of Object.keys(z.alarms)) {
-      if (availableCodes.includes(key) && z.alarms[key]) {
-        logError(z, key)
-      }
-    }
-  }
-})
-
 
 
 

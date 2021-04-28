@@ -121,7 +121,11 @@ class API {
 
       try {
         const controller = new AbortController()
-        const timeout = setTimeout(() => controller.abort(), 10 * 1000)
+        const timeout = setTimeout(() => {
+          controller.abort()
+          reject('request timed out')
+          fail()
+        }, 10 * 1000)
         const resp = await fetch(`${apiTarget}/api/${url}`, { ...opts, signal: controller.signal })
         clearTimeout(timeout)
         if (resp && resp.status == 403) {

@@ -1,23 +1,8 @@
-import { wsConnected } from './realtime/ws'
+import wsConnected from './realtime/wsConnected'
 import { derived, writable } from 'svelte/store'
 
-// enum PbProcessStatus {
-//   ProcessStatusUnknown = 0;
-//   ProcessStatusPending =1;
-//   ProcessStatusStarted =2;
-//   ProcessStatusCancelled =3;
-//   ProcessStatusCompleted = 4;
-//   ProcessStatusFailed = 5;
-//   ProcessStatusMax =6;
-// }
-/*enum ProcessIndex{
-  kProcessMoldDoctor,
-  kProcessIndexMax,
-};
-*/
 
 export const rawHealth = writable({})
-
 
 const states = {
   0: 'unknown',
@@ -31,11 +16,16 @@ const states = {
 
 let lastKnown = {}
 
-const getStatus = (key, current) => {
+const getStatus = (key, current, connected) => {
+  let ret = {
+    status: 'unknown',
+    ok: false
+  }
+  if(!connected) return ret
+
   if(!lastKnown[key]) lastKnown[key] = []
   const { status, secs } = current
   lastKnown[key].push(secs)
-  let ret = {}
   ret.status = states[status]
 
   // compare last 3 timestamps, if all are the same, ok = false
@@ -65,7 +55,7 @@ const health = derived([ rawHealth, wsConnected ], ([ $rawHealth, $wsConnected ]
 
 
   if(current && current[0]) {
-    status.moldDoctor = getStatus('moldDoctor', current[0])
+    status.moldDoctor = getStatus('moldDoctor', current[0], $wsConnected)
   }
 
   return status

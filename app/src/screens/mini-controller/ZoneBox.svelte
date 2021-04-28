@@ -84,32 +84,32 @@
     {/if}
   </div>
 
-  <div class:tempWarning class:tempError class:tempOff>
+  <div class:tempWarning class:tempError class:powerError class:powerWarning class:tempOff>
     <div class='name'>
       {zone.name}
     </div>
-  
+
     <div class='icon-legend'>
-  
+
       <div class='minic-icon-legend'>
-        
+
         {#if monitor}
           <!-- Monitor -->
-          <div class='minic-icon'><Icon icon='zone-operation-monitor' size='22px' color={(tempWarning || tempError || tempOff)?'var(--pale)': ''} /></div>
+          <div class='minic-icon'><Icon icon='zone-operation-monitor' size='22px' color={tempWarning || tempError || tempOff?'var(--pale)': ''} /></div>
         {:else if auto}
           <!-- Automatic -->
-          <div class='minic-icon'><Icon icon='zone-operation-auto' size='25px' color={(tempWarning || tempError || tempOff)?'var(--pale)': ''} /></div>
+          <div class='minic-icon'><Icon icon='zone-operation-auto' size='25px' color={tempWarning || tempError || tempOff?'var(--pale)': ''} /></div>
         {:else}
           <!-- Manual -->
-          <div class='minic-icon'><Icon icon='zone-operation-manual' size='20px' color={(tempWarning || tempError || tempOff)?'var(--pale)': ''} /></div>
+          <div class='minic-icon'><Icon icon='zone-operation-manual' size='20px' color={tempWarning || tempError || tempOff?'var(--pale)': ''} /></div>
         {/if}
 
         {#if boost || standby}
           <!-- Boost / Standby -->
           <div class='minic-icon'>
             <div class='animated' class:boost class:standby>
-              <Icon icon='boost' color={(tempWarning || tempError || tempOff)?'var(--pale)': 'var(--warning)'} />
-              <Icon icon='boost' color={(tempWarning || tempError || tempOff)?'var(--pale)': 'var(--warning)'} />
+              <Icon icon='boost' color={tempWarning || tempError || tempOff?'var(--pale)': 'var(--warning)'} />
+              <Icon icon='boost' color={tempWarning || tempError || tempOff?'var(--pale)': 'var(--warning)'} />
 
               <!-- <div class={(tempWarning || tempError)?'gradient-overlay-danger': 'gradient-overlay'} /> -->
               <div class={tempWarning? 'gradient-overlay-warning': tempError? 'gradient-overlay-danger': 'gradient-overlay'} />
@@ -117,23 +117,23 @@
           </div>
         {:else if rising}
             <!-- Boost -->
-            <div class='minic-icon'><Icon icon='up' color={(tempWarning || tempError || tempOff)?'var(--pale)': ''} /></div>
+            <div class='minic-icon'><Icon icon='up' color={tempWarning || tempError || tempOff?'var(--pale)': ''} /></div>
         {:else if falling}
             <!-- Temperature above setpoint -->
-            <div class='minic-icon'><Icon icon='down' color={(tempWarning || tempError || tempOff)?'var(--pale)': ''} /></div>
+            <div class='minic-icon'><Icon icon='down' color={tempWarning || tempError || tempOff?'var(--pale)': ''} /></div>
         <!-- {:else}
           <div class='minic-icon'>&nbsp;</div> -->
         {/if}
-  
+
         {#if settings.locked || settings.sealed}
           {#if settings.locked}
             <!-- Locked -->
-            <div class='minic-icon'><Icon icon='lock' color={(tempWarning || tempError || tempOff)? 'var(--pale)': 'var(--blue)'} /></div>
+            <div class='minic-icon'><Icon icon='lock' color={tempWarning || tempError || tempOff? 'var(--pale)': 'var(--blue)'} /></div>
           {/if}
-    
+
           {#if settings.sealed}
             <!-- Sealed -->
-            <div class='minic-icon'><Icon icon='sealed' color={(tempWarning || tempError || tempOff)?'var(--pale)': 'var(--blue)'} /></div>
+            <div class='minic-icon'><Icon icon='sealed' color={tempWarning || tempError || tempOff?'var(--pale)': 'var(--blue)'} /></div>
           {/if}
         <!-- {:else}
           <div class='minic-icon'>&nbsp;ff</div> -->
@@ -147,26 +147,26 @@
             </div> -->
           </div>
         {/if}
-        
+
         <!-- Standby -->
         <!-- <div><div class='stacked'><Icon icon='down' /><Icon icon='down' /></div></div> -->
-  
+
         <!-- Locked -->
         <!-- <div><Icon icon='lock' /></div> -->
-  
+
         <!-- Sealed -->
         <!-- <div><Icon icon='sealed' /></div> -->
-  
+
         <!-- Temperature above setpoint -->
         <!-- <div><Icon icon='down' /></div> -->
-  
+
         <!-- Boost -->
         <!-- <div><div class='stacked'><Icon icon='up' /><Icon icon='up' /></div></div> -->
-  
+
         <!-- Off -->
         <!-- <div><Icon icon='off' /></div> -->
       </div>
-  
+
       <div class="tmp">
         <div class='actual'>
           {Math.round((zone.actual_temp || 0) / 10)}&deg;<span class='temp-type-actual'>F</span>
@@ -180,7 +180,7 @@
         </div>
       </div>
     </div>
-  
+
     <div class='power'>
       <!-- {#if on}
         <div class='percent'>{((zone.actual_percent || 0) / 10).toFixed(1)}%</div>
@@ -194,8 +194,8 @@
 </div>
 
 
-<!-- 
-  if !locked 
+<!--
+  if !locked
 <div class='power' class:powerWarning class:powerError>
       {#if locked}
         <div class='icon-container'>
@@ -213,7 +213,7 @@
 
 
 <!-- <div on:click={click} class:active class='rb-box zone-box' data-id={zone.id} data-group={group && group.id}>
-  
+
   <div class='group-colors'>
     {#each tabs as t }
       <div class='color-tab' style='background:{t}' />
@@ -512,7 +512,7 @@
     0% {bottom: -100%}
     100% {bottom: 0%}
   }
-  
+
   .animated {
     display:flex;
     flex-direction: column;
@@ -593,7 +593,7 @@
       height: 20px;
       border-radius: 50%;
     }
-    
+
     .sealed-circle {
       border: 3.2px solid var(--blue);
       width: 20px;
