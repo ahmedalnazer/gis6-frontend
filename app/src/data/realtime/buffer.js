@@ -49,12 +49,12 @@ export const bufferCommands = (port, e, id) => {
 
   const post = (data) => {
     if(port) {
-      port.postMessage(data) 
+      port.postMessage(data)
     } else {
       postMessage
     }
   }
-  
+
   if (data.command == 'readBuffer') {
 
     // send data in batches, limiting max to avoid OOM when serializing to
@@ -74,7 +74,7 @@ export const bufferCommands = (port, e, id) => {
         resetBuffer()
         return
       }
-      
+
       if(latest[id]) {
         const newest = buffer.filter(x => x.ts > latest[id])
         const backFill = buffer.filter(x => x.ts < earliest[id]).slice(-(maxChunkSize - newest.length))
@@ -95,7 +95,6 @@ export const bufferCommands = (port, e, id) => {
 
   if (data.command == 'setBufferParams') {
     let reset = false
-    console.log('setting params', data.params)
     for(let key of Object.keys(data.params)) {
       if(data.params[key] != params[key]) {
         reset = true
@@ -107,7 +106,7 @@ export const bufferCommands = (port, e, id) => {
       for (let key of Object.keys(needsReset)) {
         needsReset[key] = true
       }
-    } 
+    }
   }
 
   if (data.command == 'close') {

@@ -672,10 +672,10 @@
 
 
 {#if icon == 'zone-operation-auto'}
-  <svg width="30px" height="30px" viewBox="0 0 30 30" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-      <title>D4AFD62B-3F54-4A90-BCFE-A63A2F82DEE8</title>
-      <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-          <g id="Icon-Legend" transform="translate(-47.000000, -119.000000)" fill="#364860" fill-rule="nonzero">
+  <svg width={size} height={size} viewBox="0 0 30 30" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <title></title>
+      <g id="Page-1" stroke="none" stroke-width="1" fill-rule="evenodd" style="fill:{color}">
+          <g id="Icon-Legend" transform="translate(-47.000000, -119.000000)" fill-rule="nonzero" style="fill:{color}">
               <path d="M62,119 C53.7157288,119 47,125.715729 47,134 C47,142.284271 53.7157288,149 62,149 C70.2842712,149 77,142.284271 77,134 C77,125.715729 70.2842712,119 62,119 Z M69.6388889,135.094444 L58.8402778,141.329167 C58.4492471,141.554928 57.9674799,141.554939 57.5764389,141.329196 C57.1853978,141.103452 56.9444444,140.686246 56.9444444,140.234722 L56.9444444,127.765278 C56.9444444,127.313754 57.1853978,126.896548 57.5764389,126.670804 C57.9674799,126.445061 58.4492471,126.445072 58.8402778,126.670833 L69.6388889,132.905556 C70.0298248,133.131358 70.2706334,133.548538 70.2706334,134 C70.2706334,134.451462 70.0298248,134.868642 69.6388889,135.094444 Z" id="icon-auto-copy-2"></path>
           </g>
       </g>
@@ -683,9 +683,9 @@
 {/if}
 
 {#if icon == 'zone-operation-manual'}
-  <svg width="24px" height="30px" viewBox="0 0 24 30" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-      <title>icon monitor copy</title>
-      <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+  <svg width={size} height={size} viewBox="0 0 24 30" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <title></title>
+      <g id="Page-1" stroke="none" stroke-width="1" fill-rule="evenodd" style="fill:{color}">
           <g id="Icon-Legend" transform="translate(-49.000000, -199.000000)">
               <g id="Group" transform="translate(49.000000, 199.000000)" style="fill:{color}">
                   <g id="Fill/Hydro" transform="translate(-0.000000, 0.000000)">
@@ -698,9 +698,9 @@
 {/if}
 
 {#if icon == 'zone-operation-monitor'}
-<svg width="15px" height="30px" viewBox="0 0 15 30" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <title>BB19B7F9-2CED-4A1C-95EF-7855CAF74799</title>
-    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+<svg width={size} height={size} viewBox="0 0 15 30" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title></title>
+    <g id="Page-1" stroke="none" stroke-width="1" fill-rule="evenodd" style="fill:{color}">
         <g id="Icon-Legend" transform="translate(-54.000000, -279.000000)">
             <g id="icon-monitor" transform="translate(54.000000, 279.000000)" style="fill:{color}">
                 <g id="Fill/Hydro" transform="translate(-0.000000, 0.000000)">
@@ -714,7 +714,7 @@
 
 {#if icon == 'sealed'}
   <svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <title>F0D0AEA6-2B92-4669-BF9C-DEC5240D1263</title>
+    <title></title>
     <g id="EZ-Screen-" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
         <g id="EZ-Screen" transform="translate(-791.000000, -910.000000)">
             <g id="icon-sealed-copy" transform="translate(791.000000, 910.000000)" style="fill:{color}">
@@ -728,10 +728,10 @@
 {/if}
 
 {#if icon == 'off'}
-  <svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-      <title>A9F78974-4920-4491-8826-68A0853F4C0C</title>
-      <g id="Standards" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-          <g id="Style-Guide" transform="translate(-1122.000000, -473.000000)" fill="#364860">
+  <svg width={size} height={size} viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <title></title>
+      <g id="Standards" stroke="none" stroke-width="1" fill-rule="evenodd" style="fill:{color}">
+          <g id="Style-Guide" transform="translate(-1122.000000, -473.000000)" style="fill:{color}">
               <circle id="icon-off" cx="1134" cy="485" r="12"></circle>
           </g>
       </g>

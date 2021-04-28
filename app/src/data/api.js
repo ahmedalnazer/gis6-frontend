@@ -2,6 +2,20 @@ import user from './user'
 import notify from './notifications'
 import getStub from './api-stubs'
 import history from 'router/history'
+import { CookieStorage } from 'cookie-storage'
+import _ from './language'
+
+const $_ = (...args) => {
+  let translate
+  _.subscribe(t => translate = t)()
+  return translate(...args)
+}
+
+const cookieStorage = new CookieStorage({
+  sameSite: 'Lax'
+})
+
+
 
 const offline = import.meta.env.SNOWPACK_PUBLIC_OFFLINE == 'true'
 const apiTarget = import.meta.env.SNOWPACK_PUBLIC_API_URL || ''
@@ -39,8 +53,9 @@ class API {
   // TODO: finalize and document
   update = async () => {
     try {
+      this.loadJWT()
+      await this.updateToken()
       this.status = await this.get('auth/status')
-      // console.log(this.status)
     } catch(e) {
       console.error(e)
       this.status = { user: {}}
@@ -48,31 +63,65 @@ class API {
     user.set(this.status && this.status.user.username && this.status.user)
   }
 
+  loadJWT = () => {
+    const keys = cookieStorage.getItem('auth')
+    if(keys) {
+      try {
+        const { access, refresh } = JSON.parse(keys)
+        this.token = access
+        this.refresh = refresh
+      } catch(e) {
+        // assume JSON has been corrupted somehow
+      }
+    }
+  }
+
+  updateJWT = data => {
+    const { access, refresh } = data
+    cookieStorage.setItem('auth', JSON.stringify({ access, refresh }))
+    this.token = access
+    this.refresh = refresh
+  }
+
+  updateToken = async () => {
+    if(this.refresh) {
+      const data = await this.post('/auth/token/refresh', { refresh: this.refresh })
+      if(data.code && data.code == 'token_not_valid') {
+        cookieStorage.removeItem('auth')
+      } else {
+        this.updateJWT(data)
+      }
+    }
+  }
+
   // TODO: finalize and document
   login = async (username, password) => {
     const data = await this.post('auth/token/obtain', { username, password })
     if(!data.access) {
-      notify.error('Invalid username or password')
+      notify.error($_('Invalid username or password'))
       return false
     } else {
-      this.token = data.access
-      this.refresh = data.refresh
-      console.log(data)
+      this.updateJWT(data)
       await this.update()
-      notify.success(`Signed in`)
+      notify.success($_('Signed in'))
       return true
     }
   }
 
   // TODO: finalize and document
-  logout = async () => {
+  logout = async (msg) => {
     let u
     user.subscribe(current => u = current)()
-    await this.post('auth/logout', { refresh_token: this.refresh, user: u.id })
+    try {
+      await this.post('auth/logout', { refresh_token: this.refresh, user: u.id })
+    } catch(e) {
+      console.error(e)
+      // assume JSON parsing error, may need to revisit
+    }
     this.status.user = {}
     user.set(null)
     history.push('/')
-    notify('You have succesfully logged out')
+    notify(msg || $_('You have succesfully logged out'))
   }
 
 
@@ -115,24 +164,55 @@ class API {
       const fail = (msg) => {
         if(!disconnectLock && !offline) {
           disconnectLock = setTimeout(() => disconnectLock = null, 3000)
-          notify.error(msg || 'Sorry, we seem to be having trouble connecting to the server')
+          notify.error(msg || $_('Sorry, we seem to be having trouble connecting to the server'))
         }
       }
+
       try {
-        const resp = await fetch(`${apiTarget}/api/${url}`, opts)
+        const controller = new AbortController()
+        const timeout = setTimeout(() => {
+          controller.abort()
+          reject('request timed out')
+          fail()
+        }, 10 * 1000)
+        const resp = await fetch(`${apiTarget}/api/${url}`, { ...opts, signal: controller.signal })
+        clearTimeout(timeout)
         if (resp && resp.status == 403) {
-          fail('Sorry, it seems like your admin session has expired, please try logging in again')
+          fail($_('Sorry, it seems like your user session has expired, please try logging in again'))
           return reject(resp)
         } else if (!resp || resp.status > 500) {
           fail()
           // return reject(resp)
         }
         try {
-          resolve(resp.json().catch(e => reject(e)))
+          try {
+            let body
+            try {
+              body = await resp.json()
+            } catch {
+              body = resp
+            }
+
+            // recover from expired token
+            if(resp.status == 401 && body.code && body.code == 'token_not_valid') {
+              if(!url.includes('auth/token/refresh')) {
+                await this.updateToken()
+                return resolve(await api.request(url, data, { method }))
+              } else {
+                fail($_('Sorry, it seems like your user session has expired, please try logging in again'))
+                this.updateJWT({ access: '', refresh: '' })
+                user.set(null)
+              }
+            }
+            resolve(body)
+          } catch(e) {
+            reject(e)
+          }
         } catch (e) {
           resolve(resp)
         }
       } catch(e) {
+        console.error(e)
         fail()
         // reject(err)
       }
