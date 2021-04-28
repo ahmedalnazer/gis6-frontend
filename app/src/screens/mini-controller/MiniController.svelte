@@ -61,7 +61,7 @@
   </div>
 </Screen>
 
-{#if showLegend}
+<!-- {#if showLegend}
   <Modal onClose={() => showLegend = false}>
     <div class='icon-legend'>
       <div><div class='circle' /> {$_('Off')}</div>
@@ -78,8 +78,23 @@
       <div><Icon icon='down' /> {$_('Temperature above setpoint')}</div>
     </div>
   </Modal>
-{/if}
+{/if} -->
 
+{#if showLegend}
+  <Modal title={$_('Icon Legend')} onClose={() => showLegend = false}>
+    <div class='icon-legend'>
+      <div><Icon icon='zone-operation-auto' size='35px' /> {$_('Automatic')}</div>
+      <div><Icon icon='zone-operation-manual' size='35px' /> {$_('Manual')}</div>
+      <div><Icon icon='zone-operation-monitor' size='30px' /> {$_('Monitor')}</div>
+      <div><div class='stacked'><Icon icon='down' /><Icon icon='down' /></div> {$_('Standby')}</div>
+      <div><Icon icon='lock' /> {$_('Locked')}</div>
+      <div><Icon icon='sealed' />{$_('Sealed')}</div>
+      <div><Icon icon='down' /> {$_('Temperature above setpoint')}</div>
+      <div><div class='stacked'><Icon icon='up' /><Icon icon='up' /></div> {$_('Boost')}</div>
+      <div><Icon icon='off' /> {$_('Off')}</div>
+    </div>
+  </Modal>
+{/if}
 
 <style lang="scss">
   :global(#minicontroller) .screen-body {
