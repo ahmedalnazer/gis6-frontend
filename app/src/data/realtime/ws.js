@@ -1,21 +1,11 @@
 import { realtime } from 'data/zones'
 import { rawHealth } from 'data/health'
 import { sysInfo, mdtMsg } from 'data/globalSettings'
-import { writable } from 'svelte/store'
-
-export const wsConnected = writable(false)
-// import './ws-worker.mjs'
+import wsConnected from './wsConnected'
 
 const socketTarget = import.meta.env.SNOWPACK_PUBLIC_WS_URL || `ws://${window.location.hostname}:8080`
 
 const worker = new Worker('/workers/ws-worker.js')
-
-// worker.onerror = e => {
-//   console.error('WS WORKER ERROR!!')
-//   console.error(e)
-// }
-
-// worker.port.start()
 
 let logged = []
 let loggedZones = [ 1 ]

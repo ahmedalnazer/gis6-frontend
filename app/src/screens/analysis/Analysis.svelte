@@ -12,6 +12,7 @@
   import user from "data/user"
   import mold from "data/mold"
   import AnalysisReport from './AnalysisReport.svelte'
+  import health from 'data/health'
 
   export let type, description
 
@@ -49,7 +50,7 @@
   $: analysis = analyses[type]
 
   // $: console.log($other)
-  $: disabled = $other && ![ 'complete', 'inactive' ].includes($other.status)
+  $: disabled = $other && ![ 'complete', 'inactive' ].includes($other.status) || !$health.moldDoctor.ok
 
   let selectedGroup = $activeGroup || "all"
 
@@ -108,8 +109,13 @@
 <div class="analysis">
   <p class="description">{description}</p>
   {#if disabled}
-    <p class='muted disabled-note'>{$_('Only one active analysis can be run at a time.')}</p>
+    {#if !$health.moldDoctor.ok}
+      <p class='muted disabled-note'>{$_('The Mold Doctor is currently offline.')}</p>
+    {:else}
+      <p class='muted disabled-note'>{$_('Only one active analysis can be run at a time.')}</p>
+    {/if}
   {/if}
+
   <div class="inputs">
     <Select
       bind:value={selectedGroup}
@@ -137,7 +143,7 @@
         {$_("Start Analysis")}
       </a>
     {:else if ![ 'complete', 'failed' ].includes(status)}
-      <a class="button" class:disabled={$analysis.canceling} on:click={() => confirmStop = true}
+      <a class="button" class:disabled={disabled || $analysis.canceling} on:click={() => confirmStop = true}
         >{$_("Cancel Test")}</a
       >
     {:else}
@@ -166,7 +172,7 @@
   {/if}
 </div>
 
-{#if confirmStart}
+{#if confirmStart && !disabled}
   <Modal
     title={$_("Do you want to proceed?")}
     onClose={() => confirmStart = false}
@@ -204,7 +210,7 @@
   </Modal>
 {/if}
 
-{#if confirmStop}
+{#if confirmStop && !disabled}
   <Modal title={$_("Cancel Test")} onClose={() => confirmStop = false}>
     <div class="modal-text">
       <p class="cancel-message">

@@ -32,6 +32,10 @@
       </div>
     </div>
   </div>
+{:else}
+  {#if window.debug === true}
+    <pre>{JSON.stringify(error)}</pre>
+  {/if}
 {/if}
 
 <style>
