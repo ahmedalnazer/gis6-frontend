@@ -2,7 +2,7 @@
   import _ from "data/language"
   export let analysis
 
-  let duration = analysis.endTime.getTime() - analysis.startTime.getTime()
+  let duration = new Date(analysis.endTime).getTime() - new Date(analysis.startTime).getTime()
 
 </script>
 
@@ -10,7 +10,7 @@
   <h3>Test Results</h3>
   <div class='columns'>
     <div class='data green'>
-      <h2>{analysis.zones.length}</h2>
+      <h2>{analysis.zones}</h2>
       <p>{$_('Zones Tested')}</p>
     </div>
     <div class='data red'>
@@ -18,7 +18,7 @@
       <p>{$_('Faults')}</p>
     </div>
     <div class='data yellow'>
-      <h2>{analysis.zones.filter(x => x.Islocked).length}</h2>
+      <h2>{analysis.zonesLocked}</h2>
       <p>{$_('Locked Zones')}</p>
     </div>
     <div class='data green'>

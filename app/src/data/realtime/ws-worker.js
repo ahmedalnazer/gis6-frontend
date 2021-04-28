@@ -88,6 +88,7 @@ const createSocket = () => new Promise((resolve, reject) => {
 
     socket.addEventListener('open', e => {
       console.log('Socket connection established')
+      postMessage('connected')
       initiate()
       // connect()
     })
@@ -143,6 +144,7 @@ const createSocket = () => new Promise((resolve, reject) => {
 
     socket.addEventListener('close', e => {
       console.log('Socket connection broken! Retrying in 1s...')
+      postMessage('disconnected')
       ready = false
       socket = null
       connectedChannels = []

@@ -1,6 +1,10 @@
 import { writable, derived } from 'svelte/store'
 import api from 'data/api'
 import { id } from '../utils/tools'
+import { setAlarm, clearAlarm } from 'data/testing/simUI'
+
+window.setAlarm = setAlarm
+window.clearAlarm = clearAlarm
 
 const getBit = (int, bit) => !!(int & 1 << bit)
 
@@ -28,7 +32,7 @@ export const toggleZones = (zones) => {
 
 export const getAlarms = (power, temp) => {
   let alarms = {}
-  
+
   let map = [ 'tc_open', 'tc_short', 'tc_reversed', 'low', 'high', 'tc_high', 'tc_low', 'tc_power' ]
   for (let i = 0; i < map.length; i++) {
     alarms[map[i]] = getBit(temp, i)
@@ -72,7 +76,7 @@ const zones = derived([ rawZones, realtime ], ([ $raw, $realtime ]) => {
     // console.log(merged)
 
     merged.alarms = getAlarms(merged.power_alarm, merged.temperature_alarm)
-    
+
     if (merged.alarms.cross_wired) {
       merged.alarms.crosswired_with = merged.temp_sp
     }
@@ -101,7 +105,7 @@ const zones = derived([ rawZones, realtime ], ([ $raw, $realtime ]) => {
 
     return merged
   })
-  
+
   var collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' })
   sorted.sort((a, b) => collator.compare(a.name, b.name))
   // console.log(sorted[0] && sorted[0].alarms)
@@ -125,8 +129,8 @@ const decodeZone = z => {
 }
 
 const clean = z => {
-  const dirty = [ 'name', 'number', 'groups', 'actual_current', 'actual_percent', 'actual_temp', 'power_alarm', 
-    'temp_alarm', 'settings', 'temp_sp', 'manual_sp', '_settings', 'alarms', 'hasAlarm', 'hasTempAlarm', 
+  const dirty = [ 'name', 'number', 'groups', 'actual_current', 'actual_percent', 'actual_temp', 'power_alarm',
+    'temp_alarm', 'settings', 'temp_sp', 'manual_sp', '_settings', 'alarms', 'hasAlarm', 'hasTempAlarm',
     'hasPowerAlarm', 'ZoneGroups', 'rising', 'falling', 'hasWarning'
   ]
   for(let f of dirty) {
@@ -163,15 +167,15 @@ zones.set = rawZones.set
 
 
 /**
- * 
- * @param {Object|Array} zones 
- * @param {*} options 
+ *
+ * @param {Object|Array} zones
+ * @param {*} options
  */
 zones.update = async (updatedZones, update, options = {}) => {
   if(!Array.isArray(updatedZones)) updatedZones = [ updatedZones ]
 
   const url = `/zones/${options.actions || ''}`
-  
+
   let updateData = clean(update)
   delete updateData.ZoneGroups
 

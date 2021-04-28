@@ -118,8 +118,12 @@ class API {
           notify.error(msg || 'Sorry, we seem to be having trouble connecting to the server')
         }
       }
+
       try {
-        const resp = await fetch(`${apiTarget}/api/${url}`, opts)
+        const controller = new AbortController()
+        const timeout = setTimeout(() => controller.abort(), 10 * 1000)
+        const resp = await fetch(`${apiTarget}/api/${url}`, { ...opts, signal: controller.signal })
+        clearTimeout(timeout)
         if (resp && resp.status == 403) {
           fail('Sorry, it seems like your admin session has expired, please try logging in again')
           return reject(resp)
@@ -133,6 +137,7 @@ class API {
           resolve(resp)
         }
       } catch(e) {
+        console.error(e)
         fail()
         // reject(err)
       }

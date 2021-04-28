@@ -1,3 +1,4 @@
+import { wsConnected } from './realtime/ws'
 import { derived, writable } from 'svelte/store'
 
 // enum PbProcessStatus {
@@ -17,31 +18,54 @@ import { derived, writable } from 'svelte/store'
 
 export const rawHealth = writable({})
 
-const health = derived([ rawHealth ], ([ $rawHealth ]) => {
-  const current = $rawHealth.status
 
-  let status = {
-    moldDoctor: {
-      status: 'active',
-      ok: false
+const states = {
+  0: 'unknown',
+  1: 'pending',
+  2: 'started',
+  3: 'cancelled',
+  4: 'completed',
+  5: 'failed',
+  6: 'max'
+}
+
+let lastKnown = {}
+
+const getStatus = (key, current) => {
+  if(!lastKnown[key]) lastKnown[key] = []
+  const { status, secs } = current
+  lastKnown[key].push(secs)
+  let ret = {}
+  ret.status = states[status]
+
+  // compare last 3 timestamps, if all are the same, ok = false
+  ret.ok = lastKnown[key].length < 2 // assume true until at least 3 data points collected
+  for(let ts of lastKnown[key]) {
+    if(ts != lastKnown[key][0]) {
+      ret.ok = true
     }
   }
 
-  const states = {
-    0: 'unknown',
-    1: 'pending',
-    2: 'started',
-    3: 'cancelled',
-    4: 'completed',
-    5: 'failed',
-    6: 'max'
+  lastKnown[key] = lastKnown[key].slice(-1)
+  return ret
+}
+
+const health = derived([ rawHealth, wsConnected ], ([ $rawHealth, $wsConnected ]) => {
+  const current = $rawHealth.status
+
+  let status = {
+    ws: {
+      ok: $wsConnected
+    },
+    moldDoctor: {
+      status: 'pending',
+      ok: true
+    }
   }
 
-  const okStates = [ 1, 2, 3, 4, 5, 6 ]
 
   if(current && current[0]) {
-    status.moldDoctor.status = states[current[0]]
-    status.moldDoctor.ok = okStates.includes(current[0])
+    status.moldDoctor = getStatus('moldDoctor', current[0])
   }
 
   return status
@@ -58,3 +82,5 @@ export const systemReady = derived([ health ], ([ $health ]) => {
   }
   return true
 })
+
+// health.subscribe(s => console.log(s))

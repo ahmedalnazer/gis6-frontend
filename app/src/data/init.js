@@ -3,7 +3,7 @@ import zones from 'data/zones'
 import process from 'data/process'
 import globalSettings from 'data/globalSettings'
 import { seedTypes } from 'data/zones/zone-types'
-import { setupAnalysis } from 'data/analysis'
+import { resumeAnalysis } from './analysis/core'
 
 export default async function init() {
 
@@ -35,7 +35,7 @@ export default async function init() {
   // initialize and resume active analysis
   api.get('analysis/active').then(actives => {
     for (let a of actives) {
-      setupAnalysis(a)
+      resumeAnalysis(a)
     }
   })
 }

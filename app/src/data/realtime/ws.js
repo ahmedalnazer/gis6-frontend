@@ -1,7 +1,9 @@
 import { realtime } from 'data/zones'
 import { rawHealth } from 'data/health'
 import { sysInfo, mdtMsg } from 'data/globalSettings'
+import { writable } from 'svelte/store'
 
+export const wsConnected = writable(false)
 // import './ws-worker.mjs'
 
 const socketTarget = import.meta.env.SNOWPACK_PUBLIC_WS_URL || `ws://${window.location.hostname}:8080`
@@ -45,9 +47,19 @@ Messages are displayed exactly as translated by the protobuf parser.
   return `Logging ${logged.join(', ')}`
 }
 
+let rateLimitZones = 0
+
 worker.onmessage = e => {
   // console.log(e.data)
-  if(!e || !e.data || !e.data.data) return
+  if(e.data == 'connected') {
+    wsConnected.set(true)
+    return
+  }
+  if(e.data == 'disconnected') {
+    wsConnected.set(false)
+    return
+  }
+  if(!e.data || !e.data.data) return
   const { data } = e.data
   const { mt } = data
   if (mt == 6) {
@@ -62,8 +74,11 @@ worker.onmessage = e => {
       }
       console.log(logged.length == 1 ? logged[0] : logged)
     }
-
-    realtime.set(data.records)
+    if(rateLimitZones % 5 == 0) {
+      realtime.set(data.records)
+      rateLimitZones = 0
+    }
+    rateLimitZones += 1
   } else if (mt == 3) {
     // console.log('sys message received')
     if (logged.includes('sysinfo')) console.log(data)
