@@ -112,7 +112,7 @@
                         </div>
                         <div>
                             <label>{$_('Max Starting Temperature')}</label>
-                            {report.maxStartingTemp} &#176;F
+                            {(report.maxStartingTemp || 0)/10} &#176;F
                         </div>
                     </div>
                 </div>
