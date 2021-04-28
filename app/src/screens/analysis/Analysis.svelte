@@ -12,6 +12,7 @@
   import user from "data/user"
   import mold from "data/mold"
   import AnalysisReport from './AnalysisReport.svelte'
+  import health from 'data/health'
 
   export let type, description
 
@@ -35,12 +36,12 @@
   $: messages = {
     fault: {
       start: $_("Fault analysis started"),
-      cancel: $_("Fault analysis canceled"),
+      cancel: $_("Canceling fault analysis"),
       complete: $_("Fault analysis complete"),
     },
     wiring: {
       start: $_("Wiring analysis started"),
-      cancel: $_("Wiring analysis canceled"),
+      cancel: $_("Canceling wiring analysis"),
       complete: $_("Wiring analysis complete"),
     },
   }
@@ -48,8 +49,8 @@
   $: other = analyses[type == 'fault' ? 'wiring' : 'fault']
   $: analysis = analyses[type]
 
-  $: console.log($other && $other.status)
-  $: disabled = $other && ![ 'complete', 'inactive' ].includes($other.status)
+  // $: console.log($other)
+  $: disabled = $other && ![ 'complete', 'inactive' ].includes($other.status) || !$health.moldDoctor.ok
 
   let selectedGroup = $activeGroup || "all"
 
@@ -68,31 +69,28 @@
   const start = () => {
     confirmStart = false
     notify.success(messages[type].start)
-    analysis.start(
-      toTest,
-      messages[type].complete,
-      selectedGroupName,
-      selectedGroup == 'all' ? null : selectedGroup,
-      maxStartingTemperature * 10,
-      $user && $user.username || $_("Operator"),
-      $mold.name || $_("Unknown")
-    )
+    $analysis.start({ zones: toTest, group: selectedGroupName, maxTemp: maxStartingTemperature * 10 })
   }
 
   const stop = () => {
     confirmStop = false
-    analysis.cancel()
+    $analysis.cancel()
     notify(messages[type].cancel)
   }
 
   const exit = () => {
-    analysis.reset()
+    $analysis.reset()
     history.push("/hot-runner")
+  }
+
+  const restart = async () => {
+    await $analysis.reset()
+    start()
   }
 
   $: zonesOn = $zones.filter(x => x.settings && x.settings.on).length
 
-  $: startMessage = zonesOn 
+  $: startMessage = zonesOn
     ? $_(`All zones are currently ON and the system is running. The zones will
         need to be turned OFF before the fault analysis can begin. Do you want
         to turn off the zones and proceed with the test?`)
@@ -111,8 +109,13 @@
 <div class="analysis">
   <p class="description">{description}</p>
   {#if disabled}
-    <p class='muted disabled-note'>{$_('Only one active analysis can be run at a time.')}</p>
+    {#if !$health.moldDoctor.ok}
+      <p class='muted disabled-note'>{$_('The Mold Doctor is currently offline.')}</p>
+    {:else}
+      <p class='muted disabled-note'>{$_('Only one active analysis can be run at a time.')}</p>
+    {/if}
   {/if}
+
   <div class="inputs">
     <Select
       bind:value={selectedGroup}
@@ -128,7 +131,7 @@
     />
 
     {#if status == "inactive"}
-      <a class="button active" 
+      <a class="button active"
         class:disabled
         on:click={() => {
           if(!toTest.length) {
@@ -139,17 +142,22 @@
       >
         {$_("Start Analysis")}
       </a>
-    {:else if status != "complete"}
-      <a class="button" class:disabled={$analysis.canceling} on:click={() => confirmStop = true}
+    {:else if ![ 'complete', 'failed' ].includes(status)}
+      <a class="button" class:disabled={disabled || $analysis.canceling} on:click={() => confirmStop = true}
         >{$_("Cancel Test")}</a
       >
     {:else}
       <!-- <a on:click={start}>(restart)</a> -->
       <div class="complete">
-        <div class="report-button" on:click={OnOpenReportModal}>
-          <Icon icon="report" color="var(--primary)" />
-          {$_("View Report")}
-        </div>
+        {#if status == 'complete'}
+          <div class="report-button" on:click={OnOpenReportModal}>
+            <Icon icon="report" color="var(--primary)" />
+            {$_("View Report")}
+          </div>
+        {/if}
+        {#if status == 'failed'}
+          <a class="button active" on:click={restart}>{$_("Restart Test")}</a>
+        {/if}
         <a class="button active" on:click={exit}>{$_("Exit Test")}</a>
       </div>
     {/if}
@@ -164,7 +172,7 @@
   {/if}
 </div>
 
-{#if confirmStart}
+{#if confirmStart && !disabled}
   <Modal
     title={$_("Do you want to proceed?")}
     onClose={() => confirmStart = false}
@@ -202,7 +210,7 @@
   </Modal>
 {/if}
 
-{#if confirmStop}
+{#if confirmStop && !disabled}
   <Modal title={$_("Cancel Test")} onClose={() => confirmStop = false}>
     <div class="modal-text">
       <p class="cancel-message">

@@ -300,9 +300,25 @@ healthstatus.read = function (pbf, end) {
 };
 healthstatus._readField = function (tag, obj, pbf) {
     if (tag === 1) obj.mt = pbf.readVarint();
-    else if (tag === 2) pbf.readPackedVarint(obj.status, true);
+    else if (tag === 2) obj.status.push(healthstatus.ProcessStatus.read(pbf, pbf.readVarint() + pbf.pos));
 };
 healthstatus.write = function (obj, pbf) {
     if (obj.mt) pbf.writeVarintField(1, obj.mt);
-    if (obj.status) pbf.writePackedVarint(2, obj.status);
+    if (obj.status) for (var i = 0; i < obj.status.length; i++) pbf.writeMessage(2, healthstatus.ProcessStatus.write, obj.status[i]);
+};
+
+// healthstatus.ProcessStatus ========================================
+
+healthstatus.ProcessStatus = {};
+
+healthstatus.ProcessStatus.read = function (pbf, end) {
+    return pbf.readFields(healthstatus.ProcessStatus._readField, {status: 0, secs: 0}, end);
+};
+healthstatus.ProcessStatus._readField = function (tag, obj, pbf) {
+    if (tag === 1) obj.status = pbf.readVarint(true);
+    else if (tag === 2) obj.secs = pbf.readVarint(true);
+};
+healthstatus.ProcessStatus.write = function (obj, pbf) {
+    if (obj.status) pbf.writeVarintField(1, obj.status);
+    if (obj.secs) pbf.writeVarintField(2, obj.secs);
 };

@@ -10,7 +10,7 @@
   $: details = error_types[error.type]
 </script>
 
-{#if zone && details.name}
+{#if zone && details && details.name}
   <div class="error">
     <div class="name">
       {zone.name}
@@ -32,6 +32,10 @@
       </div>
     </div>
   </div>
+{:else}
+  {#if window.debug === true}
+    <pre>{JSON.stringify(error)}</pre>
+  {/if}
 {/if}
 
 <style>

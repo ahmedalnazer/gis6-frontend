@@ -17,7 +17,7 @@
   $: analysis = analyses[type]
 
   let textBox
-  $: messages = ($analysis.log || []).map(x => $getMessage(x.id, x))
+  $: messages = ($analysis.messages || []).map(x => $getMessage(x.id, x))
 
   // limit scroll checking to when new messages are added
   let renderedTotal = 0
@@ -58,7 +58,10 @@
 </script>
 
 <div class="analysis">
-  {#if $analysis.status == "complete"}
+  {#if $analysis.status == 'failed'}
+    <h2>{$_('Analysis did not complete')}</h2>
+    <p>{$_('Please re-start the Analysis')}</p>
+  {:else if $analysis.status == "complete"}
     <TestResults analysis={$analysis} />
   {:else}
     <div class="status">
