@@ -151,6 +151,7 @@ const analysis = derived(
           zonesLocked: zones.filter(x => x.islocked).length,
           zones_locked_list: zones.filter(x => x.islocked).map(x => x.number),
           user_id: $user ? $user.id : 0,
+          user: $user ? $user.username : 'None',
           group,
           mold: $mold && $mold.name
         })
