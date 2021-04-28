@@ -121,8 +121,8 @@
         {:else if falling}
             <!-- Temperature above setpoint -->
             <div class='minic-icon'><Icon icon='down' color={(tempWarning || tempError || tempOff)?'var(--pale)': ''} /></div>
-        {:else}
-          <div class='minic-icon'>&nbsp;</div>
+        <!-- {:else}
+          <div class='minic-icon'>&nbsp;</div> -->
         {/if}
   
         {#if settings.locked || settings.sealed}
@@ -141,9 +141,10 @@
 
         {#if !on }
           <div class='minic-icon'>
-            <div class='icon-container off-circle'>
+            <Icon icon='off' color={(tempWarning || tempError || tempOff)?'var(--pale)': ''} />
+            <!-- <div class='icon-container off-circle'>
               <div class='circle' />
-            </div>
+            </div> -->
           </div>
         {/if}
         
@@ -181,10 +182,12 @@
     </div>
   
     <div class='power'>
-      {#if on}
+      <!-- {#if on}
         <div class='percent'>{((zone.actual_percent || 0) / 10).toFixed(1)}%</div>
         <div class='amps'>{((zone.actual_current || 0) / 10).toFixed(2).padStart(5, '0')} A</div>
-      {/if}
+      {/if} -->
+        <div class='percent'>{((zone.actual_percent || 0) / 10).toFixed(1)}%</div>
+        <div class='amps'>{((zone.actual_current || 0) / 10).toFixed(2).padStart(5, '0')} A</div>
     </div>
   </div>
 
@@ -399,22 +402,23 @@
   }
 
   .name, .temp, .power, .icon-legend {
-    padding: 8px;
+    padding: 2px 8px 2px 8px;
   }
   .name {
     font-weight: 400;
     padding: 8px;
+    align-items: center;
   }
   .temp, .tmp, .power, .icon-legend {
     display: flex;
     justify-content: space-between;
     // align-items: flex-end;
-    min-height: 36px;
+    min-height: 30px;
     font-weight: 300;
     transition: background-color .2s;
   }
   .icon-legend {
-    min-height: 90px !important;
+    min-height: 80px !important;
   }
   .tempOff {
     background: var(--darkGray);

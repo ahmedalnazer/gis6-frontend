@@ -728,10 +728,10 @@
 {/if}
 
 {#if icon == 'off'}
-  <svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <svg width={size} height={size} viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
       <title></title>
-      <g id="Standards" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-          <g id="Style-Guide" transform="translate(-1122.000000, -473.000000)" fill="#364860">
+      <g id="Standards" stroke="none" stroke-width="1" fill-rule="evenodd" style="fill:{color}">
+          <g id="Style-Guide" transform="translate(-1122.000000, -473.000000)" style="fill:{color}">
               <circle id="icon-off" cx="1134" cy="485" r="12"></circle>
           </g>
       </g>
