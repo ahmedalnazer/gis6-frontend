@@ -157,14 +157,18 @@ const analysis = derived(
         })
 
         const active = await api.get('/analysis/active')
-
-        // pull report that was just created
-        for (let r of active) {
-          r = cleanReport(r)
-          if (r.reportType == type) {
-            monitorReport(cleanReport(r.id))
+        try {
+          // pull report that was just created
+          for (let r of active) {
+            r = cleanReport(r)
+            if (r.reportType == type) {
+              monitorReport(cleanReport(r.id))
+            }
           }
+        } catch(e) {
+          console.error(e)
         }
+
       } else {
         monitorReport(cleanReport(report.id))
       }
