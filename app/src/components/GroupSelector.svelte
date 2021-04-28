@@ -38,7 +38,9 @@
     <div
       class="tab"
       on:click={() => activeGroup.set(null)}
-      class:active={!$activeGroup}>
+      class:active={!$activeGroup}
+    >
+      <div class='color-tab' style='background: var(--darkBlue)' />
       {$_('All Zones')}
     </div>
     {#each $groups as group (group.id)}
@@ -49,7 +51,8 @@
           class:active={$activeGroup == group.id}
           data-id={group.id}
         >
-          {group.name}
+        <div class='color-tab' style='background: {group.color}' />
+        {group.name}
         </div>
       {/if}
     {/each}
@@ -67,11 +70,13 @@
       cursor: pointer;
     }
     .tab {
-      padding: 16px 2px 16px 2px;
+      position: relative;
+      padding: 24px 2px 16px 2px;
       font-size: 85%;
       min-width: 160px;
       white-space: nowrap;
       border: 1px solid var(--darkBlue);
+      border-top: 0;
       color: var(--darkBlue);
       background: white;
       text-align: center;
@@ -81,5 +86,13 @@
         color: white;
       }
     }
+  }
+
+  .color-tab {
+    height: 10px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
   }
 </style>

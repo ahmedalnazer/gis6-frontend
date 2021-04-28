@@ -27,17 +27,17 @@
 
     let report = {
       reportType: $analysis.type,
-      user: $analysis.user.username,
-      user_id: $analysis.user.id,
+      user: $analysis.user,
+      user_id: $analysis.user_id,
       mold: $analysis.mold,
-      group: $analysis.groupName,
-      maxStartingTemp: $analysis.maxTemp,
+      group: $analysis.group,
+      maxStartingTemp: $analysis.maxStartingTemp,
       name: `${$analysis.type === 'fault' ? 'fault' : 'wiring'}-analysis-${date.getFullYear()}y_${date.getMonth() + 1}m_${date.getDate()}d_${date.getHours()}h_${date.getMinutes()}m`,
       comment: '',
-      startTime: $analysis.startTime.toISOString(),
-      endTime: $analysis.endTime.toISOString(),
-      zones: $analysis.zones.length,
-      zonesLocked: $analysis.zones.filter(x => x.Islocked).length,
+      startTime: new Date($analysis.startTime).toISOString(),
+      endTime: new Date($analysis.endTime).toISOString(),
+      zones: $analysis.zones,
+      zonesLocked: $analysis.zonesLocked,
       saved: true
     }
 
@@ -65,9 +65,9 @@
       isDisable = false
       changed[textobj.detail.field] = true
     }
-  
+
   </script>
-  
+
   <div class="report-modal">
     <Modal title={`${$analysis.type === 'fault' ? 'Fault' : 'Wiring'} Analysis Report`} {onClose}>
         <div class="report-description">{$_('This report is saved to the reports folder on the home page.')}</div>
@@ -88,7 +88,7 @@
                   bind:changed={changed.comment}
                 />
             </div>
-        
+
             <div class="grid-parent">
                 <div class="">
                     <div class='grid'>
@@ -153,7 +153,7 @@
       on:done={(kcontent) => getKeyboardText(kcontent)}
     />
   {/if}
-  
+
   <style lang="scss">
     .report-modal {
       :global(.modal-body) {

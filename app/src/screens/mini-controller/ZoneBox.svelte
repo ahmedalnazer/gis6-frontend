@@ -121,12 +121,12 @@
         {#if settings.locked || settings.sealed}
           {#if settings.locked}
             <!-- Locked -->
-            <div class='minic-icon'><Icon icon='lock' color={(tempWarning || tempError)?'var(--pale)': ''} /></div>
+            <div class='minic-icon'><Icon icon='lock' color={(tempWarning || tempError)? 'var(--pale)': 'var(--blue)'} /></div>
           {/if}
     
           {#if settings.sealed}
             <!-- Sealed -->
-            <div class='minic-icon'><Icon icon='sealed' color={(tempWarning || tempError)?'var(--pale)': ''} /></div>
+            <div class='minic-icon'><Icon icon='sealed' color={(tempWarning || tempError)?'var(--pale)': 'var(--blue)'} /></div>
           {/if}
         {:else}
           <div class='minic-icon'>&nbsp;</div>

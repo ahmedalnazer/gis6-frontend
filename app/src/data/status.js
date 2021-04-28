@@ -2,6 +2,7 @@ import { writable, derived } from 'svelte/store'
 import process from './process'
 import _ from 'data/language'
 import zones from 'data/zones'
+import health from './health'
 
 
 // info message displayed in header if not running and no warning/error declared
@@ -19,11 +20,20 @@ const running = derived([ process, zones, _ ], ([ $process, $zones, $_ ]) => {
 
 
 // error message displayed in header, will override warning/info
-const error = writable('')
-
+const error = derived([ health, _ ], ([ $health, $_ ]) => {
+  if(!$health.ws.ok) {
+    return $_('Data connection unavailable')
+  }
+  return ''
+})
 
 // warning message displayed in header, will override info
-const warning = writable('')
+const warning = derived([ health, _ ], ([ $health, $_ ]) => {
+  if($health && $health.moldDoctor && !$health.moldDoctor.ok) {
+    return $_('Mold Doctor is offline')
+  }
+  return ''
+})
 
 
 // calculate message to be displayed in header

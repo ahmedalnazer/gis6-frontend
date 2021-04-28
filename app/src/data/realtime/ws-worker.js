@@ -1,8 +1,8 @@
 import Pbf from 'pbf'
-import { tcdata, minmax, unknown_msg, tczone, sysinfo, mdtmsg } from './decode.proto'
+import { tcdata, minmax, unknown_msg, tczone, sysinfo, mdtmsg, healthstatus } from './decode.proto'
 import dataBuffer, { bufferCommands } from './buffer'
 
-const messageTypes = { tcdata, minmax, unknown_msg, tczone, sysinfo, mdtmsg }
+const messageTypes = { tcdata, minmax, unknown_msg, tczone, sysinfo, mdtmsg, healthstatus }
 
 let socket
 let ports = []
@@ -85,9 +85,10 @@ const createSocket = () => new Promise((resolve, reject) => {
   if(ready) resolve()
   if(!socket) {
     socket = new WebSocket(socketTarget)
-    
+
     socket.addEventListener('open', e => {
       console.log('Socket connection established')
+      postMessage('connected')
       initiate()
       // connect()
     })
@@ -107,7 +108,8 @@ const createSocket = () => new Promise((resolve, reject) => {
         3: 'sysinfo',
         4: 'tcdata',
         6: 'tczone',
-        7: 'mdtmsg'
+        7: 'mdtmsg',
+        8: 'healthstatus'
       }
       const type = decoders[mt]
 
@@ -134,7 +136,7 @@ const createSocket = () => new Promise((resolve, reject) => {
           } else {
             postMessage({ ts, data })
           }
-          
+
         }
       }
       // postMessage(data)
@@ -142,6 +144,7 @@ const createSocket = () => new Promise((resolve, reject) => {
 
     socket.addEventListener('close', e => {
       console.log('Socket connection broken! Retrying in 1s...')
+      postMessage('disconnected')
       ready = false
       socket = null
       connectedChannels = []

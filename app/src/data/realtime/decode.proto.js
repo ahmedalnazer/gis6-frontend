@@ -33,6 +33,41 @@ export const mtype = exports.mtype = {
     "mt_mdtmsg": {
         "value": 7,
         "options": {}
+    },
+    "mt_healthstatus": {
+        "value": 8,
+        "options": {}
+    }
+};
+
+export const PbProcessStatus = exports.PbProcessStatus = {
+    "ProcessStatusUnknown": {
+        "value": 0,
+        "options": {}
+    },
+    "ProcessStatusPending": {
+        "value": 1,
+        "options": {}
+    },
+    "ProcessStatusStarted": {
+        "value": 2,
+        "options": {}
+    },
+    "ProcessStatusCancelled": {
+        "value": 3,
+        "options": {}
+    },
+    "ProcessStatusCompleted": {
+        "value": 4,
+        "options": {}
+    },
+    "ProcessStatusFailed": {
+        "value": 5,
+        "options": {}
+    },
+    "ProcessStatusMax": {
+        "value": 6,
+        "options": {}
     }
 };
 
@@ -254,4 +289,36 @@ tczone.write = function (obj, pbf) {
     if (obj.mt) pbf.writeVarintField(1, obj.mt);
     if (obj.zones) pbf.writeVarintField(2, obj.zones);
     if (obj.records) for (var i = 0; i < obj.records.length; i++) pbf.writeMessage(3, tczone_record.write, obj.records[i]);
+};
+
+// healthstatus ========================================
+
+export const healthstatus = exports.healthstatus = {};
+
+healthstatus.read = function (pbf, end) {
+    return pbf.readFields(healthstatus._readField, {mt: 0, status: []}, end);
+};
+healthstatus._readField = function (tag, obj, pbf) {
+    if (tag === 1) obj.mt = pbf.readVarint();
+    else if (tag === 2) obj.status.push(healthstatus.ProcessStatus.read(pbf, pbf.readVarint() + pbf.pos));
+};
+healthstatus.write = function (obj, pbf) {
+    if (obj.mt) pbf.writeVarintField(1, obj.mt);
+    if (obj.status) for (var i = 0; i < obj.status.length; i++) pbf.writeMessage(2, healthstatus.ProcessStatus.write, obj.status[i]);
+};
+
+// healthstatus.ProcessStatus ========================================
+
+healthstatus.ProcessStatus = {};
+
+healthstatus.ProcessStatus.read = function (pbf, end) {
+    return pbf.readFields(healthstatus.ProcessStatus._readField, {status: 0, secs: 0}, end);
+};
+healthstatus.ProcessStatus._readField = function (tag, obj, pbf) {
+    if (tag === 1) obj.status = pbf.readVarint(true);
+    else if (tag === 2) obj.secs = pbf.readVarint(true);
+};
+healthstatus.ProcessStatus.write = function (obj, pbf) {
+    if (obj.status) pbf.writeVarintField(1, obj.status);
+    if (obj.secs) pbf.writeVarintField(2, obj.secs);
 };

@@ -1,4 +1,5 @@
 <script>
+  import { onMount, tick } from 'svelte'
   import { Progress } from "components"
   import faultAnalysis from "data/analysis/fault"
   import wiringAnalysis from "data/analysis/wiring"
@@ -16,29 +17,51 @@
   $: analysis = analyses[type]
 
   let textBox
-  $: messages = ($analysis.log || []).map(x => $getMessage(x.id, x))
+  $: messages = ($analysis.messages || []).map(x => $getMessage(x.id, x))
+
+  // limit scroll checking to when new messages are added
+  let renderedTotal = 0
 
   $: {
-    // scroll to the bottom if current scroll is within range of the last couple of messages
-    if(textBox && messages.length) {
-      const boxPos = textBox.scrollTop + textBox.offsetHeight
-      const stl = textBox.childNodes[textBox.childNodes.length - 2]
-      if(stl) {
-        const stlPos = stl.offsetTop - textBox.offsetTop
-        if(stlPos < boxPos) {
+    if(messages.length > renderedTotal) checkScroll()
+  }
+
+  // scroll to the bottom if current scroll is within range of the last couple of messages
+  const checkScroll = async () => {
+    await tick()
+    if(textBox) {
+      renderedTotal = messages.length
+      const boxPos = textBox.getBoundingClientRect().bottom
+
+      // second to last log entry
+      const s2last = textBox.childNodes[textBox.childNodes.length - 2]
+
+      // additional padding to ensure scrolling happens more often.
+      const padding = 10
+
+      if(s2last) {
+        const { top, bottom } = s2last.getBoundingClientRect()
+        if(boxPos + padding > top) {
           textBox.scrollTop = textBox.scrollHeight
         }
       } else {
         textBox.scrollTop = textBox.scrollHeight
       }
-      
     }
   }
+
+  onMount(() => {
+    // jump to the end if analysis already in progress
+    if(textBox) textBox.scrollTop = textBox.scrollHeight
+  })
 
 </script>
 
 <div class="analysis">
-  {#if $analysis.status == "complete"}
+  {#if $analysis.status == 'failed'}
+    <h2>{$_('Analysis did not complete')}</h2>
+    <p>{$_('Please re-start the Analysis')}</p>
+  {:else if $analysis.status == "complete"}
     <TestResults analysis={$analysis} />
   {:else}
     <div class="status">
@@ -106,7 +129,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
   }
-  
+
   .progress p {
     text-align: right;
   }
@@ -123,5 +146,5 @@
     border-bottom: 1px solid #A2A4A8;
     padding: 0px 40px 10px 40px;
   }
-  
+
 </style>

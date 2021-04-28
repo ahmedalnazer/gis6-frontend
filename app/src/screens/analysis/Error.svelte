@@ -10,7 +10,7 @@
   $: details = error_types[error.type]
 </script>
 
-{#if zone && details.name}
+{#if zone && details && details.name}
   <div class="error">
     <div class="name">
       {zone.name}
