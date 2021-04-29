@@ -56,9 +56,12 @@
   const editGroup = async () => {
     editing = false
     let editGroupItem = { name: newName, color: newColor, id: editGroupId }
+    let g = $groups.filter(x => x.id == editGroupId)
 
-    await groups.update(editGroupItem)
-    await groups.reload()
+    if (g.length > 0) {
+      await groups.update({ ...g[0], name: newName, color: newColor })
+      await groups.reload()
+    }
 
     //Reset for next input
     newName = ""
