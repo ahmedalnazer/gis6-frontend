@@ -59,7 +59,7 @@
           <div class='gradient-overlay' />
         </div>
       {:else}
-        <Icon icon='boost' color='#F5F6F9' />
+        <Icon icon='boost' size="26px" color='#F5F6F9' />
       {/if}
     </div>
     {$_('Boost')}
