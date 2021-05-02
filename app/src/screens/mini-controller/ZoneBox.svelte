@@ -23,6 +23,7 @@
   $: manual = !settings.auto
 
   $: setpoint = zone.temp_sp ? Math.round(zone.temp_sp / 10) * 10 : zone.ProcessSp
+  $: setpointmanual = zone.ManualSp
 
   $: on = settings.on
   // $: on = false //TEST
@@ -33,8 +34,13 @@
   $: boost = settings.boost
   // $: boost = false //TEST
 
+  $: boostWarning = settings.boost
+
   $: standby = settings.standby
   // $: standby = true //TEST
+
+  $: standbyError = settings.standby
+  // $: standbyError = true //TEST
 
   $: falling = zone.falling
   // $: falling = true //TEST
@@ -84,7 +90,7 @@
     {/if}
   </div>
 
-  <div class:tempWarning class:tempError class:powerError class:powerWarning class:tempOff>
+  <div class:tempWarning class:tempError class:powerError class:powerWarning class:tempOff class:boostWarning class:standbyError class="minic-tile-body">
     <div class='name'>
       {zone.name}
     </div>
@@ -93,90 +99,95 @@
 
       <div class='minic-icon-legend'>
 
-        {#if monitor}
-          <!-- Monitor -->
-          <div class='minic-icon'><Icon icon='zone-operation-monitor' size='22px' color={tempWarning || tempError || tempOff?'var(--pale)': ''} /></div>
-        {:else if auto}
-          <!-- Automatic -->
-          <div class='minic-icon'><Icon icon='zone-operation-auto' size='25px' color={tempWarning || tempError || tempOff?'var(--pale)': ''} /></div>
+        {#if tempError}
+          <!-- Fault -->
+          <Icon icon='warning' size='18px' color={tempWarning || tempError || tempOff || boostWarning || standbyError? 'var(--pale)': 'var(--warning)'} />
+        {:else if tempWarning}
+          <Icon icon='information' size='18px' color={tempWarning || tempError || tempOff || boostWarning || standbyError? 'var(--pale)': 'var(--warning)'} />
         {:else}
-          <!-- Manual -->
-          <div class='minic-icon'><Icon icon='zone-operation-manual' size='20px' color={tempWarning || tempError || tempOff?'var(--pale)': ''} /></div>
-        {/if}
 
-        {#if boost || standby}
-          <!-- Boost / Standby -->
-          <div class='minic-icon'>
-            <div class='animated' class:boost class:standby>
-              <Icon icon='boost' color={tempWarning || tempError || tempOff?'var(--pale)': 'var(--warning)'} />
-              <Icon icon='boost' color={tempWarning || tempError || tempOff?'var(--pale)': 'var(--warning)'} />
+          {#if boost || standby}
+            <!-- Boost / Standby -->
+            <div class='minic-icon minic-animated-icon'>
+              {#if boost}
+                <div class='leftPh'></div>
+              {/if}
+              <div class='animated' class:boost class:standby>
+                <Icon icon='boost' size='18px' color={tempWarning || tempError || tempOff || boostWarning || standbyError? 'var(--pale)': 'var(--warning)'} />
+                <Icon icon='boost' size='18px' color={tempWarning || tempError || tempOff || boostWarning || standbyError? 'var(--pale)': 'var(--warning)'} />
 
-              <!-- <div class={(tempWarning || tempError)?'gradient-overlay-danger': 'gradient-overlay'} /> -->
-              <div class={tempWarning? 'gradient-overlay-warning': tempError? 'gradient-overlay-danger': 'gradient-overlay'} />
+                <!-- <div class={(tempWarning || tempError)?'gradient-overlay-danger': 'gradient-overlay'} /> -->
+                <div class={tempWarning || boostWarning? 'gradient-overlay-warning': tempError || standbyError? 'gradient-overlay-danger': 'gradient-overlay'} />
+              </div>
+              {#if standby}
+                <div class='leftPh'></div>
+              {/if}
             </div>
-          </div>
-        {:else if rising}
-            <!-- Boost -->
-            <div class='minic-icon'><Icon icon='up' color={tempWarning || tempError || tempOff?'var(--pale)': ''} /></div>
+          {:else}
+            {#if monitor}
+              <!-- Monitor -->
+              <div class='minic-icon'><Icon icon='zone-operation-monitor' size='18px' color={tempWarning || tempError || tempOff?'var(--pale)': ''} /></div>
+              <div class='minic-icon'>&nbsp;</div>
+            {:else if auto}
+              <!-- Automatic -->
+              <div class='minic-icon'><Icon icon='zone-operation-auto' size='18px' color={tempWarning || tempError || tempOff?'var(--pale)': ''} /></div>
+              <div class='minic-icon'>&nbsp;</div>
+            {:else}
+              <!-- Manual -->
+              <div class='minic-icon'><Icon icon='zone-operation-manual' size='18px' color={tempWarning || tempError || tempOff?'var(--pale)': ''} /></div>
+              <div class='minic-icon'>&nbsp;</div>
+            {/if}
+
+            <!-- Locked and Sealed is only in monitor and auto -->
+            {#if !monitor}
+              {#if settings.locked || settings.sealed}
+                {#if settings.locked}
+                  <!-- Locked -->
+                  <div class='minic-icon'><Icon icon='lock' size='18px' color={tempWarning || tempError || tempOff? 'var(--pale)': 'var(--blue)'} /></div>
+                {/if}
+
+                {#if settings.sealed}
+                  <!-- Sealed -->
+                  <div class='minic-icon'><Icon icon='sealed' size='18px' color={tempWarning || tempError || tempOff?'var(--pale)': 'var(--blue)'} /></div>
+                {/if}
+              {/if}
+            {/if}
+          {/if}
+        
+        {/if}
+
+        <!-- {#if rising}
+            < !-- Boost -- >
+            <div class='minic-icon'><Icon icon='up' size='18px' color={tempWarning || tempError || tempOff?'var(--pale)': ''} />Rising</div>
         {:else if falling}
-            <!-- Temperature above setpoint -->
-            <div class='minic-icon'><Icon icon='down' color={tempWarning || tempError || tempOff?'var(--pale)': ''} /></div>
-        <!-- {:else}
-          <div class='minic-icon'>&nbsp;</div> -->
-        {/if}
+            < !-- Temperature above setpoint -- >
+            <div class='minic-icon'><Icon icon='down' size='18px' color={tempWarning || tempError || tempOff?'var(--pale)': ''} />Falling</div>
+        {/if} -->
 
-        {#if settings.locked || settings.sealed}
-          {#if settings.locked}
-            <!-- Locked -->
-            <div class='minic-icon'><Icon icon='lock' color={tempWarning || tempError || tempOff? 'var(--pale)': 'var(--blue)'} /></div>
-          {/if}
 
-          {#if settings.sealed}
-            <!-- Sealed -->
-            <div class='minic-icon'><Icon icon='sealed' color={tempWarning || tempError || tempOff?'var(--pale)': 'var(--blue)'} /></div>
-          {/if}
-        <!-- {:else}
-          <div class='minic-icon'>&nbsp;ff</div> -->
-        {/if}
 
-        {#if !on }
+        <!-- {#if !on }
           <div class='minic-icon'>
-            <Icon icon='off' color={(tempWarning || tempError || tempOff)?'var(--pale)': ''} />
-            <!-- <div class='icon-container off-circle'>
-              <div class='circle' />
-            </div> -->
+            <Icon icon='off' size='18px' color={(tempWarning || tempError || tempOff)?'var(--pale)': ''} />
           </div>
-        {/if}
+        {/if} -->
 
-        <!-- Standby -->
-        <!-- <div><div class='stacked'><Icon icon='down' /><Icon icon='down' /></div></div> -->
-
-        <!-- Locked -->
-        <!-- <div><Icon icon='lock' /></div> -->
-
-        <!-- Sealed -->
-        <!-- <div><Icon icon='sealed' /></div> -->
-
-        <!-- Temperature above setpoint -->
-        <!-- <div><Icon icon='down' /></div> -->
-
-        <!-- Boost -->
-        <!-- <div><div class='stacked'><Icon icon='up' /><Icon icon='up' /></div></div> -->
-
-        <!-- Off -->
-        <!-- <div><Icon icon='off' /></div> -->
       </div>
 
       <div class="tmp">
-        <div class='actual'>
-          {Math.round((zone.actual_temp || 0) / 10)}&deg;<span class='temp-type-actual'>F</span>
-        </div>
-        <div class='setpoint'>
-          {#if manual}
-            <span class='manual'></span>
-          {:else}
-            <div class="setpoint-ph">{setpoint / 10 || '-'}&deg;<span class='temp-type-'>F</span></div>
-          {/if}
+        <div>
+          <div class='actual'>
+            {Math.round((zone.actual_temp || 0) / 10)}&deg;<span class='temp-type-actual'>C</span>
+          </div>
+          <div class='setpoint'>
+            {#if monitor}
+              <span class='monitor'></span>
+            {:else if auto}
+              <div class="setpoint-ph">{setpoint / 10 || '-'}&deg;<span class='temp-type-actual'>C</span></div>
+            {:else}
+              <div class="setpoint-ph">{Math.round((zone.ManualSp || 0) / 10)}%</div>
+            {/if}
+          </div>
         </div>
       </div>
     </div>
@@ -186,9 +197,22 @@
         <div class='percent'>{((zone.actual_percent || 0) / 10).toFixed(1)}%</div>
         <div class='amps'>{((zone.actual_current || 0) / 10).toFixed(2).padStart(5, '0')} A</div>
       {/if} -->
+      {#if monitor}
+        {#if zone.MonitorTestHighAlarm}
+          <div class='amps'>{((zone.MonitorHighAlarmSP || 0) / 10).toFixed(0)}&deg;<span class='temp-type-actual'>C</span></div>
+        {:else}
+          <div class='amps'>&nbsp;</div>
+        {/if}
+        {#if zone.MonitorTestLowAlarm}
+          <div class='percent'>{((zone.MonitorLowAlarmSP || 0) / 10).toFixed(0)}&deg;<span class='temp-type-actual'>C</span></div>
+        {:else}
+          <div class='amps'>&nbsp;</div>
+        {/if}
+      {:else}
         <div class='percent'>{((zone.actual_percent || 0) / 10).toFixed(1)}%</div>
         <div class='amps'>{((zone.actual_current || 0) / 10).toFixed(2).padStart(5, '0')} A</div>
-    </div>
+      {/if}
+      </div>
   </div>
 
 </div>
@@ -394,6 +418,7 @@
     margin-bottom: 8px;
     // color: white;
     color: var(--blue);
+    // height: 124px;
   }
   .active {
     border: 4px solid var(--selected);
@@ -405,46 +430,52 @@
     padding: 2px 8px 2px 8px;
   }
   .name {
+    font-size: 15px;
     font-weight: 400;
-    padding: 8px;
+    // padding: 8px 8px 8px 8px;
     align-items: center;
   }
   .temp, .tmp, .power, .icon-legend {
     display: flex;
     justify-content: space-between;
     // align-items: flex-end;
-    min-height: 30px;
+    // min-height: 20px;
     font-weight: 300;
     transition: background-color .2s;
   }
   .icon-legend {
-    min-height: 80px !important;
+    min-height: 73px !important;
+    padding-top: 10px;
+    // border: 1px solid rgb(127, 210, 216);
+    // background-color: indianred;
   }
   .tempOff {
     background: var(--darkGray);
     color:#FFFFFF;
   }
 
-  .tempWarning, .powerWarning {
+  .tempWarning, .powerWarning, .boostWarning {
     background: var(--warning);
     color:#FFFFFF;
   }
 
-  .tempError, .powerError {
+  .tempError, .powerError, .standbyError {
     background: var(--danger);
     color:#FFFFFF;
   }
 
   .temp, .tmp, .icon-legent {
     .actual {
+      // font-size: 14px;
       font-size: 1.3em;
       font-weight: 600;
     }
     .setpoint, .temp-type {
-      font-size: 11px;
+      font-size: 14px;
       font-weight: 400;
       float: right;
       padding-left: 2px;
+      padding-top: 3px;
     }
     .temp-type-actual {
       font-size: 11px;
@@ -460,8 +491,10 @@
   }
 
   .power {
-    font-size: .9em;
+    // font-size: .9em;
+    font-size: 14px;
     align-items: center;
+    padding-bottom: 5px;
   }
 
   .icon-container {
@@ -519,10 +552,15 @@
     margin: 2px;
     position: relative;
     overflow: hidden;
+    // border: 1px solid #ffffff;
+    vertical-align: middle;
+    // text-align: center;
+    margin: auto;
+    // padding-left: 15px;
     float: left;
     :global(svg) {
       width: 14px;
-      height: 14px;
+      // height: 14px;
     }
     .gradient-overlay  {
       animation: boostAnimation 1s infinite linear;
@@ -562,6 +600,17 @@
     }
   }
 
+  .minic-animated-icon {
+    // text-align: center;
+    // padding-left: 20px;
+    // margin-left: 10px;
+    // margin-right: 10px;
+    // border: 1px solid indianred;
+    // // width: 200px;
+    // margin: auto;
+    // float: left;
+  }
+
   .standby.animated {
     transform: rotate(180deg)
   }
@@ -572,10 +621,10 @@
     grid-template-columns: repeat(2, 1fr);
     > div {
       display: flex;
-      align-items: center;
+      // align-items: center;
       padding: 1px 0;
       // padding-left: 12px;
-    // border: 1px solid #c2c2c2;
+      // border: 1px solid #c2c2c2;
       font-size: 16px;
       > :first-child {
         margin-right: 0px;
@@ -616,14 +665,24 @@
     }
   }
 
-  .minic-icon {
-    // border: 1px solid skyblue;
-    min-height: 35px;
+  .leftPh {
+    display: inline-block;
+    width: 15px;
+    // border: 1px solid indianred;
   }
+
+  // .minic-icon {
+  //   border: 1px solid indianred;
+  //   // min-height: 35px;
+  // }
 
   .tmp {
     // border: 1px solid #c2c2c2;
     display: grid;
     grid-template-columns: repeat(1, 1fr);
   }
+
+  // .minic-tile-body {
+  //   // border: 1px solid indianred;
+  // }
 </style>
