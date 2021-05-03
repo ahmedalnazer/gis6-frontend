@@ -173,7 +173,7 @@
 
           {#if zoneTypeCustomName !== ''}
           <div class="zone-type-index-desc">
-            <div class="edit-icon" on:click={e => showKeyboard()} ><Icon icon='edit' color='var(--primary)' />{zoneTypeCustomName}</div>
+            <div class="edit-icon" on:click={e => showKeyboard()} ><Icon icon='edit' size="24px" color='var(--primary)' />{zoneTypeCustomName}</div>
             <div on:click={clearZoneTypeCustomName} class="clear-zone-type">Clear</div>
           </div>
           {/if}
@@ -188,7 +188,7 @@
             />
             <!-- <input type="text" class="input" /> -->
             <div class="zone-type-index-desc">
-                <div class="edit-icon" on:click={e => showKeypad()} bind:this={keypadAnchor} ><Icon icon='edit' color='var(--primary)' on:click={e => console.log('edit clicked')} />{indexStart}</div>
+                <div class="edit-icon" on:click={e => showKeypad()} bind:this={keypadAnchor} ><Icon icon='edit' size="24px" color='var(--primary)' on:click={e => console.log('edit clicked')} />{indexStart}</div>
                 {#if indexStart !== 1}
                   <div on:click={clearStartIndex} class="clear-index">Clear</div>
                 {/if}

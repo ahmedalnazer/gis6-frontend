@@ -63,7 +63,6 @@
     const handleEditGroupClick = () => {
       // Validate form errors
       validationError = ""
-      
       if (singleItem) {
         selectedColor = selectedColorSingleItem
       }
@@ -236,9 +235,7 @@
             </div>
 
             <div>
-                <Input
-                    value={name}
-                    on:change={(e) => name = e.target.value} />
+                <Input bind:value={name}/>
             </div>
         </div>
 

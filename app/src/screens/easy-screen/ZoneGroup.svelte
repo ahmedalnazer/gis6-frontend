@@ -56,10 +56,13 @@
           {$_('Actual')}
         </div>
         <div>
+          {$_('Setpoint')}
+        </div>
+        <div>
           {$_('Output')} (%)
         </div>
         <div>
-          {$_('Settings')}
+          {$_('Zone Settings')}
         </div>
       </div>
       {#each zones as zone}
@@ -123,6 +126,9 @@
     div:last-of-type {
       padding-left: 20%;
       justify-content: flex-start;
+    }
+    div:not(:first-child):not(:last-child) {
+      justify-content: flex-end;
     }
   }
 
