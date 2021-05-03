@@ -8,6 +8,9 @@
   import DragIndicator from "style/images/DragIndicator.svelte"
   import SortableList from "svelte-sortable-list"
   import Management from "./Management.svelte"
+  import AddCardPref from 'screens/users/AddCardPref.svelte'
+  import { cardEditor } from 'data/user/cardpref'
+  import { Icon } from 'components'
 
   let isLayoutView = false
 
@@ -90,6 +93,15 @@
       {/each}
     </div>
   {/if}
+
+  <AddCardPref />
+
+  <div class="editcard">
+    <div class="editcardlink" on:click={() => { cardEditor.set(true) }}>
+      <Icon icon='edit' size="14px" color='var(--primary)' />&nbsp;Edit Card
+    </div>
+  </div>
+
 </Screen>
 
 
@@ -130,5 +142,20 @@
     font-size: 20px;
     font-weight: 600;
     color: var(--blue)
+  }
+
+  .editcard {
+    height: 300px;
+    position: relative;
+    > div {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+    }
+  }
+
+  .editcardlink {
+    cursor: pointer;
+    padding: 10px;
   }
 </style>
