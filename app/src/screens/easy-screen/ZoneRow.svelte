@@ -64,6 +64,12 @@
   </div>
 
   <div class="table-body-item temp" class:off={!on} class:error={tempError || powerError} class:warning={tempWarning || powerWarning}>
+    {#if tempWarning || powerWarning}
+      <Icon icon="information" color="white" />
+    {:else if tempError || powerError}
+      <Icon icon="warning" color="white" />
+    {/if}
+
     {#if auto}
       {Math.round((zone.actual_temp || 0) / 10)}&deg;
     {:else}
@@ -71,10 +77,26 @@
     {/if}
   </div>
 
-  <div class="table-body-item temp" class:off={!on} class:error={powerError || tempError} class:warning={powerWarning || tempWarning}>
+  <div class="table-body-item" class:off={!on} class:error={powerError || tempError} class:warning={powerWarning || tempWarning}>
+    {#if monitor}
+    <div>
+      {#if monitorHA}<span>{$_('High')}&nbsp;</span>{Math.round((monitorHSP || 0) / 10)}&deg;<span class='temp-type'>C</span>{/if}
+      {#if monitorHA && monitorLA}<br />{/if}
+      {#if monitorLA}<span>{$_('Low')}&nbsp;</span>{Math.round((monitorLSP || 0) / 10)}&deg;<span class='temp-type'>C</span>{/if}
+    </div>
+    {:else}
+      {#if auto}
+        <span>{setpoint / 10 || '-'}&deg;<span class='temp-type'>F</span></span>
+      {:else}
+        <span>{((zone.actual_percent || 0) / 10).toFixed(1)}%</span>
+      {/if}
+    {/if}
+  </div>
+
+  <div class="table-body-item" class:off={!on} class:error={powerError || tempError} class:warning={powerWarning || tempWarning}>
     {#if on}
       {#if monitor}
-        -
+        --
       {:else}
         {((zone.actual_percent || 0) / 10).toFixed(1)}%
       {/if}
@@ -87,15 +109,10 @@
     <div class="settings-indicator">
       {#if monitor}
         <span><Icon icon='zone-operation-monitor' /></span>
-        {#if monitorHA}<span>{$_('High')}&nbsp;</span>{Math.round((monitorHSP || 0) / 10)}&deg;<span class='temp-type'>C</span>{/if}
-        {#if monitorHA && monitorLA}&nbsp;-&nbsp;{/if}
-        {#if monitorLA}<span>{$_('Low')}&nbsp;</span>{Math.round((monitorLSP || 0) / 10)}&deg;<span class='temp-type'>C</span>{/if}
       {:else}
         {#if auto}
-          <span class="pr-20">{setpoint / 10 || '-'}&deg;<span class='temp-type'>F</span></span>
           <span><Icon icon='zone-operation-auto' /></span>
         {:else}
-          <span class="pr-20">{((zone.actual_percent || 0) / 10).toFixed(1)}%</span>
           <span><Icon icon='zone-operation-manual' /></span>
         {/if}
       {/if}
@@ -118,15 +135,19 @@
 
 
 <style lang="scss">
-  .pr-20 {
-    padding-right: 15px;
-  }
   .group-colors {
     display: flex;
   }
 
+  .grid {
+    div:not(:first-child):not(:last-child) {
+      justify-content: flex-end;
+    }
+  }
+
   .off {
     background: var(--darkGray);
+    color: white !important;
   }
 
   .active {
@@ -134,11 +155,21 @@
   }
 
   .warning {
-    background: var(--warning)
+    background: var(--warning);
+    color: white !important;
+    :global(svg) {
+      margin-right: auto;
+      transform: scale(1.5);
+    }
   }
 
   .error {
-    background: var(--danger)
+    background: var(--danger);
+    color: white !important;
+    :global(svg) {
+      margin-right: auto;
+      transform: scale(1.5);
+    }
   }
 
   .circle {
@@ -185,7 +216,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 20px;
+    padding: 9px 20px;
     font-family: "Open Sans";
     letter-spacing: 0;
     line-height: 22px;
@@ -202,10 +233,9 @@
   }
 
   .temp {
-    font-size: 18px;
-    font-weight: 600;
-    line-height: 24px;
-    margin-right: 2px;
+    font-size: 20px;
+    font-weight: bold;
+    line-height: 27px;
   }
 
   .settings {

@@ -58,9 +58,9 @@
 
     <div class='links'>
       {#if $_selected.length}
-        <a on:click={clearSelection} class='clear'>{$_('Clear Selection')}</a>
+        <a on:click={clearSelection} class='legend clear'>{$_('Clear Selection')}</a>
       {/if}
-      <a on:click={() => showLegend = !showLegend}>{$_('Icon Legend')}</a>
+        <a class="legend" on:click={() => showLegend = !showLegend}>{$_('Icon Legend')}</a>
     </div>
 
   </div>
@@ -72,6 +72,7 @@
           <CheckBox checked={allSelected} minus={$_selected.length && !allSelected} onClick={toggleAll} label={$_('Zone')} /> 
         </div>
         <div>{$_('Actual')}</div>
+        <div>{$_('Setpoint')}</div>
         <div>{$_('Output')} (%)</div>
         <div>{$_('Zone Settings')}</div>
       </div>
@@ -86,14 +87,14 @@
   <Modal title={$_('Icon Legend')} onClose={() => showLegend = false}>
     <div class='icon-legend'>
       <div><Icon icon='zone-operation-auto' /> {$_('Automatic')}</div>
-      <div><Icon icon='zone-operation-manual' /> {$_('Manual')}</div>
-      <div><Icon icon='zone-operation-monitor' /> {$_('Monitor')}</div>
-      <div><div class='stacked'><Icon icon='down' /><Icon icon='down' /></div> {$_('Standby')}</div>
       <div><Icon icon='lock' /> {$_('Locked')}</div>
-      <div><Icon icon='sealed' />{$_('Sealed')}</div>
-      <div><Icon icon='down' /> {$_('Temperature above setpoint')}</div>
       <div><div class='stacked'><Icon icon='up' /><Icon icon='up' /></div> {$_('Boost')}</div>
-      <div><Icon icon='off' /> {$_('Off')}</div>
+      <div><Icon icon='warning' /> {$_('Critical fault')}</div>
+      <div><Icon icon='zone-operation-manual' /> {$_('Manual')}</div>
+      <div><Icon icon='sealed' />{$_('Sealed')}</div>
+      <div><div class='stacked'><Icon icon='down' /><Icon icon='down' /></div> {$_('Standby')}</div>
+      <div><Icon icon='information' /> {$_('Warning')}</div>
+      <div><Icon icon='zone-operation-monitor' /> {$_('Monitor')}</div>
     </div>
   </Modal>
 {/if}
@@ -106,13 +107,17 @@
   }
   .tools {
     display: flex;
-    > :global(*) {
-      margin-right: 16px;
-    }
     .links {
       margin-left: auto;
       .clear {
         margin-right: 16px;
+      }
+      .legend {
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: 0;
+        line-height: 19px;
+        text-align: right;
       }
     }
   }
@@ -130,7 +135,7 @@
 
   .grouping :global(.grid) {
     display: grid;
-    grid-template-columns: 264px 125px 125px 1fr;
+    grid-template-columns: 264px 125px 125px 125px 1fr;
     border: 1px solid #A2A4A8;
     border-bottom: 0px;
   }
@@ -160,6 +165,9 @@
       padding-left: 20%;
       justify-content: flex-start;
     }
+    div:not(:first-child):not(:last-child) {
+      justify-content: flex-end;
+    }
   }
 
   #easy-screen :global(.screen-body) {
@@ -168,7 +176,7 @@
   
   .icon-legend {
     display: grid;
-    grid-template-columns: 1fr 1fr 1.3fr .7fr;
+    grid-template-columns: repeat(4, 1fr);
     > div {
       display: flex;
       align-items: center;
@@ -181,7 +189,7 @@
       }
     }
     :global(svg) {
-      width: 20px;
+      transform: scale(1.5);
       margin-right: 12px;
     }
     .circle {
