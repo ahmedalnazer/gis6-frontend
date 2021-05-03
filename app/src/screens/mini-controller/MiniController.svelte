@@ -96,6 +96,7 @@
   </Modal>
 {/if}
 
+
 <style lang="scss">
   :global(#minicontroller) .screen-body {
     display: flex;

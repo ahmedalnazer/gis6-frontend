@@ -23,6 +23,9 @@
   $: locked = settings.locked
   $: boost = settings.boost
   $: standby = settings.standby
+  $: boostWarning = settings.boost
+  $: standbyError = settings.standby
+
   $: live =  on && !locked &&  zone.actual_temp !== undefined
 
   $: falling = auto && live && zone.actual_temp > setpoint + deviation
@@ -40,6 +43,7 @@
   $: monitorHSP = zone.MonitorHighAlarmSP
   $: monitorLSP = zone.MonitorLowAlarmSP
 
+  
   const setPoint = () => {
     selectedZones.set([ zone.id ])
     activeSetpointEditor.set('setpoint')
@@ -63,7 +67,7 @@
     <CheckBox checked={active} /> {zone.name}
   </div>
 
-  <div class="table-body-item temp" class:off={!on} class:error={tempError || powerError} class:warning={tempWarning || powerWarning}>
+  <div class="table-body-item temp" class:off={!on} class:error={tempError || powerError || standbyError} class:warning={tempWarning || powerWarning || boostWarning}>
     {#if tempWarning || powerWarning}
       <Icon icon="information" color="white" />
     {:else if tempError || powerError}
@@ -77,7 +81,7 @@
     {/if}
   </div>
 
-  <div class="table-body-item" class:off={!on} class:error={powerError || tempError} class:warning={powerWarning || tempWarning}>
+  <div class="table-body-item" class:off={!on} class:error={powerError || tempError || standbyError} class:warning={powerWarning || tempWarning || boostWarning}>
     {#if monitor}
     <div>
       {#if monitorHA}<span>{$_('High')}&nbsp;</span>{Math.round((monitorHSP || 0) / 10)}&deg;<span class='temp-type'>C</span>{/if}
@@ -86,22 +90,22 @@
     </div>
     {:else}
       {#if auto}
-        <span>{setpoint / 10 || '-'}&deg;<span class='temp-type'>F</span></span>
+        <span>{setpoint / 10 || '-'}&deg;<span class='temp-type'>C</span></span>
       {:else}
         <span>{((zone.actual_percent || 0) / 10).toFixed(1)}%</span>
       {/if}
     {/if}
   </div>
 
-  <div class="table-body-item" class:off={!on} class:error={powerError || tempError} class:warning={powerWarning || tempWarning}>
+  <div class="table-body-item" class:off={!on} class:error={powerError || tempError || standbyError} class:warning={powerWarning || tempWarning || boostWarning}>
     {#if on}
       {#if monitor}
         --
       {:else}
         {((zone.actual_percent || 0) / 10).toFixed(1)}%
       {/if}
-    {:else}
-      <div class='circle' />
+    <!-- {:else}
+      <div class='circle' /> -->
     {/if}
   </div>
   
@@ -196,7 +200,7 @@
     }
     .gradient-overlay  {
       animation: boostAnimation 1s infinite linear;
-      background: linear-gradient(var(--blue), transparent, transparent, var(--blue)) repeat;
+      background: linear-gradient(var(--pale), transparent, transparent, var(--pale)) repeat;
       background-size: 100% 50%;
       background-repeat: repeat;
       background-position: 0, 0;
