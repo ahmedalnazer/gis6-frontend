@@ -67,7 +67,7 @@
 
   <div class='button setpoint' on:click={() => toggle('setpoint')}>
     <div class='icon setpoint'>
-      <Icon icon='edit' color='#F5F6F9' />
+      <Icon icon='edit' size="24px" color='#F5F6F9' />
     </div>
     {$_('Setpoint')}
   </div>

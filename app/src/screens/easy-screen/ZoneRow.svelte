@@ -112,7 +112,7 @@
       {#if settings.sealed}<span><Icon icon='sealed' /></span>{/if}
     </div>
 
-    <Icon icon='edit' color='var(--primary)' />
+    <Icon icon='edit' size="24px" color='var(--primary)' />
   </div>
 </div>
 

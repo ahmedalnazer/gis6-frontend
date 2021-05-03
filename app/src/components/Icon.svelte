@@ -313,9 +313,10 @@
 {/if}
 
 {#if icon == "edit"}
+    <!-- size "24px" -->
     <svg
-        width="24px"
-        height="24px"
+        width={size}
+        height={size}
         viewBox="0 0 24 24"
         version="1.1"
         xmlns="http://www.w3.org/2000/svg"
@@ -470,6 +471,8 @@
 {/if}
 
 {#if icon == "warning"}
+        <!-- width="20px"
+        height="16px" -->
     <svg
         xmlns="http://www.w3.org/2000/svg"
         xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -478,8 +481,8 @@
         id="Layer_1"
         x="0px"
         y="0px"
-        width="20px"
-        height="16px"
+        width={size}
+        height={size}
         viewBox="0 0 20 16"
         xml:space="preserve"
     >

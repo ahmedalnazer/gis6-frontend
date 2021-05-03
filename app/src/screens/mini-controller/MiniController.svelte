@@ -84,14 +84,14 @@
   <Modal title={$_('Icon Legend')} onClose={() => showLegend = false}>
     <div class='icon-legend'>
       <div><Icon icon='zone-operation-auto' size='35px' /> {$_('Automatic')}</div>
-      <div><Icon icon='zone-operation-manual' size='35px' /> {$_('Manual')}</div>
-      <div><Icon icon='zone-operation-monitor' size='30px' /> {$_('Monitor')}</div>
-      <div><div class='stacked'><Icon icon='down' /><Icon icon='down' /></div> {$_('Standby')}</div>
-      <div><Icon icon='lock' /> {$_('Locked')}</div>
-      <div><Icon icon='sealed' />{$_('Sealed')}</div>
-      <div><Icon icon='down' /> {$_('Temperature above setpoint')}</div>
+      <div><Icon icon='lock' size='35px' /> {$_('Locked')}</div>
       <div><div class='stacked'><Icon icon='up' /><Icon icon='up' /></div> {$_('Boost')}</div>
-      <div><Icon icon='off' /> {$_('Off')}</div>
+      <div><Icon icon='warning' size='35px' /> {$_('Critical fault')}</div>
+      <div><Icon icon='zone-operation-manual' size='35px' /> {$_('Manual')}</div>
+      <div><Icon icon='sealed' size='35px' />{$_('Sealed')}</div>
+      <div><div class='stacked'><Icon icon='down' /><Icon icon='down' /></div> {$_('Standby')}</div>
+      <div><Icon icon='information' size='35px' /> {$_('Warning')}</div>
+      <div><Icon icon='zone-operation-monitor' size='30px' /> {$_('Monitor')}</div>
     </div>
   </Modal>
 {/if}
