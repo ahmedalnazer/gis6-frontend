@@ -11,7 +11,11 @@
   import AddCardPref from 'screens/users/AddCardPref.svelte'
   import { cardEditor } from 'data/user/cardpref'
   import { Icon } from 'components'
+  import Tools from "./Tools.svelte";
+  import General from "./General.svelte";
 
+  import user, { roles } from 'data/user'
+  $: console.log($user)
   let isLayoutView = false
 
   let showSetupProductionButton = true
@@ -19,6 +23,8 @@
     { id: 1, sectionName: "FUNCTIONS", itemOrder: 1 },
     { id: 2, sectionName: "MOLD", itemOrder: 2 },
     { id: 3, sectionName: "MANAGEMENT", itemOrder: 3 },
+    { id: 4, sectionName: "TOOLS", itemOrder: 4 },
+    { id: 5, sectionName: "GENERAL", itemOrder: 5 },
   ]
 
   const sortSectionDataList = (ev) => {
@@ -88,6 +94,10 @@
             <Mold />
           {:else if sectionDataItem.sectionName == 'MANAGEMENT'}
             <Management />
+          {:else if sectionDataItem.sectionName == 'TOOLS'}
+            <Tools />
+          {:else if sectionDataItem.sectionName == 'GENERAL'}
+            <General />
           {/if}
         </div>
       {/each}
@@ -138,10 +148,24 @@
     opacity: 0.8;
   }
 
+  :global(.dashboard-card) {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  :global(.dashboard-card) :global(.title) {
+    letter-spacing: 0;
+    line-height: 27px;
+    margin-top: 10px;
+    margin-bottom: 0;
+  }
+
   .dashboard-body :global(h2) {
     font-size: 20px;
     font-weight: 600;
-    color: var(--blue)
+    color: var(--darkBlue)
   }
 
   .editcard {

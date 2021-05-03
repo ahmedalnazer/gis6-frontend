@@ -15,10 +15,18 @@
   $: availableCards = cards.filter(x => x.roles.includes('all') || x.roles.includes($user.role))
 </script>
 
-<DashboardSection title={$_('Functions')}>
+<DashboardSection title={$_('Controller Functions')}>
   <div class='card-grid'>
     {#each availableCards as card (card.id)}
       <svelte:component this={card.component} />
     {/each}
   </div>
 </DashboardSection>
+
+<style>
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 16px;
+  }
+</style>

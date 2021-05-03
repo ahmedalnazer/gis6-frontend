@@ -2,11 +2,12 @@
   import _ from 'data/language'
   import Mold from './cards/Mold.svelte'
   import Process from './cards/Process.svelte'
+  import OrderCard from "./OrderCard.svelte"
   import DashboardSection from './DashboardSection.svelte'
 
 </script>
 
-<DashboardSection title={$_('Mold')}>
+<DashboardSection title={$_('Mold, Process, Order')}>
   <div class='card-grid'>
     <Mold />
     <Process />
@@ -14,15 +15,10 @@
 </DashboardSection>
 
 <style>
-  .card-grid :global(.container) {
+  .card-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-  }
-  .card-grid :global(.image) {
-    overflow: hidden;
-  }
-  .card-grid :global(img) {
-    object-fit: cover;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 10px;
   }
 </style>
 
