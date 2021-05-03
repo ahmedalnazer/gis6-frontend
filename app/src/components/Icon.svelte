@@ -8,6 +8,8 @@
     <svg
         viewBox="0 0 21 24"
         version="1.1"
+        width={size} 
+        height={size} 
         xmlns="http://www.w3.org/2000/svg"
         xmlns:xlink="http://www.w3.org/1999/xlink"
     >
@@ -251,8 +253,8 @@
 
 {#if icon == "boost"}
     <svg
-        width="26px"
-        height="24px"
+        width={size} 
+        height={size}
         viewBox="0 0 26 24"
         version="1.1"
         xmlns="http://www.w3.org/2000/svg"
@@ -311,9 +313,10 @@
 {/if}
 
 {#if icon == "edit"}
+    <!-- size "24px" -->
     <svg
-        width="24px"
-        height="24px"
+        width={size}
+        height={size}
         viewBox="0 0 24 24"
         version="1.1"
         xmlns="http://www.w3.org/2000/svg"
@@ -468,6 +471,8 @@
 {/if}
 
 {#if icon == "warning"}
+        <!-- width="20px"
+        height="16px" -->
     <svg
         xmlns="http://www.w3.org/2000/svg"
         xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -476,8 +481,8 @@
         id="Layer_1"
         x="0px"
         y="0px"
-        width="20px"
-        height="16px"
+        width={size}
+        height={size}
         viewBox="0 0 20 16"
         xml:space="preserve"
     >
@@ -713,7 +718,7 @@
 {/if}
 
 {#if icon == 'sealed'}
-  <svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <svg width={size} height={size} viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <title></title>
     <g id="EZ-Screen-" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
         <g id="EZ-Screen" transform="translate(-791.000000, -910.000000)">

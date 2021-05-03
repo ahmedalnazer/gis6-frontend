@@ -117,7 +117,7 @@
             <span class="required">*</span>
           </div>
           <div>
-              <Input value={name} on:change={(e) => name = e.target.value} />
+              <Input bind:value={name}/>
           </div>
         {/if}
       </div>
