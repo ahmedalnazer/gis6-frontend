@@ -2,6 +2,7 @@
   import { createEventDispatcher } from 'svelte'
   export let onClick = false
   export let checked = false
+  export let disabled = false
   export let minus = false
   export let label = ''
   export let changed = false
@@ -13,6 +14,7 @@
 </script>
 
 <div class='input checkbox' class:changed class:trackChange>
+  <!-- svelte-ignore a11y-label-has-associated-control -->
   <label on:click={() => {
     onClick 
       ? onClick()
@@ -21,7 +23,7 @@
     dispatch('click')
     if(trackChange) changed = true
   }}>
-    <div class='check' class:checked class:minus>
+    <div class='check' class:checked class:minus class:disabled>
       {#if checked}
         <svg viewbox="0 0 100 100">
           <path d="
@@ -38,7 +40,7 @@
     </div>
     <!-- <input type='checkbox' on:change {checked} /> -->
     {#if label}
-      <span>{label}</span>
+      <span class:disabled>{label}</span>
     {/if}
   </label>
 </div>
@@ -66,6 +68,10 @@
     &.checked, &.minus {
       background: var(--blue);
     }
+  }
+
+  .disabled {
+    opacity: .7;
   }
 
   svg {
