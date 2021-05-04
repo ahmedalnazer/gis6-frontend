@@ -2,6 +2,6 @@
   import Card from './Card.svelte'
 </script>
 
-<Card link='/manage-users'>
-  <h2>User Management</h2>
+<Card link='/'>
+  <h2>Network Settings</h2>
 </Card>

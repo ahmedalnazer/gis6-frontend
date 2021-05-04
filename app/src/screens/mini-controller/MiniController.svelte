@@ -103,7 +103,8 @@
     flex-direction: column;
   }
   .tools {
-    margin-bottom: 24px;
+    // margin-bottom: 24px;
+    margin-bottom: 8px;
     display: flex;
     > :global(*) {
       margin-right: 16px;

@@ -26,37 +26,16 @@
   $: setpointmanual = zone.ManualSp
 
   $: on = settings.on
-  // $: on = false //TEST
-
   $: locked = settings.locked
-  // $: locked = true //TEST
-
   $: boost = settings.boost
-  // $: boost = false //TEST
-
   $: boostWarning = settings.boost
-
   $: standby = settings.standby
-  // $: standby = true //TEST
-
   $: standbyError = settings.standby
-  // $: standbyError = true //TEST
-
   $: falling = zone.falling
-  // $: falling = true //TEST
-
   $: rising = zone.rising
-  // $: rising = true //TEST
-
   $: tempWarning = !boost && !standby && (falling || rising)
-  // $: tempWarning = true
-
   $: tempError = zone.hasTempAlarm
-  // $: tempError = true //TEST
-
   $: powerError = zone.hasPowerAlarm
-  // $: powerError = true //TEST
-
   $: tempOff = !on
 
   let powerWarning = false
@@ -115,8 +94,6 @@
               <div class='animated' class:boost class:standby>
                 <Icon icon='boost' size='18px' color={tempWarning || tempError || tempOff || boostWarning || standbyError? 'var(--pale)': 'var(--warning)'} />
                 <Icon icon='boost' size='18px' color={tempWarning || tempError || tempOff || boostWarning || standbyError? 'var(--pale)': 'var(--warning)'} />
-
-                <!-- <div class={(tempWarning || tempError)?'gradient-overlay-danger': 'gradient-overlay'} /> -->
                 <div class={tempWarning || boostWarning? 'gradient-overlay-warning': tempError || standbyError? 'gradient-overlay-danger': 'gradient-overlay'} />
               </div>
               {#if standby}
@@ -126,15 +103,15 @@
           {:else}
             {#if monitor}
               <!-- Monitor -->
-              <div class='minic-icon'><Icon icon='zone-operation-monitor' size='18px' color={tempWarning || tempError || tempOff?'var(--pale)': ''} /></div>
+              <div class='minic-icon'><Icon icon='zone-operation-monitor' size='18px' color={tempWarning || tempError || tempOff || boostWarning || standbyError?'var(--pale)': ''} /></div>
               <div class='minic-icon'>&nbsp;</div>
             {:else if auto}
               <!-- Automatic -->
-              <div class='minic-icon'><Icon icon='zone-operation-auto' size='18px' color={tempWarning || tempError || tempOff?'var(--pale)': ''} /></div>
+              <div class='minic-icon'><Icon icon='zone-operation-auto' size='18px' color={tempWarning || tempError || tempOff || boostWarning || standbyError?'var(--pale)': ''} /></div>
               <div class='minic-icon'>&nbsp;</div>
             {:else}
               <!-- Manual -->
-              <div class='minic-icon'><Icon icon='zone-operation-manual' size='18px' color={tempWarning || tempError || tempOff?'var(--pale)': ''} /></div>
+              <div class='minic-icon'><Icon icon='zone-operation-manual' size='18px' color={tempWarning || tempError || tempOff || boostWarning || standbyError?'var(--pale)': ''} /></div>
               <div class='minic-icon'>&nbsp;</div>
             {/if}
 
@@ -143,34 +120,17 @@
               {#if settings.locked || settings.sealed}
                 {#if settings.locked}
                   <!-- Locked -->
-                  <div class='minic-icon'><Icon icon='lock' size='18px' color={tempWarning || tempError || tempOff? 'var(--pale)': 'var(--blue)'} /></div>
+                  <div class='minic-icon'><Icon icon='lock' size='18px' color={tempWarning || tempError || tempOff || boostWarning || standbyError? 'var(--pale)': 'var(--blue)'} /></div>
                 {/if}
 
                 {#if settings.sealed}
                   <!-- Sealed -->
-                  <div class='minic-icon'><Icon icon='sealed' size='18px' color={tempWarning || tempError || tempOff?'var(--pale)': 'var(--blue)'} /></div>
+                  <div class='minic-icon'><Icon icon='sealed' size='18px' color={tempWarning || tempError || tempOff || boostWarning || standbyError?'var(--pale)': 'var(--blue)'} /></div>
                 {/if}
               {/if}
             {/if}
           {/if}
-        
         {/if}
-
-        <!-- {#if rising}
-            < !-- Boost -- >
-            <div class='minic-icon'><Icon icon='up' size='18px' color={tempWarning || tempError || tempOff?'var(--pale)': ''} />Rising</div>
-        {:else if falling}
-            < !-- Temperature above setpoint -- >
-            <div class='minic-icon'><Icon icon='down' size='18px' color={tempWarning || tempError || tempOff?'var(--pale)': ''} />Falling</div>
-        {/if} -->
-
-
-
-        <!-- {#if !on }
-          <div class='minic-icon'>
-            <Icon icon='off' size='18px' color={(tempWarning || tempError || tempOff)?'var(--pale)': ''} />
-          </div>
-        {/if} -->
 
       </div>
 
@@ -183,7 +143,7 @@
             {#if monitor}
               <span class='monitor'></span>
             {:else if auto}
-              <div class="setpoint-ph">{setpoint / 10 || '-'}&deg;<span class='temp-type-actual'>C</span></div>
+              <div class="setpoint-ph">{setpoint / 10 || '-'}&deg;<span class='temp-type-sp-actual'>C</span></div>
             {:else}
               <div class="setpoint-ph">{Math.round((zone.ManualSp || 0) / 10)}%</div>
             {/if}
@@ -193,200 +153,31 @@
     </div>
 
     <div class='power'>
-      <!-- {#if on}
-        <div class='percent'>{((zone.actual_percent || 0) / 10).toFixed(1)}%</div>
-        <div class='amps'>{((zone.actual_current || 0) / 10).toFixed(2).padStart(5, '0')} A</div>
-      {/if} -->
       {#if monitor}
         {#if zone.MonitorTestHighAlarm}
-          <div class='amps'>{((zone.MonitorHighAlarmSP || 0) / 10).toFixed(0)}&deg;<span class='temp-type-actual'>C</span></div>
+          <div class='amps'>
+            <Icon icon='uparrow' size='14px' color={tempWarning || tempError || tempOff || boostWarning || standbyError? 'var(--pale)': 'var(--blue)'} />
+            {((zone.MonitorHighAlarmSP || 0) / 10).toFixed(0)}&deg;<span class='temp-type-actual'>C</span>
+          </div>
         {:else}
           <div class='amps'>&nbsp;</div>
         {/if}
         {#if zone.MonitorTestLowAlarm}
-          <div class='percent'>{((zone.MonitorLowAlarmSP || 0) / 10).toFixed(0)}&deg;<span class='temp-type-actual'>C</span></div>
+          <div class='percent'>
+        <Icon icon='downarrow' size='14px' color={tempWarning || tempError || tempOff || boostWarning || standbyError? 'var(--pale)': 'var(--blue)'} />
+        {((zone.MonitorLowAlarmSP || 0) / 10).toFixed(0)}&deg;<span class='temp-type-actual'>C</span>
+      </div>
         {:else}
           <div class='amps'>&nbsp;</div>
         {/if}
       {:else}
         <div class='percent'>{((zone.actual_percent || 0) / 10).toFixed(1)}%</div>
-        <div class='amps'>{((zone.actual_current || 0) / 10).toFixed(2).padStart(5, '0')} A</div>
+        <div class='amps'>{((zone.actual_current || 0) / 10).toFixed(2).padStart(5, '0')}A</div>
       {/if}
       </div>
   </div>
 
 </div>
-
-
-<!--
-  if !locked
-<div class='power' class:powerWarning class:powerError>
-      {#if locked}
-        <div class='icon-container'>
-          <Icon icon='lock' color='white' />
-        </div>
-      {:else if on}
-        <div class='percent'>{((zone.actual_percent || 0) / 10).toFixed(1)}%</div>
-        <div class='amps'>{((zone.actual_current || 0) / 10).toFixed(2).padStart(5, '0')} A</div>
-      {:else}
-        <div class='icon-container off-circle'>
-          <div class='circle' />
-        </div>
-      {/if}
-    </div> -->
-
-
-<!-- <div on:click={click} class:active class='rb-box zone-box' data-id={zone.id} data-group={group && group.id}>
-
-  <div class='group-colors'>
-    {#each tabs as t }
-      <div class='color-tab' style='background:{t}' />
-    {/each}
-  </div>
-
-  <div class='details' class:off={!on}>
-    {#if !on && !locked}
-      <div class='overlay' />
-    {/if}
-  </div>
-
-  <div class='name'>
-    {zone.name}
-  </div>
-
-  <div class='temp' class:tempWarning class:tempError>
-
-    <div class='deviation-icon'>
-      {#if boost || standby}
-        <div class='animated' class:boost class:standby>
-          <Icon icon='boost' color='var(--warning)' />
-          <Icon icon='boost' color='var(--warning)' />
-          <div class='gradient-overlay' />
-        </div>
-      {:else}
-        {#if rising}
-          <Icon icon='up' color='white' />
-        {/if}
-        {#if falling}
-          <Icon icon='down' color='white' />
-        {/if}
-      {/if}
-
-      <div class='power' class:powerWarning class:powerError>
-        {#if locked}
-          <div class='icon-container'>
-            <Icon icon='lock' color='var(--blue)' />
-          </div>
-        {:else}
-          <div class='icon-container off-circle'>
-            <div class='circle' />
-          </div>
-        {/if}
-      </div>
-
-    </div>
-
-    <div>
-      <div class='actual'>
-        {Math.round((zone.actual_temp || 0) / 10)}&deg;<span class='temp-type'>F</span>
-      </div>
-      <div>
-        {#if on && zone.settings.sealed}
-          <div class='icon-container sealed'>
-            <div class='sealed-circle'>
-              <div class='sealed-line' />
-            </div>
-          </div>
-        {:else if on}
-          <div class='setpoint'>
-            {#if manual}
-              <span class='manual'></span>
-            {:else}
-              {setpoint / 10 || '-'}&deg;<span class='temp-type'>F</span>
-            {/if}
-          </div>
-        {/if}
-      </div>
-    </div>
-
-  </div>
-
-
-  <div class='power' class:powerWarning class:powerError>
-    {#if on}
-      <div class='percent'>{((zone.actual_percent || 0) / 10).toFixed(1)}%</div>
-      <div class='amps'>{((zone.actual_current || 0) / 10).toFixed(2).padStart(5, '0')} A</div>
-    {/if}
-  </div>
-
-</div> -->
-
-<!-- <div on:click={click} class:active class='rb-box zone-box' data-id={zone.id} data-group={group && group.id}>
-  <div class='group-colors'>
-    {#each tabs as t }
-      <div class='color-tab' style='background:{t}' />
-    {/each}
-  </div>
-  <div class='details' class:off={!on}>
-    {#if !on && !locked}
-      <div class='overlay' />
-    {/if}
-    <div class='name'>
-      {zone.name}
-    </div>
-    <div class='temp' class:tempWarning class:tempError>
-      <div class='actual'>
-        {Math.round((zone.actual_temp || 0) / 10)}&deg;<span class='temp-type'>F</span>
-      </div>
-      <div class='deviation-icon'>
-        {#if boost || standby}
-          <div class='animated' class:boost class:standby>
-            <Icon icon='boost' color='var(--warning)' />
-            <Icon icon='boost' color='var(--warning)' />
-            <div class='gradient-overlay' />
-          </div>
-        {:else}
-          {#if rising}
-            <Icon icon='up' color='white' />
-          {/if}
-          {#if falling}
-            <Icon icon='down' color='white' />
-          {/if}
-        {/if}
-      </div>
-      {#if on && zone.settings.sealed}
-          <div class='icon-container sealed'>
-            <div class='sealed-circle'>
-              <div class='sealed-line' />
-            </div>
-          </div>
-      {:else if on}
-        <div class='setpoint'>
-          {#if manual}
-            <span class='manual'></span>
-          {:else}
-            {setpoint / 10 || '-'}&deg;<span class='temp-type'>F</span>
-          {/if}
-        </div>
-      {/if}
-    </div>
-    <div class='power' class:powerWarning class:powerError>
-      {#if locked}
-        <div class='icon-container'>
-          <Icon icon='lock' color='white' />
-        </div>
-      {:else if on}
-        <div class='percent'>{((zone.actual_percent || 0) / 10).toFixed(1)}%</div>
-        <div class='amps'>{((zone.actual_current || 0) / 10).toFixed(2).padStart(5, '0')} A</div>
-      {:else}
-        <div class='icon-container off-circle'>
-          <div class='circle' />
-        </div>
-      {/if}
-    </div>
-  </div>
-</div> -->
-
 
 <style lang="scss">
 
@@ -411,14 +202,11 @@
   }
   .zone-box {
     background: var(--white);
-    // background: var(--blue);
     box-shadow: var(--shadow);
     border-radius: 0px 0px 3px 3px;
     margin: 4px;
-    margin-bottom: 8px;
-    // color: white;
+    margin-bottom: 6px;
     color: var(--blue);
-    // height: 124px;
   }
   .active {
     border: 4px solid var(--selected);
@@ -430,24 +218,21 @@
     padding: 2px 8px 2px 8px;
   }
   .name {
-    font-size: 15px;
-    font-weight: 400;
-    // padding: 8px 8px 8px 8px;
+    font-size: 11px;
+    font-weight: 600;
     align-items: center;
+    letter-spacing: 0;
+    line-height: 15px;
   }
   .temp, .tmp, .power, .icon-legend {
     display: flex;
     justify-content: space-between;
-    // align-items: flex-end;
-    // min-height: 20px;
     font-weight: 300;
     transition: background-color .2s;
   }
   .icon-legend {
     min-height: 73px !important;
     padding-top: 10px;
-    // border: 1px solid rgb(127, 210, 216);
-    // background-color: indianred;
   }
   .tempOff {
     background: var(--darkGray);
@@ -466,20 +251,30 @@
 
   .temp, .tmp, .icon-legent {
     .actual {
-      // font-size: 14px;
-      font-size: 1.3em;
+      font-size: 24px;
+      // font-size: 1.4em;
       font-weight: 600;
+      letter-spacing: 0;
+      line-height: 33px;
+      text-align: right;
     }
     .setpoint, .temp-type {
-      font-size: 14px;
-      font-weight: 400;
+      font-size: 16px;
+      font-weight: 600;
       float: right;
-      padding-left: 2px;
-      padding-top: 3px;
+      letter-spacing: 0;
+      line-height: 22px;
+      text-align: right;
     }
     .temp-type-actual {
-      font-size: 11px;
-      padding-left: 2px;
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: 0;
+      line-height: 33px;
+      text-align: right;
+    }
+    .temp-type-sp-actual {
+      font-size: 15px;
     }
     .setpoint-ph {
       float: right;
@@ -491,17 +286,17 @@
   }
 
   .power {
-    // font-size: .9em;
     font-size: 14px;
     align-items: center;
     padding-bottom: 5px;
+    letter-spacing: 0;
+    line-height: 19px;
+    text-align: right;
   }
 
   .icon-container {
     flex: 1;
     display: flex;
-    // align-items: center;
-    // justify-content: center;
     :global(svg) {
       width: 14px;
     }
@@ -552,15 +347,11 @@
     margin: 2px;
     position: relative;
     overflow: hidden;
-    // border: 1px solid #ffffff;
     vertical-align: middle;
-    // text-align: center;
     margin: auto;
-    // padding-left: 15px;
     float: left;
     :global(svg) {
       width: 14px;
-      // height: 14px;
     }
     .gradient-overlay  {
       animation: boostAnimation 1s infinite linear;
@@ -600,31 +391,16 @@
     }
   }
 
-  .minic-animated-icon {
-    // text-align: center;
-    // padding-left: 20px;
-    // margin-left: 10px;
-    // margin-right: 10px;
-    // border: 1px solid indianred;
-    // // width: 200px;
-    // margin: auto;
-    // float: left;
-  }
-
   .standby.animated {
     transform: rotate(180deg)
   }
 
   .minic-icon-legend {
-    // border: 1px solid #c2c2c2;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     > div {
       display: flex;
-      // align-items: center;
       padding: 1px 0;
-      // padding-left: 12px;
-      // border: 1px solid #c2c2c2;
       font-size: 16px;
       > :first-child {
         margin-right: 0px;
@@ -651,7 +427,6 @@
       align-items: center;
       justify-content: center;
       border-radius: 50%;
-      // margin-left: auto;
       position: relative;
     }
     .sealed-line {
@@ -668,21 +443,15 @@
   .leftPh {
     display: inline-block;
     width: 15px;
-    // border: 1px solid indianred;
   }
 
-  // .minic-icon {
-  //   border: 1px solid indianred;
-  //   // min-height: 35px;
-  // }
-
   .tmp {
-    // border: 1px solid #c2c2c2;
     display: grid;
     grid-template-columns: repeat(1, 1fr);
   }
 
-  // .minic-tile-body {
-  //   // border: 1px solid indianred;
-  // }
+  .minic-icon {
+    padding-top: 6px !important;
+    padding-bottom: 1px !important;
+  }
 </style>

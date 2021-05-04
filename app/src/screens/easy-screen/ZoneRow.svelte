@@ -68,26 +68,47 @@
   </div>
 
   <div class="table-body-item temp" class:off={!on} class:error={tempError || powerError || standbyError} class:warning={tempWarning || powerWarning || boostWarning}>
-    {#if tempWarning || powerWarning}
-      <Icon icon="information" color="white" />
-    {:else if tempError || powerError}
+    {#if tempError || powerError}
       <Icon icon="warning" color="white" />
+    {:else if boost || standby}
+      <div class="bst-sb">
+        <div class='animated' class:boost class:standby>
+          <Icon icon='boost' size='18px' color='var(--pale)' />
+          <Icon icon='boost' size='18px' color='var(--pale)' />
+          <div class={tempWarning || boostWarning? 'gradient-overlay-warning': tempError || standbyError? 'gradient-overlay-danger': 'gradient-overlay'} />
+        </div>
+      </div>
+
+    {:else if tempWarning || powerWarning}
+      <Icon icon="information" color="white" />
     {/if}
 
-    {#if auto}
-      {Math.round((zone.actual_temp || 0) / 10)}&deg;
+    {Math.round((zone.actual_temp || 0) / 10)}&deg;<span class='temp-type'>C</span>
+    <!-- {#if auto}
+      {Math.round((zone.actual_temp || 0) / 10)}&deg;<span class='temp-type'>C</span>
     {:else}
-      {((zone.actual_current || 0) / 10).toFixed(1)} A
-    {/if}
+      {((zone.actual_current || 0) / 10).toFixed(1)}A
+    {/if} -->
   </div>
 
   <div class="table-body-item" class:off={!on} class:error={powerError || tempError || standbyError} class:warning={powerWarning || tempWarning || boostWarning}>
+    
     {#if monitor}
-    <div>
-      {#if monitorHA}<span>{$_('High')}&nbsp;</span>{Math.round((monitorHSP || 0) / 10)}&deg;<span class='temp-type'>C</span>{/if}
-      {#if monitorHA && monitorLA}<br />{/if}
-      {#if monitorLA}<span>{$_('Low')}&nbsp;</span>{Math.round((monitorLSP || 0) / 10)}&deg;<span class='temp-type'>C</span>{/if}
-    </div>
+      <div class="setpoint">
+        {#if monitorHA}
+          <div class="tempset">
+            <Icon icon='uparrow' size='14px' color={tempWarning || tempError || boostWarning || standbyError? 'var(--pale)': 'var(--blue)'} />
+            {Math.round((monitorHSP || 0) / 10)}&deg;<span class='temp-type'>C</span>
+          </div>
+        {/if}
+        {#if monitorHA && monitorLA}<br />{/if}
+        {#if monitorLA}
+          <div class="tempset">
+            <Icon icon='downarrow' size='14px' color={tempWarning || tempError || boostWarning || standbyError? 'var(--pale)': 'var(--blue)'} />
+            {Math.round((monitorLSP || 0) / 10)}&deg;<span class='temp-type'>C</span>
+          </div>
+        {/if}
+      </div>
     {:else}
       {#if auto}
         <span>{setpoint / 10 || '-'}&deg;<span class='temp-type'>C</span></span>
@@ -121,13 +142,13 @@
         {/if}
       {/if}
 
-      {#if boost || standby}
+      <!-- {#if boost || standby}
         <div class='animated' class:boost class:standby>
           <Icon icon='boost' color='var(--warning)' />
           <Icon icon='boost' color='var(--warning)' />
           <div class='gradient-overlay' />
         </div>
-      {/if}
+      {/if} -->
 
       {#if settings.locked}<span><Icon icon='lock' /></span>{/if}
       {#if settings.sealed}<span><Icon icon='sealed' /></span>{/if}
@@ -163,7 +184,7 @@
     color: white !important;
     :global(svg) {
       margin-right: auto;
-      transform: scale(1.5);
+      // transform: scale(1.5);
     }
   }
 
@@ -172,7 +193,7 @@
     color: white !important;
     :global(svg) {
       margin-right: auto;
-      transform: scale(1.5);
+      // transform: scale(1.5);
     }
   }
 
@@ -195,8 +216,8 @@
     position: relative;
     overflow: hidden;
     :global(svg) {
-      width: 8px;
-      height: 8px;
+      width: 14px;
+      // height: 14px;
     }
     .gradient-overlay  {
       animation: boostAnimation 1s infinite linear;
@@ -210,6 +231,34 @@
       left: 0;
       bottom: 0%
     }
+        .gradient-overlay-danger  {
+      animation: boostAnimation 1s infinite linear;
+      background: linear-gradient(var(--danger), transparent, transparent, var(--danger)) repeat;
+      background-size: 100% 50%;
+      background-repeat: repeat;
+      background-position: 0, 0;
+      position:absolute;
+      height: 200%;
+      width: 100%;
+      left: 0;
+      bottom: 0%
+    }
+    .gradient-overlay-warning {
+      animation: boostAnimation 1s infinite linear;
+      background: linear-gradient(var(--warning), transparent, transparent, var(--warning)) repeat;
+      background-size: 100% 50%;
+      background-repeat: repeat;
+      background-position: 0, 0;
+      position:absolute;
+      height: 200%;
+      width: 100%;
+      left: 0;
+      bottom: 0%
+    }
+  }
+
+  .bst-sb {
+    padding: 5px;
   }
 
   .standby.animated {
@@ -226,6 +275,12 @@
     line-height: 22px;
     font-size: 16px;
     color: #011F3E;
+    :global(.input.checkbox) {
+       padding-right: 0; 
+     }
+     .setpoint {
+       text-align: right;
+     }
   }
 
   .zone-name {
@@ -254,6 +309,10 @@
     height: 20px;
     width: 20px;
     color: #358DCA;
+  }
+
+  .tempset {
+    float: right;
   }
 
 </style>
