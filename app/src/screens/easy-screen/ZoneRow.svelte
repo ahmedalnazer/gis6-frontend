@@ -75,18 +75,19 @@
     {/if}
 
     {#if auto}
-      {Math.round((zone.actual_temp || 0) / 10)}&deg;
+      {Math.round((zone.actual_temp || 0) / 10)}&deg;<span class='temp-type'>C</span>
     {:else}
-      {((zone.actual_current || 0) / 10).toFixed(1)} A
+      <!-- {((zone.actual_current || 0) / 10).toFixed(1)} A -->
+      {Math.round((zone.actual_temp || 0) / 10)}&deg;<span class='temp-type'>C</span>
     {/if}
   </div>
 
   <div class="table-body-item" class:off={!on} class:error={powerError || tempError || standbyError} class:warning={powerWarning || tempWarning || boostWarning}>
     {#if monitor}
-    <div>
-      {#if monitorHA}<span>{$_('High')}&nbsp;</span>{Math.round((monitorHSP || 0) / 10)}&deg;<span class='temp-type'>C</span>{/if}
+    <div class="setpoint">
+      {#if monitorHA}<span>{$_('High')}&nbsp;{Math.round((monitorHSP || 0) / 10)}&deg;<span class='temp-type'>C</span></span>{/if}
       {#if monitorHA && monitorLA}<br />{/if}
-      {#if monitorLA}<span>{$_('Low')}&nbsp;</span>{Math.round((monitorLSP || 0) / 10)}&deg;<span class='temp-type'>C</span>{/if}
+      {#if monitorLA}<span>{$_('Low')}&nbsp;{Math.round((monitorLSP || 0) / 10)}&deg;<span class='temp-type'>C</span></span>{/if}
     </div>
     {:else}
       {#if auto}
@@ -226,6 +227,12 @@
     line-height: 22px;
     font-size: 16px;
     color: #011F3E;
+    :global(.input.checkbox) {
+      padding-right: 0; 
+    }
+    .setpoint {
+      text-align: right;
+    }
   }
 
   .zone-name {
