@@ -103,15 +103,15 @@
           {:else}
             {#if monitor}
               <!-- Monitor -->
-              <div class='minic-icon'><Icon icon='zone-operation-monitor' size='18px' color={tempWarning || tempError || tempOff?'var(--pale)': ''} /></div>
+              <div class='minic-icon'><Icon icon='zone-operation-monitor' size='18px' color={tempWarning || tempError || tempOff || boostWarning || standbyError?'var(--pale)': ''} /></div>
               <div class='minic-icon'>&nbsp;</div>
             {:else if auto}
               <!-- Automatic -->
-              <div class='minic-icon'><Icon icon='zone-operation-auto' size='18px' color={tempWarning || tempError || tempOff?'var(--pale)': ''} /></div>
+              <div class='minic-icon'><Icon icon='zone-operation-auto' size='18px' color={tempWarning || tempError || tempOff || boostWarning || standbyError?'var(--pale)': ''} /></div>
               <div class='minic-icon'>&nbsp;</div>
             {:else}
               <!-- Manual -->
-              <div class='minic-icon'><Icon icon='zone-operation-manual' size='18px' color={tempWarning || tempError || tempOff?'var(--pale)': ''} /></div>
+              <div class='minic-icon'><Icon icon='zone-operation-manual' size='18px' color={tempWarning || tempError || tempOff || boostWarning || standbyError?'var(--pale)': ''} /></div>
               <div class='minic-icon'>&nbsp;</div>
             {/if}
 
@@ -120,12 +120,12 @@
               {#if settings.locked || settings.sealed}
                 {#if settings.locked}
                   <!-- Locked -->
-                  <div class='minic-icon'><Icon icon='lock' size='18px' color={tempWarning || tempError || tempOff? 'var(--pale)': 'var(--blue)'} /></div>
+                  <div class='minic-icon'><Icon icon='lock' size='18px' color={tempWarning || tempError || tempOff || boostWarning || standbyError? 'var(--pale)': 'var(--blue)'} /></div>
                 {/if}
 
                 {#if settings.sealed}
                   <!-- Sealed -->
-                  <div class='minic-icon'><Icon icon='sealed' size='18px' color={tempWarning || tempError || tempOff?'var(--pale)': 'var(--blue)'} /></div>
+                  <div class='minic-icon'><Icon icon='sealed' size='18px' color={tempWarning || tempError || tempOff || boostWarning || standbyError?'var(--pale)': 'var(--blue)'} /></div>
                 {/if}
               {/if}
             {/if}
@@ -155,12 +155,18 @@
     <div class='power'>
       {#if monitor}
         {#if zone.MonitorTestHighAlarm}
-          <div class='amps'>{((zone.MonitorHighAlarmSP || 0) / 10).toFixed(0)}&deg;<span class='temp-type-actual'>C</span></div>
+          <div class='amps'>
+            <Icon icon='uparrow' size='14px' color={tempWarning || tempError || tempOff || boostWarning || standbyError? 'var(--pale)': 'var(--blue)'} />
+            {((zone.MonitorHighAlarmSP || 0) / 10).toFixed(0)}&deg;<span class='temp-type-actual'>C</span>
+          </div>
         {:else}
           <div class='amps'>&nbsp;</div>
         {/if}
         {#if zone.MonitorTestLowAlarm}
-          <div class='percent'>{((zone.MonitorLowAlarmSP || 0) / 10).toFixed(0)}&deg;<span class='temp-type-actual'>C</span></div>
+          <div class='percent'>
+        <Icon icon='downarrow' size='14px' color={tempWarning || tempError || tempOff || boostWarning || standbyError? 'var(--pale)': 'var(--blue)'} />
+        {((zone.MonitorLowAlarmSP || 0) / 10).toFixed(0)}&deg;<span class='temp-type-actual'>C</span>
+      </div>
         {:else}
           <div class='amps'>&nbsp;</div>
         {/if}
@@ -212,9 +218,11 @@
     padding: 2px 8px 2px 8px;
   }
   .name {
-    font-size: 15px;
-    font-weight: 400;
+    font-size: 11px;
+    font-weight: 600;
     align-items: center;
+    letter-spacing: 0;
+    line-height: 15px;
   }
   .temp, .tmp, .power, .icon-legend {
     display: flex;
@@ -243,18 +251,27 @@
 
   .temp, .tmp, .icon-legent {
     .actual {
-      font-size: 1.4em;
+      font-size: 24px;
+      // font-size: 1.4em;
       font-weight: 600;
+      letter-spacing: 0;
+      line-height: 33px;
+      text-align: right;
     }
     .setpoint, .temp-type {
       font-size: 16px;
       font-weight: 600;
       float: right;
-      padding-left: 2px;
-      padding-top: 4px;
+      letter-spacing: 0;
+      line-height: 22px;
+      text-align: right;
     }
     .temp-type-actual {
-      font-size: 18px;
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: 0;
+      line-height: 33px;
+      text-align: right;
     }
     .temp-type-sp-actual {
       font-size: 15px;
@@ -272,6 +289,9 @@
     font-size: 14px;
     align-items: center;
     padding-bottom: 5px;
+    letter-spacing: 0;
+    line-height: 19px;
+    text-align: right;
   }
 
   .icon-container {
@@ -430,4 +450,8 @@
     grid-template-columns: repeat(1, 1fr);
   }
 
+  .minic-icon {
+    padding-top: 6px !important;
+    padding-bottom: 1px !important;
+  }
 </style>
