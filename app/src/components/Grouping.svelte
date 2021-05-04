@@ -151,7 +151,7 @@
     display: grid;
     // grid-template-columns: repeat(8, 1fr);
     grid-template-columns: repeat(6, 1fr);
-    grid-gap: 8px;
+    grid-gap: 5px;
     overflow: auto;
   }
 
