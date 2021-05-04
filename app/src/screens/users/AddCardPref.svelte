@@ -76,6 +76,7 @@
                                     label={$_(userCard.Title)}
                                     bind:checked={userCard.Enabled}
                                     disabled={!userCard.Editable}
+                                    on:change={() => {valueChanged(userCard.CardName)}}
                                 />
                             {:else}
                                 <CheckBox 
@@ -83,7 +84,7 @@
                                     bind:checked={userCard.Enabled}
                                     disabled={!userCard.Editable}
                                     onClick={() => {}}
-                                    />
+                                />
                             {/if}
                         </div>
                     {/each}
@@ -104,6 +105,7 @@
                                 label={$_(userCard.Title)}
                                 bind:checked={userCard.Enabled}
                                 disabled={!userCard.Editable}
+                                on:change={() => {valueChanged(userCard.CardName)}}
                             />
                         {:else}
                             <CheckBox 
@@ -159,6 +161,7 @@
                                 label={$_(userCard.Title)}
                                 bind:checked={userCard.Enabled}
                                 disabled={!userCard.Editable}
+                                on:change={() => {valueChanged(userCard.CardName)}}
                             />
                         {:else}
                             <CheckBox 

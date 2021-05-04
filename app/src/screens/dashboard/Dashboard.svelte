@@ -147,10 +147,8 @@
 
   <AddCardPref />
 
-  <div class="editcard">
-    <div class="editcardlink" on:click={() => { cardEditor.set(true) }}>
-      <Icon icon='edit' size="14px" color='var(--primary)' />&nbsp;Edit Card
-    </div>
+  <div class="editcard" on:click={() => { cardEditor.set(true) }}>
+    <Icon icon='edit' size="14px" color='var(--primary)' />&nbsp;Edit Card
   </div>
 
 </Screen>
@@ -196,17 +194,15 @@
   }
 
   .editcard {
-    height: 300px;
-    position: relative;
-    > div {
-      position: absolute;
-      bottom: 0;
-      right: 0;
-    }
+    position: fixed;
+    bottom: 140px;
+    right: 0;
+    padding: 25px;
+    cursor: pointer;
   }
 
-  .editcardlink {
-    cursor: pointer;
-    padding: 10px;
+  .editcard:hover {
+    opacity: .7;
   }
+
 </style>
