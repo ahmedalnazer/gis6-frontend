@@ -6,17 +6,24 @@
     import _ from 'data/language'
     import CheckBox from "components/input/CheckBox.svelte"
     import user, { roles } from 'data/user'
+    import { logIn } from 'data/user/actions'
 
     let userCardPrefStore = []
+    let enableSave = false
+    let changedData = []
 
     const close = async () => {
         cardEditor.set(false)
+        changedData = []
+        enableSave = false
     }
 
     const save = async () => {
         cardEditor.set(false)
         $userCardPref.filter(x => x.UserType == userType)
         userCardPref.set(userCardPrefStore)
+        changedData = []
+        enableSave = false
     }
 
     let userCards = []
@@ -31,6 +38,17 @@
         {
             userCards = [...userCards[0].UserCards]
         }
+    }
+
+    const valueChanged = (cardName) => {
+        if (changedData.includes(cardName)) {
+            changedData.pop(cardName)
+        }
+        else {
+            changedData.push(cardName)
+        }
+
+        enableSave = changedData.length > 0
     }
 
     onMount(() => { })
@@ -114,6 +132,7 @@
                                 label={$_(userCard.Title)}
                                 bind:checked={userCard.Enabled}
                                 disabled={!userCard.Editable}
+                                on:change={() => {valueChanged(userCard.CardName)}}
                             />
                         {:else}
                             <CheckBox 
@@ -121,7 +140,7 @@
                                 bind:checked={userCard.Enabled}
                                 disabled={!userCard.Editable}
                                 onClick={() => {}}
-                                />
+                            />
                         {/if}
                     </div>
                     {/each}
@@ -157,7 +176,7 @@
             <div>&nbsp;</div>
             <div class="savebtn">
                 <div>
-                    <button class="button active" on:click={() => save()}>
+                    <button class="button active" class:disabled={!enableSave} on:click={() => save()}>
                         {$_("Save Selections")}
                     </button>
                 </div>
