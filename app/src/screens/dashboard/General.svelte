@@ -1,21 +1,25 @@
 <script>
   import _ from 'data/language'
-  import Mold from './cards/Mold.svelte'
-  import Process from './cards/Process.svelte'
+  import SavedFiles from './cards/SavedFiles.svelte'
+  import NetworkSettings from './cards/NetworkSettings.svelte'
+  import UserManagement from './cards/UserManagement.svelte'
   import DashboardSection from './DashboardSection.svelte'
 
   export let userCards
 
 </script>
 
-<DashboardSection title={$_('Mold, Process, Order')}>
+<DashboardSection title={$_('General')}>
   <div class='card-grid'>
     {#each (userCards || []) as userCard}
-      {#if userCard.CardName == "MOLD"}
-        <Mold />
+      {#if userCard.CardName == "SAVED_FILES"}
+        <SavedFiles />
       {/if}
-      {#if userCard.CardName == "PROCESS"}
-        <Process />
+      {#if userCard.CardName == "NETWORK_SETTINGS"}
+        <NetworkSettings />
+      {/if}
+      {#if userCard.CardName == "USER_MANAGEMENT"}
+        <UserManagement />
       {/if}
     {/each}
   </div>

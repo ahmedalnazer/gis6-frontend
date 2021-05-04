@@ -5,26 +5,53 @@
     import { cardEditor, userCardPref } from 'data/user/cardpref'
     import _ from 'data/language'
     import CheckBox from "components/input/CheckBox.svelte"
+    import user, { roles } from 'data/user'
+    import { logIn } from 'data/user/actions'
+
+    let userCardPrefStore = []
+    let enableSave = false
+    let changedData = []
 
     const close = async () => {
         cardEditor.set(false)
+        changedData = []
+        enableSave = false
     }
 
     const save = async () => {
         cardEditor.set(false)
+        $userCardPref.filter(x => x.UserType == userType)
+        userCardPref.set(userCardPrefStore)
+        changedData = []
+        enableSave = false
     }
 
     let userCards = []
+    $:userType = $user? $user.role: 0
+    $: getUserCards(userType)
 
-    onMount(() => {
-        userCards = $userCardPref.filter(x => x.UserType == 1)
+    const getUserCards = (userTypeId) => {
+        // USER_TYPE_CHOICES = ((1, "admin"), (2, "operator"), (3, "process_engineer"), (4, "setup"), (5, "plant_manager") )
+        userCardPrefStore = $userCardPref
+        userCards = $userCardPref.filter(x => x.UserType == userTypeId)
         if (userCards.length > 0)
         {
-            userCards = userCards[0].UserCards
+            userCards = [...userCards[0].UserCards]
+        }
+    }
+
+    const valueChanged = (cardName) => {
+        if (changedData.includes(cardName)) {
+            changedData.pop(cardName)
+        }
+        else {
+            changedData.push(cardName)
         }
 
-        console.log(userCards)
-    })
+        enableSave = changedData.length > 0
+    }
+
+    onMount(() => { })
 </script>
 
 {#if $cardEditor == true}
@@ -44,10 +71,21 @@
                 <div>
                     {#each userCards.filter(x => x.CardType == 'CONTROLLER_FUNCTIONS') as userCard}
                         <div>
-                            <!-- svelte-ignore missing-declaration -->
-                            <CheckBox 
-                                label={$_(userCard.Title)}
-                            />
+                            {#if userCard.Editable == true}
+                                <CheckBox 
+                                    label={$_(userCard.Title)}
+                                    bind:checked={userCard.Enabled}
+                                    disabled={!userCard.Editable}
+                                    on:change={() => {valueChanged(userCard.CardName)}}
+                                />
+                            {:else}
+                                <CheckBox 
+                                    label={$_(userCard.Title)}
+                                    bind:checked={userCard.Enabled}
+                                    disabled={!userCard.Editable}
+                                    onClick={() => {}}
+                                />
+                            {/if}
                         </div>
                     {/each}
                 </div>
@@ -61,12 +99,23 @@
                 </div>
                 <div>
                     {#each userCards.filter(x => x.CardType == 'MOLD_PROCESS_ORDER') as userCard}
-                        <div>
-                            <!-- svelte-ignore missing-declaration -->
+                    <div>
+                        {#if userCard.Editable == true}
                             <CheckBox 
                                 label={$_(userCard.Title)}
+                                bind:checked={userCard.Enabled}
+                                disabled={!userCard.Editable}
+                                on:change={() => {valueChanged(userCard.CardName)}}
                             />
-                        </div>
+                        {:else}
+                            <CheckBox 
+                                label={$_(userCard.Title)}
+                                bind:checked={userCard.Enabled}
+                                disabled={!userCard.Editable}
+                                onClick={() => {}}
+                                />
+                        {/if}
+                    </div>
                     {/each}
                 </div>
             </div>
@@ -79,12 +128,23 @@
                 </div>
                 <div>
                     {#each userCards.filter(x => x.CardType == 'TOOLS_DIAGNOSTICS') as userCard}
-                        <div>
-                            <!-- svelte-ignore missing-declaration -->
+                    <div>
+                        {#if userCard.Editable == true}
                             <CheckBox 
                                 label={$_(userCard.Title)}
+                                bind:checked={userCard.Enabled}
+                                disabled={!userCard.Editable}
+                                on:change={() => {valueChanged(userCard.CardName)}}
                             />
-                        </div>
+                        {:else}
+                            <CheckBox 
+                                label={$_(userCard.Title)}
+                                bind:checked={userCard.Enabled}
+                                disabled={!userCard.Editable}
+                                onClick={() => {}}
+                            />
+                        {/if}
+                    </div>
                     {/each}
                 </div>
             </div>
@@ -95,12 +155,23 @@
                 <div class="card-section-desc">&nbsp;</div>
                 <div>
                     {#each userCards.filter(x => x.CardType == 'GENERAL') as userCard}
-                        <div>
-                            <!-- svelte-ignore missing-declaration -->
+                    <div>
+                        {#if userCard.Editable == true}
                             <CheckBox 
                                 label={$_(userCard.Title)}
+                                bind:checked={userCard.Enabled}
+                                disabled={!userCard.Editable}
+                                on:change={() => {valueChanged(userCard.CardName)}}
                             />
-                        </div>
+                        {:else}
+                            <CheckBox 
+                                label={$_(userCard.Title)}
+                                bind:checked={userCard.Enabled}
+                                disabled={!userCard.Editable}
+                                onClick={() => {}}
+                                />
+                        {/if}
+                    </div>
                     {/each}
                 </div>
             </div>
@@ -108,7 +179,7 @@
             <div>&nbsp;</div>
             <div class="savebtn">
                 <div>
-                    <button class="button active" on:click={() => save()}>
+                    <button class="button active" class:disabled={!enableSave} on:click={() => save()}>
                         {$_("Save Selections")}
                     </button>
                 </div>

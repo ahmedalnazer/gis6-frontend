@@ -118,7 +118,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      padding: 2px 20px 2px 20px;
     }
     div:first-of-type {
       justify-content: flex-start;
