@@ -15,7 +15,7 @@
           <p class="count">0</p>
           <p class="status-label">{$_('Parts')}</p>
         </div>
-        <div class="progres-bar">
+        <div class="progres-bar-radial">
           <ProgressBar
             style='radial'
             series={[{
@@ -32,7 +32,7 @@
           </div>
         </div>
       </div>
-      <div class="scroll-bar">
+      <div class="progres-bar-liner">
         <ProgressBar
         series={[0, 10]}
           thresholds={[
@@ -40,17 +40,17 @@
             { perc: 10, color: '#364860' },
             { perc: 100, color: '#364860' }
           ]}
-          textSize={10}
+          textSize={0}
           width={450}
           height={20}
           rx={10}
           ry={10}
-          labelAlignX={'left'}
-          labelAlignY={'below'}
-
-          labelColor={'red'}
-          invLabelColor={'blue'}
         />
+        <div class="progres-bar-liner-labels">
+          <span>0</span>
+          <!-- <span>76,000</span>
+          <span>152,000</span> -->
+        </div>
       </div>
       <div class="setup-order-btn">
         <button>{$_('Setup Order')}</button>
@@ -71,7 +71,7 @@
         border-left: 5px solid #E0E2E7;
         padding-left: 16px;
       }
-      .progres-bar {
+      .progres-bar-radial {
         display: grid;
         grid-template-columns: 0.4fr 1fr;
         grid-gap: 15px;
@@ -92,8 +92,21 @@
         color: var(--textSecondary)
       }
     }
-    .scroll-bar {
+    .progres-bar-liner {
       margin-top: 34px;
+      .progres-bar-liner-labels {
+        margin-top: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        span{
+          color: #666666;
+          font-size: 12px;
+          font-weight: 600;
+          letter-spacing: 0;
+          line-height: 17px;
+        }
+      }
     }
     .setup-order-btn {
       text-align: right;
