@@ -6,7 +6,7 @@
 
 <Card>
   <div class="dashboard-card">
-    <Icon icon="inputOutput" color="#A0B7CE" />
-    <h2 class="title">{$_('Inputs & Outputs')}</h2>
+    <Icon icon="hardwareConfig" color="#A0B7CE" />
+    <h2 class="title">{$_('Hardware Configuration')}</h2>
   </div>
 </Card>
