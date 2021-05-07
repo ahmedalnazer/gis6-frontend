@@ -911,6 +911,8 @@
         </g>
     </g>
 </svg>
+{/if}
+
 {#if icon == 'checkmark'}
   <svg width="16px" height="12px" viewBox="0 0 16 12" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <title>5D7EA647-47E1-4B40-AD4B-44FDFBFAB879</title>
