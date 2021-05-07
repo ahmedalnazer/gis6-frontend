@@ -6,6 +6,8 @@
   import MaterialDatabaseCard from './cards/MaterialDatabaseCard.svelte'
   import InputOutput from './cards/InputOutput.svelte'
   import HistoricalData from './cards/HistoricalData.svelte'
+  import CycleData from './cards/CycleData.svelte'
+  import HardwareConfig from './cards/HardwareConfig.svelte'
   
   export let userCards
 
@@ -44,6 +46,12 @@
       {/if}
       {#if userCard.CardName == "MATERIAL_DATABASE"}
         <MaterialDatabaseCard />
+      {/if}
+      {#if userCard.CardName == "CYCLE_DATA"}
+        <CycleData />
+      {/if}
+      {#if userCard.CardName == "HARDWARE_CONFIG"}
+        <HardwareConfig />
       {/if}
     {/each}
   </div>

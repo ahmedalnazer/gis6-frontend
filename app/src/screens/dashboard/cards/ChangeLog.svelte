@@ -2,18 +2,12 @@
   import _ from "data/language"
   import Card from './Card.svelte'
   import { activeActivityLog } from 'data/activitylog.js'
+  import { Icon } from 'components'
 </script>
 
 <Card>
-  <div class="change-log-card" on:click={() => { $activeActivityLog = "activitylog" }}>
-    <h2>{$_('Recent Activity')}</h2>
-    <p class='muted'>Modified 3/16/2021 10:45 PM</p>
-  </div>  
+  <div class="dashboard-card" on:click={() => { $activeActivityLog = "activitylog" }}>
+    <Icon icon="userManagement" color="#A0B7CE" />
+    <h2 class="title">{$_('Recent Activity')}</h2>
+  </div>
 </Card>
-
-<style lang="scss">
-  .change-log-card {
-    height: 100%;
-    cursor: pointer;
-  }
-</style>

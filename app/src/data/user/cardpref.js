@@ -36,9 +36,10 @@ const userCardData = [
             { id:11, Title:"Historic Data", CardName: "HISTORICAL_DATA", Enabled: false, Editable: true, CardType : "TOOLS_DIAGNOSTICS", ItemOrder: 11 },
             { id:12, Title:"Material Database", CardName: "MATERIAL_DATABASE", Enabled: false, Editable: true, CardType : "TOOLS_DIAGNOSTICS", ItemOrder: 12 },
             { id:13, Title:"Network Settings", CardName: "NETWORK_SETTINGS", Enabled: true, Editable: true, CardType : "GENERAL", ItemOrder: 13 },
-            { id:14, Title:"Units", CardName: "UNITS", Enabled: false, Editable: true, CardType : "GENERAL", ItemOrder: 14 },
-            { id:15, Title:"Reports & Files", CardName: "REPORTS_FILES", Enabled: true, Editable: true, CardType : "GENERAL", ItemOrder: 15 },
-            { id:16, Title:"User Management", CardName: "USER_MANAGEMENT", Enabled: true, Editable: true, CardType : "GENERAL", ItemOrder: 16 }
+            { id:14, Title:"Units", CardName: "UNITS", Enabled: false, Editable: false, CardType : "GENERAL", ItemOrder: 14 },
+            { id:15, Title:"Reports & Files", CardName: "REPORTS_FILES", Enabled: false, Editable: true, CardType : "GENERAL", ItemOrder: 15 },
+            { id:16, Title:"User Management", CardName: "USER_MANAGEMENT", Enabled: true, Editable: true, CardType : "GENERAL", ItemOrder: 16 },
+            { id: 19, Title: "Saved Files", CardName: "SAVED_FILES", Enabled: true, Editable: true, CardType: "GENERAL", ItemOrder: 19 }
         ]
     },
     {
@@ -57,7 +58,7 @@ const userCardData = [
             { id:11, Title:"Historic Data", CardName: "HISTORICAL_DATA", Enabled: false, Editable: true, CardType : "TOOLS_DIAGNOSTICS", ItemOrder: 11 },
             { id:12, Title:"Material Database", CardName: "MATERIAL_DATABASE", Enabled: false, Editable: true, CardType : "TOOLS_DIAGNOSTICS", ItemOrder: 12 },
             { id:13, Title:"Network Settings", CardName: "NETWORK_SETTINGS", Enabled: false, Editable: true, CardType : "GENERAL", ItemOrder: 13 },
-            { id:14, Title:"Units", CardName: "UNITS", Enabled: false, Editable: true, CardType : "GENERAL", ItemOrder: 14 },
+            { id:14, Title:"Units", CardName: "UNITS", Enabled: false, Editable: false, CardType : "GENERAL", ItemOrder: 14 },
             { id:15, Title:"Reports & Files", CardName: "REPORTS_FILES", Enabled: false, Editable: true, CardType : "GENERAL", ItemOrder: 15 },
             { id:16, Title:"User Management", CardName: "USER_MANAGEMENT", Enabled: false, Editable: true, CardType : "GENERAL", ItemOrder: 16 }
         ]
@@ -77,7 +78,7 @@ const userCardData = [
             { id:11, Title:"Historic Data", CardName: "HISTORICAL_DATA", Enabled: false, Editable: true, CardType : "TOOLS_DIAGNOSTICS", ItemOrder: 11 },
             { id:12, Title:"Material Database", CardName: "MATERIAL_DATABASE", Enabled: false, Editable: true, CardType : "TOOLS_DIAGNOSTICS", ItemOrder: 12 },
             { id:13, Title:"Network Settings", CardName: "NETWORK_SETTINGS", Enabled: false, Editable: true, CardType : "GENERAL", ItemOrder: 13 },
-            { id:14, Title:"Units", CardName: "UNITS", Enabled: false, Editable: true, CardType : "GENERAL", ItemOrder: 14 },
+            { id:14, Title:"Units", CardName: "UNITS", Enabled: false, Editable: false, CardType : "GENERAL", ItemOrder: 14 },
             { id:15, Title:"Reports & Files", CardName: "REPORTS_FILES", Enabled: false, Editable: true, CardType : "GENERAL", ItemOrder: 15 },
             { id:16, Title:"User Management", CardName: "USER_MANAGEMENT", Enabled: false, Editable: true, CardType : "GENERAL", ItemOrder: 16 },
             { id:17, Title:"Cycle Data", CardName: "CYCLE_DATA", Enabled: true, Editable: true, CardType : "TOOLS_DIAGNOSTICS", ItemOrder: 17 },
@@ -100,7 +101,7 @@ const userCardData = [
             { id:11, Title:"Historic Data", CardName: "HISTORICAL_DATA", Enabled: false, Editable: true, CardType : "TOOLS_DIAGNOSTICS", ItemOrder: 11 },
             { id:12, Title:"Material Database", CardName: "MATERIAL_DATABASE", Enabled: false, Editable: true, CardType : "TOOLS_DIAGNOSTICS", ItemOrder: 12 },
             { id:13, Title:"Network Settings", CardName: "NETWORK_SETTINGS", Enabled: false, Editable: true, CardType : "GENERAL", ItemOrder: 13 },
-            { id:14, Title:"Units", CardName: "UNITS", Enabled: false, Editable: true, CardType : "GENERAL", ItemOrder: 14 },
+            { id:14, Title:"Units", CardName: "UNITS", Enabled: false, Editable: false, CardType : "GENERAL", ItemOrder: 14 },
             { id:15, Title:"Reports & Files", CardName: "REPORTS_FILES", Enabled: false, Editable: true, CardType : "GENERAL", ItemOrder: 15 },
             { id:16, Title:"User Management", CardName: "USER_MANAGEMENT", Enabled: false, Editable: true, CardType : "GENERAL", ItemOrder: 16 }
         ]
