@@ -771,6 +771,8 @@
             </g>
         </g>
     </svg>
+{/if}
+
 {#if icon == "checkmarkcircle"}
 <svg width={size} height={size} viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <title>A6415A1A-314C-47B3-A71F-53A4BA003648</title>

@@ -24,6 +24,7 @@
             }]}
             thickness={17}
             width={75}
+            textSize={0}
           />
           <div>
             <p class="count">0</p>
@@ -35,9 +36,9 @@
         <ProgressBar
         series={[0, 10]}
           thresholds={[
-            { perc: 0, valueLabel: '0l', color: '#364860' },
-            { perc: 10, valueLabel: '10j', color: '#364860' },
-            { perc: 100, valueLabel: '100g', color: '#364860' }
+            { perc: 0, color: '#364860' },
+            { perc: 10, color: '#364860' },
+            { perc: 100, color: '#364860' }
           ]}
           textSize={10}
           width={450}
