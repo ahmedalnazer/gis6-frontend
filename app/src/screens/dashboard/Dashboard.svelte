@@ -164,6 +164,14 @@
     cursor: move;
   }
 
+  :global(.drag-header .title) {
+    color: var(--darkBlue);
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 0;
+    line-height: 17px;
+  }
+
   .section-title {
     border-bottom: 1px solid rgba(0, 0, 10, 0.1);
     font-weight: 800;
@@ -187,10 +195,23 @@
     opacity: 0.8;
   }
 
+  :global(.dashboard-card) {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  :global(.dashboard-card .title) {
+    letter-spacing: 0;
+    line-height: 27px;
+    margin-top: 10px;
+    margin-bottom: 0;
+  }
+
   .dashboard-body :global(h2) {
     font-size: 20px;
     font-weight: 600;
-    color: var(--blue)
+    color: var(--darkBlue)
   }
 
   .editcard {

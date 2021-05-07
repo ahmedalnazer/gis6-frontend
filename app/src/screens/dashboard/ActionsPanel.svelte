@@ -1,6 +1,9 @@
 <script>
     import { createEventDispatcher } from "svelte"
     // import Button, { Label } from "@smui/button";
+    import user, { roles } from 'data/user'
+    import _ from 'data/language'
+    import { logIn } from 'data/user/actions'
 
     const dispatchSetupProduction = createEventDispatcher()
     let showSetupProductionButton = true
@@ -12,6 +15,7 @@
 </script>
 
 <div class="actionContainer">
+  {#if $user && $user.id}
     {#if showSetupProductionButton}
         <button
             on:click={handleSetupProductionClick}
@@ -24,4 +28,9 @@
     <button class="button">
         SHUTDOWN SYSTEM
     </button>
+  {:else }
+    <button class="button" on:click={e => logIn()}>
+      {$_('Log In')}
+    </button>
+  {/if}
 </div>
