@@ -1,16 +1,50 @@
 <script>
   import Card from './Card.svelte'
   import mold from 'data/mold'
+  import _ from 'data/language'
 </script>
 
-<Card span={2}>
+<Card>
   <div class='container'>
     <div class='labels'>
-      <h2>Mold</h2>
-      <p class='muted'>{$mold.name}</p>
+      <h2>{$_('Mold & Process')}</h2>
+      <p>{$_('Modified 10/08/2020 12:45PM')}</p>
     </div>
-    <div class='image'>
-      <img src='/images/moldimages/mx232.png' />
+    <div class='labels'>
+      <h2>{$_('Mold')}</h2>
+      <p class='muted'>{$_('Large cap')}</p>
+      <!-- <p class='muted'>{$mold.name}</p> -->
+    </div>
+    <div class='labels'>
+      <h2>{$_('Process')}</h2>
+      <p class='muted'>{$_('Black ABS')}</p>
+    </div>
+    <div class='labels'>
+      <h2>{$_('Material')}</h2>
+      <p class='muted'>{$_('ABS')}</p>
     </div>
   </div>
 </Card>
+
+<style lang="scss">
+  .container {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    grid-gap: 20px;
+    .labels {
+      h2 {
+        font-weight: 600;
+        letter-spacing: 0;
+        line-height: 27px;
+      }
+      p {
+        letter-spacing: 0;
+        line-height: 19px;
+        color: var(--textSecondary);
+        .muted {
+          font-weight: 600;
+        }
+      }
+    }
+  }
+</style>
