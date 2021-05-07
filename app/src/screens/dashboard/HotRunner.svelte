@@ -11,6 +11,7 @@
   import LinePlotCard from './cards/LinePlotCard.svelte'
   import MaterialDatabaseCard from './cards/MaterialDatabaseCard.svelte'
   import GroupManagement from './cards/GroupManagement.svelte'
+  import DataVis from './cards/datavis/Wrapper.svelte'
 
   // USER_TYPE_CHOICES = ((1, "admin"), (2, "operator"), (3, "process_engineer"), (4, "setup"), (5, "plant_manager") )
   let cards = [
@@ -64,8 +65,9 @@
   <div slot="tasks">
     <ZoneTasks />
   </div>
-  
+
   <div class='hot-runner-dash card-grid'>
+    <DataVis />
     {#each availableCards as card (card.id)}
       <svelte:component this={card.component} />
     {/each}
