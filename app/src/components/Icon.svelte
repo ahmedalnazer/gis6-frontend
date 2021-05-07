@@ -911,6 +911,32 @@
         </g>
     </g>
 </svg>
+{#if icon == 'checkmark'}
+  <svg width="16px" height="12px" viewBox="0 0 16 12" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>5D7EA647-47E1-4B40-AD4B-44FDFBFAB879</title>
+    <g id="Customize-Layout" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+      <g id="Home-Edit-Mode" transform="translate(-965.000000, -1763.000000)" fill="#358DCA">
+        <g id="Layout-Button" transform="translate(965.000000, 1759.000000)">
+          <polygon id="icon-checkmark" points="5.22595268 15.9186441 5.22595268 15.9186441 5.09951835 16 0 11.0372881 2.40225244 8.75932203 5.14166313 11.4440678 12.8541578 4 15.2564103 6.31864407"></polygon>
+        </g>
+      </g>
+    </g>
+  </svg>
+{/if}
+
+{#if icon == 'add'}
+  <svg width="14px" height="15px" viewBox="0 0 14 15" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>90C47AD6-3803-4BFB-BFB1-54CC85AB4414</title>
+    <g id="Customize-Layout" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+      <g id="Home-Edit-Mode" transform="translate(-824.000000, -1762.000000)" fill="#358DCA" fill-rule="nonzero">
+        <g id="Layout-Button-Copy" transform="translate(824.017094, 1759.444444)">
+          <g id="Add-icon" transform="translate(0.000000, 2.666667)">
+            <path d="M8.13675214,0.527777778 L8.136,5.80477778 L13.2222222,5.80555556 L13.2222222,8.97222222 L8.136,8.97177778 L8.13675214,14.25 L5.08547009,14.25 L5.085,8.97177778 L0,8.97222222 L0,5.80555556 L5.085,5.80477778 L5.08547009,0.527777778 L8.13675214,0.527777778 Z" id="icon-add"></path>
+          </g>
+        </g>
+      </g>
+    </g>
+  </svg>
 {/if}
 
 <style>
