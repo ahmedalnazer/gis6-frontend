@@ -179,7 +179,7 @@
     display: flex;
   }
   .color-tab {
-    height: 10px;
+    height: 12px;
     flex: 1;
   }
   .details {

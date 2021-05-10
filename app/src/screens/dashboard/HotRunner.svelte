@@ -16,16 +16,6 @@
   // USER_TYPE_CHOICES = ((1, "admin"), (2, "operator"), (3, "process_engineer"), (4, "setup"), (5, "plant_manager") )
   let cards = [
     {
-      id: 1,
-      roles: [ 'all' ],
-      component: Minicontroller
-    },
-    {
-      id: 2,
-      roles: [ 'all' ],
-      component: EasyScreen
-    },
-    {
       id: 4,
       roles: [ 1, 3 ],
       component: GroupManagement
@@ -44,11 +34,6 @@
       id: 6,
       roles: [ 'all' ],
       component: WiringAnalysis
-    },
-    {
-      id: 7,
-      roles: [ 'all' ],
-      component: LinePlotCard
     },
     {
       id: 8,

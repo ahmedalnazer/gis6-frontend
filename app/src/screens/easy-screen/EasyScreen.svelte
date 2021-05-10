@@ -1,4 +1,8 @@
 <script>
+  import { onMount } from 'svelte'
+  import { setHRPrefs } from 'data/hot-runner/preferences'
+  onMount(() => setHRPrefs({ dataView: 'ez' }))
+
   import Screen from "layout/Screen.svelte"
   import { activeGroup, sortGroups } from "data/groups"
   import { selectedZones as _selected } from "data/zones"
@@ -69,7 +73,7 @@
     <Grouping Zone={ZoneRow} Group={ZoneGroup} bind:selection bind:displayedZones >
       <div slot='all-zone-header' class='table-header-item grid'>
         <div>
-          <CheckBox checked={allSelected} minus={$_selected.length && !allSelected} onClick={toggleAll} label={$_('Zone')} /> 
+          <CheckBox checked={allSelected} minus={$_selected.length && !allSelected} onClick={toggleAll} label={$_('Zone')} />
         </div>
         <div>{$_('Actual')}</div>
         <div>{$_('Setpoint')}</div>
@@ -173,7 +177,7 @@
   #easy-screen :global(.screen-body) {
     padding-top: 2px;
   }
-  
+
   .icon-legend {
     display: grid;
     grid-template-columns: repeat(4, 1fr);

@@ -1,4 +1,8 @@
 <script>
+  import { onMount } from 'svelte'
+  import { setHRPrefs } from 'data/hot-runner/preferences'
+  onMount(() => setHRPrefs({ dataView: 'mini' }))
+
   import { Icon } from 'components'
   import Screen from "layout/Screen.svelte"
   import { activeGroup, sortGroups } from "data/groups"
