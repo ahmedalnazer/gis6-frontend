@@ -23,8 +23,8 @@
         canvas.height = canvas.width * 6.1 / 7.8
         scaled = true
       }
-      
-      if(!offscreen && canvas.transferControlToOffscreen) {        
+
+      if(!offscreen && canvas.transferControlToOffscreen) {
         offscreen = canvas.transferControlToOffscreen()
         worker.postMessage({ canvas: offscreen }, [ offscreen ])
       }
@@ -70,6 +70,7 @@
   canvas {
     width: 100%;
     flex: 1;
+    z-index: 2;
     /* filter: blur(.5px); */
   }
 </style>
