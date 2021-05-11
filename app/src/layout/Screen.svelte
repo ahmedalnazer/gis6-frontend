@@ -1,6 +1,6 @@
 <script>
   import _ from 'data/language'
-  import { Select } from 'components'
+  import { BareSelect } from 'components'
   import history, { goBack } from 'router/history'
   import IconBackArrow from 'style/images/icon_backarrow.svelte'
   import { onMount } from 'svelte'
@@ -40,10 +40,10 @@
     return { id: key, ...groups[group][key] }
   }) || []
 
-  
+
   $: {
     if(group && groups[group]) {
-      
+
       const selectedOption = selectedScreen && options.find(x => x.id == selectedScreen)
       if(selectedOption && targetUrl != selectedOption.url) {
         targetUrl = selectedOption.url
@@ -63,14 +63,14 @@
       goBack()
     }
   }
-  
+
   onMount(() => {
     if(options.length) {
       const selectedOption = options.find(x => x.url == $history.pathname)
       selectedScreen = selectedOption ? selectedOption.id : ''
     }
   })
-  
+
 
 </script>
 
@@ -87,7 +87,7 @@
         <IconBackArrow width="30" height="30" />
       </div>
       {#if options.length}
-        <Select isSearchable={false} selectedItemLabel='title'  bind:value={selectedScreen} options={options} />
+        <BareSelect isSearchable={false} bind:value={selectedScreen} options={options} />
       {:else}
         <h1>{title}</h1>
       {/if}
@@ -140,7 +140,7 @@
       overflow: auto;
     }
   }
-  
+
   .screen-header + .screen-body {
     padding-top: 20px;
   }
@@ -172,7 +172,7 @@
       box-shadow: 4px 4px 8px rgba(0, 0, 0, .3);
     }
     :global(.button:not(.ignore-task-styles):active, .button.pressed:not(.ignore-task-styles)) {
-      background: linear-gradient(180deg, #161E29 0%, #1D2734 7.81%, #212F41 100%) !important; 
+      background: linear-gradient(180deg, #161E29 0%, #1D2734 7.81%, #212F41 100%) !important;
       box-shadow: none !important;
     }
   }

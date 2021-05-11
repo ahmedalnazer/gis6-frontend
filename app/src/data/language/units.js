@@ -1,43 +1,62 @@
 import { writable, derived } from 'svelte/store'
 import current from './current'
 
+const units = {
+  // temperature in degrees
+  temperature: {
+    getUnit: prefs => {
+      if(prefs.compact) return '°'
+      return '°F'
+    },
+    precision: 1,
+    convert: (v, prefs) => {
+      return v / 10
+    }
+  },
+
+  // electrical current (e.g. amps)
+  current: {
+    getUnit: prefs => {
+      return 'A'
+    },
+    precision: 2,
+    convert: (v, prefs) => {
+      return v / 10
+    }
+  },
+
+  // percentage values (usually just dividing by 10)
+  percent: {
+    getUnit: prefs => {
+      return '%'
+    },
+    precision: 1,
+    convert: (v, prefs) => {
+      return v / 10
+    }
+  }
+}
+units.temp = units.temperature
+units.percentage = units.percent
+
 
 const rawConvert = derived([ current ], ([ current ]) => {
-  const converters = {
-    temperature: v => v,
-    current: v => v,
-    percent: v => v
-  }
   return ({ type, value }) => {
-    const converter = converters[type]
+    const converter = units[type] && units[type].convert
     if(!converter) {
       console.warn(`Missing converter for "${type}"`, { type, value })
       return value
     }
-    return converter(value / 10)
+    return converter(value)
   }
 })
 
 
 const convert = derived([ rawConvert, current ], ([ $rawConvert, $current ]) => {
-  const units = {
-    temperature: {
-      unit: '°F',
-      precision: 1
-    },
-    current: {
-      unit: 'A',
-      precision: 2
-    },
-    percent: {
-      unit: '%',
-      precision: 1
-    }
-  }
-  
-  return ({ type, value }) => {
-    const { unit, precision } = units[type] || {}
-    return `${$rawConvert({ type, value }).toFixed(precision || 1)}${unit || ''}`
+  return ({ type, value, compact }) => {
+    let { getUnit, precision } = units[type] || {}
+    if(!getUnit) getUnit = () => {}
+    return `${$rawConvert({ type, value }).toFixed(precision || 1)}${getUnit({ ...$current, compact }) || ''}`
   }
 })
 
