@@ -1,6 +1,7 @@
 <script>
   export let link = undefined
   export let span = 1
+  export let footerIcon = undefined
 </script>
 
 <a href={link} class='card' style='grid-column: span {span};'>
@@ -8,7 +9,7 @@
     <slot />
   </div>
   <div class='footer'>
-    {#if link}
+    {#if footerIcon}
       <img src='/images/icons/expand.svg' alt='expand'/>
     {/if}
   </div>

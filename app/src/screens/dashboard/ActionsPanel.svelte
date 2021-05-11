@@ -30,7 +30,7 @@
     </button>
   {:else }
     <button class="button" on:click={e => logIn()}>
-      {$_('Log In')}
+      {$_('LOG IN')}
     </button>
   {/if}
 </div>
