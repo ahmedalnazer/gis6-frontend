@@ -1,5 +1,8 @@
 <script>
-  import { onDestroy } from 'svelte'
+  import { onMount, onDestroy } from 'svelte'
+  import { setHRPrefs } from 'data/hot-runner/preferences'
+  onMount(() => setHRPrefs({ dataView: 'line' }))
+
   import GroupSelector from "components/GroupSelector.svelte"
   import { Select, CheckBox, Icon } from 'components'
   import Screen from 'layout/Screen.svelte'
