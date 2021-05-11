@@ -10,7 +10,7 @@
   import SortableList from "svelte-sortable-list"
   import Management from "./Management.svelte"
   import AddCardPref from 'screens/users/AddCardPref.svelte'
-  import { cardEditor, userCardPref } from 'data/user/cardpref'
+  import { cardEditor, userCardPref, enableHomeEdit } from 'data/user/cardpref'
   import { Icon } from 'components'
   import user, { roles } from 'data/user'
   import { onMount } from 'svelte'
@@ -149,7 +149,11 @@
   <AddCardPref />
 
   {#if editCards}
-  <div class="editcard" on:click={() => editCards = false }>
+  <div class="editcard" on:click={() => {
+      editCards = false
+      enableHomeEdit.set(true)
+    }}
+  >
     <Icon icon='edit' size="14px" color='var(--primary)' />&nbsp;Edit Card
   </div>
   {:else}
@@ -158,7 +162,11 @@
         <Icon icon="add" />
         <span>Add card</span>
       </div>
-      <div on:click={() => editCards = true }>
+      <div on:click={() => {
+          editCards = true
+          enableHomeEdit.set(false)
+        }}
+      >
         <Icon icon="checkmark" />
         <span>Done</span>
       </div>
@@ -223,12 +231,38 @@
     flex-direction: column;
     justify-content: center;
   }
-  :global(.dashboard-card .title) {
+  :global(.dashboard-card .title, .card-edit-placeholder .title) {
     letter-spacing: 0;
     line-height: 27px;
     margin-top: 10px;
     margin-bottom: 0;
   }
+  .dashboard-body :global(.cardEnabled) {
+    box-sizing: border-box;
+    border: 2px solid #358DCA;
+    border-radius: 2px;
+    background-color: #FFFFFF;
+    box-shadow: 0 2px 5px 0 rgba(54,72,96,0.5);
+  }
+  .dashboard-body :global(.bigCard) {
+    height: 336px;
+  }
+  .dashboard-body :global(.smallCard) {
+    height: 160px;
+  }
+  .dashboard-body :global(.card-edit-placeholder) {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    :global(.title) {
+      margin: 0;
+      flex: 1;
+    }
+    :global(svg) {
+      align-self: flex-end;
+    }
+  }
+
 
   .dashboard-body :global(h2) {
     font-size: 20px;

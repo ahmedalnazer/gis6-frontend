@@ -2,9 +2,12 @@
   export let link = undefined
   export let span = 1
   export let footerIcon = undefined
+  export let cardEnabled
+  export let bigCard
+  export let smallCard
 </script>
 
-<a href={link} class='card' style='grid-column: span {span};'>
+<a href={link} class='card' class:cardEnabled class:bigCard class:smallCard style='grid-column: span {span};'>
   <div class='body'>
     <slot />
   </div>

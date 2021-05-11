@@ -2,28 +2,37 @@
   import Card from './Card.svelte'
   import mold from 'data/mold'
   import _ from 'data/language'
+  import { Icon } from 'components'
+  import { enableHomeEdit } from 'data/user/cardpref'
 </script>
 
-<Card>
-  <div class='container'>
-    <div class='labels'>
-      <h2>{$_('Mold & Process')}</h2>
-      <p>{$_('Modified 10/08/2020 12:45PM')}</p>
+<Card cardEnabled={$enableHomeEdit} smallCard={$enableHomeEdit}>
+  {#if $enableHomeEdit}
+    <div class="card-edit-placeholder">
+      <h2 class="title">{$_('Mold & Process')}</h2>
+      <Icon icon="trash" color="#358DCA" />
     </div>
-    <div class='labels'>
-      <h2>{$_('Mold')}</h2>
-      <p class='muted'>{$_('Large cap')}</p>
-      <!-- <p class='muted'>{$mold.name}</p> -->
+  {:else}
+    <div class='container'>
+      <div class='labels'>
+        <h2>{$_('Mold & Process')}</h2>
+        <p>{$_('Modified 10/08/2020 12:45PM')}</p>
+      </div>
+      <div class='labels'>
+        <h2>{$_('Mold')}</h2>
+        <p class='muted'>{$_('Large cap')}</p>
+        <!-- <p class='muted'>{$mold.name}</p> -->
+      </div>
+      <div class='labels'>
+        <h2>{$_('Process')}</h2>
+        <p class='muted'>{$_('Black ABS')}</p>
+      </div>
+      <div class='labels'>
+        <h2>{$_('Material')}</h2>
+        <p class='muted'>{$_('ABS')}</p>
+      </div>
     </div>
-    <div class='labels'>
-      <h2>{$_('Process')}</h2>
-      <p class='muted'>{$_('Black ABS')}</p>
-    </div>
-    <div class='labels'>
-      <h2>{$_('Material')}</h2>
-      <p class='muted'>{$_('ABS')}</p>
-    </div>
-  </div>
+  {/if}
 </Card>
 
 <style lang="scss">

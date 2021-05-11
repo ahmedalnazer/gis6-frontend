@@ -2,11 +2,19 @@
   import Card from './Card.svelte'
   import _ from 'data/language'
   import { Icon } from 'components'
+  import { enableHomeEdit } from 'data/user/cardpref'
 </script>
 
-<Card link='/manage-users' footerIcon={false}>
-  <div class="dashboard-card">
-    <Icon icon="userManagement" color="#A0B7CE" />
-    <h2 class="title">{$_('User Management')}</h2>
-  </div>
+<Card link='/manage-users' footerIcon={false} cardEnabled={$enableHomeEdit} smallCard={$enableHomeEdit}>
+  {#if $enableHomeEdit}
+    <div class="card-edit-placeholder">
+      <h2 class="title">{$_('User Management')}</h2>
+      <Icon icon="trash" color="#358DCA" />
+    </div>
+  {:else}
+    <div class="dashboard-card">
+      <Icon icon="userManagement" color="#A0B7CE" />
+      <h2 class="title">{$_('User Management')}</h2>
+    </div>
+  {/if}
 </Card>

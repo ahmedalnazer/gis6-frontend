@@ -2,61 +2,70 @@
   import Card from './Card.svelte'
   import _ from 'data/language'
   import ProgressBar from "@okrad/svelte-progressbar"
+  import { Icon } from 'components'
+  import { enableHomeEdit } from 'data/user/cardpref'
 </script>
 
-<Card>
-  <div class='container'>
-    <div class='labels'>
-      <h2>{$_('Order: No current order')}</h2>
+<Card cardEnabled={$enableHomeEdit} bigCard={$enableHomeEdit}>
+  {#if $enableHomeEdit}
+    <div class="card-edit-placeholder">
+      <h2 class="title">{$_('Order')}</h2>
+      <Icon icon="trash" color="#358DCA" />
     </div>
-    <div class='order-status'>
-      <div class="status">
-        <div class="with-border">
-          <p class="count">0</p>
-          <p class="status-label">{$_('Parts')}</p>
-        </div>
-        <div class="progres-bar-radial">
-          <ProgressBar
-            style='radial'
-            series={[{
-              perc: 0,
-              color: '#364860'
-            }]}
-            thickness={17}
-            width={75}
-            textSize={0}
-          />
-          <div>
+  {:else}
+    <div class='container'>
+      <div class='labels'>
+        <h2>{$_('Order: No current order')}</h2>
+      </div>
+      <div class='order-status'>
+        <div class="status">
+          <div class="with-border">
             <p class="count">0</p>
-            <p class="status-label">{$_('Days left')}</p>
+            <p class="status-label">{$_('Parts')}</p>
+          </div>
+          <div class="progres-bar-radial">
+            <ProgressBar
+              style='radial'
+              series={[{
+                perc: 0,
+                color: '#364860'
+              }]}
+              thickness={17}
+              width={75}
+              textSize={0}
+            />
+            <div>
+              <p class="count">0</p>
+              <p class="status-label">{$_('Days left')}</p>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="progres-bar-liner">
-        <ProgressBar
-        series={[0]}
-          thresholds={[
-            { perc: 0, color: '#364860' },
-            { perc: 10, color: '#364860' },
-            { perc: 100, color: '#364860' }
-          ]}
-          textSize={0}
-          width={450}
-          height={20}
-          rx={10}
-          ry={10}
-        />
-        <div class="progres-bar-liner-labels">
-          <span>0</span>
-          <!-- <span>76,000</span>
-          <span>152,000</span> -->
+        <div class="progres-bar-liner">
+          <ProgressBar
+          series={[0]}
+            thresholds={[
+              { perc: 0, color: '#364860' },
+              { perc: 10, color: '#364860' },
+              { perc: 100, color: '#364860' }
+            ]}
+            textSize={0}
+            width={450}
+            height={20}
+            rx={10}
+            ry={10}
+          />
+          <div class="progres-bar-liner-labels">
+            <span>0</span>
+            <!-- <span>76,000</span>
+            <span>152,000</span> -->
+          </div>
+        </div>
+        <div class="setup-order-btn">
+          <button>{$_('Setup Order')}</button>
         </div>
       </div>
-      <div class="setup-order-btn">
-        <button>{$_('Setup Order')}</button>
-      </div>
     </div>
-  </div>
+  {/if}
 </Card>
 
 <style lang="scss">
