@@ -10,7 +10,8 @@ export const logIn = () => loggingIn.set(true)
 
 // load all current users into state
 const loadUsers = async () => {
-  const u = await api.get('/auth/user/list')
+  // const u = await api.get('/auth/user/list')
+  const u = await api.get('/v2/user/user')
   if(u && u.length == 0) {
     try {
       await createUser({
@@ -47,7 +48,8 @@ loadUsers()
  */
 export const createUser = async user => {
   // post new user
-  const u = await api.post('auth/user', user)
+  // const u = await api.post('auth/user', user)
+  const u = await api.post('/v2/user/user/', user)
   if(u.error) {
     // notify user if there's an error
     notify.error(u.error)
@@ -64,7 +66,8 @@ export const createUser = async user => {
  */
 export const deleteUser = async user => {
   // post new user
-  const data = await api.delete(`/auth/user/${user.id}`)
+  // const data = await api.delete(`/auth/user/${user.id}`)
+  const data = await api.delete(`/v2/user/user/${user.id}`)
 
   notify('User successfully deleted')
   // refresh state
@@ -79,7 +82,8 @@ export const deleteUser = async user => {
  */
 export const updateUser = async user => {
   // post new user
-  const data = await api.put(`/auth/user/${user.id}`, user)
+  // const data = await api.put(`/auth/user/${user.id}`, user)
+  const data = await api.put(`/v2/user/user/${user.id}`, user)
   notify.success('User profile updated')
   // refresh state
   await loadUsers()

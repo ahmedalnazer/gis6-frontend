@@ -85,7 +85,8 @@ class API {
 
   updateToken = async () => {
     if(this.refresh) {
-      const data = await this.post('/auth/token/refresh', { refresh: this.refresh })
+      // const data = await this.post('/auth/token/refresh', { refresh: this.refresh })
+      const data = await this.post('/v2/user/token/refresh', { refresh: this.refresh })
       if(data.code && data.code == 'token_not_valid') {
         cookieStorage.removeItem('auth')
       } else {
@@ -96,7 +97,8 @@ class API {
 
   // TODO: finalize and document
   login = async (username, password) => {
-    const data = await this.post('auth/token/obtain', { username, password })
+    // const data = await this.post('auth/token/obtain', { username, password })
+    const data = await this.post('/v2/user/token/obtain/', { username, password })
     if(!data.access) {
       notify.error($_('Invalid username or password'))
       return false
@@ -113,7 +115,8 @@ class API {
     let u
     user.subscribe(current => u = current)()
     try {
-      await this.post('auth/logout', { refresh_token: this.refresh, user: u.id })
+      // await this.post('auth/logout', { refresh_token: this.refresh, user: u.id })
+      await this.post('/v2/user/logout/', { refresh_token: this.refresh, user: u.id })
     } catch(e) {
       console.error(e)
       // assume JSON parsing error, may need to revisit
@@ -195,7 +198,8 @@ class API {
 
             // recover from expired token
             if(resp.status == 401 && body.code && body.code == 'token_not_valid') {
-              if(!url.includes('auth/token/refresh')) {
+              // if(!url.includes('auth/token/refresh')) {
+              if(!url.includes('/v2/user/token/refresh/')) {
                 await this.updateToken()
                 return resolve(await api.request(url, data, { method }))
               } else {
