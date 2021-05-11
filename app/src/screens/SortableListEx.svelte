@@ -1,6 +1,6 @@
 <script>
     import SortableList from "svelte-sortable-list";
-    import Comp from "./Comp.svelte";
+    // import Comp from "./Comp.svelte";
     let list = [
         { id: 1, name: "First Item" },
         { id: 2, name: "Second Item" },
@@ -12,5 +12,5 @@
 </script>
 
 <SortableList {list} key="id" on:sort={sortList} let:item>
-    <Comp {item} />
+    <!-- <Comp {item} /> -->
 </SortableList>
