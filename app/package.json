@@ -35,18 +35,17 @@
     "@babel/plugin-transform-runtime": "^7.0.0",
     "@babel/preset-env": "^7.0.0",
     "@babel/runtime": "^7.0.0",
-    "@snowpack/plugin-dotenv": "^2.0.5",
-    "@snowpack/plugin-sass": "^1.2.0",
-    "@snowpack/plugin-svelte": "^3.5.2",
+    "@snowpack/plugin-dotenv": "^2.1.0",
+    "@snowpack/plugin-sass": "^1.4.0",
+    "@snowpack/plugin-svelte": "^3.6.1",
     "@sveltejs/snowpack-config": "^1.0.0-next.0",
     "autoprefixer": "^9.6.1",
     "http-proxy": "^1.18.1",
     "node-fetch": "^2.6.0",
     "npm-run-all": "^4.1.5",
     "rollup-plugin-commonjs": "^10.1.0",
-    "rollup-plugin-extensions": "^0.1.0",
     "rollup-plugin-scss": "^2.6.1",
     "rollup-plugin-svelte": "^7.0.0",
-    "snowpack": "3.0.13"
+    "snowpack": "^3.3.7"
   }
 }

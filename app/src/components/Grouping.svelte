@@ -38,7 +38,7 @@
       _selected.set(selectionZones.map(x => x.zone))
     }
   }
-  
+
 
   const boxSelect = (nodes) => {
     for(let [ nodeString, group ] of nodes) {
@@ -137,7 +137,6 @@
 
   .zone-container {
     flex: 1;
-    overflow: auto;
   }
 
   .selection-area {
@@ -145,14 +144,14 @@
     flex-direction: column;
     flex: 1;
     overflow: auto;
+    padding: 4px;
   }
 
   .selection-area.grid :global(.zones) {
     display: grid;
     // grid-template-columns: repeat(8, 1fr);
     grid-template-columns: repeat(6, 1fr);
-    grid-gap: 5px;
-    overflow: auto;
+    grid-gap: 16px;
   }
 
 </style>

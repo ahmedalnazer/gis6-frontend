@@ -4,11 +4,12 @@
   import { activeSetpointEditor } from 'data/setpoint'
   import { selectedZones } from 'data/zones'
   import { createEventDispatcher } from 'svelte'
-  
+
 
   export let zone
   export let group = null
-  export let active
+  export let active = false
+  export let compact = false
 
   const dispatch = createEventDispatcher()
 
@@ -43,7 +44,7 @@
   $: monitorHSP = zone.MonitorHighAlarmSP
   $: monitorLSP = zone.MonitorLowAlarmSP
 
-  
+
   const setPoint = () => {
     selectedZones.set([ zone.id ])
     activeSetpointEditor.set('setpoint')
@@ -64,7 +65,11 @@
 
 <div class='grid rb-box zone-box' on:click={click} class:active data-id={zone.id} data-group={group && group.id}>
   <div class="table-body-item zone-name">
-    <CheckBox checked={active} /> {zone.name}
+    {#if !compact}
+      <CheckBox checked={active} /> {zone.name}
+    {:else}
+      <label>{zone.name}</label>
+    {/if}
   </div>
 
   <div class="table-body-item temp" class:off={!on} class:error={tempError || powerError || standbyError} class:warning={tempWarning || powerWarning || boostWarning}>
@@ -92,7 +97,7 @@
   </div>
 
   <div class="table-body-item" class:off={!on} class:error={powerError || tempError || standbyError} class:warning={powerWarning || tempWarning || boostWarning}>
-    
+
     {#if monitor}
       <div class="setpoint">
         {#if monitorHA}
@@ -129,7 +134,7 @@
       <div class='circle' /> -->
     {/if}
   </div>
-  
+
   <div class='table-body-item settings' on:click|stopPropagation={setPoint}>
     <div class="settings-indicator">
       {#if monitor}
@@ -154,7 +159,11 @@
       {#if settings.sealed}<span><Icon icon='sealed' /></span>{/if}
     </div>
 
-    <Icon icon='edit' size="24px" color='var(--primary)' />
+    <div>
+      {#if !compact}
+        <Icon icon='edit' size="24px" color='var(--primary)' />
+      {/if}
+    </div>
   </div>
 </div>
 
@@ -276,7 +285,7 @@
     font-size: 16px;
     color: #011F3E;
     :global(.input.checkbox) {
-       padding-right: 0; 
+       padding-right: 0;
      }
      .setpoint {
        text-align: right;

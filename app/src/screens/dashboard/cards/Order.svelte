@@ -19,7 +19,7 @@
           <ProgressBar
             style='radial'
             series={[{
-              perc: 55,
+              perc: 0,
               color: '#364860'
             }]}
             thickness={17}
@@ -34,7 +34,7 @@
       </div>
       <div class="progres-bar-liner">
         <ProgressBar
-        series={[0, 10]}
+        series={[0]}
           thresholds={[
             { perc: 0, color: '#364860' },
             { perc: 10, color: '#364860' },
