@@ -130,4 +130,4 @@ const userCardData = [
 
 export const cardEditor = writable('')
 export const userCardPref = writable(userCardData)
-
+export const enableHomeEdit = writable(false)
