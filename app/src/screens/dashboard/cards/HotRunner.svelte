@@ -30,7 +30,7 @@
   }
 </script>
 
-<Card link='/hot-runner'>
+<Card link='/hot-runner' footerIcon={false}>
     <div class="sectionHeader">
         <div class='icon'>
           <Icon icon="checkmarkcircle" color="var(--green)" size="1em" />

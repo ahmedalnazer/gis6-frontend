@@ -4,7 +4,7 @@
   import { Icon } from 'components'
 </script>
 
-<Card link='/manage-users'>
+<Card link='/manage-users' footerIcon={false}>
   <div class="dashboard-card">
     <Icon icon="userManagement" color="#A0B7CE" />
     <h2 class="title">{$_('User Management')}</h2>
