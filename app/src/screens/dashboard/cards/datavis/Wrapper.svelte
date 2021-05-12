@@ -7,11 +7,10 @@
   import EZ from './EZ'
   import history from 'router/history'
   import hotRunnerPrefs, { setHRPrefs } from 'data/hot-runner/preferences'
-  import { activeGroup } from 'data/groups'
   import zones from 'data/zones'
+  import { activeGroup } from 'data/groups'
 
   $: activeZones = $activeGroup ? $zones.filter(x => x.groups && x.groups.includes($activeGroup)) : $zones
-
 
   let selectedVis = $hotRunnerPrefs.dataView
 
@@ -75,7 +74,7 @@
   .body {
     margin: 0 -4px;
     padding: 4px;
-    max-height: 590px;
+    max-height: 640px;
     overflow: auto;
   }
 </style>
