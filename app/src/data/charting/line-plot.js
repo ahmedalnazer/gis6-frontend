@@ -10,7 +10,7 @@ import { getInspectionDetails } from './inspection'
  * @param {Function} submitLines
  */
 const draw = (chartData, logStats, submitLines) => {
-  const { canvas, ctx, scale, paused, bufferParams, position, mode, inspectedPoint } = chartData
+  const { canvas, ctx, scale, paused, bufferParams, position, mode, renderMode, inspectedPoint } = chartData
 
   let { zones, jank } = chartData
 
@@ -29,10 +29,10 @@ const draw = (chartData, logStats, submitLines) => {
 
   let maxLinePoints = Math.min(700, Math.max(80, 20000 / (zones.length * properties.length))) * (chartData.resolution / 4)
 
-  const { xMin, xMax, dX, xScale, valid, xRange } = getXParameters(position, canvas, scale, paused)
+  const { xMin, xMax, dX, xScale, valid, xRange, delay } = getXParameters(position, canvas, scale, paused, bufferParams)
   if(!valid) return
 
-  const renderLimit = xMin - 2000
+  const renderLimit = xMin - delay
   const sample = buffer.active.filter(x => x.time >= renderLimit)
 
   // determine which points should be filtered based on max points per line
@@ -76,9 +76,9 @@ const draw = (chartData, logStats, submitLines) => {
         if (prop == 'deviation') {
           const settings = getSettings(point)
           if (settings.manual) {
-            y = point.manual_sp - point.actual_percent
+            y = point.actual_percent - point.manual_sp
           } else {
-            y = point.temp_sp - point.actual_temp
+            y = point.actual_temp - point.temp_sp
           }
         }
         lines[prop][z - 1].push({ x, y, time: frame.ts })
@@ -134,9 +134,9 @@ const draw = (chartData, logStats, submitLines) => {
   const selected = [ inspectionDetails.index ]
 
   if(canvas && ctx) {
-    drawLines(_props, canvas, { renderedLines, selected })
+    drawLines(_props, canvas, { renderedLines, selected, renderMode })
   } else {
-    submitLines({ renderedLines, selected })
+    submitLines({ renderedLines, selected, renderMode })
   }
 
   const plotFilled = sample.length < buffer.active.length
@@ -176,7 +176,7 @@ const getFrame = (rendered, idx, zone) => {
 }
 
 // get the x axis bounds
-const getXParameters = (position, canvas, scale, paused) => {
+const getXParameters = (position, canvas, scale, paused, bufferParams) => {
   const latest = buffer.active[buffer.active.length - 1]
   if (!latest) return { valid: false }
 
@@ -189,7 +189,7 @@ const getXParameters = (position, canvas, scale, paused) => {
   let panXRatio = position.panX / canvas.width
   let timeOffset = xRange * panXRatio
 
-  const delay = Math.max(1000, .01 * xRange)
+  const delay = Math.max(1000, 1000 / bufferParams.rate) * 2
 
   const now = new Date().getTime() - delay - timeOffset
   let rawXMax = paused ? latest.time - delay * .25 - timeOffset : now
@@ -204,7 +204,7 @@ const getXParameters = (position, canvas, scale, paused) => {
   const dX = xMax - xMin
   const xScale = canvas.width / (xMax - xMin)
 
-  return { xMin, xMax, xRange, dX, xScale, valid: true }
+  return { xMin, xMax, xRange, dX, xScale, delay, valid: true }
 }
 
 

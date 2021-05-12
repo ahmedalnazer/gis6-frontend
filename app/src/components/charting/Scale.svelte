@@ -20,7 +20,7 @@
 
   $: gap = range / spaces
   $: shim = max % gap
-  
+
   let intervals = []
 
   $: {
@@ -38,6 +38,7 @@
     let places = 0
     if(range < 20) places = 1
     if(range < 2) places = 2
+    if(isNaN(n)) return ''
     return n.toFixed(places)
   }
 

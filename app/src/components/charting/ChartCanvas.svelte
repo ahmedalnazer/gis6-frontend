@@ -10,6 +10,7 @@
   export let width = 0
   export let height = 0
   export let mode = 'pan'
+  export let renderMode = 'normal'
   export let inspectedPoint = [ 0, 0 ]
 
   let canvas, worker
@@ -29,7 +30,7 @@
         worker.postMessage({ canvas: offscreen }, [ offscreen ])
       }
 
-      let chartData = { type, properties, scale, paused, zones, position, jank, mode, inspectedPoint }
+      let chartData = { type, properties, scale, paused, zones, position, jank, mode, renderMode, inspectedPoint }
       if(!offscreen) chartData.canvas = { width: canvas.width, height: canvas.height }
       worker.postMessage(chartData)
     }

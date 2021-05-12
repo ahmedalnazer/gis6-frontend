@@ -53,7 +53,7 @@
   $: {
     const setLength = Math.floor(range / interval)
     const first = Math.ceil(start / interval) * interval
-    
+
     let updatedSet = [ getLine(first) ]
     for(let i = 1; i < setLength; i++) {
       const time = first + interval * i
@@ -70,9 +70,11 @@
 
 <div class='x-grid origin' bind:this={grid}>
   {#each set as line}
-    <div class='line' style='transform: translateX({line.left}px); opacity: {line.opacity}'>
-      <div class='stamp'>{line.stamp}</div>
-    </div>
+    {#if !isNaN(line.left)}
+      <div class='line' style='transform: translateX({line.left}px); opacity: {line.opacity}'>
+        <div class='stamp'>{line.stamp}</div>
+      </div>
+    {/if}
   {/each}
   {#each displayedMarks as mark}
     <div class='origin mark' style='transform: translateX({mark}px)' />

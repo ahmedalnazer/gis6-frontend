@@ -164,6 +164,14 @@
     cursor: move;
   }
 
+  :global(.screen-body) {
+    padding-top: 22px !important;
+  }
+
+  .dashboard-body :global(.drag-header) {
+    margin-top: 0;
+  }
+
   :global(.drag-header .title) {
     color: var(--darkBlue);
     font-size: 12px;
@@ -216,10 +224,15 @@
 
   .editcard {
     position: fixed;
-    bottom: 140px;
+    bottom: 143px;
     right: 0;
-    padding: 25px;
+    padding-right: 25px;
     cursor: pointer;
+    color: #358DCA;
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: 0;
+    line-height: 18px;
   }
 
   .editcard:hover {
