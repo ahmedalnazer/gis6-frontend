@@ -4,6 +4,8 @@
   import { activeSetpointEditor } from 'data/setpoint'
   import { selectedZones } from 'data/zones'
   import { createEventDispatcher } from 'svelte'
+  import convert from 'data/language/units'
+
 
 
   export let zone
@@ -60,6 +62,16 @@
     }
     setPoint()
   }
+
+  const tempConfig = { type: 'temp', precision: 0 }
+
+  $: readout = auto ?  $convert({ value: zone.actual_temp, ...tempConfig }) : $convert({ type: 'current', value: zone.actual_current })
+  $: sp = !monitor && (auto ? $convert({ value: setpoint, ...tempConfig }) : $convert({ type: 'percent', value: zone.ManualSp }))
+
+  $: monitorHigh = $convert({ value: zone.MonitorHighAlarmSP || 0, compact, ...tempConfig })
+  $: monitorLow = $convert({ value: zone.MonitorLowAlarmSP || 0, compact, ...tempConfig })
+
+
 </script>
 
 
@@ -87,13 +99,7 @@
     {:else if tempWarning || powerWarning}
       <Icon icon="information" color="white" />
     {/if}
-
-    {Math.round((zone.actual_temp || 0) / 10)}&deg;<span class='temp-type'>C</span>
-    <!-- {#if auto}
-      {Math.round((zone.actual_temp || 0) / 10)}&deg;<span class='temp-type'>C</span>
-    {:else}
-      {((zone.actual_current || 0) / 10).toFixed(1)}A
-    {/if} -->
+    {readout}
   </div>
 
   <div class="table-body-item" class:off={!on} class:error={powerError || tempError || standbyError} class:warning={powerWarning || tempWarning || boostWarning}>
@@ -103,23 +109,19 @@
         {#if monitorHA}
           <div class="tempset">
             <Icon icon='uparrow' size='14px' color={tempWarning || tempError || boostWarning || standbyError? 'var(--pale)': 'var(--blue)'} />
-            {Math.round((monitorHSP || 0) / 10)}&deg;<span class='temp-type'>C</span>
+            {monitorHigh}
           </div>
         {/if}
         {#if monitorHA && monitorLA}<br />{/if}
         {#if monitorLA}
           <div class="tempset">
             <Icon icon='downarrow' size='14px' color={tempWarning || tempError || boostWarning || standbyError? 'var(--pale)': 'var(--blue)'} />
-            {Math.round((monitorLSP || 0) / 10)}&deg;<span class='temp-type'>C</span>
+            {monitorLow}
           </div>
         {/if}
       </div>
     {:else}
-      {#if auto}
-        <span>{setpoint / 10 || '-'}&deg;<span class='temp-type'>C</span></span>
-      {:else}
-        <span>{((zone.actual_percent || 0) / 10).toFixed(1)}%</span>
-      {/if}
+      {sp}
     {/if}
   </div>
 

@@ -38,7 +38,7 @@
   export let valid = true
 
   let emptyBody
-  
+
 
   let history = []
 
@@ -119,7 +119,7 @@
 
   <div class="groups">
     <h2 class='apply'>
-      {$_('Apply')} 
+      {$_('Apply')}
       {#if history.length}
         <div class='undo' on:click={undo}>
           <Icon icon='undo' color='var(--primary)' /> {$_('Undo')}
@@ -128,9 +128,9 @@
     </h2>
     <div class="buttons">
       {#if $openSetpointEditorVai.source != "materialdb"}
-      <div 
-        class="button ignore-task-styles" 
-        class:applied={applied.selected && $activeZones.length} 
+      <div
+        class="button ignore-task-styles"
+        class:applied={applied.selected && $activeZones.length}
         class:disabled={!$activeZones.length || !valid}
         on:click={applySelected}
       >
@@ -141,8 +141,8 @@
         {/if}
       </div>
       {/if}
-      <div 
-        class="button ignore-task-styles" 
+      <div
+        class="button ignore-task-styles"
         class:applied={applied.all}
         class:disabled={!valid}
         on:click={applyAll}
@@ -156,7 +156,7 @@
           class:disabled={!valid}
           on:click={() => applyGroup(group)}
         >
-          <span><Icon icon='check' color='var(--primary)' /></span> 
+          <span><Icon icon='check' color='var(--primary)' /></span>
           <span>{group.name}</span>
         </div>
       {/each}
