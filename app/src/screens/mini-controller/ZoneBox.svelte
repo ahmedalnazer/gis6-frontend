@@ -41,7 +41,6 @@
   $: tempWarning = !boost && !standby && (falling || rising)
   $: tempError = zone.hasTempAlarm
   $: powerError = zone.hasPowerAlarm
-  $: tempOff = !on
 
   let powerWarning = false
 
@@ -58,7 +57,7 @@
     activeSetpointEditor.set('setpoint')
   }
 
-  $: danger = tempWarning || tempError || tempOff || boost || standby
+  $: danger = tempWarning || tempError || !on || boost || standby
 
   let typeIcon = ''
   $: {
@@ -73,8 +72,11 @@
 
   $: boostProps = { icon:'boost', size:'18px', color: danger ? 'var(--pale)': 'var(--warning)' }
 
-  $: readout = auto ?  $convert({ type: 'temp', value: zone.actual_temp }) : $convert({ type: 'percent', value: zone.actual_percent })
+  $: readout = auto ?  $convert({ type: 'temp', value: zone.actual_temp }) : $convert({ type: 'current', value: zone.actual_current })
   $: sp = !monitor && (auto ? $convert({ type: 'temp', value: setpoint, compact }) : $convert({ type: 'percent', value: manualSp }))
+
+  $: monitorHigh = $convert({ type: 'temp', value: zone.MonitorHighAlarmSP || 0, compact })
+  $: monitorLow = $convert({ type: 'temp', value: zone.MonitorLowAlarmSP || 0, compact })
 
 </script>
 
@@ -85,13 +87,7 @@
     {/each}
   </div>
 
-  <div class='details' class:off={!on}>
-    {#if !on && !locked}
-      <div class='overlay' />
-    {/if}
-  </div>
-
-  <div class='wrapper' class:tempWarning class:tempError class:powerError class:powerWarning class:tempOff class:boostWarning={boost} class:standbyError={standby}>
+  <div class='wrapper' class:tempWarning={tempWarning || boost} class:tempError={tempError || standby} class:powerError class:powerWarning class:tempOff={!on} >
     <div class='name'>
       {zone.name}
     </div>
@@ -100,7 +96,20 @@
 
       <div class='tmp compact'>
         <div class='actual'>{readout}</div>
-        <div class='setpoint'>{sp || ''}</div>
+        <div class='setpoint'>
+          {#if monitor}
+            <div class='monitor-values'>
+              {#if zone.MonitorTestHighAlarm}
+                <div>{monitorHigh}</div>
+              {/if}
+              {#if zone.MonitorTestLowAlarm}
+                <div>{monitorLow}</div>
+              {/if}
+            </div>
+          {:else}
+            {sp || ''}
+          {/if}
+        </div>
       </div>
 
     {:else}
@@ -143,17 +152,17 @@
       <div class='power'>
         {#if monitor}
           {#if zone.MonitorTestHighAlarm}
-            <div class='amps'>
-              <Icon icon='uparrow' size='14px' color={danger ? 'var(--pale)': 'var(--blue)'} />
-              {((zone.MonitorHighAlarmSP || 0) / 10).toFixed(0)}&deg;<span class='temp-type-actual'>C</span>
+            <div class='monitor-value'>
+              <Icon icon='uparrow' size='10px' color={danger ? 'var(--pale)': 'var(--blue)'} />
+              {monitorHigh}
             </div>
           {:else}
             <div class='amps'>&nbsp;</div>
           {/if}
           {#if zone.MonitorTestLowAlarm}
-            <div class='percent'>
-              <Icon icon='downarrow' size='14px' color={danger ? 'var(--pale)': 'var(--blue)'} />
-              {((zone.MonitorLowAlarmSP || 0) / 10).toFixed(0)}&deg;<span class='temp-type-actual'>C</span>
+            <div class='monitor-value'>
+              <Icon icon='downarrow' size='10px' color={danger ? 'var(--pale)': 'var(--blue)'} />
+              {monitorLow}
             </div>
           {:else}
             <div class='amps'>&nbsp;</div>
@@ -174,26 +183,18 @@
     display: flex;
     flex-direction: column;
     height: 100%;
+    position: relative;
   }
+
   .group-colors {
     display: flex;
   }
+
   .color-tab {
     height: 12px;
     flex: 1;
   }
-  .details {
-    font-size: .9em;
-    position: relative;
-  }
-  .overlay {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255, 255, 255, .5);
-  }
+
   .zone-box {
     background: var(--white);
     box-shadow: var(--shadow);
@@ -203,6 +204,7 @@
     flex-direction: column;
     overflow: hidden;
   }
+
   .active {
     box-shadow: 0 0 0px 4px var(--selected);
   }
@@ -214,21 +216,23 @@
     letter-spacing: 0;
     margin-bottom: 8px;
   }
+
   .icon-legend {
     min-height: 73px !important;
     padding-top: 10px;
   }
+
   .tempOff {
     background: var(--darkGray);
     color:#FFFFFF;
   }
 
-  .tempWarning, .powerWarning, .boostWarning {
+  .tempWarning, .powerWarning {
     background: var(--warning);
     color:#FFFFFF;
   }
 
-  .tempError, .powerError, .standbyError {
+  .tempError, .powerError {
     background: var(--danger);
     color:#FFFFFF;
   }
@@ -241,11 +245,11 @@
   .temp, .tmp {
     .actual {
       font-size: 24px;
-      // font-size: 1.4em;
       font-weight: 600;
       letter-spacing: 0;
       text-align: right;
     }
+
     .setpoint, .temp-type {
       font-size: 16px;
       font-weight: 600;
@@ -253,15 +257,18 @@
       letter-spacing: 0;
       text-align: right;
     }
+
     .temp-type-actual {
       font-size: 24px;
       font-weight: 600;
       letter-spacing: 0;
       text-align: right;
     }
+
     .temp-type-sp-actual {
       font-size: 15px;
     }
+
     .setpoint-ph {
       float: right;
     }
@@ -276,7 +283,6 @@
     padding-top: 8px;
     font-size: 14px;
     align-items: center;
-    padding-bottom: 5px;
     letter-spacing: 0;
     text-align: right;
   }
@@ -314,9 +320,11 @@
     :global(svg) {
       width: 14px;
     }
+
     @mixin gradBG($color) {
       background-image: linear-gradient($color, transparent, transparent, $color);
     }
+
     .gradient-overlay  {
       @include gradBG(var(--pale));
       animation: boostAnimation 1s infinite linear;
@@ -330,12 +338,10 @@
       bottom: 0%;
 
     }
-    .gradient-overlay.danger  {
-      @include gradBG(var(--danger))
-    }
-    .gradient-overlay.warning {
-      @include gradBG(var(--warning))
-    }
+
+    .gradient-overlay.danger  { @include gradBG(var(--danger)) }
+
+    .gradient-overlay.warning { @include gradBG(var(--warning)) }
   }
 
   .standby.animated {
@@ -348,6 +354,7 @@
   }
 
   .tmp.compact {
+    flex: 1;
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
@@ -358,6 +365,9 @@
       font-size: 14px;
       font-weight: 400;
     }
+    .monitor-values {
+      font-size: 11px;
+    }
   }
 
   .icon-grid {
@@ -366,5 +376,10 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 6px;
+  }
+
+  .monitor-value {
+    display: flex;
+    align-items: center;
   }
 </style>
