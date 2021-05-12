@@ -18,7 +18,7 @@
 
   export let type = 'line'
   export let properties = [ 'actual_temp' ]
-  export let propertyOptions
+  export let propertyOptions = []
   export let zones = []
   export let colors = {}
   export let scales = {}
@@ -26,6 +26,7 @@
   export let paused = false
   export let mode = 'pan'
   export let moved = false
+  export let renderMode = 'normal'
 
   export const mark = () => {
     const t = new Date().getTime() - 1000
@@ -159,7 +160,7 @@
   $: inspect = scaleData.inspection || {}
 
   $: chartProps = {
-    properties, paused, type, scale, zones, type, position, jank, mode,
+    properties, paused, type, scale, zones, type, position, jank, mode, renderMode,
     inspectedPoint: [ inspectionBase[0], inspectionPoint[1] ]
   }
 
@@ -205,6 +206,11 @@
     <div class='loading' class:active={stats.loading !== false && !stats.plotFilled}>
       {$_('Loading data...')}
     </div>
+
+    <div class='loading' class:active={stats.loading === false && stats.totalPoints < totalZones * properties.filter(x => !!x).length * 3}>
+      {$_('Buffering data...')}
+    </div>
+
 
     {#if mode == 'inspect'}
       <InspectionBox {...{ inspect, properties, propertyOptions, getTS, canvasWidth, wrapperHeight, setInspectionPoint, canvasWrapper }} />

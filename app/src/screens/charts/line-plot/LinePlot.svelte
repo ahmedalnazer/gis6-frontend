@@ -14,15 +14,9 @@
   import zones, { activeZones, selectedZones, toggleZones } from 'data/zones'
   import { activeGroup } from "data/groups"
   import { default as _convert } from 'data/language/units'
+  import lineConfig, { setLineConfig, propertyOptions as propOps } from 'data/charting/line-config'
 
-  let propertyOptions = [
-    { id: 'actual_temp', name: $_('Actual Temperature'), type: 'temperature' },
-    { id: 'deviation', name: $_('Deviation'), type: 'temperature' },
-    { id: 'actual_current', name: $_('Heater Current'), type: 'current' },
-    { id: 'manual_sp', name: $_('Manual % Setpoint'), type: 'percent' },
-    { id: 'actual_percent', name: $_('Percent Output'), type: 'percent' },
-    { id: 'temp_sp', name: $_('Temperature Setpoint'), type: 'temperature' },
-  ]
+  $: propertyOptions = $propOps
 
   const convert = (type, value) => {
     const op = propertyOptions.find(x => x.id == type)
@@ -38,7 +32,10 @@
     3: '',
     4: ''
   }
+
   $: properties = [ params[1], params[2], params[3], params[4] ]
+
+
 
   let mode = 'pan'
 
@@ -54,6 +51,21 @@
   let showSettings = false
 
   let scales = {}
+
+  // load cached config
+  if($lineConfig.properties) {
+    for(let [ i, p ] of $lineConfig.properties.entries()) {
+      params[i+1] = p
+    }
+  }
+
+  if($lineConfig.scales) {
+    scales = $lineConfig.scales
+  }
+
+  $: {
+    setLineConfig({ properties, scales })
+  }
 
   $: availableZones = $activeGroup
     ? $zones.filter(x => x.groups && x.groups.includes($activeGroup))

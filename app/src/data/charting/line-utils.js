@@ -6,27 +6,15 @@ export const colors = {
 }
 
 
-export function smooth(ctx, points, color, width) {
+export function smooth(ctx, points, color, width ) {
   ctx.strokeStyle = color
   ctx.lineWidth = width
   // ctx.strokeRect(20, 20, 150, 100)
 
-  ctx.beginPath()
-  if (points == undefined || points.length == 0) {
+  if(color) ctx.beginPath()
+  if (points == undefined || points.length == 0 || points.length < 3) {
     return true
   }
-  if (points.length == 1) {
-    ctx.moveTo(points[0].x, points[0].y)
-    ctx.lineTo(points[0].x, points[0].y)
-    return true
-  }
-  if (points.length == 2) {
-    ctx.moveTo(points[0].x, points[0].y)
-    ctx.lineTo(points[1].x, points[1].y)
-    return true
-  }
-
-  if(points.length < 3) return
   // ctx.moveTo(points[0].x, points[0].y)
   // for (var i = 0; i < points.length - 2; i++) {
   //   // ctx.lineTo(points[i].x, points[i].y)
@@ -47,8 +35,8 @@ export function smooth(ctx, points, color, width) {
     if (typeof f == 'undefined') f = 0.3
     if (typeof t == 'undefined') t = 0.6
 
-    ctx.beginPath()
-    ctx.moveTo(points[0].x, points[0].y)
+    if(color) ctx.beginPath()
+    if(color) ctx.moveTo(points[0].x, points[0].y)
 
     var m = 0
     var dx1 = 0
@@ -76,12 +64,14 @@ export function smooth(ctx, points, color, width) {
     // ctx.stroke();
   }
   bzCurve(points, .3, 1)
-  ctx.stroke()
+  if(color) ctx.stroke()
 }
 
+const avg = arr => arr.reduce( ( p, c ) => p + c, 0 ) / arr.length
 
 
-export const drawLines = (props, canvas, { renderedLines, selected }) => {
+
+export const drawLines = (props, canvas, { renderedLines, selected, renderMode }) => {
   const ctx = canvas.getContext("2d")
   const lineColors = {
     [props[0]]: colors[1],
@@ -93,11 +83,51 @@ export const drawLines = (props, canvas, { renderedLines, selected }) => {
   // clear canvas for new frame
   ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-  for (let prop of props) {
-    if(renderedLines[prop]) {
-      for (let i = 0; i < renderedLines[prop].length; i++) {
-        const line = renderedLines[prop][i]
-        smooth(ctx, line, lineColors[prop], i == selected ? 3 : 1)
+  if(renderMode == 'minmax') {
+    for(let prop of props) {
+      const lines = renderedLines[prop]
+      let minLine = []
+      let maxLine = []
+      let avgLine = []
+
+      if(lines && lines[0] && lines[0].length) {
+        for(let i = 0; i < lines[0].length; i++) {
+          let min = 99999999
+          let max = -9999999
+          let x
+          let values = []
+          for(let l of lines) {
+            const p = l[i]
+            x = p.x
+            values.push(p.y)
+            min = p.y < min ? p.y : min
+            max = p.y > max ? p.y : max
+          }
+          minLine.push({ x, y: min })
+          maxLine.push({ x, y: max })
+          avgLine.push({ x, y: avg(values) })
+        }
+        smooth(ctx, avgLine, lineColors[prop], 3)
+
+        minLine.reverse()
+
+        const region = new Path2D()
+        ctx.moveTo(minLine[0].x, minLine[0].y)
+        smooth(region, minLine)
+        region.lineTo(maxLine[0].x, maxLine[0].y)
+        smooth(region, maxLine)
+        region.closePath()
+        ctx.fillStyle = `${lineColors[prop]}33`
+        ctx.fill(region, 'nonzero')
+      }
+    }
+  } else {
+    for (let prop of props) {
+      if(renderedLines[prop]) {
+        for (let i = 0; i < renderedLines[prop].length; i++) {
+          const line = renderedLines[prop][i]
+          smooth(ctx, line, lineColors[prop], i == selected ? 3 : 1)
+        }
       }
     }
   }
