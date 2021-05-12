@@ -9,6 +9,9 @@
   import hotRunnerPrefs, { setHRPrefs } from 'data/hot-runner/preferences'
   import { Icon } from 'components'
   import zones from 'data/zones'
+  import { activeGroup } from 'data/groups'
+
+  $: activeZones = $activeGroup ? $zones.filter(x => x.groups && x.groups.includes($activeGroup)) : $zones
 
   let selectedVis = $hotRunnerPrefs.dataView
   let min = {}
@@ -147,7 +150,7 @@
       <div class='button' on:click={go}>{$_('View Details')}</div>
     </div>
     <div class='body' on:click={go}>
-      <svelte:component this={Rendered} />
+      <svelte:component zones={activeZones} this={Rendered} />
     </div>
   </div>
 </Card>
