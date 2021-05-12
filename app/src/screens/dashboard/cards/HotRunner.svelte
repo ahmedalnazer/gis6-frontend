@@ -30,7 +30,7 @@
   }
 </script>
 
-<Card link='/hot-runner'>
+<Card link='/hot-runner' footerIcon={false}>
     <div class="sectionHeader">
         <div class='icon'>
           <Icon icon="checkmarkcircle" color="var(--green)" size="1em" />
@@ -64,7 +64,7 @@
         <div class="hot-items">
           <div class="temp">
             <Icon icon='uparrow' size="1em" />
-            <div class="zoneTemp">{(max.actual_temp || 0) / 10}&deg;C</div>
+            <div class="zoneTemp">{(max.actual_temp || 0) / 10}&deg;F</div>
           </div>
           <div class="zoneInfo">{$_('Highest Temp')}</div>
         </div>
@@ -75,7 +75,7 @@
         <div class="hot-items">
           <div class="temp">
             <Icon icon='downarrow' size="1em" />
-            <div class="zoneTemp">{(min.actual_temp || 0) / 10}&deg;C</div>
+            <div class="zoneTemp">{(min.actual_temp || 0) / 10}&deg;F</div>
           </div>
           <div class="zoneInfo">{$_('Lowest Temp')}</div>
         </div>
