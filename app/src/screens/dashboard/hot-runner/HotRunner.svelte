@@ -50,18 +50,41 @@
   </div>
 
   <div class='hot-runner-dash card-grid'>
-    <Summary />
+
+    <div class='zone-summary-container'>
+      <div class='zone-summary-title'>
+        {$_('Zone Summary')}
+      </div>
+      <div class='summary'>
+        <Summary />
+      </div>
+    </div>
     <DataVis />
     {#each availableCards as card (card.id)}
       <svelte:component this={card.component} />
     {/each}
-    <!-- <Minicontroller />
-    <EasyScreen />
-    {#if showZoneNames}
-      <ZoneNames />
-    {/if}
-    <FaultAnalysis />
-    <WiringAnalysis />
-    <LinePlotCard /> -->
   </div>
 </Screen>
+
+
+<style>
+  .zone-summary-container {
+    height: 180px;
+    border-radius: 2px;
+    background-color: #F5F6F9;
+    grid-column: span 4 / auto;
+  }
+
+  .zone-summary-title{
+    font-size: 22px;
+    font-weight: bold;
+    letter-spacing: 0;
+    line-height: 30px;
+    padding: 11px 10px 20px 19px;
+  }
+
+  .summary {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+  }
+</style>

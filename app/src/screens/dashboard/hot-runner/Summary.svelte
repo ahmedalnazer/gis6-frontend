@@ -4,28 +4,11 @@
   import _ from 'data/language'
   import convert from 'data/language/units'
 
-  let min = {}
-  let max = {}
-  $: {
-    for(let z of $zones) {
-      if(!min.actual_temp || z.actual_temp < min.actual_temp) {
-        min = z
-      }
-      if(!max.actual_temp || z.actual_temp > max.actual_temp) {
-        max = z
-      }
-    }
-  }
-
+  $: minTemp = $zones.reduce((min, zone) => !min ? zone.actual_temp : Math.min(zone.actual_temp, min), null)
+  $: maxTemp = $zones.reduce((max, zone) => Math.max(zone.actual_temp, max), 0)
 
 </script>
 
-<div class='zone-summary-container'>
-  <div class='zone-summary-title'>
-    {$_('Zone Summary')}
-  </div>
-
-  <div class="zone-summary-body">
     <div class="hot-items heaters">
       <div>
         <div class="zone-temp">60</div>
@@ -37,96 +20,34 @@
         <div><b>20</b> <span>{$_('SPRUES')}</span></div>
       </div>
     </div>
-    <div class="hot-items">
+    <div class="hot-items min">
       <div class="temp">
         <div>
           <Icon icon='downarrow' size="30px" />
-          <span class="zone-temp">{$convert({ type: 'temp', value: min.actual_temp || 0 })}</span>
+          <span class="zone-temp">{$convert({ type: 'temp', value: minTemp, precision: 0 })}</span>
         </div>
       </div>
       <div class="zone-info zone-info-temp">{$_('LOWEST TEMP')}</div>
     </div>
 
-    <div class="hot-items">
+    <div class="hot-items max">
       <div class="temp">
         <div>
           <Icon icon='uparrow' size="30px" />
-          <span class="zone-temp">{$convert({ type: 'temp', value: max.actual_temp || 0 })}</span>
+          <span class="zone-temp">{$convert({ type: 'temp', value: maxTemp, precision: 0 })}</span>
         </div>
       </div>
       <div class="zone-info zone-info-temp">{$_('HIGHEST TEMP')}</div>
     </div>
 
-    <div class="hot-items">
+    <div class="hot-items faults">
       <div class="zone-temp">{$zones.filter(x => x.hasAlarm).length}</div>
       <div class="zone-info zone-info-faults">{$_('FAULTS')}</div>
     </div>
-  </div>
-
-
-
-  <!-- <div class="zone-summary-body">
-
-      <div class="hot-items heaters">
-        <div>
-          <p class="zoneTemp">60</p>
-          <p class="zoneInfo">{$_('Heaters')}</p>
-        </div>
-        <div class="group-zone-count">
-          <p><b>20</b> <span>{$_('Tips')}</span></p>
-          <p><b>20</b> <span>{$_('Manifolds')}</span></p>
-          <p><b>20</b> <span>{$_('Sprues')}</span></p>
-        </div>
-      </div>
-      <div class="hot-items">
-        <div class="temp">
-          <Icon icon='uparrow' size="1em" />
-          <div class="zoneTemp">{(max.actual_temp || 0) / 10}&deg;C</div>
-        </div>
-        <div class="zoneInfo">{$_('Highest Temp')}</div>
-      </div>
-      <div class="hot-items">
-        <p class="zoneTemp">0</p>
-        <p class="zoneInfo">{$_('Faults')}</p>
-      </div>
-      <div class="hot-items">
-        <div class="temp">
-          <Icon icon='downarrow' size="1em" />
-          <div class="zoneTemp">{(min.actual_temp || 0) / 10}&deg;C</div>
-        </div>
-        <div class="zoneInfo">{$_('Lowest Temp')}</div>
-      </div>
-  </div> -->
-
-</div>
 
 <style lang="scss">
 
-.zone-summary-container {
-    height: 180px;
-    border-radius: 2px;
-    background-color: #F5F6F9;
-    grid-column: span 4 / auto;
-      // border: 1px solid indianred;
-  }
-
-  .zone-summary-title{
-    font-size: 22px;
-    font-weight: bold;
-    letter-spacing: 0;
-    line-height: 30px;
-    padding: 11px 10px 20px 19px;
-  }
-
-
-  .zone-summary-body {
-    // border: 1px solid indianred;
-    // padding-top: 20px;
-    // padding-bottom: 13px;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-
-    .zone-temp {
+  .zone-temp {
       font-size: 40px;
       letter-spacing: 0;
       line-height: 55px;
@@ -165,7 +86,6 @@
         }
       }
     }
-  }
 
 
 
