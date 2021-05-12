@@ -14,7 +14,7 @@
 <style>
   .drag-header {
     display: flex;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 2px solid #ddd;
     margin: 16px 0;
     font-weight: 600;
     align-items: center;
