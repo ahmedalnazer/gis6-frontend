@@ -53,10 +53,13 @@ const rawConvert = derived([ current ], ([ current ]) => {
 
 
 const convert = derived([ rawConvert, current ], ([ $rawConvert, $current ]) => {
-  return ({ type, value, compact }) => {
+  return ({ type, value, compact, precision: customPrecision }) => {
     let { getUnit, precision } = units[type] || {}
+    let p = customPrecision
+    if(p === undefined) p = precision
+    if(p === undefined) p = 1
     if(!getUnit) getUnit = () => {}
-    return `${$rawConvert({ type, value }).toFixed(precision || 1)}${getUnit({ ...$current, compact }) || ''}`
+    return `${$rawConvert({ type, value }).toFixed(p)}${getUnit({ ...$current, compact }) || ''}`
   }
 })
 

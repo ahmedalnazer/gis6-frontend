@@ -1,7 +1,8 @@
 <script>
   import ZoneRow from 'screens/easy-screen/ZoneRow.svelte'
-  import zones from 'data/zones'
   import _ from 'data/language'
+
+  export let zones
 </script>
 
 <div class='ez'>
@@ -12,7 +13,7 @@
     <div class='end'>{$_('Output')} (%)</div>
     <div class='settings'>{$_('Zone Settings')}</div>
   </div>
-  {#each $zones as z}
+  {#each zones as z}
     <ZoneRow compact zone={z} />
   {/each}
 </div>
