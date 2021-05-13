@@ -1,4 +1,4 @@
-import { writable } from 'svelte/store'
+import { writable, derived } from 'svelte/store'
 
 const userCardData = [
     {
@@ -8,17 +8,17 @@ const userCardData = [
             { id:2, Title:"Balancing", CardName: "BALANCING", Enabled: false, Editable: false, CardType : "CONTROLLER_FUNCTIONS", ItemOrder: 2 },
             { id:3, Title:"Monitoring", CardName: "MONITORING", Enabled: false, Editable: false, CardType : "CONTROLLER_FUNCTIONS", ItemOrder: 3 },
             { id:4, Title:"Valve Pin", CardName: "VALVE_PIN", Enabled: false, Editable: false, CardType : "CONTROLLER_FUNCTIONS", ItemOrder: 4 },
-            { id:5, Title:"Mold & Process", CardName: "MOLD", Enabled: true, Editable: false, CardType : "MOLD_PROCESS_ORDER", ItemOrder: 5 },
-            { id:7, Title:"Images", CardName: "IMAGES", Enabled: true, Editable: true, CardType : "MOLD_PROCESS_ORDER", ItemOrder: 7 },
-            { id:8, Title:"Order", CardName: "ORDER", Enabled: true, Editable: true, CardType : "MOLD_PROCESS_ORDER", ItemOrder: 8 },
-            { id:9, Title:"Recent Activity", CardName: "RECENT_ACTIVITY", Enabled: false, Editable: true, CardType : "TOOLS_DIAGNOSTICS", ItemOrder: 9 },
-            { id:10, Title:"Inputs/Outputs", CardName: "INPUTS_OUTPUTS", Enabled: false, Editable: true, CardType : "TOOLS_DIAGNOSTICS", ItemOrder: 10 },
-            { id:11, Title:"Historic Data", CardName: "HISTORICAL_DATA", Enabled: false, Editable: true, CardType : "TOOLS_DIAGNOSTICS", ItemOrder: 11 },
-            { id:12, Title:"Material Database", CardName: "MATERIAL_DATABASE", Enabled: false, Editable: true, CardType : "TOOLS_DIAGNOSTICS", ItemOrder: 12 },
-            { id:13, Title:"Network Settings", CardName: "NETWORK_SETTINGS", Enabled: false, Editable: true, CardType : "GENERAL", ItemOrder: 13 },
-            { id:14, Title:"Units", CardName: "UNITS", Enabled: false, Editable: true, CardType : "GENERAL", ItemOrder: 14 },
-            { id:15, Title:"Reports & Files", CardName: "REPORTS_FILES", Enabled: false, Editable: true, CardType : "GENERAL", ItemOrder: 15 },
-            { id:16, Title:"User Management", CardName: "USER_MANAGEMENT", Enabled: false, Editable: true, CardType : "GENERAL", ItemOrder: 16 }
+            { id:5, Title:"Mold & Process", CardName: "MOLD", Enabled: true, Editable: false, CardType : "MOLD_PROCESS_ORDER", ItemOrder: 1 },
+            { id:7, Title:"Images", CardName: "IMAGES", Enabled: true, Editable: true, CardType : "MOLD_PROCESS_ORDER", ItemOrder: 2 },
+            { id:8, Title:"Order", CardName: "ORDER", Enabled: true, Editable: true, CardType : "MOLD_PROCESS_ORDER", ItemOrder: 3 },
+            { id:9, Title:"Recent Activity", CardName: "RECENT_ACTIVITY", Enabled: false, Editable: true, CardType : "TOOLS_DIAGNOSTICS", ItemOrder: 1 },
+            { id:10, Title:"Inputs/Outputs", CardName: "INPUTS_OUTPUTS", Enabled: false, Editable: true, CardType : "TOOLS_DIAGNOSTICS", ItemOrder: 2 },
+            { id:11, Title:"Historic Data", CardName: "HISTORICAL_DATA", Enabled: false, Editable: true, CardType : "TOOLS_DIAGNOSTICS", ItemOrder: 3 },
+            { id:12, Title:"Material Database", CardName: "MATERIAL_DATABASE", Enabled: false, Editable: true, CardType : "TOOLS_DIAGNOSTICS", ItemOrder: 4 },
+            { id:13, Title:"Network Settings", CardName: "NETWORK_SETTINGS", Enabled: false, Editable: true, CardType : "GENERAL", ItemOrder: 1 },
+            { id:14, Title:"Units", CardName: "UNITS", Enabled: false, Editable: true, CardType : "GENERAL", ItemOrder: 2 },
+            { id:15, Title:"Reports & Files", CardName: "REPORTS_FILES", Enabled: false, Editable: true, CardType : "GENERAL", ItemOrder: 3 },
+            { id:16, Title:"User Management", CardName: "USER_MANAGEMENT", Enabled: false, Editable: true, CardType : "GENERAL", ItemOrder: 4 }
         ]
     },
     {
@@ -131,3 +131,22 @@ const userCardData = [
 export const cardEditor = writable('')
 export const userCardPref = writable(userCardData)
 export const enableHomeEdit = writable(false)
+
+const _cards = writable([])
+const _cardOrder = writable(JSON.parse(localStorage.getItem('card_order') || '[]'))
+export const sortcards = writable(true)
+
+/**
+ * Store which returns an Array containing group ids in desired display order
+ */
+export const card_order = derived([_cards, _cardOrder], ([$_cards, $_cardOrder]) => {
+  // filter non-existent groups from the order list
+  const _order = $_cardOrder.map(x => id(x))
+  const order = [... new Set(_order
+    .filter(x => !!$_cards.find(g => id(g.id) == x))
+    .concat(
+      $_cards.filter(x => !_order.includes(id(x.id))).map(x => id(x.id))
+    )
+  )]
+  return order
+})

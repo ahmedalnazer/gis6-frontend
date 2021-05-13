@@ -10,12 +10,15 @@
   import SortableList from "svelte-sortable-list"
   import Management from "./Management.svelte"
   import AddCardPref from 'screens/users/AddCardPref.svelte'
-  import { cardEditor, userCardPref, enableHomeEdit } from 'data/user/cardpref'
+  import { cardEditor, userCardPref, enableHomeEdit, card_order, sortcards as _sortcards } from 'data/user/cardpref'
   import { Icon } from 'components'
   import user, { roles } from 'data/user'
   import { onMount } from 'svelte'
-  import Card from "screens/users/Card.svelte";
-  $: console.log('cardEditor: ', $cardEditor)
+  import Sortable from "sortablejs"
+  import { tick } from "svelte"
+
+  $: sortcards = $_sortcards
+
   let isLayoutView = false
   let showSetupProductionButton = true
   let userCards = []
@@ -25,6 +28,7 @@
   let generalCards = []
   let sectionData = []
   let editCards = true
+  let userCardPrefStore = []
 
   $:userType = $user? $user.role: 0
   $:getUserCards(userType, $userCardPref)
@@ -36,6 +40,7 @@
   const getUserCards = (userTypeId, userCardPref) => {
     
     // USER_TYPE_CHOICES = ((1, "admin"), (2, "operator"), (3, "process_engineer"), (4, "setup"), (5, "plant_manager") )
+    userCardPrefStore = userCardPref
     userCards = userCardPref.filter(x => x.UserType == userTypeId)
     if (userCards.length > 0)
     {
@@ -67,6 +72,28 @@
     }
 
     sectionData = cardData
+  }
+
+  const ondeleteCard = () => {
+    userCardPref.set(userCardPrefStore)
+  }
+
+  let sortList, sortable
+
+  const resetSortable = async () => {
+    await tick()
+    if(sortable) sortable.destroy()
+    sortable = Sortable.create(sortList, {
+      handle: ".drag-header",
+      animation: 150,
+      swapThreshold: 0.75
+    })
+  }
+
+  $: {
+    if(sortList && sortcards && $card_order) {
+      resetSortable()
+    }
   }
 
   onMount(() => { })
@@ -108,7 +135,7 @@
       </SortableList>
     </div>
   {:else}
-    <div class="dashboard-body">
+    <div class="dashboard-body" bind:this={sortList}>
 
       {#if showSetupProductionButton == false}
         <div style="padding:0px 0px 0px 0px;">
@@ -135,11 +162,11 @@
           {#if sectionDataItem.CardType == 'CONTROLLER_FUNCTIONS'}
             <Function userCards={controllerFunctionCards} />
           {:else if sectionDataItem.CardType == 'MOLD_PROCESS_ORDER'}
-            <Mold userCards={moldProcessOrderCards} />
+            <Mold userCards={moldProcessOrderCards} on:deleteCard={() => ondeleteCard()} />
           {:else if sectionDataItem.CardType == 'TOOLS_DIAGNOSTICS'}
-            <Management userCards={toolsDiagnosticsCards} />
+            <Management userCards={toolsDiagnosticsCards} on:deleteCard={() => ondeleteCard()} />
           {:else if sectionDataItem.CardType == 'GENERAL'}
-            <General userCards={generalCards} />
+            <General userCards={generalCards} on:deleteCard={() => ondeleteCard()} />
           {/if}
         </div>
       {/each}
@@ -258,7 +285,7 @@
       margin: 0;
       flex: 1;
     }
-    :global(svg) {
+    :global(div) {
       align-self: flex-end;
     }
   }

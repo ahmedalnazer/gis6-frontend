@@ -4,18 +4,29 @@
   import { activeActivityLog } from 'data/activitylog.js'
   import { Icon } from 'components'
   import { enableHomeEdit } from 'data/user/cardpref'
+  import { createEventDispatcher } from 'svelte';
+
+  const dispatch = createEventDispatcher();
+  export let userCard
 </script>
 
+{#if $enableHomeEdit}
 <Card cardEnabled={$enableHomeEdit} smallCard={$enableHomeEdit}>
-  {#if $enableHomeEdit}
-    <div class="card-edit-placeholder">
-      <h2 class="title">{$_('Recent Activity')}</h2>
+  <div class="card-edit-placeholder">
+    <h2 class="title">{$_('Recent Activity')}</h2>
+    <div on:click={() => {
+      userCard.Enabled = false
+      dispatch('deleteCard')
+    }}>
       <Icon icon="trash" color="#358DCA" />
     </div>
-  {:else}
-    <div class="dashboard-card" on:click={() => { $activeActivityLog = "activitylog" }}>
-      <Icon icon="recentActivity" color="#A0B7CE" />
-      <h2 class="title">{$_('Recent Activity')}</h2>
-    </div>
-  {/if}
+  </div>
 </Card>
+{:else}
+<Card link='/'>
+  <div class="dashboard-card" on:click={() => { $activeActivityLog = "activitylog" }}>
+    <Icon icon="recentActivity" color="#A0B7CE" />
+    <h2 class="title">{$_('Recent Activity')}</h2>
+  </div>
+</Card>
+{/if}

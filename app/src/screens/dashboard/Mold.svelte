@@ -13,13 +13,13 @@
   <div class='card-grid'>
     {#each (userCards || []) as userCard}
       {#if userCard.CardName == "MOLD"}
-        <Mold />
+        <Mold {userCard} on:deleteCard />
       {/if}
       {#if userCard.CardName == "IMAGES"}
-        <Image />
+        <Image {userCard} on:deleteCard />
       {/if}
       {#if userCard.CardName == "ORDER"}
-        <Order />
+        <Order {userCard} on:deleteCard />
       {/if}
     {/each}
   </div>

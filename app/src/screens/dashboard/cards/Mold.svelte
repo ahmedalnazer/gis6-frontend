@@ -4,36 +4,47 @@
   import _ from 'data/language'
   import { Icon } from 'components'
   import { enableHomeEdit } from 'data/user/cardpref'
+  import { createEventDispatcher } from 'svelte';
+
+  const dispatch = createEventDispatcher();
+  export let userCard
 </script>
 
-<Card cardEnabled={$enableHomeEdit} smallCard={$enableHomeEdit}>
-  {#if $enableHomeEdit}
-    <div class="card-edit-placeholder">
-      <h2 class="title">{$_('Mold & Process')}</h2>
+{#if $enableHomeEdit}
+<Card cardEnabled={$enableHomeEdit} bigCard={$enableHomeEdit}>
+  <div class="card-edit-placeholder">
+    <h2 class="title">{$_('Mold & Process')}</h2>
+    <div on:click={() => {
+      userCard.Enabled = false
+      dispatch('deleteCard')
+    }}>
       <Icon icon="trash" color="#358DCA" />
     </div>
-  {:else}
-    <div class='container'>
-      <div class='labels'>
-        <h2>{$_('Mold & Process')}</h2>
-        <p>{$_('Modified 10/08/2020 12:45PM')}</p>
-      </div>
-      <div class='labels'>
-        <h2>{$_('Mold')}</h2>
-        <p class='muted'>{$_('Large cap')}</p>
-        <!-- <p class='muted'>{$mold.name}</p> -->
-      </div>
-      <div class='labels'>
-        <h2>{$_('Process')}</h2>
-        <p class='muted'>{$_('Black ABS')}</p>
-      </div>
-      <div class='labels'>
-        <h2>{$_('Material')}</h2>
-        <p class='muted'>{$_('ABS')}</p>
-      </div>
-    </div>
-  {/if}
+  </div>
 </Card>
+{:else}
+<Card link='/'>
+  <div class='container'>
+    <div class='labels'>
+      <h2>{$_('Mold & Process')}</h2>
+      <p>{$_('Modified 10/08/2020 12:45PM')}</p>
+    </div>
+    <div class='labels'>
+      <h2>{$_('Mold')}</h2>
+      <p class='muted'>{$_('Large cap')}</p>
+      <!-- <p class='muted'>{$mold.name}</p> -->
+    </div>
+    <div class='labels'>
+      <h2>{$_('Process')}</h2>
+      <p class='muted'>{$_('Black ABS')}</p>
+    </div>
+    <div class='labels'>
+      <h2>{$_('Material')}</h2>
+      <p class='muted'>{$_('ABS')}</p>
+    </div>
+  </div>
+</Card>
+{/if}
 
 <style lang="scss">
   .container {

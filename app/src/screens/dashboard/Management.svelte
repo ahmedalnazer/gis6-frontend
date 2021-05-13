@@ -8,6 +8,11 @@
   import HistoricalData from './cards/HistoricalData.svelte'
   import CycleData from './cards/CycleData.svelte'
   import HardwareConfig from './cards/HardwareConfig.svelte'
+  import Sortable from "sortablejs"
+  import { tick } from "svelte"
+  import { card_order, sortcards as _sortcards } from 'data/user/cardpref'
+
+  $: sortcards = $_sortcards
   
   export let userCards
 
@@ -19,6 +24,24 @@
     }
   ]
 
+  let sortList, sortable
+
+  const resetSortable = async () => {
+    await tick()
+    if(sortable) sortable.destroy()
+    sortable = Sortable.create(sortList, {
+      handle: ".card",
+      animation: 150,
+      swapThreshold: 0.75
+    })
+  }
+
+  $: {
+    if(sortList && sortcards && $card_order) {
+      resetSortable()
+    }
+  }
+
   // {
     //   id: 2,
     //   roles: [ 1 ],
@@ -29,29 +52,29 @@
 </script>
 
 <DashboardSection title={$_('Tools & Diagnostics')}>
-  <div class='card-grid'>
+  <div class='card-grid' bind:this={sortList}>
     <!-- {#each availableCards as card (card.id)}
       <svelte:component this={card.component} />
     {/each} -->
 
     {#each (userCards || []) as userCard}
       {#if userCard.CardName == "RECENT_ACTIVITY"}
-        <ChangeLog />
+        <ChangeLog {userCard} on:deleteCard />
       {/if}
       {#if userCard.CardName == "INPUTS_OUTPUTS"}
-        <InputOutput />
+        <InputOutput {userCard} on:deleteCard />
       {/if}
       {#if userCard.CardName == "HISTORICAL_DATA"}
-        <HistoricalData />
+        <HistoricalData {userCard} on:deleteCard />
       {/if}
       {#if userCard.CardName == "MATERIAL_DATABASE"}
-        <MaterialDatabaseCard />
+        <MaterialDatabaseCard {userCard} on:deleteCard />
       {/if}
       {#if userCard.CardName == "CYCLE_DATA"}
-        <CycleData />
+        <CycleData {userCard} on:deleteCard />
       {/if}
       {#if userCard.CardName == "HARDWARE_CONFIG"}
-        <HardwareConfig />
+        <HardwareConfig {userCard} on:deleteCard />
       {/if}
     {/each}
   </div>

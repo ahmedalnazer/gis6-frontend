@@ -13,13 +13,13 @@
   <div class='card-grid'>
     {#each (userCards || []) as userCard}
       {#if userCard.CardName == "SAVED_FILES"}
-        <SavedFiles />
+        <SavedFiles {userCard} on:deleteCard />
       {/if}
       {#if userCard.CardName == "NETWORK_SETTINGS"}
-        <NetworkSettings />
+        <NetworkSettings {userCard} on:deleteCard />
       {/if}
       {#if userCard.CardName == "USER_MANAGEMENT"}
-        <UserManagement />
+        <UserManagement {userCard} on:deleteCard />
       {/if}
     {/each}
   </div>
