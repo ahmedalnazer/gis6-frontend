@@ -9,31 +9,19 @@ export const colors = {
 export function smooth(ctx, points, color, width ) {
   ctx.strokeStyle = color
   ctx.lineWidth = width
-  // ctx.strokeRect(20, 20, 150, 100)
 
   if(color) ctx.beginPath()
   if (points == undefined || points.length == 0 || points.length < 3) {
     return true
   }
-  // ctx.moveTo(points[0].x, points[0].y)
-  // for (var i = 0; i < points.length - 2; i++) {
-  //   // ctx.lineTo(points[i].x, points[i].y)
-  //   var xc = (points[i].x + points[i + 1].x) / 2
-  //   var yc = (points[i].y + points[i + 1].y) / 2
-  //   // ctx.lineTo(points[i].x, points[i].y)
-  //   ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc)
-  // }
-  // ctx.quadraticCurveTo(points[i].x, points[i].y, points[i + 1].x, points[i + 1].y)
 
   function gradient(a, b) {
     return (b.y - a.y) / (b.x - a.x)
   }
 
-  function bzCurve(points, f, t) {
+  function bzCurve(points, f = .5, t = 1) {
     //f = 0, will be straight line
-    //t suppose to be 1, but changing the value can control the smoothness too
-    if (typeof f == 'undefined') f = 0.3
-    if (typeof t == 'undefined') t = 0.6
+    //t should generally be 1, but changing the value can control the smoothness too
 
     if(color) ctx.beginPath()
     if(color) ctx.moveTo(points[0].x, points[0].y)
@@ -47,11 +35,22 @@ export function smooth(ctx, points, color, width ) {
     var preP = points[0]
     for (var i = 1; i < points.length; i++) {
       var curP = points[i]
+
+      // draw points for debugging
+
+      // if(color) {
+      //   ctx.fillStyle = color
+      //   ctx.fillRect(curP.x - 4, curP.y - 4, 8, 8)
+      // }
+
       const nexP = points[i + 1]
       if (nexP) {
+        // flatten curves next to level y segments to avoid "horns" where the plot plateaus
+        const modifier = nexP.y == curP.y || dy1 == 0 ? .05 : 1
+
         m = gradient(preP, nexP)
-        dx2 = (nexP.x - curP.x) * -f
-        dy2 = dx2 * m * t
+        dx2 = (nexP.x - curP.x) * -f * (dy1 == 0 ? .8 : 1)
+        dy2 = dx2 * m * t * modifier
       } else {
         dx2 = 0
         dy2 = 0
@@ -63,7 +62,7 @@ export function smooth(ctx, points, color, width ) {
     }
     // ctx.stroke();
   }
-  bzCurve(points, .3, 1)
+  bzCurve(points)
   if(color) ctx.stroke()
 }
 

@@ -38,11 +38,9 @@
 
   onMount(() => {
     const connection = connectWS()
-    const wsWorker = connection.worker
     const { port } = connection
 
     worker = new Worker('/workers/chart-worker.js')
-    console.log('chart worker created')
     worker.postMessage({ wsPort: port }, [ port ])
     worker.onmessage = e => {
       if(e.data.type == 'lines') {
