@@ -86,5 +86,6 @@
   .summary {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
+    padding: 0 20px;
   }
 </style>

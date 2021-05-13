@@ -9,41 +9,42 @@
 
 </script>
 
-    <div class="hot-items heaters">
-      <div>
-        <div class="zone-temp">60</div>
-        <div class="zone-info zone-info-heaters">{$_('HEATERS')}</div>
-      </div>
-      <div class="group-zone-count">
-        <div><b>20</b> <span>{$_('TIPS')}</span></div>
-        <div><b>20</b> <span>{$_('MANIFOLDS')}</span></div>
-        <div><b>20</b> <span>{$_('SPRUES')}</span></div>
-      </div>
-    </div>
-    <div class="hot-items min">
-      <div class="temp">
-        <div>
-          <Icon icon='downarrow' size="30px" />
-          <span class="zone-temp">{$convert({ type: 'temp', value: minTemp, precision: 0 })}</span>
-        </div>
-      </div>
-      <div class="zone-info zone-info-temp">{$_('LOWEST TEMP')}</div>
-    </div>
+<div class="hot-items heaters">
+  <div>
+    <div class="zone-temp">60</div>
+    <div class="zone-info zone-info-heaters">{$_('HEATERS')}</div>
+  </div>
+  <div class="group-zone-count">
+    <div><b>20</b> <span>{$_('TIPS')}</span></div>
+    <div><b>20</b> <span>{$_('MANIFOLDS')}</span></div>
+    <div><b>20</b> <span>{$_('SPRUES')}</span></div>
+  </div>
+</div>
 
-    <div class="hot-items max">
-      <div class="temp">
-        <div>
-          <Icon icon='uparrow' size="30px" />
-          <span class="zone-temp">{$convert({ type: 'temp', value: maxTemp, precision: 0 })}</span>
-        </div>
-      </div>
-      <div class="zone-info zone-info-temp">{$_('HIGHEST TEMP')}</div>
+<div class="hot-items min">
+  <div class="temp">
+    <div>
+      <Icon icon='downarrow' size="30px" />
+      <span class="zone-temp">{$convert({ type: 'temp', value: minTemp, precision: 0 })}</span>
     </div>
+  </div>
+  <div class="zone-info zone-info-temp">{$_('LOWEST TEMP')}</div>
+</div>
 
-    <div class="hot-items faults">
-      <div class="zone-temp">{$zones.filter(x => x.hasAlarm).length}</div>
-      <div class="zone-info zone-info-faults">{$_('FAULTS')}</div>
+<div class="hot-items max">
+  <div class="temp">
+    <div>
+      <Icon icon='uparrow' size="30px" />
+      <span class="zone-temp">{$convert({ type: 'temp', value: maxTemp, precision: 0 })}</span>
     </div>
+  </div>
+  <div class="zone-info zone-info-temp">{$_('HIGHEST TEMP')}</div>
+</div>
+
+<div class="hot-items faults">
+  <div class="zone-temp">{$zones.filter(x => x.hasAlarm).length}</div>
+  <div class="zone-info zone-info-faults">{$_('FAULTS')}</div>
+</div>
 
 <style lang="scss">
 
