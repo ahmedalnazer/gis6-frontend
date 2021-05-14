@@ -14,11 +14,14 @@
 <Card cardEnabled={$enableHomeEdit} bigCard={$enableHomeEdit}>
   <div class="card-edit-placeholder">
     <h2 class="title">{$_('Order')}</h2>
-    <div on:click={() => {
-      userCard.Enabled = false
-      dispatch('deleteCard')
-    }}>
-      <Icon icon="trash" color="#358DCA" />
+    <div>
+      <Icon icon="move" color="#358DCA" />
+      <span on:click={() => {
+        userCard.Enabled = false
+        dispatch('deleteCard')
+      }}>
+        <Icon icon="trash" color="#358DCA" />
+      </span>
     </div>
   </div>
 </Card>

@@ -16,6 +16,7 @@
   import { onMount } from 'svelte'
   import Sortable from "sortablejs"
   import { tick } from "svelte"
+  import _ from 'data/language'
 
   $: sortcards = $_sortcards
 
@@ -187,7 +188,7 @@
     <div class="editing-cards">
       <div on:click={() => cardEditor.set(true)}>
         <Icon icon="add" />
-        <span>Add card</span>
+        <span>{$_("Add card")}</span>
       </div>
       <div on:click={() => {
           editCards = true
@@ -195,7 +196,15 @@
         }}
       >
         <Icon icon="checkmark" />
-        <span>Done</span>
+        <span>{$_("Done")}</span>
+      </div>
+      <div on:click={() => {
+          editCards = true
+          enableHomeEdit.set(false)
+        }}
+      >
+        <Icon icon="close" size="1em" color="#358DCA" />
+        <span>{$_("Cancel")}</span>
       </div>
     </div>
   {/if}
@@ -270,6 +279,7 @@
     border-radius: 2px;
     background-color: #FFFFFF;
     box-shadow: 0 2px 5px 0 rgba(54,72,96,0.5);
+    padding: 12px 10px 10px 16px;
   }
   .dashboard-body :global(.bigCard) {
     height: 336px;
@@ -286,7 +296,9 @@
       flex: 1;
     }
     :global(div) {
-      align-self: flex-end;
+      align-items: center;
+      display: flex;
+      justify-content: space-between;
     }
   }
 
@@ -334,7 +346,7 @@
       line-height: 18px;
       margin-left: 5px;
     }
-    > :first-child {
+    > :not(:last-child) {
       margin-right: 35px;
     }
   }

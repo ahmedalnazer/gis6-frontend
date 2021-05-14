@@ -11,6 +11,9 @@
   {#if $enableHomeEdit}
     <div class="card-edit-placeholder big-card">
       <h2 class="title">{$_('Hot Runner')}</h2>
+      <div>
+      <Icon icon="move" color="#358DCA" />
+    </div>
     </div>
   {:else}
     <div class="sectionHeader">
