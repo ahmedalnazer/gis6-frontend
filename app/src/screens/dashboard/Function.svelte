@@ -3,6 +3,9 @@
   import DashboardSection from './DashboardSection.svelte'
   import HotRunner from './cards/HotRunner.svelte'
   import _ from 'data/language'
+  import Sortable from "sortablejs"
+  import { tick } from "svelte"
+  import { card_order, sortcards as _sortcards, enableHomeEdit } from 'data/user/cardpref'
 
   export let userCards
 
@@ -15,10 +18,29 @@
   ]
 
   $: availableCards = cards.filter(x => x.roles.includes('all') || x.roles.includes($user.role))
+
+  $: sortcards = $_sortcards
+  let sortList, sortable
+
+  const resetSortable = async () => {
+    await tick()
+    if(sortable) sortable.destroy()
+    sortable = Sortable.create(sortList, {
+      handle: ".cardEnabled",
+      animation: 150,
+      swapThreshold: 0.75
+    })
+  }
+
+  $: {
+    if(sortList && sortcards && $card_order) {
+      resetSortable()
+    }
+  }
 </script>
 
-<DashboardSection title={$_('Controller Functions')}>
-  <div class='card-grid'>
+<DashboardSection title={$_('Controller Functions')} editEnabled={$enableHomeEdit}>
+  <div class='card-grid' bind:this={sortList}>
     <!-- {#each availableCards as card (card.id)}
       <svelte:component this={card.component} />
     {/each} -->

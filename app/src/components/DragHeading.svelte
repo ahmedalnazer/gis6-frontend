@@ -1,8 +1,9 @@
 <script>
   import DragIndicator from 'style/images/DragIndicator.svelte'
+  export let editEnabled
 </script>
 
-<div class='drag-header'>
+<div class='drag-header' class:editEnabled>
   <div class="drag-icon">
     <DragIndicator size="1.1em" />
   </div>

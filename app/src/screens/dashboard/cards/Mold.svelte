@@ -2,9 +2,31 @@
   import Card from './Card.svelte'
   import mold from 'data/mold'
   import _ from 'data/language'
+  import { Icon } from 'components'
+  import { enableHomeEdit } from 'data/user/cardpref'
+  import { createEventDispatcher } from 'svelte';
+
+  const dispatch = createEventDispatcher();
+  export let userCard
 </script>
 
-<Card>
+{#if $enableHomeEdit}
+<Card cardEnabled={$enableHomeEdit} bigCard={$enableHomeEdit}>
+  <div class="card-edit-placeholder">
+    <h2 class="title">{$_('Mold & Process')}</h2>
+    <div>
+      <Icon icon="move" color="#358DCA" />
+      <span on:click={() => {
+        userCard.Enabled = false
+        dispatch('deleteCard')
+      }}>
+        <Icon icon="trash" color="#358DCA" />
+      </span>
+    </div>
+  </div>
+</Card>
+{:else}
+<Card link='/'>
   <div class='container'>
     <div class='labels'>
       <h2>{$_('Mold & Process')}</h2>
@@ -25,6 +47,7 @@
     </div>
   </div>
 </Card>
+{/if}
 
 <style lang="scss">
   .container {
