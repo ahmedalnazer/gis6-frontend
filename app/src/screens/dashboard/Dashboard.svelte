@@ -84,7 +84,7 @@
     await tick()
     if(sortable) sortable.destroy()
     sortable = Sortable.create(sortList, {
-      handle: ".drag-header",
+      handle: ".editEnabled",
       animation: 150,
       swapThreshold: 0.75
     })

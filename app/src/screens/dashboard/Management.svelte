@@ -10,9 +10,7 @@
   import HardwareConfig from './cards/HardwareConfig.svelte'
   import Sortable from "sortablejs"
   import { tick } from "svelte"
-  import { card_order, sortcards as _sortcards } from 'data/user/cardpref'
-
-  $: sortcards = $_sortcards
+  import { card_order, sortcards as _sortcards, enableHomeEdit } from 'data/user/cardpref'
   
   export let userCards
 
@@ -24,13 +22,14 @@
     }
   ]
 
+  $: sortcards = $_sortcards
   let sortList, sortable
 
   const resetSortable = async () => {
     await tick()
     if(sortable) sortable.destroy()
     sortable = Sortable.create(sortList, {
-      handle: ".card",
+      handle: ".cardEnabled",
       animation: 150,
       swapThreshold: 0.75
     })
@@ -51,7 +50,7 @@
   $: availableCards = cards.filter(x => x.roles.includes('all') || x.roles.includes($user && $user.role))
 </script>
 
-<DashboardSection title={$_('Tools & Diagnostics')}>
+<DashboardSection title={$_('Tools & Diagnostics')} editEnabled={$enableHomeEdit}>
   <div class='card-grid' bind:this={sortList}>
     <!-- {#each availableCards as card (card.id)}
       <svelte:component this={card.component} />
