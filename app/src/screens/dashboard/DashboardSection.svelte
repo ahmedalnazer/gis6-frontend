@@ -1,11 +1,12 @@
 <script>
   import DragHeading from 'components/DragHeading.svelte'
   export let title
+  export let editEnabled
 </script>
 
 
 <div class='dashboard-section'>
-  <DragHeading>{title}</DragHeading>
+  <DragHeading {editEnabled}>{title}</DragHeading>
 
   <div class="section-body">
     <slot />

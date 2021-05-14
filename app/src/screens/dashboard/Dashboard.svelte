@@ -10,12 +10,16 @@
   import SortableList from "svelte-sortable-list"
   import Management from "./Management.svelte"
   import AddCardPref from 'screens/users/AddCardPref.svelte'
-  import { cardEditor, userCardPref } from 'data/user/cardpref'
+  import { cardEditor, userCardPref, enableHomeEdit, card_order, sortcards as _sortcards } from 'data/user/cardpref'
   import { Icon } from 'components'
   import user, { roles } from 'data/user'
   import { onMount } from 'svelte'
-  import Card from "screens/users/Card.svelte";
-  
+  import Sortable from "sortablejs"
+  import { tick } from "svelte"
+  import _ from 'data/language'
+
+  $: sortcards = $_sortcards
+
   let isLayoutView = false
   let showSetupProductionButton = true
   let userCards = []
@@ -24,6 +28,8 @@
   let toolsDiagnosticsCards = []
   let generalCards = []
   let sectionData = []
+  let editCards = true
+  let userCardPrefStore = []
 
   $:userType = $user? $user.role: 0
   $:getUserCards(userType, $userCardPref)
@@ -35,6 +41,7 @@
   const getUserCards = (userTypeId, userCardPref) => {
     
     // USER_TYPE_CHOICES = ((1, "admin"), (2, "operator"), (3, "process_engineer"), (4, "setup"), (5, "plant_manager") )
+    userCardPrefStore = userCardPref
     userCards = userCardPref.filter(x => x.UserType == userTypeId)
     if (userCards.length > 0)
     {
@@ -66,6 +73,28 @@
     }
 
     sectionData = cardData
+  }
+
+  const ondeleteCard = () => {
+    userCardPref.set(userCardPrefStore)
+  }
+
+  let sortList, sortable
+
+  const resetSortable = async () => {
+    await tick()
+    if(sortable) sortable.destroy()
+    sortable = Sortable.create(sortList, {
+      handle: ".editEnabled",
+      animation: 150,
+      swapThreshold: 0.75
+    })
+  }
+
+  $: {
+    if(sortList && sortcards && $card_order) {
+      resetSortable()
+    }
   }
 
   onMount(() => { })
@@ -107,7 +136,7 @@
       </SortableList>
     </div>
   {:else}
-    <div class="dashboard-body">
+    <div class="dashboard-body" bind:this={sortList}>
 
       {#if showSetupProductionButton == false}
         <div style="padding:0px 0px 0px 0px;">
@@ -134,11 +163,11 @@
           {#if sectionDataItem.CardType == 'CONTROLLER_FUNCTIONS'}
             <Function userCards={controllerFunctionCards} />
           {:else if sectionDataItem.CardType == 'MOLD_PROCESS_ORDER'}
-            <Mold userCards={moldProcessOrderCards} />
+            <Mold userCards={moldProcessOrderCards} on:deleteCard={() => ondeleteCard()} />
           {:else if sectionDataItem.CardType == 'TOOLS_DIAGNOSTICS'}
-            <Management userCards={toolsDiagnosticsCards} />
+            <Management userCards={toolsDiagnosticsCards} on:deleteCard={() => ondeleteCard()} />
           {:else if sectionDataItem.CardType == 'GENERAL'}
-            <General userCards={generalCards} />
+            <General userCards={generalCards} on:deleteCard={() => ondeleteCard()} />
           {/if}
         </div>
       {/each}
@@ -147,9 +176,38 @@
 
   <AddCardPref />
 
-  <div class="editcard" on:click={() => { cardEditor.set(true) }}>
+  {#if editCards}
+  <div class="editcard" on:click={() => {
+      editCards = false
+      enableHomeEdit.set(true)
+    }}
+  >
     <Icon icon='edit' size="14px" color='var(--primary)' />&nbsp;Edit Card
   </div>
+  {:else}
+    <div class="editing-cards">
+      <div on:click={() => cardEditor.set(true)}>
+        <Icon icon="add" />
+        <span>{$_("Add card")}</span>
+      </div>
+      <div on:click={() => {
+          editCards = true
+          enableHomeEdit.set(false)
+        }}
+      >
+        <Icon icon="checkmark" />
+        <span>{$_("Done")}</span>
+      </div>
+      <div on:click={() => {
+          editCards = true
+          enableHomeEdit.set(false)
+        }}
+      >
+        <Icon icon="close" size="1em" color="#358DCA" />
+        <span>{$_("Cancel")}</span>
+      </div>
+    </div>
+  {/if}
 
 </Screen>
 
@@ -209,12 +267,41 @@
     flex-direction: column;
     justify-content: center;
   }
-  :global(.dashboard-card .title) {
+  :global(.dashboard-card .title, .card-edit-placeholder .title) {
     letter-spacing: 0;
     line-height: 27px;
     margin-top: 10px;
     margin-bottom: 0;
   }
+  .dashboard-body :global(.cardEnabled) {
+    box-sizing: border-box;
+    border: 2px solid #358DCA;
+    border-radius: 2px;
+    background-color: #FFFFFF;
+    box-shadow: 0 2px 5px 0 rgba(54,72,96,0.5);
+    padding: 12px 10px 10px 16px;
+  }
+  .dashboard-body :global(.bigCard) {
+    height: 336px;
+  }
+  .dashboard-body :global(.smallCard) {
+    height: 160px;
+  }
+  .dashboard-body :global(.card-edit-placeholder) {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    :global(.title) {
+      margin: 0;
+      flex: 1;
+    }
+    :global(div) {
+      align-items: center;
+      display: flex;
+      justify-content: space-between;
+    }
+  }
+
 
   .dashboard-body :global(h2) {
     font-size: 20px;
@@ -237,6 +324,31 @@
 
   .editcard:hover {
     opacity: .7;
+  }
+
+  .editing-cards {
+    position: fixed;
+    right: 0;
+    bottom: 122px;
+    width: 100%;
+    padding: 22px 40px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    background-color: #FFFFFF;
+    box-shadow: 0 -2px 4px 0 rgba(54,72,96,0.4);
+    span {
+      color: #358DCA;
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: 0;
+      line-height: 18px;
+      margin-left: 5px;
+    }
+    > :not(:last-child) {
+      margin-right: 35px;
+    }
   }
 
 </style>
