@@ -1,15 +1,15 @@
 import { derived } from 'svelte/store'
 import current from './current'
 import convert from './units'
-import zones from 'data/zones'
+import { rawZones } from 'data/zones'
 
 import de from './translations/de.json'
 import fr from './translations/fr.json'
 
-const _ = derived([ current, convert, zones ], ([ $current, $convert, $zones ]) => {
+const _ = derived([ current, convert, rawZones ], ([ $current, $convert, $zones ]) => {
   return (text, options) => {
     options = options || {}
-    
+
     // if($current == 'en-US') return text
     let datasets = {
       'de-DE': de,
@@ -32,7 +32,7 @@ const _ = derived([ current, convert, zones ], ([ $current, $convert, $zones ]) 
         translation = translation.replace(r, param)
       } else {
         translation = translation.replace('%s', param)
-      }      
+      }
     }
 
     const zoneIds = options.zones || []

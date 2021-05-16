@@ -8,7 +8,7 @@
 </script>
 
 <header class={$status.level}>
-  <div class="logo">    
+  <div class="logo">
     <div class="homelogo" on:click={() => { history.push('/') /*window.location.href = '/'*/ }} title="Home">
       <Icon icon="homelogo" color="#FFFFFF" />
       <div class="homelogo-text">{$_("Barnes GIS6")}</div>
@@ -28,7 +28,7 @@
     </div>
   </div>
 
-  <div class="icon" on:click={() => { $activeActivityLog = "activitylog" }}>
+  <div class="icon" on:click={() => activeActivityLog.set(true)}>
     <img src="/images/icons/icon-history.svg" alt="History" title="History" />
   </div>
 </header>

@@ -4,9 +4,9 @@
   import { activeActivityLog } from 'data/activitylog.js'
   import { Icon } from 'components'
   import { enableHomeEdit } from 'data/user/cardpref'
-  import { createEventDispatcher } from 'svelte';
+  import { createEventDispatcher } from 'svelte'
 
-  const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher()
   export let userCard
 </script>
 
@@ -27,7 +27,7 @@
 </Card>
 {:else}
 <Card link='/'>
-  <div class="dashboard-card" on:click={() => { $activeActivityLog = "activitylog" }}>
+  <div class="dashboard-card" on:click={() => activeActivityLog.set(true)}>
     <Icon icon="recentActivity" color="#A0B7CE" />
     <h2 class="title">{$_('Recent Activity')}</h2>
   </div>

@@ -3,7 +3,7 @@
   import _ from 'data/language'
   import { defaultUser } from 'data/user'
   import { isEmail } from 'data/utils/tools'
- 
+
   export let permissionsLocked = false
 
   export let valid = true
@@ -187,7 +187,7 @@
           ]} />
         </div>
       </div>
-  
+
       <div class="panel-content">
         <div>
           <label>{$_('Electrical Resistance')}</label>
@@ -198,7 +198,7 @@
           ]} />
         </div>
       </div>
-  
+
       <div class="panel-content">
         <div>
           <label>{$_('Pressure')}</label>
@@ -209,7 +209,7 @@
           ]} />
         </div>
       </div>
-  
+
       <div class="panel-content">
         <div>
           <label>{$_('Length')}</label>
@@ -224,6 +224,7 @@
 
   </div>
 
+  {#if permissionsLocked !== true}
   <CheckBox bind:checked={user._temp_1} label={$_('Home Screen Mold, Process and Order Panel')} />
   <!-- <h3 class='permissions-heading'>{$_('Home Screen Mold, Process and Order Panel')}</h3> -->
   <div class='perm-section card- border- permissions-' class:locked={permissionsLocked}>
@@ -342,7 +343,7 @@
           <div> </div>
         </div>
       </div>
-      
+
       <div>
         <div class="live-data-image">
           <Icon icon='lineGraph' color='var(--primary)' />
@@ -411,6 +412,9 @@
       <CheckBox bind:checked={user.can_edit_hardware} label={$_('Tunning')} />
     </div>
   </div>
+
+  {/if}
+
 
 </form>
 

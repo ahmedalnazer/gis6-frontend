@@ -106,7 +106,7 @@
     }
 
     viewByFilterControlDataSelected = setDefaultViewByFilter(viewByFilterControlDataSelected, viewByFilterControlData)
-    
+
     const viewByChanged = (ev) => {
       viewByFilterData = ev.detail
       viewByFilterControlDataSelected = viewByFilterData
@@ -126,13 +126,13 @@
     }
 
     const close = async () => {
-      activeActivityLog.set('')
+      activeActivityLog.set(false)
     }
 
     const closeDownloadData = async () => {
       showDownloadMessage = false
     }
-    
+
     const applyChanges = (ev) => {
       activityLogFilterViewBy.set(viewByFilterControlDataSelected)
       activityLogFilterSelectSystem.set(selectSystemsFilterControlDataSelected)
@@ -144,10 +144,10 @@
     onMount(() => {
       searchLogs()
     })
-    
+
 </script>
 
-{#if $activeActivityLog == "activitylog"}
+{#if $activeActivityLog}
     <Modal
         title={$_("Recent Activity")}
         onClose={close}
@@ -175,11 +175,11 @@
                                     </button>
                                 </div>
                                 <div class="activity-log-download" on:click={() => showDownloadMessage = true}>
-                                    <Icon icon='download' color='white' />                        
-                                </div>                       
+                                    <Icon icon='download' color='white' />
+                                </div>
                         </div>
                     </div>
-                        
+
                     </div>
                     <div>&nbsp;</div>
                 </div>
@@ -191,22 +191,22 @@
                         <div>Date/Time</div>
                         <div>Description</div>
                         <div>System</div>
-                        <div>User</div>    
+                        <div>User</div>
                     </div>
-    
+
                     {#each $log as logData (logData.id)}
                         <div class="activity-log-grid item">
-                            <div>  
+                            <div>
                                 <AlertChips type={logData.logLevel} />
                             </div>
                             <div>{logData.logCreated}</div>
                             <div>{logData.logText}</div>
                             <div>{logData.system}</div>
-                            <div>{logData.logUser} 
-                            </div>  
+                            <div>{logData.logUser}
+                            </div>
                         </div>
                     {/each}
-    
+
                     {#if $log.length <= 0}
                         <div class="item mute">
                             <div class="no-record muted">{$_("No records found")}</div>
@@ -215,19 +215,19 @@
 
                     <!-- {#each activityLogData as activityLogDataItem (activityLogDataItem.id)}
                     <div class="activity-log-grid item">
-                        <div>  
+                        <div>
                             <AlertChips type={activityLogDataItem.type} />
                         </div>
                         <div>{activityLogDataItem.datetime}</div>
                         <div>{activityLogDataItem.description}</div>
                         <div>{activityLogDataItem.system}</div>
-                        <div>{activityLogDataItem.user}</div>  
+                        <div>{activityLogDataItem.user}</div>
                     </div>
                 {/each} -->
 
                 </div>
 
-            </div>    
+            </div>
             <div class="activity-log-container- activity-log-footer">&nbsp;</div>
         </div>
     </Modal>
@@ -312,6 +312,6 @@
 
     :global(.modal-wrapper) {
         max-height: calc(85vh) !important;
-    } 
+    }
 </style>
 

@@ -60,7 +60,11 @@ class API {
       console.error(e)
       this.status = { user: {}}
     }
-    user.set(this.status && this.status.user.username && this.status.user)
+    if(this.status.user && this.status.user.username) {
+      user.set(await this.get(`v2/user/profile/${this.status.user.id}`))
+    } else {
+      user.set(null)
+    }
   }
 
   loadJWT = () => {
@@ -198,8 +202,8 @@ class API {
 
             // recover from expired token
             if(resp.status == 401 && body.code && body.code == 'token_not_valid') {
-                // if(!url.includes('/v2/user/token/refresh/')) {
-                if(!url.includes('auth/token/refresh')) {
+              // if(!url.includes('/v2/user/token/refresh/')) {
+              if(!url.includes('auth/token/refresh')) {
                 await this.updateToken()
                 return resolve(await api.request(url, data, { method }))
               } else {

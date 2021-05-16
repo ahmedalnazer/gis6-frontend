@@ -8,7 +8,7 @@ window.clearAlarm = clearAlarm
 
 const getBit = (int, bit) => !!(int & 1 << bit)
 
-const rawZones = writable([])
+export const rawZones = writable([])
 export const realtime = writable([])
 
 export const selectedZones = writable([])

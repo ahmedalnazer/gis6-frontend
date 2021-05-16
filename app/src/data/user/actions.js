@@ -88,3 +88,15 @@ export const updateUser = async user => {
   // refresh state
   await loadUsers()
 }
+
+/**
+ * Declaritively update a user's profile data
+ * @param {string} id - Target user's id
+ * @param {Object} patch - Object containing updated fields
+ */
+export const updateUserProfile = async (id, patch) => {
+  // patch user record
+  const data = await api.patch(`v2/user/profile/${id}`, patch)
+  // refresh loaded user
+  await api.update()
+}

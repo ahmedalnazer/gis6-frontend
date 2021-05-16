@@ -4,6 +4,7 @@
   import _ from 'data/language'
   import { updateUser } from 'data/user/actions'
   import { users, defaultUser } from 'data/user'
+  import DashboardPreferences from './DashboardPreferences.svelte'
 
   export let userId
 
@@ -32,7 +33,9 @@
 </script>
 
 <Screen title='{$_('User Profile')}'>
-  <UserForm bind:valid bind:user {validating} />
+  <UserForm bind:valid bind:user {validating} permissionsLocked={true} />
+  <DashboardPreferences />
+
   <div class='form-submit'>
     <a class='button active' on:click={update}>Save</a>
   </div>

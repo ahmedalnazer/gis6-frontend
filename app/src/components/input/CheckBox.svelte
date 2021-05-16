@@ -16,7 +16,7 @@
 <div class='input checkbox' class:changed class:trackChange>
   <!-- svelte-ignore a11y-label-has-associated-control -->
   <label on:click={() => {
-    onClick 
+    onClick
       ? onClick()
       : !controlled && (checked = minus ? false : !checked)
     dispatch('change')
@@ -65,6 +65,12 @@
     margin-right: 16px;
     height: 18px;
     width: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-left: 2px;
+    padding-top: 2px;
+
     &.checked, &.minus {
       background: var(--blue);
     }
@@ -89,6 +95,7 @@
     height: 100%;
     width: 100%;
     position: relative;
+    left: -1px;
   }
 
   .minus-bar {

@@ -7,26 +7,15 @@
 
 </script>
 
-<Card link='/hot-runner' footerIcon={false} cardEnabled={$enableHomeEdit} bigCard={$enableHomeEdit}>
-  {#if $enableHomeEdit}
-    <div class="card-edit-placeholder big-card">
-      <h2 class="title">{$_('Hot Runner')}</h2>
-      <div>
-      <Icon icon="move" color="#358DCA" />
-    </div>
-    </div>
-  {:else}
-    <div class="sectionHeader">
-      <div class='icon'>
-        <Icon icon="checkmarkcircle" color="var(--green)" size="1em" />
-      </div>
-      <div>{$_('Hot Runner')}</div>
-    </div>
-    <div class='zoneContainer'>
-      <Summary />
-    </div>
-  {/if}
-</Card>
+<div class="sectionHeader">
+  <div class='icon'>
+    <Icon icon="checkmarkcircle" color="var(--green)" size="1em" />
+  </div>
+  <div>{$_('Hot Runner')}</div>
+</div>
+<div class='zoneContainer'>
+  <Summary />
+</div>
 
 
 <style lang="scss">

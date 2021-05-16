@@ -1,91 +1,68 @@
 <script>
-  import Card from './Card.svelte'
   import _ from 'data/language'
   import ProgressBar from "@okrad/svelte-progressbar"
-  import { Icon } from 'components'
-  import { enableHomeEdit } from 'data/user/cardpref'
-  import { createEventDispatcher } from 'svelte';
-
-  const dispatch = createEventDispatcher();
-  export let userCard
 </script>
 
-{#if $enableHomeEdit}
-<Card cardEnabled={$enableHomeEdit} bigCard={$enableHomeEdit}>
-  <div class="card-edit-placeholder">
-    <h2 class="title">{$_('Order')}</h2>
-    <div>
-      <Icon icon="move" color="#358DCA" />
-      <span on:click={() => {
-        userCard.Enabled = false
-        dispatch('deleteCard')
-      }}>
-        <Icon icon="trash" color="#358DCA" />
-      </span>
-    </div>
+<div class='container'>
+  <div class='labels'>
+    <h2>{$_('Order: No current order')}</h2>
   </div>
-</Card>
-{:else}
-<Card>
-  <div class='container'>
-    <div class='labels'>
-      <h2>{$_('Order: No current order')}</h2>
-    </div>
-    <div class='order-status'>
-      <div class="status">
-        <div class="with-border">
-          <p class="count">0</p>
-          <p class="status-label">{$_('Parts')}</p>
-        </div>
-        <div class="progres-bar-radial">
-          <ProgressBar
-            style='radial'
-            series={[{
-              perc: 0,
-              color: '#364860'
-            }]}
-            thickness={17}
-            width={75}
-            textSize={0}
-          />
-          <div>
-            <p class="count">0</p>
-            <p class="status-label">{$_('Days left')}</p>
-          </div>
-        </div>
+  <div class='order-status'>
+    <div class="status">
+      <div class="with-border">
+        <p class="count">0</p>
+        <p class="status-label">{$_('Parts')}</p>
       </div>
-      <div class="progres-bar-liner">
+      <div class="progres-bar-radial">
         <ProgressBar
-        series={[0]}
-          thresholds={[
-            { perc: 0, color: '#364860' },
-            { perc: 10, color: '#364860' },
-            { perc: 100, color: '#364860' }
-          ]}
+          style='radial'
+          series={[ {
+            perc: 0,
+            color: '#364860'
+          } ]}
+          thickness={17}
+          width={75}
           textSize={0}
-          width={450}
-          height={20}
-          rx={10}
-          ry={10}
         />
-        <div class="progres-bar-liner-labels">
-          <span>0</span>
-          <!-- <span>76,000</span>
-          <span>152,000</span> -->
+        <div>
+          <p class="count">0</p>
+          <p class="status-label">{$_('Days left')}</p>
         </div>
       </div>
-      <div class="setup-order-btn">
-        <button>{$_('Setup Order')}</button>
+    </div>
+    <div class="progres-bar-liner">
+      <ProgressBar
+      series={[ 0 ]}
+        thresholds={[
+          { perc: 0, color: '#364860' },
+          { perc: 10, color: '#364860' },
+          { perc: 100, color: '#364860' }
+        ]}
+        textSize={0}
+        width={400}
+        height={20}
+        rx={10}
+        ry={10}
+      />
+      <div class="progres-bar-liner-labels">
+        <span>0</span>
+        <!-- <span>76,000</span>
+        <span>152,000</span> -->
       </div>
     </div>
+    <div class="setup-order-btn">
+      <button>{$_('Setup Order')}</button>
+    </div>
   </div>
-</Card>
-{/if}
+</div>
 
 <style lang="scss">
+  .container {
+    height: 100%;
+  }
   .order-status {
     margin-top: 60px;
-    
+
     .status {
       display: grid;
       grid-template-columns: repeat(2, 1fr);

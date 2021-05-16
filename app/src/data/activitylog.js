@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store'
 
-export const activeActivityLog = writable('')
+export const activeActivityLog = writable(false)
 
 export const activityLogFilterViewBy = writable('')
 

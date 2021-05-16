@@ -11,7 +11,7 @@
   import Sortable from "sortablejs"
   import { tick } from "svelte"
   import { card_order, sortcards as _sortcards, enableHomeEdit } from 'data/user/cardpref'
-  
+
   export let userCards
 
   let cards = [
@@ -42,9 +42,9 @@
   }
 
   // {
-    //   id: 2,
-    //   roles: [ 1 ],
-    //   component: UserManagement
+  //   id: 2,
+  //   roles: [ 1 ],
+  //   component: UserManagement
   // }
 
   $: availableCards = cards.filter(x => x.roles.includes('all') || x.roles.includes($user && $user.role))
