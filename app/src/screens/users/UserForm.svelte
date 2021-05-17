@@ -14,6 +14,30 @@
 
   let errors = {}
   let tempPlaceholder = 1
+  let tempPlaceholderLength = 1
+  let tempPlaceholderPress = 1
+  let tempPlaceholderEleRes = 1
+  let tempPlaceholderEleCurr = 1
+  let tempPlaceholderTemp = 1
+
+  $: setMetricValue(tempPlaceholder)
+
+  const setMetricValue = (tempPlaceholder) => {
+    if (tempPlaceholder == 1) {
+      tempPlaceholderLength = 1
+      tempPlaceholderPress = 1
+      tempPlaceholderEleRes = 1
+      tempPlaceholderEleCurr = 1
+      tempPlaceholderTemp = 1
+    }
+    else {
+      tempPlaceholderLength = 2
+      tempPlaceholderPress = 2
+      tempPlaceholderEleRes = 1
+      tempPlaceholderEleCurr = 1
+      tempPlaceholderTemp = 2
+    }
+  }
 
   const validate = (user) => {
     // check user properties
@@ -151,15 +175,20 @@
     </div>
   </div> -->
 
-  <h3 class='permissions-heading'>{$_('Units')}</h3>
+  <!-- <h3 class='permissions-heading'>{$_('Units')}</h3> -->
   <div class='perm-section card- border- permissions-' class:locked={permissionsLocked}>
-    <div class='input units-input'>
-      <label>{$_('Units')}</label>
-      <Select bind:value={tempPlaceholder} options={[
-        { id: 1, name: $_('Metric (SI)') },
-        { id: 2, name: $_('US Customary Units') },
-      ]} />
+    <div class='units-container'>
+      <div>
+        <h3 class='permissions-heading'>{$_('Units')}</h3>
+      </div>
+      <div class='input units-input'>
+        <Select bind:value={tempPlaceholder} options={[
+          { id: 1, name: $_('Metric (SI)') },
+          { id: 2, name: $_('US Customary Units') },
+        ]} />
+      </div>
     </div>
+
 
     <div class="perm-units-content">
       <div class="panel-content">
@@ -167,9 +196,9 @@
           <label>{$_('Temperature')}</label>
         </div>
         <div class='input'>
-          <Select bind:value={tempPlaceholder} options={[
-            { id: 1, name: $_('Celsius') },
-            { id: 2, name: $_('Fahrenheit') },
+          <Select bind:value={tempPlaceholderTemp} options={[
+            { id: 1, name: $_('Celsius &#176;C') },
+            { id: 2, name: $_('Fahrenheit &#176;F') },
             { id: 4, name: $_('Kelvin - K') },
           ]} />
         </div>
@@ -180,7 +209,7 @@
           <label>{$_('Electric Current')}</label>
         </div>
         <div class='input'>
-          <Select bind:value={tempPlaceholder} options={[
+          <Select bind:value={tempPlaceholderEleCurr} options={[
             { id: 1, name: $_('Amperage - A') },
             { id: 2, name: $_('Volt - V') },
             { id: 3, name: $_('Ohms - Ω') },
@@ -193,7 +222,7 @@
           <label>{$_('Electrical Resistance')}</label>
         </div>
         <div class='input'>
-          <Select bind:value={tempPlaceholder} options={[
+          <Select bind:value={tempPlaceholderEleRes} options={[
             { id: 1, name: $_('Ohms - Ω') },
           ]} />
         </div>
@@ -204,8 +233,9 @@
           <label>{$_('Pressure')}</label>
         </div>
         <div class='input'>
-          <Select bind:value={tempPlaceholder} options={[
-            { id: 1, name: $_('Pascal') },
+          <Select bind:value={tempPlaceholderPress} options={[
+            { id: 1, name: $_('psi') },
+            { id: 2, name: $_('bars') },
           ]} />
         </div>
       </div>
@@ -215,8 +245,9 @@
           <label>{$_('Length')}</label>
         </div>
         <div class='input'>
-          <Select bind:value={tempPlaceholder} options={[
-            { id: 1, name: $_('Meters - m') },
+          <Select bind:value={tempPlaceholderLength} options={[
+            { id: 1, name: $_('Inches - in') },
+            { id: 2, name: $_('Meters - m') },
           ]} />
         </div>
       </div>
@@ -225,31 +256,49 @@
   </div>
 
   {#if permissionsLocked !== true}
-  <CheckBox bind:checked={user._temp_1} label={$_('Home Screen Mold, Process and Order Panel')} />
-  <!-- <h3 class='permissions-heading'>{$_('Home Screen Mold, Process and Order Panel')}</h3> -->
-  <div class='perm-section card- border- permissions-' class:locked={permissionsLocked}>
-    <div class='checks'>
-      <CheckBox bind:checked={user.can_edit_process} label={$_('Mold & Process')} />
-      <CheckBox bind:checked={user.can_process_temperature} label={$_('Images')} />
-      <CheckBox bind:checked={user.can_edit_hardware} label={$_('Order')} />
+    <div class='inline-pref-control'>
+      <CheckBox bind:checked={user._temp_1} label={$_('Home Screen Mold, Process and Order Panel')} />
+      <!-- <h3 class='permissions-heading'>{$_('Home Screen Mold, Process and Order Panel')}</h3> -->
+      <div class='perm-section card- border- permissions-' class:locked={permissionsLocked}>
+        <div class='checks-1r'>
+          <CheckBox bind:checked={user.can_edit_process} label={$_('Mold & Process')} />
+          <CheckBox bind:checked={user.can_process_temperature} label={$_('Images')} />
+          <CheckBox bind:checked={user.can_edit_hardware} label={$_('Order')} />
+        </div>
+      </div>
     </div>
-  </div>
 
-  <CheckBox bind:checked={user._temp_2} label={$_('Home Screen General')} />
-  <!-- <h3 class='permissions-heading'>{$_('Home Screen General')}</h3> -->
-  <div class='perm-section card- border- permissions-' class:locked={permissionsLocked}>
-    <div class='checks'>
-      <CheckBox bind:checked={user.can_edit_process} label={$_('Network Settings')} />
-      <CheckBox bind:checked={user.can_process_temperature} label={$_('Report & Files')} />
-      <CheckBox bind:checked={user.can_edit_hardware} label={$_('User Management')} />
-      <CheckBox bind:checked={user.can_edit_hardware} label={$_('Hardware Configuration')} />
+    <div class='inline-pref-control'>
+      <CheckBox bind:checked={user._temp_1} label={$_('Home Screen Tools & Diagnostics Panel')} />
+      <div class='perm-section card- border- permissions-' class:locked={permissionsLocked}>
+        <div class='checks-1r'>
+          <CheckBox bind:checked={user.can_edit_process} label={$_('Recent Activities')} />
+          <CheckBox bind:checked={user.can_process_temperature} label={$_('Inputs & Outputs')} />
+          <CheckBox bind:checked={user.can_edit_hardware} label={$_('Historical Data')} />
+          <CheckBox bind:checked={user.can_edit_hardware} label={$_('Material Database')} />
+          <CheckBox bind:checked={user.can_edit_hardware} label={$_('Cycle Data')} />
+          <CheckBox bind:checked={user.can_edit_hardware} label={$_('Hardware Configuration')} />
+        </div>
+      </div>
     </div>
-  </div>
+
+    <div class='inline-pref-control'>
+      <CheckBox bind:checked={user._temp_2} label={$_('Home Screen General')} />
+      <!-- <h3 class='permissions-heading'>{$_('Home Screen General')}</h3> -->
+      <div class='perm-section card- border- permissions-' class:locked={permissionsLocked}>
+        <div class='checks-1r'>
+          <CheckBox bind:checked={user.can_edit_process} label={$_('Network Settings')} />
+          <CheckBox bind:checked={user.can_process_temperature} label={$_('Report & Files')} />
+          <CheckBox bind:checked={user.can_edit_hardware} label={$_('User Management')} />
+          <CheckBox bind:checked={user.can_edit_hardware} label={$_('Hardware Configuration')} />
+        </div>
+      </div>
+    </div>
 
   <h3 class='permissions-heading'>{$_('Hotrunner Live Data Cards')}</h3>
   <div class='perm-section card- border- permissions-' class:locked={permissionsLocked}>
     <div class='checks'>
-      <div>
+      <div class="live-data-body">
         <div class="live-data-image">
           <Icon icon='miniController' color='var(--primary)' />
         </div>
@@ -261,7 +310,7 @@
         </div>
       </div>
 
-      <div>
+      <div class="live-data-body">
         <div class="live-data-image">
           <Icon icon='setpointTable' color='var(--primary)' />
         </div>
@@ -273,7 +322,7 @@
         </div>
       </div>
 
-      <div>
+      <div class="live-data-body">
         <div class="live-data-image">
           <Icon icon='ezScreen' color='var(--primary)' />
         </div>
@@ -285,7 +334,7 @@
         </div>
       </div>
 
-      <div>
+      <div class="live-data-body">
         <div class="live-data-image">
           <Icon icon='toolGraph' color='var(--primary)' />
         </div>
@@ -298,7 +347,7 @@
       </div>
 
 
-      <div>
+      <div class="live-data-body">
         <div class="live-data-image">
           <Icon icon='pilotGraph' color='var(--primary)' />
         </div>
@@ -310,7 +359,7 @@
         </div>
       </div>
 
-      <div>
+      <div class="live-data-body">
         <div class="live-data-image-">
         </div>
         <div class="live-data-content">
@@ -321,7 +370,7 @@
         </div>
       </div>
 
-      <div>
+      <div class="live-data-body">
         <div class="live-data-image">
           <Icon icon='barGraph' color='var(--primary)' />
         </div>
@@ -333,7 +382,7 @@
         </div>
       </div>
 
-      <div>
+      <div class="live-data-body">
         <div class="live-data-image-">
         </div>
         <div class="live-data-content">
@@ -344,7 +393,7 @@
         </div>
       </div>
 
-      <div>
+      <div class="live-data-body">
         <div class="live-data-image">
           <Icon icon='lineGraph' color='var(--primary)' />
         </div>
@@ -356,7 +405,7 @@
         </div>
       </div>
 
-      <div>
+      <div class="live-data-body">
         <div class="live-data-image-">
         </div>
         <div class="live-data-content">
@@ -367,7 +416,7 @@
         </div>
       </div>
 
-      <div>
+      <div class="live-data-body">
         <div class="live-data-image">
           <Icon icon='dataTable' color='var(--primary)' />
         </div>
@@ -379,7 +428,7 @@
         </div>
       </div>
 
-      <div>
+      <div class="live-data-body">
         <div class="live-data-image-">
         </div>
         <div class="live-data-content">
@@ -393,26 +442,29 @@
     </div>
   </div>
 
-  <CheckBox bind:checked={user._temp_3} label={$_('Hotrunner Dashboard Tools & Diagnostics')} />
-  <!-- <h3 class='permissions-heading'>{$_('Hotrunner Dashboard Tools & Diagnostics')}</h3> -->
-  <div class='perm-section card- border- permissions-' class:locked={permissionsLocked}>
-    <div class='checks'>
-      <CheckBox bind:checked={user.can_edit_process} label={$_('Wiring Analysis')} />
-      <CheckBox bind:checked={user.can_process_temperature} label={$_('Fault Analysis')} />
-      <CheckBox bind:checked={user.can_edit_hardware} label={$_('Thermodynamic Analysis')} />
+  <div class='inline-pref-control'>
+    <CheckBox bind:checked={user._temp_4} label={$_('Hotrunner Dashboard Process and Hardware Setting')} />
+    <div class='perm-section card- border- permissions-' class:locked={permissionsLocked}>
+      <div class='checks-1r'>
+        <CheckBox bind:checked={user.can_edit_hardware} label={$_('HR Process')} />
+        <CheckBox bind:checked={user.can_edit_process} label={$_('Group Management')} />
+        <CheckBox bind:checked={user.can_process_temperature} label={$_('Zone Names')} />
+      </div>
     </div>
   </div>
 
-  <CheckBox bind:checked={user._temp_4} label={$_('Hotrunner Dashboard Process and Hardware Setting')} />
-  <!-- <h3 class='permissions-heading'>{$_('Hotrunner Dashboard Process and Hardware Setting')}</h3> -->
-  <div class='perm-section card- border- permissions-' class:locked={permissionsLocked}>
-    <div class='checks'>
-      <CheckBox bind:checked={user.can_edit_process} label={$_('Group Management')} />
-      <CheckBox bind:checked={user.can_process_temperature} label={$_('Zone Names')} />
-      <CheckBox bind:checked={user.can_edit_hardware} label={$_('Tunning')} />
+  <div class='inline-pref-control'>
+    <CheckBox bind:checked={user._temp_3} label={$_('Hotrunner Dashboard Tools & Diagnostics')} />
+    <!-- <h3 class='permissions-heading'>{$_('Hotrunner Dashboard Tools & Diagnostics')}</h3> -->
+    <div class='perm-section card- border- permissions-' class:locked={permissionsLocked}>
+      <div class='checks-1r'>
+        <CheckBox bind:checked={user.can_edit_process} label={$_('Wiring Analysis')} />
+        <CheckBox bind:checked={user.can_process_temperature} label={$_('Fault Analysis')} />
+        <CheckBox bind:checked={user.can_edit_hardware} label={$_('Thermodynamic Analysis')} />
+      </div>
     </div>
   </div>
-
+  
   {/if}
 
 
@@ -440,6 +492,11 @@
     grid-template-columns: repeat(2, 1fr);
   }
 
+  .checks-1r {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+  }
+
   .permissions-heading {
     // margin-top: 48px;
     font-size: 22px;
@@ -464,20 +521,62 @@
     max-width: 50%;
   }
 
+  .units-input {
+    padding-top: 8px;    
+  }
+
+  .live-data-body {
+    display: grid;
+    grid-template-columns: 94px 1fr;
+    // grid-gap: 16px;
+    padding-bottom: 19px;
+  }
+
   .live-data-image {
-    border: 1px solid #cfc5c5;
-    width: 70px;
-    height: 70px;
+    // width: 70px;
+    // height: 70px;
     float: left;
+    padding: 13.5px 25.5px 13.5px 25.5px;
+    border-radius: 2px;
+    border: 1px solid #979797;
   }
 
   .live-data-content {
-    padding-left: 10px;
-    // background-color: indianred;
+    padding-left: 15px;
+    // border: 1px solid indianred;
+    vertical-align: top;
+    :global(.input.checkbox) {
+      height: auto;
+      padding-top: 0px;
+       padding-right: 0;
+     }
   }
 
   .perm-section {
     border-bottom: 2px solid #979797;
     padding: 16px;
+  }
+
+  .inline-pref-control {
+    :global(.input.checkbox) {
+      line-height: 30px;
+      font-size: 22px;
+      font-weight: bold;
+    }
+  }
+
+  .checks, .checks-1r {
+    :global(.input.checkbox) {
+      font-weight: 600;
+      font-size: 16px;
+      line-height: 22px;
+      letter-spacing: 0;
+     }
+  }
+
+  .units-container {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    // grid-gap: 16px;
   }
 </style>
