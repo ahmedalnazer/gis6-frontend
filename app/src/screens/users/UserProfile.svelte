@@ -33,7 +33,7 @@
 </script>
 
 <Screen title='{$_('User Profile')}'>
-  <UserForm bind:valid bind:user {validating} permissionsLocked={true} />
+  <UserForm bind:valid bind:user {validating} permissionsLocked={false} />
   <DashboardPreferences />
 
   <div class='form-submit'>

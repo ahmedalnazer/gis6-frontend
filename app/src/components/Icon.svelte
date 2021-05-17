@@ -993,15 +993,15 @@
 {/if}
 
 {#if icon == "pilotGraph"}
-    <svg width="44px" height="27px" viewBox="0 0 44 27" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-        <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round">
-            <g id="User-Panel" transform="translate(-566.000000, -1991.000000)" stroke="#231F20">
-                <g id="Group-Copy-3" transform="translate(566.500000, 1991.502000)">
-                    <polygon id="Stroke-3247" points="43 26 0 26 0 0 43 0"></polygon>
-                    <line x1="0" y1="7" x2="43" y2="7" id="Stroke-3248"></line>
-                    <line x1="0" y1="13" x2="43" y2="13" id="Stroke-3249"></line>
-                    <line x1="0" y1="20" x2="43" y2="20" id="Stroke-3250"></line>
-                    <line x1="16" y1="0" x2="16" y2="26" id="Stroke-3251"></line>
+    <svg width="45px" height="26px" viewBox="0 0 45 26" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+            <g id="User-Panel" transform="translate(-52.000000, -2140.000000)" stroke="#000000">
+                <g id="Group-10" transform="translate(53.000000, 2141.000000)">
+                    <line x1="0" y1="24" x2="43" y2="24" id="Stroke-4517"></line>
+                    <polygon id="Stroke-4518" points="10 0 4 0 4 24 10 24"></polygon>
+                    <polygon id="Stroke-4519" points="20 0 14 0 14 24 20 24"></polygon>
+                    <polygon id="Stroke-4520" points="30 0 24 0 24 24 30 24"></polygon>
+                    <polygon id="Stroke-4521" points="40 0 34 0 34 24 40 24"></polygon>
                 </g>
             </g>
         </g>
@@ -1009,15 +1009,15 @@
 {/if}
 
 {#if icon == "barGraph"}
-    <svg width="44px" height="27px" viewBox="0 0 44 27" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-        <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round">
-            <g id="User-Panel" transform="translate(-566.000000, -1991.000000)" stroke="#231F20">
-                <g id="Group-Copy-3" transform="translate(566.500000, 1991.502000)">
-                    <polygon id="Stroke-3247" points="43 26 0 26 0 0 43 0"></polygon>
-                    <line x1="0" y1="7" x2="43" y2="7" id="Stroke-3248"></line>
-                    <line x1="0" y1="13" x2="43" y2="13" id="Stroke-3249"></line>
-                    <line x1="0" y1="20" x2="43" y2="20" id="Stroke-3250"></line>
-                    <line x1="16" y1="0" x2="16" y2="26" id="Stroke-3251"></line>
+    <svg width="45px" height="24px" viewBox="0 0 45 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+            <g id="User-Panel" transform="translate(-52.000000, -2213.000000)" stroke="#000000">
+                <g id="Group-17" transform="translate(53.000000, 2214.000000)">
+                    <line x1="0" y1="22" x2="43" y2="22" id="Stroke-4517"></line>
+                    <polygon id="Stroke-4518" points="11 13 5 13 5 22 11 22"></polygon>
+                    <polygon id="Stroke-4519" points="18 3 12 3 12 22 18 22"></polygon>
+                    <polygon id="Stroke-4520" points="31 0 25 0 25 22 31 22"></polygon>
+                    <polygon id="Stroke-4521" points="38 4 31 4 31 22 38 22"></polygon>
                 </g>
             </g>
         </g>
@@ -1025,15 +1025,18 @@
 {/if}
 
 {#if icon == "lineGraph"}
-    <svg width="44px" height="27px" viewBox="0 0 44 27" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-        <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round">
-            <g id="User-Panel" transform="translate(-566.000000, -1991.000000)" stroke="#231F20">
-                <g id="Group-Copy-3" transform="translate(566.500000, 1991.502000)">
-                    <polygon id="Stroke-3247" points="43 26 0 26 0 0 43 0"></polygon>
-                    <line x1="0" y1="7" x2="43" y2="7" id="Stroke-3248"></line>
-                    <line x1="0" y1="13" x2="43" y2="13" id="Stroke-3249"></line>
-                    <line x1="0" y1="20" x2="43" y2="20" id="Stroke-3250"></line>
-                    <line x1="16" y1="0" x2="16" y2="26" id="Stroke-3251"></line>
+    <svg width="45px" height="31px" viewBox="0 0 45 31" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+            <g id="User-Panel" transform="translate(-52.000000, -2278.000000)" stroke="#000000">
+                <g id="Group-8" transform="translate(53.000000, 2279.000000)">
+                    <line x1="0" y1="29" x2="43" y2="29" id="Stroke-4867"></line>
+                    <path d="M41,2 C41,3.104 40.104,4 39,4 C37.896,4 37,3.104 37,2 C37,0.896 37.896,0 39,0 C40.104,0 41,0.896 41,2 L41,2 Z" id="Stroke-4872"></path>
+                    <path d="M29,14 C29,15.104 28.104,16 27,16 C25.896,16 25,15.104 25,14 C25,12.896 25.896,12 27,12 C28.104,12 29,12.896 29,14 L29,14 Z" id="Stroke-4873"></path>
+                    <path d="M18,10 C18,11.104 17.104,12 16,12 C14.896,12 14,11.104 14,10 C14,8.896 14.896,8 16,8 C17.104,8 18,8.896 18,10 L18,10 Z" id="Stroke-4874"></path>
+                    <path d="M7,19 C7,20.104 6.104,21 5,21 C3.896,21 3,20.104 3,19 C3,17.896 3.896,17 5,17 C6.104,17 7,17.896 7,19 L7,19 Z" id="Stroke-4875"></path>
+                    <line x1="7" y1="18" x2="15" y2="12" id="Stroke-4876"></line>
+                    <line x1="18" y1="11" x2="25" y2="14" id="Stroke-4877"></line>
+                    <line x1="29" y1="13" x2="37" y2="4" id="Stroke-4878"></line>
                 </g>
             </g>
         </g>
@@ -1043,8 +1046,8 @@
 {#if icon == "dataTable"}
     <svg width="44px" height="27px" viewBox="0 0 44 27" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
         <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round">
-            <g id="User-Panel" transform="translate(-566.000000, -1991.000000)" stroke="#231F20">
-                <g id="Group-Copy-3" transform="translate(566.500000, 1991.502000)">
+            <g id="User-Panel" transform="translate(-52.000000, -2352.000000)" stroke="#231F20">
+                <g id="Group" transform="translate(52.500000, 2352.502000)">
                     <polygon id="Stroke-3247" points="43 26 0 26 0 0 43 0"></polygon>
                     <line x1="0" y1="7" x2="43" y2="7" id="Stroke-3248"></line>
                     <line x1="0" y1="13" x2="43" y2="13" id="Stroke-3249"></line>
@@ -1057,15 +1060,14 @@
 {/if}
 
 {#if icon == "toolGraph"}
-    <svg width="44px" height="27px" viewBox="0 0 44 27" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-        <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round">
-            <g id="User-Panel" transform="translate(-566.000000, -1991.000000)" stroke="#231F20">
-                <g id="Group-Copy-3" transform="translate(566.500000, 1991.502000)">
-                    <polygon id="Stroke-3247" points="43 26 0 26 0 0 43 0"></polygon>
-                    <line x1="0" y1="7" x2="43" y2="7" id="Stroke-3248"></line>
-                    <line x1="0" y1="13" x2="43" y2="13" id="Stroke-3249"></line>
-                    <line x1="0" y1="20" x2="43" y2="20" id="Stroke-3250"></line>
-                    <line x1="16" y1="0" x2="16" y2="26" id="Stroke-3251"></line>
+    <svg width="40px" height="29px" viewBox="0 0 40 29" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+            <g id="User-Panel" transform="translate(-567.000000, -2062.000000)" stroke="#231F20">
+                <g id="Group" transform="translate(568.000000, 2063.000000)">
+                    <polygon id="Stroke-3615" points="0 0 0 27 38 27 38 9 27.5172414 0"></polygon>
+                    <polyline id="Stroke-3616" points="37 9 27 9 27 0"></polyline>
+                    <polygon id="Stroke-3617" points="8 21 24 21 19.9990483 12 15.1999366 17.912487 11.9996828 16.2233963"></polygon>
+                    <path d="M14,10.5 C14,11.88 12.88,13 11.5,13 C10.12,13 9,11.88 9,10.5 C9,9.11875 10.12,8 11.5,8 C12.88,8 14,9.11875 14,10.5 L14,10.5 Z" id="Stroke-3618"></path>
                 </g>
             </g>
         </g>
