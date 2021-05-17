@@ -84,7 +84,6 @@ export const updateUser = async user => {
   // post new user
   const data = await api.put(`/auth/user/${user.id}`, user)
   // const data = await api.put(`/v2/user/user/${user.id}`, user)
-  notify.success('User profile updated')
   // refresh state
   await loadUsers()
 }

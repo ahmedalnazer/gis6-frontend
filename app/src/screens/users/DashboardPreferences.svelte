@@ -3,8 +3,7 @@
   import CheckBox from "components/input/CheckBox.svelte"
   import { dashboardData } from 'data/dashboards/dashboard-data'
   import { enabled as _enabled } from 'data/dashboards/enabled'
-  import Icon from 'components/Icon.svelte'
-import DashboardOption from 'screens/dashboard/DashboardOption.svelte'
+  import DashboardOption from 'screens/dashboard/DashboardOption.svelte'
 
 
   const getCards = group => Object.entries(group.cards)
@@ -19,7 +18,7 @@ import DashboardOption from 'screens/dashboard/DashboardOption.svelte'
   }
 
   let groups = {}
-  let enabled = {}
+  export let enabled = {}
 
   $: {
     enabled = $_enabled || enabled
@@ -50,15 +49,32 @@ import DashboardOption from 'screens/dashboard/DashboardOption.svelte'
 
   $: console.log(groups, enabled)
 
+  const getFields = (dashboard, group) => {
+    return enabled[dashboard][group] && Object.entries(enabled[dashboard][group]) || []
+  }
+
   $: hasSelected = enabled ? (dashboard, group) => {
-    return enabled[dashboard][group]
-      && Object.entries(enabled[dashboard][group]).find(([ card, isEnabled ]) => isEnabled)
+    const fields = getFields(dashboard, group)
+    const selected = fields.filter(([ card, isEnabled ]) => isEnabled)
+    const all = selected.length == fields.length
+    return {
+      all,
+      some: selected.length > 0 && !all,
+    }
   } : () => false
 
 
   $: dashboardTitles = {
     main: $_('Home Screen'),
     hot_runner: $_('Hotrunner Dashboard')
+  }
+
+  const toggleGroup = (dashboard, group) => {
+    const fields = getFields(dashboard, group)
+    const { some, all } = hasSelected(dashboard, group)
+    for(let [ card, isEnabled ] of fields) {
+      enabled[dashboard][group][card] = !(some || all)
+    }
   }
 </script>
 
@@ -70,7 +86,9 @@ import DashboardOption from 'screens/dashboard/DashboardOption.svelte'
         <h2>
           <CheckBox
             label={`${dashboardTitles[dashboard]} ${group.title}`}
-            checked={hasSelected('main', group.name)}
+            checked={hasSelected(dashboard, group.name).all}
+            minus={hasSelected(dashboard, group.name).some}
+            on:click={() => toggleGroup(dashboard, group.name)}
           />
         </h2>
 

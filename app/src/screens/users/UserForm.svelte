@@ -12,6 +12,8 @@
 
   export let user = { ...defaultUser }
 
+  export let profile = false
+
   let errors = {}
   let tempPlaceholder = 1
   let tempPlaceholderLength = 1
@@ -75,13 +77,14 @@
     }
     const specialChar = /(?=.*[!@#$%^&*])/.test(user.password || '')
 
-    if(user.password.length < 8 || numbers < 2 || !specialChar) {
+    if(!profile && (user.password.length < 8 || numbers < 2 || !specialChar)) {
       err.password = [ $_('Please ensure your password is at least 8 characters, including at least 2 numbers and 1 special character') ]
     }
 
     if(validating) {
       errors = err
     }
+    console.log(errors)
     return Object.keys(err).filter(key => err[key] && err[key].length > 0).length === 0
   }
 
@@ -106,18 +109,21 @@
         { id: 'de-DE', name: 'Deutsche' }
       ]} />
     </div>
+
     <Input bind:value={user.username} label={$_('User Login ID')} errors={errors.username} />
-    <Input
-      type='password'
-      bind:value={user.password}
-      label={$_('Password')}
-      errors={errors.password}
-      info={
-        !errors.password || !errors.password.length
-          ? [ $_('Minimum 8 characters, 2 numeric and one special character') ]
-          : []
-      }
-    />
+    {#if !profile}
+      <Input
+        type='password'
+        bind:value={user.password}
+        label={$_('Password')}
+        errors={errors.password}
+        info={
+          !errors.password || !errors.password.length
+            ? [ $_('Minimum 8 characters, 2 numeric and one special character') ]
+            : []
+        }
+      />
+    {/if}
   </div>
 
   <h3 class='permissions-heading'>{$_('Security Level / Role')}</h3>
