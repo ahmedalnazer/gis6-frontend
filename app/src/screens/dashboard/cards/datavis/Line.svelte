@@ -2,8 +2,9 @@
   import Chart from 'components/charting/Chart.svelte'
   import { colors } from 'data/charting/line-utils'
   import lineConfig, { propertyOptions } from 'data/charting/line-config'
+  import activeZones from 'data/zones/active'
 
-  export let zones
+  $: zones = $activeZones
 
   $: properties = $lineConfig.properties || [ 'actual_temp' ]
   $: propOps = properties.map((x, i) => ({

@@ -8,6 +8,8 @@
 
   $: dashData = $dashboards[dashboard]
 
+  $: console.log(dashData)
+
   const sort = e => updateOrder({ order: e.detail, dashboard })
 
 </script>

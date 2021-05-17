@@ -4,8 +4,11 @@
   import { updateOrder, getOrder } from 'data/dashboards'
 
   export let dashboard = ''
-  export let group = ''
+  export let group = {}
   export let cards = []
+
+  $: console.log(cards)
+
   export let edit = false
 
   const sort = e => {
@@ -21,10 +24,14 @@
     }
     return p
   }
+
 </script>
 
 <Sortable class='dashboard-card-group' {edit} on:change={sort} order={$getOrder({ dashboard, group })}>
-  {#each cards as card (card.name)}
+  {#if group.component}
+    <svelte:component this={group.component} />
+  {:else}
+    {#each cards as card (card.name)}
     <!-- <div class='card-wrapper' data-id={card.name}> -->
       {#if card.component}
         <Card {...props(card)} >
@@ -34,7 +41,8 @@
         <Card {...props(card)} />
       {/if}
 
-  {/each}
+    {/each}
+  {/if}
 </Sortable>
 
 <style>

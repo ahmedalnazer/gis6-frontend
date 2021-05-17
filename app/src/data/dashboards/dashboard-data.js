@@ -5,11 +5,9 @@ import HotRunner from 'screens/dashboard/cards/HotRunner'
 import Image from 'screens/dashboard/cards/Image'
 import Mold from 'screens/dashboard/cards/Mold'
 import Order from 'screens/dashboard/cards/Order'
-import EZ from 'screens/dashboard/cards/datavis/EZ'
-import Line from 'screens/dashboard/cards/datavis/Line'
-import Mini from 'screens/dashboard/cards/datavis/Mini'
 import FaultAnalysis from 'screens/dashboard/cards/FaultAnalysis'
 import WiringAnalysis from 'screens/dashboard/cards/WiringAnalysis'
+import Wrapper from 'screens/dashboard/cards/datavis/Wrapper'
 import { activeActivityLog } from 'data/activitylog'
 import { cardOrder } from './ordering'
 import { enabled } from './enabled'
@@ -131,22 +129,22 @@ export const dashboardData = derived([ _, enabledModules ], ([ $_, $enabledModul
 
       live_data_cards: {
         title: $_('Live Data Cards'),
-        selector: true,
+        component: Wrapper,
         cards: {
           minicontroller: {
             title: $_('Minicontroller'),
             description: $_('Basic zone data in card format'),
-            component: Mini
+            editIcon: 'miniController'
           },
           ez: {
             title: $_('EZ Screen'),
             description: $_('Basic zone data in table format'),
-            component: EZ
+            editIcon: 'ezScreen'
           },
           line_graph: {
             title: $_('Line Graph'),
             description: $_('Advanced view of zone data in line graph'),
-            component: Line
+            editIcon: 'lineGraph'
           }
         }
       },
@@ -179,7 +177,7 @@ export const dashboardData = derived([ _, enabledModules ], ([ $_, $enabledModul
             title: $_('Wiring Analysis'),
             conponent: WiringAnalysis
           },
-          wiring_analysis: {
+          fault_analysis: {
             title: $_('Fault Analysis'),
             conponent: FaultAnalysis
           }

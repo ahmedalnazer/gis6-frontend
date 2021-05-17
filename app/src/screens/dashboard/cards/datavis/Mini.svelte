@@ -1,7 +1,8 @@
 <script>
   import ZoneBox from '../../../mini-controller/ZoneBox'
+  import activeZones from 'data/zones/active'
 
-  export let zones
+  $: zones = $activeZones
 </script>
 
 <div class='mini'>

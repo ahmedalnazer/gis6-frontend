@@ -1,8 +1,9 @@
 <script>
   import ZoneRow from 'screens/easy-screen/ZoneRow.svelte'
   import _ from 'data/language'
+  import activeZones from 'data/zones/active'
 
-  export let zones
+  $: zones = $activeZones
 </script>
 
 <div class='ez'>

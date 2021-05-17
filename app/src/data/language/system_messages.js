@@ -3,7 +3,7 @@ import _ from './i18n'
 import { writable, derived } from 'svelte/store'
 
 // pull activity messages from db
-const activityMessages = writable()
+const activityMessages = writable([])
 api.get('activity-message').then(messages => activityMessages.set(messages))
 
 

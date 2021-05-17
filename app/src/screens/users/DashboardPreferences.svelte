@@ -3,8 +3,9 @@
   import CheckBox from "components/input/CheckBox.svelte"
   import { dashboardData } from 'data/dashboards/dashboard-data'
   import { enabled as _enabled } from 'data/dashboards/enabled'
+  import Icon from 'components/Icon.svelte'
+import DashboardOption from 'screens/dashboard/DashboardOption.svelte'
 
-  export let dashboard
 
   const getCards = group => Object.entries(group.cards)
     .map(([ name, card ]) => ({ ...card, name }))
@@ -24,12 +25,10 @@
     enabled = $_enabled || enabled
   }
 
-  $: main = $dashboardData.main
-  $: hot_runner = $dashboardData.hot_runner
-
   $: {
-    groups.hot_runner = getGroups(hot_runner)
-    groups.main = getGroups(main)
+    for(let key of Object.keys($dashboardData)) {
+      groups[key] = getGroups($dashboardData[key])
+    }
 
     // set defaults if needed
     for(let dashboard of Object.keys(groups)) {
@@ -51,36 +50,37 @@
 
   $: console.log(groups, enabled)
 
-  $: hasSelected = (dashboard, group) => {
+  $: hasSelected = enabled ? (dashboard, group) => {
     return enabled[dashboard][group]
       && Object.entries(enabled[dashboard][group]).find(([ card, isEnabled ]) => isEnabled)
+  } : () => false
+
+
+  $: dashboardTitles = {
+    main: $_('Home Screen'),
+    hot_runner: $_('Hotrunner Dashboard')
   }
-
-
 </script>
 
 
 {#if $dashboardData && enabled && groups}
-  {#each groups.main || [] as group}
-    <div class='section'>
-      <h2>
-        <CheckBox
-          label={group.title}
-          checked={hasSelected('main', group.name)}
-        />
-      </h2>
-
-
-      <div class='cards'>
-        {#each group.cards as card}
+  {#each Object.keys(groups) as dashboard}
+    {#each groups[dashboard] as group}
+      <div class='section'>
+        <h2>
           <CheckBox
-            label={card.title}
-            bind:checked={enabled.main[group.name][card.name]}
-            disabled={card.mandatory}
+            label={`${dashboardTitles[dashboard]} ${group.title}`}
+            checked={hasSelected('main', group.name)}
           />
-        {/each}
+        </h2>
+
+        <div class='cards'>
+          {#each group.cards as card}
+            <DashboardOption {card} bind:checked={enabled[dashboard][group.name][card.name]} />
+          {/each}
+        </div>
       </div>
-    </div>
+    {/each}
   {/each}
 
   <div class='card-pref-container'></div>
@@ -93,6 +93,9 @@
     padding-bottom: 10px;
   }
 
+  p {
+    margin-top: 0;
+  }
 
   .cards {
     padding-left: 30px;

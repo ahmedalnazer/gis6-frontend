@@ -10,6 +10,8 @@
   import GroupManagement from '../cards/GroupManagement.svelte'
   import DataVis from '../cards/datavis/Wrapper.svelte'
   import Summary from './Summary.svelte'
+  import CardSet from '../CardSet'
+  import EditBar from '../EditBar.svelte'
 
   // USER_TYPE_CHOICES = ((1, "admin"), (2, "operator"), (3, "process_engineer"), (4, "setup"), (5, "plant_manager") )
   let cards = [
@@ -42,6 +44,8 @@
 
   $: availableCards = cards.filter(x => x.roles.includes('all') || x.roles.includes($user && $user.role))
 
+  let edit = false
+
 </script>
 
 <Screen title={$_('Hot Runner')} back='/'>
@@ -49,7 +53,8 @@
     <ZoneTasks />
   </div>
 
-  <div class='hot-runner-dash card-grid'>
+
+  <div class='hot-runner-dash'>
 
     <div class='zone-summary-container'>
       <div class='zone-summary-title'>
@@ -59,15 +64,26 @@
         <Summary />
       </div>
     </div>
-    <DataVis />
+
+    <div class='dashboard-container'>
+      <CardSet dashboard='hot_runner' {edit} />
+      <EditBar dashboard='hot_runner' bind:edit />
+    </div>
+
+
+    <!-- <DataVis />
     {#each availableCards as card (card.id)}
       <svelte:component this={card.component} />
-    {/each}
+    {/each} -->
   </div>
 </Screen>
 
 
 <style>
+  .dashboard-container {
+    position: relative;
+    padding-bottom: 60px;
+  }
   .zone-summary-container {
     height: 180px;
     border-radius: 2px;
